@@ -1,0 +1,147 @@
+#include "DX11Wrapper.h"
+#include"WindowWrap.h"
+
+DX11Addon::DX11Addon(Window& window):
+	m_width(window.getWinWidth()), m_height(window.getWinHeight()), m_pHWND(&window.getHWND())
+{
+	m_pWin = &window;
+
+	initSwapChain();
+	initRTV();
+	SetupDSAndVP();
+	InitRastNSampState();
+}
+
+DX11Addon::~DX11Addon()
+{
+	m_device->Release();
+	m_dc->Release();
+	m_swapChain->Release();
+	m_rtv->Release();
+	m_depthStencilBuffer->Release();
+	m_dsView->Release();
+	m_dsState->Release();
+	m_rasterizerState->Release();
+	m_sampState->Release();
+}
+
+bool DX11Addon::initSwapChain()
+{
+
+	UINT flags = 0;
+#ifdef _DEBUG
+	flags = D3D11_CREATE_DEVICE_DEBUG;
+#endif // _DEBUG
+
+
+
+	DXGI_SWAP_CHAIN_DESC swapChainDesc;
+	ZeroMemory(&swapChainDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
+
+	swapChainDesc.BufferDesc.Width = m_width;
+	swapChainDesc.BufferDesc.Height = m_height;
+	swapChainDesc.BufferDesc.RefreshRate.Numerator = 0; // 60
+	swapChainDesc.BufferDesc.RefreshRate.Denominator = 1;
+	swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	swapChainDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
+	swapChainDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
+
+	swapChainDesc.SampleDesc.Count = 1;
+	swapChainDesc.SampleDesc.Quality = 0;
+
+	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+	swapChainDesc.BufferCount = 1;
+	swapChainDesc.OutputWindow = *m_pHWND;
+	swapChainDesc.Windowed = true;
+	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+	swapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+
+	HRESULT hr = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, flags, NULL, 0, D3D11_SDK_VERSION, &swapChainDesc, &m_swapChain, &m_device, NULL, &m_dc);
+	COM_ERROR(hr, "CreateDeviceAndSwapChain Failed");
+
+
+
+	return true;
+}
+
+bool DX11Addon::initRTV()
+{
+	ID3D11Texture2D* backBuffer = nullptr;
+
+	HRESULT hr = m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&backBuffer));
+	COM_ERROR(hr, "Get Buffer failed");
+
+	hr = m_device->CreateRenderTargetView(backBuffer, NULL, &m_rtv);
+	COM_ERROR(hr, "RTV failed");
+
+	backBuffer->Release();
+	return true;
+}
+
+bool DX11Addon::SetupDSAndVP()
+{
+	D3D11_TEXTURE2D_DESC depthStencilTextureDesc;
+	depthStencilTextureDesc.Width = m_width;
+	depthStencilTextureDesc.Height = m_height;
+	depthStencilTextureDesc.MipLevels = 1;
+	depthStencilTextureDesc.ArraySize = 1;
+	depthStencilTextureDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthStencilTextureDesc.SampleDesc.Count = 1;
+	depthStencilTextureDesc.SampleDesc.Quality = 0;
+	depthStencilTextureDesc.Usage = D3D11_USAGE_DEFAULT;
+	depthStencilTextureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	depthStencilTextureDesc.CPUAccessFlags = 0;
+	depthStencilTextureDesc.MiscFlags = 0;
+
+	HRESULT hr = m_device->CreateTexture2D(&depthStencilTextureDesc, NULL, &m_depthStencilBuffer);
+	COM_ERROR(hr, "Depth stencil failed");
+
+	hr = m_device->CreateDepthStencilView(m_depthStencilBuffer, NULL, &m_dsView);
+	COM_ERROR(hr, "Depth Stencil View failed");
+
+	D3D11_DEPTH_STENCIL_DESC dssDesc;
+	ZeroMemory(&dssDesc, sizeof(D3D11_DEPTH_STENCIL_DESC));
+
+	dssDesc.DepthEnable = true;
+	dssDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	dssDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+
+	hr = m_device->CreateDepthStencilState(&dssDesc, &m_dsState);
+	COM_ERROR(hr, "DS State failed");
+
+	m_viewport.TopLeftX = 0;
+	m_viewport.TopLeftY = 0;
+	m_viewport.Width = m_width;
+	m_viewport.Height = m_height;
+	m_viewport.MinDepth = 0;
+	m_viewport.MaxDepth = 0;
+
+	m_dc->RSSetViewports(1, &m_viewport);
+
+	return SUCCEEDED(hr);
+}
+
+bool DX11Addon::InitRastNSampState()
+{
+	D3D11_RASTERIZER_DESC rastDesc;
+	ZeroMemory(&rastDesc, sizeof(D3D11_RASTERIZER_DESC));
+	rastDesc.FillMode = D3D11_FILL_MODE::D3D11_FILL_SOLID;
+	rastDesc.CullMode = D3D11_CULL_MODE::D3D11_CULL_BACK;
+
+	HRESULT hr = m_device->CreateRasterizerState(&rastDesc, &m_rasterizerState);
+	COM_ERROR(hr, "Rasterizer State setup failed");
+
+	D3D11_SAMPLER_DESC sampDesc;
+	ZeroMemory(&sampDesc, sizeof(D3D11_SAMPLER_DESC));
+	sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	sampDesc.MinLOD = 0;
+	sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
+	hr = m_device->CreateSamplerState(&sampDesc, &m_sampState);
+	COM_ERROR(hr, "Sampler State setup failed");
+
+	return true;
+}

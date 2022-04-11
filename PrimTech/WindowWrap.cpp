@@ -2,16 +2,30 @@
 
 LRESULT CALLBACK MessageDirect(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+	Window* const pWindow = reinterpret_cast<Window*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
 	switch (uMsg)
 	{
 	case WM_CLOSE:
+		//if (MessageBox(hwnd, L"Leaving already?", L"[REDACTED]", MB_OKCANCEL) == IDOK)
+		//{
+		//	//MessageBox(hwnd, L"NO!", L"You can't leave", 0);
+		//	DestroyWindow(hwnd);
+		//}
 		DestroyWindow(hwnd);
 		return 0;
+
+	case WM_DESTROY:
+		PostQuitMessage(0);
+		return 0;
+
 	default:
-		Window* const pWindow = reinterpret_cast<Window*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
+		
 		return pWindow->WindowProc(hwnd, uMsg, wParam, lParam);
 	}
+	return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
+
+
 
 LRESULT CALLBACK HandleMessageSetup(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -48,11 +62,6 @@ LRESULT CALLBACK HandleMessageSetup(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
 	}
 }
 
-
-Window::Window():
-	m_width(0), m_height(0)
-{}
-
 bool Window::processMsg()
 {
 	MSG msg = {};
@@ -67,7 +76,8 @@ bool Window::processMsg()
 		if (!IsWindow(this->m_hwnd))
 		{
 			m_hwnd = NULL;
-			UnregisterClass(m_wndClass.c_str(), );
+			UnregisterClass(m_wndClass.c_str(), m_hInstance);
+			return false;
 		}
 	}
 
@@ -83,19 +93,9 @@ bool Window::processMsg()
 
 LRESULT Window::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	switch (uMsg)
-	{
-	case WM_DESTROY:
-		PostQuitMessage(0);
-		return 0;
-	case WM_CLOSE:
-		if (MessageBox(hwnd, L"Leaving already?", m_windowName.c_str(), MB_OKCANCEL) == IDOK)
-		{
-			MessageBoxW(NULL, L"NO!", m_windowName.c_str(), MB_ICONERROR);
-		}
-		return 0;
+	//switch (uMsg)
+	//{
 
-	}
 	return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
 
@@ -104,27 +104,80 @@ std::wstring Window::getWinName() const
 	return m_windowName;
 }
 
-bool Window::init(std::wstring windowName, HINSTANCE hInstance, std::wstring windowClass)
+HWND& Window::getHWND()
 {
+	return m_hwnd;
+}
+
+bool Window::CreateDX11()
+{
+	if (m_apiLoaded) return false;
+	m_pDX11 = new DX11Addon(*this);
+	return true;
+}
+
+uint16_t Window::getWinWidth() const
+{
+	return m_windowWidth;
+}
+
+uint16_t Window::getWinHeight() const
+{
+	return m_windowHeight;
+}
+
+Window::Window():
+	m_windowWidth(0), m_windowHeight(0)
+{}
+
+Window::~Window()
+{
+	if (m_pDX11) delete m_pDX11;
+}
+
+bool Window::init(LPCWSTR windowName, HINSTANCE hInstance, std::wstring windowClass, unsigned int width, unsigned int height)
+{
+
 	m_windowName = windowName;
 	// Register window class
 	m_wndClass = windowClass;
 
+	m_windowWidth = width;
+	m_windowHeight = height;
+
 	WNDCLASS wc = {};
 
+	//wc.style = CS_DBLCLKS; // om vi vill att fönstret ska registrera dubbel klicks
 	wc.lpfnWndProc = HandleMessageSetup;
 	wc.hInstance = hInstance;
-	wc.lpszClassName = wndClass.c_str();
+	wc.lpszClassName = m_wndClass.c_str();
+
+	RECT rect = {};
+	rect.left = GetSystemMetrics(SM_CXSCREEN) * .5f - width * .5f;
+	rect.top = GetSystemMetrics(SM_CYSCREEN) * .5f - height * .5f;
+	rect.right = rect.left + width;
+	rect.bottom = rect.top + height;
+
+	DWORD style = WS_OVERLAPPEDWINDOW;
+
+	AdjustWindowRect(&rect, style, false);
+
+	m_windowWidth = rect.right - rect.left;
+	m_windowHeight = rect.bottom - rect.top;
 
 	RegisterClass(&wc);
-
-	// skapa window
-	m_hwnd = CreateWindowEx(0, wndClass.c_str(), m_windowName.c_str(), WS_OVERLAPPEDWINDOW,
-		CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+	m_hwnd = CreateWindowEx(0, m_wndClass.c_str(), m_windowName.c_str(), style,
+		CW_USEDEFAULT, CW_USEDEFAULT, m_windowWidth, m_windowHeight,
 		NULL, NULL, hInstance, NULL);
+	
+	
 
-	if (m_hwnd == NULL) return 0;
+
+
+	if (m_hwnd == NULL) return false;
 
 	ShowWindow(m_hwnd, SW_SHOW);
-
+	SetForegroundWindow(m_hwnd);
+	SetFocus(m_hwnd);
+	return true;
 }

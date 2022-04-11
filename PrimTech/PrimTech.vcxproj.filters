@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\Utility">
+      <UniqueIdentifier>{4ab89a50-0ba5-4942-a2e5-6258a64cf94d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Utility">
+      <UniqueIdentifier>{d20ac34f-5ca7-4495-8b92-6214395c1cd8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -20,6 +26,15 @@
     </ClCompile>
     <ClCompile Include="WindowWrap.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DX11Wrapper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Utility\Popup.cpp">
+      <Filter>Source Files\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="Utility\StringHelper.cpp">
+      <Filter>Source Files\Utility</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -29,5 +44,25 @@
     <ClInclude Include="WindowWrap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="DX11Wrapper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Utility\COMException.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Utility\Popup.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Utility\StringHelper.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="BaseVS.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
+    <FxCompile Include="BasePS.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>
