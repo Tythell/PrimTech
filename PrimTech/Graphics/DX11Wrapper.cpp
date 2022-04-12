@@ -1,5 +1,5 @@
 #include "DX11Wrapper.h"
-#include"WindowWrap.h"
+#include"../WindowWrap.h"
 
 DX11Addon::DX11Addon(Window& window):
 	m_width(window.getWinWidth()), m_height(window.getWinHeight()), m_pHWND(&window.getHWND())
@@ -13,6 +13,8 @@ DX11Addon::DX11Addon(Window& window):
 
 	InitShaders();
 	InitScene();
+	m_cam.SetPerspective(70.f, m_width / m_height, 0.1f, 1000.f);
+	InitConstantBuffers();
 }
 
 DX11Addon::~DX11Addon()
@@ -152,15 +154,15 @@ bool DX11Addon::InitRastNSampState()
 
 bool DX11Addon::InitShaders()
 {
-	D3D11_INPUT_ELEMENT_DESC layout[] =
+	D3D11_INPUT_ELEMENT_DESC layout[2] =
 	{
-		{"POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
 		//{"TEXCOORD", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0};
 		//{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0};
 	};
 
-	m_vShader.Init(m_device, "../x64/Debug/BaseVS.cso", layout, ARRAYSIZE(layout));
+	m_vShader.Init(m_device, "../x64/Debug/BaseVS.cso", layout, 2);
 	m_pShader.Init(m_device, "../x64/Debug/BasePS.cso");
 	
 	return false;
@@ -170,9 +172,9 @@ bool DX11Addon::InitScene()
 {
 	Vertex vertexes[] =
 	{
-		{0.0f, 0.5f, 0.f, 0.f, 1.f},
-		{0.5f, -0.5f, 0.f, 1.f, 0.f},
-		{-0.5f, -0.5f, 1.f, 0.f, 0.f},
+		{ 0, 0.5f, 0.f, 0.f, 0.f, 1.f },
+		{ 0.5, -0.5f, 0.f, 0.f, 1.f, 0.f },
+		{ -0.5, -0.5f, 0.f, 1.f, 0.f, 0.f},
 	};
 
 
@@ -181,6 +183,18 @@ bool DX11Addon::InitScene()
 	COM_ERROR(hr, "Failed to setup Vertex Buffer");
 
 	return true;
+}
+
+void DX11Addon::InitConstantBuffers()
+{
+	m_transformBuffer.Init(m_device, m_dc);
+}
+
+void DX11Addon::UpdateConstantBuffers()
+{
+	m_transformBuffer.getData().world = d::XMMatrixIdentity();
+	m_transformBuffer.getData().viewProj = d::XMMatrixTranspose(m_cam.GetViewM() * m_cam.GetProjM());
+	m_transformBuffer.applyChange();
 }
 
 void DX11Addon::Render()
@@ -200,6 +214,8 @@ void DX11Addon::Render()
 	//m_dc->PSSetShaderResources
 	UINT offset = 0;
 	m_dc->IASetVertexBuffers(0, 1, m_vbuffer.GetReference(), m_vbuffer.GetStrideP(), &offset);
+
+	UpdateConstantBuffers();
 
 	m_dc->Draw(3, 0);
 

@@ -140,21 +140,27 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="DX11Wrapper.cpp" />
-    <ClCompile Include="Vertex.cpp" />
-    <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="Graphics\Camera.cpp" />
+    <ClCompile Include="Graphics\DX11Wrapper.cpp" />
+    <ClCompile Include="Graphics\Shader.cpp" />
+    <ClCompile Include="Graphics\Transform.cpp" />
     <ClCompile Include="Utility\StringHelper.cpp" />
     <ClCompile Include="Utility\Popup.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Graphics\Vertex.cpp" />
     <ClCompile Include="WindowWrap.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="VertexBuffer.h" />
-    <ClInclude Include="Vertex.h" />
-    <ClInclude Include="Shader.h" />
+    <ClInclude Include="Graphics\Camera.h" />
+    <ClInclude Include="Graphics\CbufferTypes.h" />
+    <ClInclude Include="Graphics\ConstantBuffer.h" />
+    <ClInclude Include="Graphics\VertexBuffer.h" />
+    <ClInclude Include="Graphics\Vertex.h" />
+    <ClInclude Include="Graphics\Shader.h" />
+    <ClInclude Include="Graphics\Transform.h" />
     <ClInclude Include="Utility\StringHelper.h" />
     <ClInclude Include="Utility\COMException.h" />
-    <ClInclude Include="DX11Wrapper.h" />
+    <ClInclude Include="Graphics\DX11Wrapper.h" />
     <ClInclude Include="Utility\Popup.h" />
     <ClInclude Include="WindowWrap.h" />
   </ItemGroup>

@@ -1,5 +1,5 @@
 #pragma once
-#include"DX11Wrapper.h"
+#include"Graphics\DX11Wrapper.h"
 #include <string>
 
 class Window

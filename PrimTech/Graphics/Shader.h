@@ -2,7 +2,7 @@
 #include <d3d11.h>
 #pragma comment(lib, "D3DCompiler.lib")
 #include <d3dcompiler.h>
-#include "Utility\COMException.h"
+#include "../Utility/Popup.h"
 class Shader
 {
 public:

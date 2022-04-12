@@ -1,10 +1,12 @@
 #pragma once
 #include "Shader.h"
 #include <Windows.h>
-#include "Utility/Popup.h"
+#include "../Utility/Popup.h"
 #include "Vertex.h"
 #include "VertexBuffer.h"
 #include<wrl\client.h>
+#include"ConstantBuffer.h"
+#include"CbufferTypes.h"
 
 namespace sm = DirectX::SimpleMath;
 using Vector2i = DirectX::XMINT2;
@@ -26,6 +28,8 @@ private:
 	bool InitRastNSampState();
 	bool InitShaders();
 	bool InitScene();
+	void InitConstantBuffers();
+	void UpdateConstantBuffers();
 
 	Window* m_pWin = nullptr;
 
@@ -52,5 +56,7 @@ private:
 
 	VertexBuffer<Vertex> m_vbuffer;
 
+	ConstantBuffer<Transforms> m_transformBuffer;
+	Camera m_cam;
 };
 
