@@ -12,7 +12,6 @@ protected:
 	bool ReadBlob(std::string path);
 private:
 	ID3D10Blob* mp_buffer;
-	char* shaderByteCode;
 };
 
 class VShader : public Shader

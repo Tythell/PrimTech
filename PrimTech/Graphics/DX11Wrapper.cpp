@@ -13,7 +13,8 @@ DX11Addon::DX11Addon(Window& window):
 
 	InitShaders();
 	InitScene();
-	m_cam.SetPerspective(70.f, m_width / m_height, 0.1f, 1000.f);
+	m_cam.SetPerspective(90.f, static_cast<float>(m_width) / static_cast<float>(m_height), 0.1f, 1000.f);
+	m_cam.SetPosition(0, 0, -1);
 	InitConstantBuffers();
 }
 
@@ -124,6 +125,9 @@ bool DX11Addon::SetupDSAndVP()
 
 	m_dc->RSSetViewports(1, &m_viewport);
 
+
+	
+
 	return SUCCEEDED(hr);
 }
 
@@ -172,9 +176,9 @@ bool DX11Addon::InitScene()
 {
 	Vertex vertexes[] =
 	{
-		{ 0, 0.5f, 0.f, 0.f, 0.f, 1.f },
-		{ 0.5, -0.5f, 0.f, 0.f, 1.f, 0.f },
-		{ -0.5, -0.5f, 0.f, 1.f, 0.f, 0.f},
+		{ 0, 0.5f, 1.f, 0.f, 0.f, 1.f },
+		{ 0.5, -0.5f, 1.f, 0.f, 1.f, 0.f },
+		{ -0.5, -0.5f, 1.f, 1.f, 0.f, 0.f},
 	};
 
 
@@ -188,6 +192,7 @@ bool DX11Addon::InitScene()
 void DX11Addon::InitConstantBuffers()
 {
 	m_transformBuffer.Init(m_device, m_dc);
+	m_dc->VSSetConstantBuffers(0, 1, m_transformBuffer.GetReference());
 }
 
 void DX11Addon::UpdateConstantBuffers()

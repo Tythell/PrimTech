@@ -65,7 +65,7 @@ sm::Matrix Camera::GetViewM() const
 
 sm::Matrix Camera::GetProjM() const
 {
-	return m_viewM;
+	return m_projM;
 }
 
 void Camera::UpdateView()
