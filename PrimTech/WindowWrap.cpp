@@ -126,6 +126,14 @@ uint16_t Window::getWinHeight() const
 	return m_windowHeight;
 }
 
+void Window::Run()
+{
+	while (processMsg())
+	{
+		m_pDX11->Render();
+	}
+}
+
 Window::Window():
 	m_windowWidth(0), m_windowHeight(0)
 {}

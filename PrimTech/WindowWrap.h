@@ -17,7 +17,10 @@ public:
 	
 	uint16_t getWinWidth() const;
 	uint16_t getWinHeight() const;
+	void Run();
 private:
+	void Render();
+
 	DX11Addon* m_pDX11 = nullptr;
 	bool m_apiLoaded = false;
 	int m_windowWidth, m_windowHeight = 0;

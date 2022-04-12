@@ -141,12 +141,17 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="DX11Wrapper.cpp" />
+    <ClCompile Include="Vertex.cpp" />
+    <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Utility\StringHelper.cpp" />
     <ClCompile Include="Utility\Popup.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="WindowWrap.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="VertexBuffer.h" />
+    <ClInclude Include="Vertex.h" />
+    <ClInclude Include="Shader.h" />
     <ClInclude Include="Utility\StringHelper.h" />
     <ClInclude Include="Utility\COMException.h" />
     <ClInclude Include="DX11Wrapper.h" />

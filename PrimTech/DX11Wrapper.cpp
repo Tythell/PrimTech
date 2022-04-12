@@ -10,6 +10,9 @@ DX11Addon::DX11Addon(Window& window):
 	initRTV();
 	SetupDSAndVP();
 	InitRastNSampState();
+
+	InitShaders();
+	InitScene();
 }
 
 DX11Addon::~DX11Addon()
@@ -66,15 +69,16 @@ bool DX11Addon::initSwapChain()
 
 bool DX11Addon::initRTV()
 {
-	ID3D11Texture2D* backBuffer = nullptr;
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> backBuffer;
 
-	HRESULT hr = m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&backBuffer));
+	HRESULT hr = m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(backBuffer.GetAddressOf()));
 	COM_ERROR(hr, "Get Buffer failed");
 
-	hr = m_device->CreateRenderTargetView(backBuffer, NULL, &m_rtv);
+	hr = m_device->CreateRenderTargetView(backBuffer.Get(), NULL, &m_rtv);
 	COM_ERROR(hr, "RTV failed");
 
-	backBuffer->Release();
+	m_dc->OMSetRenderTargets(1, &m_rtv, m_dsView);
+
 	return true;
 }
 
@@ -126,7 +130,7 @@ bool DX11Addon::InitRastNSampState()
 	D3D11_RASTERIZER_DESC rastDesc;
 	ZeroMemory(&rastDesc, sizeof(D3D11_RASTERIZER_DESC));
 	rastDesc.FillMode = D3D11_FILL_MODE::D3D11_FILL_SOLID;
-	rastDesc.CullMode = D3D11_CULL_MODE::D3D11_CULL_BACK;
+	rastDesc.CullMode = D3D11_CULL_MODE::D3D11_CULL_NONE;
 
 	HRESULT hr = m_device->CreateRasterizerState(&rastDesc, &m_rasterizerState);
 	COM_ERROR(hr, "Rasterizer State setup failed");
@@ -144,4 +148,60 @@ bool DX11Addon::InitRastNSampState()
 	COM_ERROR(hr, "Sampler State setup failed");
 
 	return true;
+}
+
+bool DX11Addon::InitShaders()
+{
+	D3D11_INPUT_ELEMENT_DESC layout[] =
+	{
+		{"POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		//{"TEXCOORD", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0};
+		//{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0};
+	};
+
+	m_vShader.Init(m_device, "../x64/Debug/BaseVS.cso", layout, ARRAYSIZE(layout));
+	m_pShader.Init(m_device, "../x64/Debug/BasePS.cso");
+	
+	return false;
+}
+
+bool DX11Addon::InitScene()
+{
+	Vertex vertexes[] =
+	{
+		{0.0f, 0.5f, 0.f, 0.f, 1.f},
+		{0.5f, -0.5f, 0.f, 1.f, 0.f},
+		{-0.5f, -0.5f, 1.f, 0.f, 0.f},
+	};
+
+
+	HRESULT hr = m_vbuffer.Init(m_device, vertexes, ARRAYSIZE(vertexes));
+	
+	COM_ERROR(hr, "Failed to setup Vertex Buffer");
+
+	return true;
+}
+
+void DX11Addon::Render()
+{
+	float bgColor[] = { .1,.1,.1,1 };
+	m_dc->ClearRenderTargetView(m_rtv, bgColor);
+	m_dc->ClearDepthStencilView(m_dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
+
+	m_dc->IASetInputLayout(m_vShader.GetInputLayout());
+	m_dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	m_dc->RSSetState(m_rasterizerState);
+	m_dc->OMSetDepthStencilState(m_dsState, 0);
+	m_dc->PSSetSamplers(0, 1, &m_sampState);
+
+	m_dc->VSSetShader(m_vShader.GetShader(), NULL, 0);
+	m_dc->PSSetShader(m_pShader.GetShader(), NULL, 0);
+	//m_dc->PSSetShaderResources
+	UINT offset = 0;
+	m_dc->IASetVertexBuffers(0, 1, m_vbuffer.GetReference(), m_vbuffer.GetStrideP(), &offset);
+
+	m_dc->Draw(3, 0);
+
+	m_swapChain->Present(0, NULL);
 }

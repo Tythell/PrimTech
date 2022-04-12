@@ -1,8 +1,10 @@
 #pragma once
-#include <d3d11.h>
+#include "Shader.h"
 #include <Windows.h>
 #include "Utility/Popup.h"
-#include "DXTK/SimpleMath.h"
+#include "Vertex.h"
+#include "VertexBuffer.h"
+#include<wrl\client.h>
 
 namespace sm = DirectX::SimpleMath;
 using Vector2i = DirectX::XMINT2;
@@ -16,11 +18,16 @@ public:
 	~DX11Addon();
 
 
+	void Render();
 private:
 	bool initSwapChain();
 	bool initRTV();
 	bool SetupDSAndVP();
 	bool InitRastNSampState();
+	bool InitShaders();
+	bool InitScene();
+
+	Window* m_pWin = nullptr;
 
 	const unsigned int m_width, m_height;
 
@@ -40,7 +47,10 @@ private:
 	ID3D11RasterizerState* m_rasterizerState = nullptr;
 	ID3D11SamplerState* m_sampState = nullptr;
 
+	VShader m_vShader;
+	PShader m_pShader;
 
-	Window* m_pWin = nullptr;
+	VertexBuffer<Vertex> m_vbuffer;
+
 };
 

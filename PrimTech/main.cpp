@@ -8,10 +8,7 @@ int WINAPI wWinMain(/*_In_*/ HINSTANCE hInstance, /*_In_opt_*/ HINSTANCE hPrevIn
 	window.init(L"PrimTech", hInstance, L"windowClass", 1000, 800);
 	window.CreateDX11();
 
-	while (window.processMsg())
-	{
-		
-	}
+	window.Run();
 
 	return 0;
 }

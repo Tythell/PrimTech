@@ -1,6 +1,6 @@
 #include "StringHelper.h"
 
-std::wstring StringHelper::StringToW(std::string str)
+const std::wstring StringHelper::StringToW(std::string str)
 {
     return std::wstring(str.begin(), str.end());
 }
