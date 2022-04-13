@@ -1,11 +1,18 @@
+Texture2D albedo : TEXCOORD : register(t0);
+SamplerState samplerState : SAMPLER : register(s0);
+
 struct PSInput
 {
 	float4 position : SV_POSITION;
-	float3 colour : COLOR;
+	//float3 colour : COLOR;
+	float2 uv : TEXCOORD;
 	float3 worldPos : WORLD_POS;
 };
 
 float4 main(PSInput input) : SV_TARGET
 {
-	return float4(input.colour, 1.f);
+	float3 albedoColor = albedo.Sample(samplerState, input.uv);
+	
+	
+	return float4(albedoColor, 1.f);
 }

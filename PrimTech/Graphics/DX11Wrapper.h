@@ -4,9 +4,11 @@
 #include "../Utility/Popup.h"
 #include "Vertex.h"
 #include "VertexBuffer.h"
+#include"IndexBuffer.h"
 #include<wrl\client.h>
 #include"ConstantBuffer.h"
 #include"CbufferTypes.h"
+#include"Texture.h"
 
 namespace sm = DirectX::SimpleMath;
 using Vector2i = DirectX::XMINT2;
@@ -55,6 +57,9 @@ private:
 	PShader m_pShader;
 
 	VertexBuffer<Vertex> m_vbuffer;
+	IndexBuffer m_iBuffer;
+
+	TextureMap m_fileTexture;
 
 	ConstantBuffer<Transforms> m_transformBuffer;
 	Camera m_cam;

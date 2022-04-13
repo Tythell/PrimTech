@@ -4,10 +4,10 @@
 
 struct Vertex
 {
-	Vertex(float x, float y, float z, float r, float g, float b):
-		position(x,y, 0.f), color(r,g,b) {}
+	Vertex(float x, float y, float z, float u, float v):
+		position(x,y, z), uv(u,v) {}
 
 	DirectX::XMFLOAT3 position;
-	DirectX::XMFLOAT3 color;
+	DirectX::XMFLOAT2 uv;
 };
 

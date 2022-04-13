@@ -142,7 +142,9 @@
   <ItemGroup>
     <ClCompile Include="Graphics\Camera.cpp" />
     <ClCompile Include="Graphics\DX11Wrapper.cpp" />
+    <ClCompile Include="Graphics\Noise\PerlinNoise.cpp" />
     <ClCompile Include="Graphics\Shader.cpp" />
+    <ClCompile Include="Graphics\Texture.cpp" />
     <ClCompile Include="Graphics\Transform.cpp" />
     <ClCompile Include="Utility\StringHelper.cpp" />
     <ClCompile Include="Utility\Popup.cpp" />
@@ -154,10 +156,14 @@
     <ClInclude Include="Graphics\Camera.h" />
     <ClInclude Include="Graphics\CbufferTypes.h" />
     <ClInclude Include="Graphics\ConstantBuffer.h" />
+    <ClInclude Include="Graphics\IndexBuffer.h" />
+    <ClInclude Include="Graphics\Noise\PerlinNoise.h" />
+    <ClInclude Include="Graphics\Texture.h" />
     <ClInclude Include="Graphics\VertexBuffer.h" />
     <ClInclude Include="Graphics\Vertex.h" />
     <ClInclude Include="Graphics\Shader.h" />
     <ClInclude Include="Graphics\Transform.h" />
+    <ClInclude Include="Utility\MathFunctions.h" />
     <ClInclude Include="Utility\StringHelper.h" />
     <ClInclude Include="Utility\COMException.h" />
     <ClInclude Include="Graphics\DX11Wrapper.h" />
