@@ -31,7 +31,7 @@ sm::Vector2 Perlin::RandomGradient(int ix, int iy)
 	sm::Vector2 v;
 	v.x = cos(random); v.y = sin(random);
 
-	return sm::Vector2();
+	return v;
 }
 
 float Perlin::dotGridGradient(int ix, int iy, float x, float y)
@@ -68,6 +68,6 @@ float Perlin::perlinn(float x, float y)
 
 	value = Interpolate(ix0, ix1, sy);
 
-	return 0.0f;
+	return value;
 }
 
