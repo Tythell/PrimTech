@@ -15,7 +15,8 @@ public:
 	VertexBuffer() {}
 	~VertexBuffer()
 	{
-		buffer->Release();
+		if(buffer)
+			buffer->Release();
 	}
 
 	ID3D11Buffer* Get()const

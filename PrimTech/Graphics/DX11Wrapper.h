@@ -9,6 +9,7 @@
 #include"ConstantBuffer.h"
 #include"CbufferTypes.h"
 #include"Texture.h"
+#include"../Logic/Grid.h"
 
 namespace sm = DirectX::SimpleMath;
 using Vector2i = DirectX::XMINT2;
@@ -34,6 +35,8 @@ private:
 	void UpdateConstantBuffers();
 
 	Window* m_pWin = nullptr;
+
+	StoneGrid m_grid;
 
 	const unsigned int m_width, m_height;
 

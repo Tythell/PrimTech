@@ -30,7 +30,6 @@ sm::Vector2 Perlin::RandomGradient(int ix, int iy)
 	float random = a * (d::XM_PI / ~(0u >> 1));
 	sm::Vector2 v;
 	v.x = cos(random); v.y = sin(random);
-
 	return v;
 }
 

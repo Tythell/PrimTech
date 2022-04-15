@@ -12,11 +12,13 @@ private:
 	ID3D11Buffer* m_buffer;
 	ID3D11DeviceContext* m_dc = nullptr;
 	T data;
+	bool m_on = false;
 public:
 	ConstantBuffer() {}
 	~ConstantBuffer()
 	{
-		m_buffer->Release();
+		if(m_on)
+			m_buffer->Release();
 	}
 
 	T& getData()
@@ -34,6 +36,7 @@ public:
 	}
 	HRESULT Init(ID3D11Device*& device, ID3D11DeviceContext*& deviceContext)
 	{
+		m_on = true;
 		m_dc = deviceContext;
 		D3D11_BUFFER_DESC desc;
 		desc.Usage = D3D11_USAGE_DYNAMIC;

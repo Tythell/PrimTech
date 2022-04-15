@@ -7,6 +7,11 @@ private:
 	UINT bufferSize = 0;
 public:
 	IndexBuffer() {}
+	~IndexBuffer()
+	{
+		// If break here, uninitialized buffer present
+		m_buffer->Release();
+	}
 
 	ID3D11Buffer* Get()const
 	{

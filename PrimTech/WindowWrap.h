@@ -19,7 +19,6 @@ public:
 	uint16_t getWinHeight() const;
 	void Run();
 private:
-	void Render();
 
 	DX11Addon* m_pDX11 = nullptr;
 	bool m_apiLoaded = false;

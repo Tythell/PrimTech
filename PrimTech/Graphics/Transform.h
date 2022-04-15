@@ -1,7 +1,5 @@
 #pragma once
-#include"../Math/Simplemath.h"
-namespace sm = DirectX::SimpleMath;
-namespace d = DirectX;
+#include"../Math/Math.h"
 class Transform
 {
 	sm::Vector3 pos, rot, scale;

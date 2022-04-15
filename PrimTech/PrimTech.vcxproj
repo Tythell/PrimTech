@@ -146,6 +146,7 @@
     <ClCompile Include="Graphics\Shader.cpp" />
     <ClCompile Include="Graphics\Texture.cpp" />
     <ClCompile Include="Graphics\Transform.cpp" />
+    <ClCompile Include="Logic\Grid.cpp" />
     <ClCompile Include="Utility\StringHelper.cpp" />
     <ClCompile Include="Utility\Popup.cpp" />
     <ClCompile Include="main.cpp" />
@@ -163,7 +164,8 @@
     <ClInclude Include="Graphics\Vertex.h" />
     <ClInclude Include="Graphics\Shader.h" />
     <ClInclude Include="Graphics\Transform.h" />
-    <ClInclude Include="Utility\MathFunctions.h" />
+    <ClInclude Include="Logic\Grid.h" />
+    <ClInclude Include="Math\Math.h" />
     <ClInclude Include="Utility\StringHelper.h" />
     <ClInclude Include="Utility\COMException.h" />
     <ClInclude Include="Graphics\DX11Wrapper.h" />

@@ -1,8 +1,9 @@
 #include "DX11Wrapper.h"
 #include"../WindowWrap.h"
 
-DX11Addon::DX11Addon(Window& window):
-	m_width(window.getWinWidth()), m_height(window.getWinHeight()), m_pHWND(&window.getHWND())
+DX11Addon::DX11Addon(Window& window) :
+	m_width(window.getWinWidth()), m_height(window.getWinHeight()), m_pHWND(&window.getHWND()),
+	m_grid(32,32)
 {
 	m_pWin = &window;
 
@@ -15,7 +16,7 @@ DX11Addon::DX11Addon(Window& window):
 	InitScene();
 	m_cam.SetPerspective(90.f, static_cast<float>(m_width) / static_cast<float>(m_height), 0.1f, 1000.f);
 	m_cam.SetPosition(0, 0, 0);
-	m_fileTexture.CreateTextureFromFile("../Textures/gunter2.png", m_device);
+	m_fileTexture.CreateFromFile("Textures/gunter2.png", m_device);
 	InitConstantBuffers();
 }
 
@@ -127,7 +128,7 @@ bool DX11Addon::SetupDSAndVP()
 	m_dc->RSSetViewports(1, &m_viewport);
 
 
-	
+
 
 	return SUCCEEDED(hr);
 }
@@ -151,6 +152,7 @@ bool DX11Addon::InitRastNSampState()
 	sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 	sampDesc.MinLOD = 0;
 	sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
 	hr = m_device->CreateSamplerState(&sampDesc, &m_sampState);
 	COM_ERROR(hr, "Sampler State setup failed");
 
@@ -168,7 +170,7 @@ bool DX11Addon::InitShaders()
 
 	m_vShader.Init(m_device, "../x64/Debug/BaseVS.cso", layout, ARRAYSIZE(layout));
 	m_pShader.Init(m_device, "../x64/Debug/BasePS.cso");
-	
+
 	return false;
 }
 
@@ -193,7 +195,7 @@ bool DX11Addon::InitScene()
 	m_iBuffer.Init(m_device, indices, ARRAYSIZE(indices));
 
 
-	
+
 	COM_ERROR(hr, "Failed to setup Vertex Buffer");
 
 	return true;
@@ -223,7 +225,7 @@ void DX11Addon::Render()
 	m_dc->RSSetState(m_rasterizerState);
 	m_dc->OMSetDepthStencilState(m_dsState, 0);
 	m_dc->PSSetSamplers(0, 1, &m_sampState);
-	m_dc->PSSetShaderResources(0, 1, m_fileTexture.getTextureResourceViewAdress());
+	m_dc->PSSetShaderResources(0, 1, m_fileTexture.GetSRVAdress());
 
 	m_dc->VSSetShader(m_vShader.GetShader(), NULL, 0);
 	m_dc->PSSetShader(m_pShader.GetShader(), NULL, 0);

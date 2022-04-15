@@ -136,7 +136,9 @@ void Window::Run()
 
 Window::Window():
 	m_windowWidth(0), m_windowHeight(0)
-{}
+{
+
+}
 
 Window::~Window()
 {
