@@ -5,4 +5,5 @@ struct Transforms
 {
 	sm::Matrix world;
 	sm::Matrix viewProj;
+	d::XMFLOAT4 color;
 };

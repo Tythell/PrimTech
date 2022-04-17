@@ -2,6 +2,7 @@ cbuffer Transforms : register(b0)
 {
 	float4x4 world;
 	float4x4 viewProj;
+	float4 color;
 };
 
 struct VSInput
@@ -13,7 +14,7 @@ struct VSInput
 struct VSOutput
 {
 	float4 position : SV_POSITION;
-	//float3 color : COLOR;
+	float3 color : COLOR;
 	float2 uv : TEXCOORD;
 	//float3 norm : NORMAL;
 	float3 worldPos : WORLD_POS;
@@ -23,10 +24,10 @@ struct VSOutput
 VSOutput main(VSInput input)
 {
 	VSOutput output;
-	output.position = mul(float4(input.position, 1.f), viewProj);
+	output.position = mul(float4(input.position, 1.f), mul(world, viewProj));
 	//output.position = mul(float4(input.position, 1.0f), mul(world, viewProj));
 	output.worldPos = mul(float4(input.position, 1.0f), world);
-	//output.color = input.color;
+	output.color = color;
 	output.uv = input.uv;
 	return output;
 }

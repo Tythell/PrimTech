@@ -1,29 +1,54 @@
 #include "Grid.h"
 
-StoneGrid::StoneGrid(unsigned x, unsigned y, unsigned c):
+CellGrid::CellGrid(unsigned x, unsigned y, unsigned c):
 	m_resolutions(x,y)
 {
 	mp_tileGrid = new uint8_t[x * y * c];
 
-	TextureMap::CreateCharFromFile("White32.png", mp_tileHp, x, y, c);
+	m_output = new int[x * y];
+	m_state = new int[x * y];
 
-	Simulate(x / 2, 0);
+	memset(m_output, 0, x * y * sizeof(int));
+	memset(m_state, 0, x * y * sizeof(int));
 
-	TextureMap::ExportCharToImage("testExport.png", mp_tileHp, x, y, 1);
+	//TextureMap::CreateCharFromFile("White32.png", mp_tileHp, x, y, c);
+
+	//Simulate(x / 2, 0);
+
+	//TextureMap::ExportCharToImage("testExport.png", mp_tileHp, x, y, 1);
 }
 
-StoneGrid::~StoneGrid()
+CellGrid::~CellGrid()
 {
+	delete[] m_output;
+	delete[] m_state;
+
 	delete mp_tileHp;
 	delete mp_tileGrid;
 }
 
-uint8_t*& StoneGrid::GetChar()
+void CellGrid::Update(float dtime)
+{
+	auto cell = [&](int x, int y) { return m_output[y * m_gridWidth + x]; };
+
+	for (int i = 0; i < m_gridWidth * m_gridHeight; i++)
+	{
+		m_output[i] = m_state[i];
+	}
+
+	for (int x = 1; x < m_gridWidth - 1; x++)
+		for (int y = 1; y < m_gridHeight - 1; y++)
+		{
+
+		}
+}
+
+uint8_t*& CellGrid::GetChar()
 {
 	return mp_tileHp;
 }
 
-int StoneGrid::FindWeakNeighbour(int x, int y) const
+int CellGrid::FindWeakNeighbour(int x, int y) const
 {
 	int tile = Coord(x, y);
 	int leftNeighbour = Coord(x + 1, y);
@@ -33,12 +58,12 @@ int StoneGrid::FindWeakNeighbour(int x, int y) const
 	return 0;
 }
 
-int StoneGrid::Coord(int x, int y) const
+int CellGrid::Coord(int x, int y) const
 {
 	return m_resolutions.x * y + x;
 }
 
-void StoneGrid::Simulate(int x, int y)
+void CellGrid::Simulate(int x, int y)
 {
 	refreshTiles(x, y);
 
@@ -57,7 +82,7 @@ void StoneGrid::Simulate(int x, int y)
 
 }
 
-void StoneGrid::refreshTiles(unsigned x, unsigned y)
+void CellGrid::refreshTiles(unsigned x, unsigned y)
 {
 	m_cTile = Coord(x, y);
 	m_lTile = m_cTile - 1;

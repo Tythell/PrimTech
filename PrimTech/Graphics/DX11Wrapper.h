@@ -2,14 +2,10 @@
 #include "Shader.h"
 #include <Windows.h>
 #include "../Utility/Popup.h"
-#include "Vertex.h"
-#include "VertexBuffer.h"
-#include"IndexBuffer.h"
 #include<wrl\client.h>
-#include"ConstantBuffer.h"
-#include"CbufferTypes.h"
 #include"Texture.h"
 #include"../Logic/Grid.h"
+#include"../Cell.h"
 
 namespace sm = DirectX::SimpleMath;
 using Vector2i = DirectX::XMINT2;
@@ -36,7 +32,7 @@ private:
 
 	Window* m_pWin = nullptr;
 
-	StoneGrid m_grid;
+	RenderGrid m_grid;
 
 	const unsigned int m_width, m_height;
 
@@ -59,12 +55,12 @@ private:
 	VShader m_vShader;
 	PShader m_pShader;
 
-	VertexBuffer<Vertex> m_vbuffer;
-	IndexBuffer m_iBuffer;
+	//VertexBuffer<Vertex> m_vbuffer;
+	//IndexBuffer m_iBuffer;
 
-	TextureMap m_fileTexture;
+	TextureMap m_defaultTexture;
 
-	ConstantBuffer<Transforms> m_transformBuffer;
+	//ConstantBuffer<Transforms> m_transformBuffer;
 	Camera m_cam;
 };
 
