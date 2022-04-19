@@ -2,8 +2,8 @@
 #include"../WindowWrap.h"
 
 DX11Addon::DX11Addon(Window& window) :
-	m_width(window.getWinWidth()), m_height(window.getWinHeight()), m_pHWND(&window.getHWND()),
-	m_grid(32,32)
+	m_width(window.getWinWidth()), m_height(window.getWinHeight()), m_pHWND(&window.getHWND())
+	//m_grid(32,32)
 {
 	m_pWin = &window;
 

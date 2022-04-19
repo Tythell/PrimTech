@@ -36,7 +36,7 @@ private:
 
 	Window* m_pWin = nullptr;
 
-	StoneGrid m_grid;
+	//StoneGrid m_grid;
 
 	const unsigned int m_width, m_height;
 
