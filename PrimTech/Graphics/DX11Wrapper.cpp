@@ -19,7 +19,6 @@ DX11Addon::DX11Addon(Window& window) :
 	m_defaultTexture.CreateFromFile("gunter2.png", m_device);
 	InitConstantBuffers();
 
-	m_grid.Init(d::XMINT2( m_width, m_height ), d::XMINT2( 3,3 ), m_device, m_dc);
 	m_grid.SetViewProjM(m_cam.GetProjM());
 }
 
@@ -182,7 +181,7 @@ bool DX11Addon::InitShaders()
 
 bool DX11Addon::InitScene()
 {
-
+	m_grid.Init(d::XMINT2(m_width, m_height), d::XMINT2(3, 3), m_device, m_dc);
 	return true;
 }
 
@@ -215,10 +214,7 @@ void DX11Addon::Render()
 
 	UpdateConstantBuffers();
 
-	static float r = 0;
-	r += 0.0002f;
-
-	m_grid.DrawCell({ 1,0,0, 1 }, { 0,0 });
+	m_grid.DrawCell(sm::Vector4(1,0,0, 1 ), sm::Vector2( 0,0 ));
 
 	//m_transformBuffer.getData().world = d::XMMatrixTranspose(d::XMMatrixTranslationFromVector(sm::Vector3(-r,.4f,0)));
 	//m_transformBuffer.getData().color = sm::Vector4(0, 1, 0, 1);
