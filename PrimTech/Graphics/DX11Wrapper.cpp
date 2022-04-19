@@ -211,6 +211,7 @@ void DX11Addon::UpdateConstantBuffers()
 {
 	m_transformBuffer.getData().world = d::XMMatrixIdentity();
 	m_transformBuffer.getData().viewProj = d::XMMatrixTranspose(m_cam.GetViewM() * m_cam.GetProjM());
+	m_transformBuffer.getData().color = sm::Vector4(1.f, 0.f, 0.f, 1.f);
 	m_transformBuffer.applyChange();
 }
 

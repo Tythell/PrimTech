@@ -7,6 +7,7 @@ struct PSInput
 	//float3 colour : COLOR;
 	float2 uv : TEXCOORD;
 	float3 worldPos : WORLD_POS;
+	float4 color : COLOR;
 };
 
 float4 main(PSInput input) : SV_TARGET
@@ -14,5 +15,5 @@ float4 main(PSInput input) : SV_TARGET
 	float3 albedoColor = albedo.Sample(samplerState, input.uv);
 	
 	
-	return float4(albedoColor, 1.f);
+	return float4(input.color.xyz, 1.f);
 }
