@@ -18,7 +18,7 @@ DX11Addon::DX11Addon(Window& window) :
 	m_cam.SetPosition(0, 0, -1);
 	//m_fileTexture.CreateFromFile("Textures/gunter2.png", m_device);
 	InitConstantBuffers();
-	m_pixel.Init(d::XMINT2(m_width, m_height), d::XMINT2(3,3), m_device, m_dc);
+	m_pixel.Init(d::XMINT2(m_width, m_height), d::XMINT2(20,20), m_device, m_dc);
 
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -229,7 +229,8 @@ void DX11Addon::InitConstantBuffers()
 void DX11Addon::UpdateConstantBuffers()
 {
 	//m_transformBuffer.getData().world = d::XMMatrixIdentity();
-	m_cam.SetPosition(Im.f[1], 0.f, 0.f);
+	m_dc->VSSetConstantBuffers(0,1,m_transformBuffer.GetReference());
+	//m_cam.SetPosition(Im.f[1], 0.f, 0.f);
 	m_transformBuffer.getData().viewProj = d::XMMatrixTranspose(m_cam.GetViewM() * m_cam.GetProjM());
 	m_transformBuffer.getData().color = sm::Vector4(1.f, 0.f, 0.f, 1.f);
 	m_transformBuffer.applyChange();
@@ -249,9 +250,11 @@ void DX11Addon::Render()
 	//m_dc->PSSetShaderResources(0, 1, m_fileTexture.GetSRVAdress());
 
 	UpdateConstantBuffers();
-	
 
 	m_dc->DrawIndexed(m_iBuffer.GetBufferSize(), 0, 0);
+	m_pixel.SetViewProjM(m_cam.GetProjM());
+	m_pixel.DrawCell(sm::Vector4(0.f, 1.f, 0.f, 1.f), sm::Vector2(Im.f[1], Im.f[2]));
+	m_pixel.DrawCell(sm::Vector4(0.f, 0.f, 1.f, 1.f), sm::Vector2(1, 0));
 
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
@@ -259,7 +262,8 @@ void DX11Addon::Render()
 	ImGui::Begin("Debug");
 
 	ImGui::SliderFloat("Ortho view", &Im.f[0], 1.f, 100);
-	ImGui::SliderFloat("Ortho view2", &Im.f[1], -10.f, 10.f);
+	ImGui::SliderFloat("X Coord", &Im.f[1], -20.f, 50.f, "%1.0f");
+	ImGui::SliderFloat("Y Coord", &Im.f[2], -20, 20.f, "%1.0f");
 
 	ImGui::End();
 	ImGui::Render();

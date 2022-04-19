@@ -180,12 +180,14 @@ bool Window::init(LPCWSTR windowName, HINSTANCE hInstance, std::wstring windowCl
 
 	AdjustWindowRect(&rect, style, false);
 
-	m_windowWidth = rect.right - rect.left;
-	m_windowHeight = rect.bottom - rect.top;
+	//m_windowWidth = rect.right - rect.left;
+	//m_windowHeight = rect.bottom - rect.top;
 
 	RegisterClass(&wc);
 	m_hwnd = CreateWindowEx(0, m_wndClass.c_str(), m_windowName.c_str(), style,
-		CW_USEDEFAULT, CW_USEDEFAULT, m_windowWidth, m_windowHeight,
+		CW_USEDEFAULT, CW_USEDEFAULT,
+		rect.right - rect.left,
+		rect.bottom - rect.top,
 		NULL, NULL, hInstance, NULL);
 	
 	

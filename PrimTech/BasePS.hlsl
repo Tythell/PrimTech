@@ -4,7 +4,6 @@ SamplerState samplerState : SAMPLER : register(s0);
 struct PSInput
 {
 	float4 position : SV_POSITION;
-	//float3 colour : COLOR;
 	float2 uv : TEXCOORD;
 	float3 worldPos : WORLD_POS;
 	float4 color : COLOR;

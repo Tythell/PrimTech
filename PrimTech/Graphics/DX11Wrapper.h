@@ -17,7 +17,7 @@ class Window;
 
 struct ImGuiVars
 {
-	float f[2] = {1.f,1.f};
+	float f[3] = {50.f,1.f, 0.f};
 };
 
 class DX11Addon

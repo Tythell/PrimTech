@@ -20,4 +20,7 @@ private:
 	IndexBuffer m_iBuffer;
 	ID3D11DeviceContext* m_dc;
 	ConstantBuffer<Transforms> m_cbuffer;
+
+	d::XMINT2 m_gridRes;
+	d::XMINT2 m_windRes;
 };

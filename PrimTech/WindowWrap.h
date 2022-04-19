@@ -7,7 +7,7 @@ class Window
 public:
 	Window();
 	~Window();
-	bool init(LPCWSTR windowName, HINSTANCE hInstance, std::wstring windowClass, unsigned int width = 1200, unsigned int height = 1000);
+	bool init(LPCWSTR windowName, HINSTANCE hInstance, std::wstring windowClass, unsigned int width, unsigned int height);
 	bool processMsg();
 	LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 	std::wstring getWinName() const;
