@@ -17,7 +17,7 @@ class Window;
 
 struct ImGuiVars
 {
-	float f[3] = {50.f,1.f, 0.f};
+	float f[3] = {60.f,1.f, 0.f};
 };
 
 class DX11Addon
@@ -27,7 +27,7 @@ public:
 	~DX11Addon();
 
 
-	void Render();
+	void Render(double& deltatime);
 private:
 	bool initSwapChain();
 	bool initRTV();
@@ -72,7 +72,6 @@ private:
 	//ConstantBuffer<Transforms> m_transformBuffer;
 	Camera m_cam;
 
-	RenderCell m_cell;
 	CellGrid m_grid;
 	
 

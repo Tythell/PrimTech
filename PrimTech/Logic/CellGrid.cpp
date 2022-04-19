@@ -1,7 +1,7 @@
 #include "CellGrid.h"
 
-CellGrid::CellGrid(unsigned x, unsigned y, unsigned z):
-	m_resolutions(x,y), m_cell(x,y), m_gridWidth(x), m_gridHeight(y)
+CellGrid::CellGrid(unsigned x, unsigned y, unsigned z) :
+	m_resolutions(x, y), m_cell(x, y), m_gridWidth(x), m_gridHeight(y), TIMELIMIT(.1f)
 {
 	int totalCells = x * y;
 	m_output = new int[totalCells];
@@ -37,6 +37,7 @@ void CellGrid::InitRenderCell(ID3D11Device*& device, ID3D11DeviceContext*& dc)
 void CellGrid::Update(float dtime)
 {
 	auto cell = [&](int x, int y) { return m_output[y * m_gridWidth + x]; };
+	m_timer += dtime;
 
 	m_cell.SetViewProjM(mp_cam->GetProjM());
 
@@ -53,19 +54,12 @@ void CellGrid::Update(float dtime)
 			//	m_state[Coord(x, y)] = 0;
 			//	m_state[Coord(x, y + 1)] = 1;
 			//}
-			int nNeighbours = cell(x - 1, y - 1) + cell(x - 0, y - 1) + cell(x + 1, y - 1) +
-				cell(x - 1, y + 0) + 0 + cell(x + 1, y + 0) +
-				cell(x - 1, y + 1) + cell(x + 0, y + 1) + cell(x + 1, y + 1);
 
-			if (cell(x, y) == 1)
-				m_state[y * m_gridWidth + x] = nNeighbours == 2 || nNeighbours == 3;
-			else
-				m_state[y * m_gridWidth + x] = nNeighbours == 3;
-
-			if (cell(x, y) == 1)
-				m_cell.DrawCell(WHITE_3F, {(float)x,(float)y});
-
+			GameOfLife(x, y);
 		}
+
+
+
 }
 
 void CellGrid::SetCamP(Camera& c)
@@ -76,6 +70,26 @@ void CellGrid::SetCamP(Camera& c)
 uint8_t*& CellGrid::GetChar()
 {
 	return mp_tileHp;
+}
+
+void CellGrid::GameOfLife(int x, int y)
+{
+	int nNeighbours = Cell(x - 1, y - 1) + Cell(x - 0, y - 1) + Cell(x + 1, y - 1) +
+		Cell(x - 1, y + 0) + 0 + Cell(x + 1, y + 0) +
+		Cell(x - 1, y + 1) + Cell(x + 0, y + 1) + Cell(x + 1, y + 1);
+
+	if (Cell(x, y) == 1)
+		m_state[y * m_gridWidth + x] = nNeighbours == 2 || nNeighbours == 3;
+	else
+		m_state[y * m_gridWidth + x] = nNeighbours == 3;
+
+	if (Cell(x, y) == 1)
+		m_cell.DrawCell(WHITE_3F, { (float)x,(float)y });
+}
+
+int& CellGrid::Cell(int x, int y)
+{
+	return m_output[y * m_gridWidth + x];
 }
 
 int CellGrid::Coord(int x, int y) const

@@ -3,7 +3,7 @@
 
 DX11Addon::DX11Addon(Window& window) :
 	m_width(window.getWinWidth()), m_height(window.getWinHeight()), m_pHWND(&window.getHWND()),
-	m_cell( 40,20 ), m_grid(100, 52)
+	m_grid(100, 60)
 {
 	m_pWin = &window;
 
@@ -14,11 +14,10 @@ DX11Addon::DX11Addon(Window& window) :
 
 	InitShaders();
 	InitScene();
-	
+
 	m_cam.SetPosition(0, 0, -1);
 	//m_fileTexture.CreateFromFile("Textures/gunter2.png", m_device);
 	InitConstantBuffers();
-	m_cell.Init(m_device, m_dc);
 	m_grid.InitRenderCell(m_device, m_dc);
 	m_grid.SetCamP(m_cam);
 	ImGuiInit(window.getHWND());
@@ -214,9 +213,9 @@ void DX11Addon::ImGuiRender()
 	ImGui::NewFrame();
 	ImGui::Begin("Debug");
 
-	//ImGui::SliderFloat("Ortho view", &m_i.f[0], 1.f, 100);
-	ImGui::SliderFloat("X Coord", &m_i.f[1], -20.f, 50.f, "%1.0f");
-	ImGui::SliderFloat("Y Coord", &m_i.f[2], -20, 20.f, "%1.0f");
+	ImGui::SliderFloat("Ortho view", &m_i.f[0], 1.f, 100);
+	//ImGui::SliderFloat("X Coord", &m_i.f[1], -20.f, 50.f, "%1.0f");
+	//ImGui::SliderFloat("Y Coord", &m_i.f[2], -20, 20.f, "%1.0f");
 
 	ImGui::End();
 	ImGui::Render();
@@ -230,27 +229,29 @@ void DX11Addon::ImGuiShutDown()
 	ImGui::DestroyContext();
 }
 
-void DX11Addon::Render()
+void DX11Addon::Render(double& deltatime)
 {
 	float bgColor[] = { .1,.1,.1,1 };
+
+	Sleep(10);
+
 	m_dc->ClearRenderTargetView(m_rtv, bgColor);
 	m_dc->ClearDepthStencilView(m_dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
 
 	m_dc->IASetInputLayout(m_vShader.GetInputLayout());
-	m_dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	m_dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	m_dc->RSSetState(m_rasterizerState);
 	m_dc->OMSetDepthStencilState(m_dsState, 0);
 	//m_dc->PSSetSamplers(0, 1, &m_sampState);
 	m_cam.SetOrtographic(m_i.f[0] * (m_width / m_height), m_i.f[0], 0.f, 50.f);
-	m_cell.SetViewProjM(m_cam.GetProjM());
 
-	m_cell.DrawCell(sm::Vector3(0.f, 1.f, 0.f), sm::Vector2(m_i.f[1], m_i.f[2]));
-	m_cell.DrawCell(WHITE_3F, sm::Vector2(1, 0));
-	m_grid.Update(0.f);
-	
+	m_grid.Update(deltatime);
+
 
 	ImGuiRender();
 
-	
+
 	m_swapChain->Present(0, NULL);
+
+
 }

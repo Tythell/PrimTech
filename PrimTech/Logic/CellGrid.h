@@ -17,6 +17,9 @@ public:
 	void SetCamP(Camera& c);
 	uint8_t*& GetChar();
 private:
+	void GameOfLife(int x, int y);
+	int& Cell(int x, int y);
+
 	Camera* mp_cam;
 	d::XMINT2 m_resolutions;
 
@@ -34,6 +37,9 @@ private:
 
 	int* m_output;
 	int* m_state;
+
+	float m_timer = 0.f;
+	const float TIMELIMIT;
 
 	RenderCell m_cell;
 };

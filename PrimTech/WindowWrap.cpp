@@ -1,4 +1,5 @@
 #include "WindowWrap.h"
+#include<omp.h>
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK MessageDirect(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -136,9 +137,12 @@ uint16_t Window::getWinHeight() const
 
 void Window::Run()
 {
+	double start, deltatime = 0.f;
 	while (processMsg())
 	{
-		m_pDX11->Render();
+		start = omp_get_wtime();
+		m_pDX11->Render(deltatime);
+		deltatime = omp_get_wtime() - start;
 	}
 }
 
