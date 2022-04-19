@@ -19,7 +19,8 @@ DX11Addon::DX11Addon(Window& window) :
 	m_defaultTexture.CreateFromFile("gunter2.png", m_device);
 	InitConstantBuffers();
 
-	m_grid.Init({ m_width, m_height }, { 3,3 }, m_device, m_dc);
+	m_grid.Init(d::XMINT2( m_width, m_height ), d::XMINT2( 3,3 ), m_device, m_dc);
+	m_grid.SetViewProjM(m_cam.GetProjM());
 }
 
 DX11Addon::~DX11Addon()
@@ -187,8 +188,8 @@ bool DX11Addon::InitScene()
 
 void DX11Addon::InitConstantBuffers()
 {
-	m_transformBuffer.Init(m_device, m_dc);
-	m_dc->VSSetConstantBuffers(0, 1, m_transformBuffer.GetReference());
+	//m_transformBuffer.Init(m_device, m_dc);
+	//m_dc->VSSetConstantBuffers(0, 1, m_transformBuffer.GetReference());
 }
 
 void DX11Addon::UpdateConstantBuffers()

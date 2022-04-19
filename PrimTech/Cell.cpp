@@ -30,6 +30,7 @@ void RenderGrid::Init(d::XMINT2 windowRes, d::XMINT2 gridRes, ID3D11Device*& dev
 
 	m_dc->IASetVertexBuffers(0, 1, m_vBuffer.GetReference(), m_vBuffer.GetStrideP(), &offset);
 	m_dc->IASetIndexBuffer(m_iBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+	m_dc->VSSetConstantBuffers(0, 1, m_cbuffer.GetReference());
 }
 
 void RenderGrid::DrawCell(sm::Vector4 color, sm::Vector2 xy)
@@ -38,4 +39,9 @@ void RenderGrid::DrawCell(sm::Vector4 color, sm::Vector2 xy)
 	m_cbuffer.getData().color = color;
 	m_cbuffer.applyChange();
 	m_dc->DrawIndexed(m_iBuffer.GetBufferSize(), 0, 0);
+}
+
+void RenderGrid::SetViewProjM(sm::Matrix m)
+{
+	m_cbuffer.getData().viewProj = m;
 }

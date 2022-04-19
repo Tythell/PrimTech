@@ -17,6 +17,7 @@ public:
 	void DrawGrid();
 
 	void DrawCell(sm::Vector4 color, sm::Vector2 xy);
+	void SetViewProjM(sm::Matrix m);
 private:
 	int m_cellSize;
 	
