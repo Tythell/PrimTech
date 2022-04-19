@@ -2,15 +2,23 @@
 #include "Shader.h"
 #include <Windows.h>
 #include "../Utility/Popup.h"
-#include<wrl\client.h>
+#include"RenderCell.h"
 #include"Texture.h"
-#include"../Logic/Grid.h"
-#include"../Cell.h"
+#include<wrl\client.h>
+
+#include"3rdParty\imgui\imgui.h"
+#include "3rdParty\imgui/imgui_impl_win32.h"
+#include "3rdParty\imgui/imgui_impl_dx11.h"
 
 namespace sm = DirectX::SimpleMath;
 using Vector2i = DirectX::XMINT2;
 
 class Window;
+
+struct ImGuiVars
+{
+	float f[2] = {1.f,1.f};
+};
 
 class DX11Addon
 {
@@ -31,8 +39,6 @@ private:
 	void UpdateConstantBuffers();
 
 	Window* m_pWin = nullptr;
-
-	RenderGrid m_grid;
 
 	const unsigned int m_width, m_height;
 
@@ -55,12 +61,16 @@ private:
 	VShader m_vShader;
 	PShader m_pShader;
 
-	//VertexBuffer<Vertex> m_vbuffer;
-	//IndexBuffer m_iBuffer;
+	VertexBuffer<Vertex> m_vbuffer;
+	IndexBuffer m_iBuffer;
 
-	TextureMap m_defaultTexture;
+	//TextureMap m_fileTexture;
 
-	//ConstantBuffer<Transforms> m_transformBuffer;
+	ConstantBuffer<Transforms> m_transformBuffer;
 	Camera m_cam;
+
+	RenderCell m_pixel;
+
+	ImGuiVars Im;
 };
 
