@@ -3,7 +3,6 @@
 
 DX11Addon::DX11Addon(Window& window) :
 	m_width(window.getWinWidth()), m_height(window.getWinHeight()), m_pHWND(&window.getHWND())
-	//m_grid(32,32)
 {
 	m_pWin = &window;
 
@@ -14,14 +13,27 @@ DX11Addon::DX11Addon(Window& window) :
 
 	InitShaders();
 	InitScene();
-	m_cam.SetPerspective(90.f, static_cast<float>(m_width) / static_cast<float>(m_height), 0.1f, 1000.f);
-	m_cam.SetPosition(0, 0, 0);
-	m_fileTexture.CreateFromFile("Textures/gunter2.png", m_device);
+	float scale = 3.f;
+	
+	m_cam.SetPosition(0, 0, -1);
+	//m_fileTexture.CreateFromFile("Textures/gunter2.png", m_device);
 	InitConstantBuffers();
+	m_pixel.Init(d::XMINT2(m_width, m_height), d::XMINT2(3,3), m_device, m_dc);
+
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO();
+	ImGui_ImplDX11_Init(m_device, m_dc);
+	ImGui_ImplWin32_Init(window.getHWND());
+	ImGui::StyleColorsDark();
 }
 
 DX11Addon::~DX11Addon()
 {
+	ImGui_ImplDX11_Shutdown();
+	ImGui_ImplWin32_Shutdown();
+	ImGui::DestroyContext();
+
 	m_device->Release();
 	m_dc->Release();
 	m_swapChain->Release();
@@ -171,6 +183,9 @@ bool DX11Addon::InitShaders()
 	m_vShader.Init(m_device, "../x64/Debug/BaseVS.cso", layout, ARRAYSIZE(layout));
 	m_pShader.Init(m_device, "../x64/Debug/BasePS.cso");
 
+	m_dc->VSSetShader(m_vShader.GetShader(), NULL, 0);
+	m_dc->PSSetShader(m_pShader.GetShader(), NULL, 0);
+
 	return false;
 }
 
@@ -178,10 +193,10 @@ bool DX11Addon::InitScene()
 {
 	Vertex vertexes[] =
 	{
-		{ -0.5f, -0.5f, 1.f, /**/ 0, 0},
-		{ -0.5, 0.5f, 1, /**/ 0, 1},
-		{ 0.5, 0.5f, 1.f, /**/ 1, 1},
-		{ 0.5f, -0.5f, 1.f,/**/ 1, 0},
+		{ -0.5f, -0.5f, 0.f, /**/ 0, 0},
+		{ -0.5, 0.5f, 0.f, /**/ 0, 1},
+		{ 0.5, 0.5f, 0.f, /**/ 1, 1},
+		{ 0.5f, -0.5f, 0.f,/**/ 1, 0},
 	};
 
 	DWORD indices[] =
@@ -195,8 +210,12 @@ bool DX11Addon::InitScene()
 	m_iBuffer.Init(m_device, indices, ARRAYSIZE(indices));
 
 
-
 	COM_ERROR(hr, "Failed to setup Vertex Buffer");
+
+
+	UINT offset = 0;
+	m_dc->IASetVertexBuffers(0, 1, m_vbuffer.GetReference(), m_vbuffer.GetStrideP(), &offset);
+	m_dc->IASetIndexBuffer(m_iBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 
 	return true;
 }
@@ -209,7 +228,8 @@ void DX11Addon::InitConstantBuffers()
 
 void DX11Addon::UpdateConstantBuffers()
 {
-	m_transformBuffer.getData().world = d::XMMatrixIdentity();
+	//m_transformBuffer.getData().world = d::XMMatrixIdentity();
+	m_cam.SetPosition(Im.f[1], 0.f, 0.f);
 	m_transformBuffer.getData().viewProj = d::XMMatrixTranspose(m_cam.GetViewM() * m_cam.GetProjM());
 	m_transformBuffer.getData().color = sm::Vector4(1.f, 0.f, 0.f, 1.f);
 	m_transformBuffer.applyChange();
@@ -225,19 +245,25 @@ void DX11Addon::Render()
 	m_dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	m_dc->RSSetState(m_rasterizerState);
 	m_dc->OMSetDepthStencilState(m_dsState, 0);
-	m_dc->PSSetSamplers(0, 1, &m_sampState);
-	m_dc->PSSetShaderResources(0, 1, m_fileTexture.GetSRVAdress());
-
-	m_dc->VSSetShader(m_vShader.GetShader(), NULL, 0);
-	m_dc->PSSetShader(m_pShader.GetShader(), NULL, 0);
-	//m_dc->PSSetShaderResources
-	UINT offset = 0;
-	m_dc->IASetVertexBuffers(0, 1, m_vbuffer.GetReference(), m_vbuffer.GetStrideP(), &offset);
-	m_dc->IASetIndexBuffer(m_iBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+	//m_dc->PSSetSamplers(0, 1, &m_sampState);
+	//m_dc->PSSetShaderResources(0, 1, m_fileTexture.GetSRVAdress());
 
 	UpdateConstantBuffers();
+	
 
 	m_dc->DrawIndexed(m_iBuffer.GetBufferSize(), 0, 0);
 
+	ImGui_ImplDX11_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
+	ImGui::Begin("Debug");
+
+	ImGui::SliderFloat("Ortho view", &Im.f[0], 1.f, 100);
+	ImGui::SliderFloat("Ortho view2", &Im.f[1], -10.f, 10.f);
+
+	ImGui::End();
+	ImGui::Render();
+	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+	m_cam.SetOrtographic(Im.f[0] * (m_width / m_height), Im.f[0], 0.f, 50.f);
 	m_swapChain->Present(0, NULL);
 }

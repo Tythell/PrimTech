@@ -1,7 +1,14 @@
 #include "WindowWrap.h"
 
+extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK MessageDirect(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+
+	if (ImGui_ImplWin32_WndProcHandler(hwnd, uMsg, wParam, lParam))
+	{
+		return true;
+	}
+
 	Window* const pWindow = reinterpret_cast<Window*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
 	switch (uMsg)
 	{
@@ -43,6 +50,7 @@ LRESULT CALLBACK HandleMessageSetup(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
 	//	return pWin->WindowProc(hwnd, uMsg, wParam, lParam);
 	//else
 	//	return DefWindowProc(hwnd, uMsg, wParam, lParam);
+
 	switch (uMsg)
 	{
 	case WM_NCCREATE:

@@ -140,9 +140,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Graphics\3rdParty\imgui\imgui.cpp" />
+    <ClCompile Include="Graphics\3rdParty\imgui\imgui_draw.cpp" />
+    <ClCompile Include="Graphics\3rdParty\imgui\imgui_impl_dx11.cpp" />
+    <ClCompile Include="Graphics\3rdParty\imgui\imgui_impl_win32.cpp" />
+    <ClCompile Include="Graphics\3rdParty\imgui\imgui_tables.cpp" />
+    <ClCompile Include="Graphics\3rdParty\imgui\imgui_widgets.cpp" />
     <ClCompile Include="Graphics\Camera.cpp" />
     <ClCompile Include="Graphics\DX11Wrapper.cpp" />
     <ClCompile Include="Graphics\Noise\PerlinNoise.cpp" />
+    <ClCompile Include="Graphics\RenderCell.cpp" />
     <ClCompile Include="Graphics\Shader.cpp" />
     <ClCompile Include="Graphics\Texture.cpp" />
     <ClCompile Include="Graphics\Transform.cpp" />
@@ -154,11 +161,20 @@
     <ClCompile Include="WindowWrap.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Graphics\3rdParty\imgui\imconfig.h" />
+    <ClInclude Include="Graphics\3rdParty\imgui\imgui.h" />
+    <ClInclude Include="Graphics\3rdParty\imgui\imgui_impl_dx11.h" />
+    <ClInclude Include="Graphics\3rdParty\imgui\imgui_impl_win32.h" />
+    <ClInclude Include="Graphics\3rdParty\imgui\imgui_internal.h" />
+    <ClInclude Include="Graphics\3rdParty\imgui\imstb_rectpack.h" />
+    <ClInclude Include="Graphics\3rdParty\imgui\imstb_textedit.h" />
+    <ClInclude Include="Graphics\3rdParty\imgui\imstb_truetype.h" />
     <ClInclude Include="Graphics\Camera.h" />
     <ClInclude Include="Graphics\CbufferTypes.h" />
     <ClInclude Include="Graphics\ConstantBuffer.h" />
     <ClInclude Include="Graphics\IndexBuffer.h" />
     <ClInclude Include="Graphics\Noise\PerlinNoise.h" />
+    <ClInclude Include="Graphics\RenderCell.h" />
     <ClInclude Include="Graphics\Texture.h" />
     <ClInclude Include="Graphics\VertexBuffer.h" />
     <ClInclude Include="Graphics\Vertex.h" />

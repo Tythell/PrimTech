@@ -2,19 +2,23 @@
 #include "Shader.h"
 #include <Windows.h>
 #include "../Utility/Popup.h"
-#include "Vertex.h"
-#include "VertexBuffer.h"
-#include"IndexBuffer.h"
-#include<wrl\client.h>
-#include"ConstantBuffer.h"
-#include"CbufferTypes.h"
+#include"RenderCell.h"
 #include"Texture.h"
-#include"../Logic/Grid.h"
+#include<wrl\client.h>
+
+#include"3rdParty\imgui\imgui.h"
+#include "3rdParty\imgui/imgui_impl_win32.h"
+#include "3rdParty\imgui/imgui_impl_dx11.h"
 
 namespace sm = DirectX::SimpleMath;
 using Vector2i = DirectX::XMINT2;
 
 class Window;
+
+struct ImGuiVars
+{
+	float f[2] = {1.f,1.f};
+};
 
 class DX11Addon
 {
@@ -35,8 +39,6 @@ private:
 	void UpdateConstantBuffers();
 
 	Window* m_pWin = nullptr;
-
-	//StoneGrid m_grid;
 
 	const unsigned int m_width, m_height;
 
@@ -62,9 +64,13 @@ private:
 	VertexBuffer<Vertex> m_vbuffer;
 	IndexBuffer m_iBuffer;
 
-	TextureMap m_fileTexture;
+	//TextureMap m_fileTexture;
 
 	ConstantBuffer<Transforms> m_transformBuffer;
 	Camera m_cam;
+
+	RenderCell m_pixel;
+
+	ImGuiVars Im;
 };
 

@@ -10,6 +10,11 @@ void Camera::SetPerspective(float fovDeg, float aspectRatio, float nearZ, float 
 	m_projM = d::XMMatrixPerspectiveFovLH(fovRad, aspectRatio, nearZ, farZ);
 }
 
+void Camera::SetOrtographic(float width, float height, float nearZ, float farZ)
+{
+	m_projM = d::XMMatrixOrthographicLH(width, height, nearZ, farZ);
+}
+
 void Camera::SetPosition(float x, float y, float z)
 {
 	m_position = sm::Vector3(x, y, z);

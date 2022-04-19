@@ -31,6 +31,12 @@
     <Filter Include="Source Files\Logic">
       <UniqueIdentifier>{1438c42c-9e2e-4e48-bdb8-ce8b08abe80e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\ImGui">
+      <UniqueIdentifier>{6074b742-45c8-441a-8474-d967f195eea0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ImGui">
+      <UniqueIdentifier>{80df9a67-c832-4992-a954-5e61db1fca2d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -68,6 +74,27 @@
     </ClCompile>
     <ClCompile Include="Logic\Grid.cpp">
       <Filter>Source Files\Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\RenderCell.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\3rdParty\imgui\imgui.cpp">
+      <Filter>Source Files\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\3rdParty\imgui\imgui_draw.cpp">
+      <Filter>Source Files\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\3rdParty\imgui\imgui_impl_dx11.cpp">
+      <Filter>Source Files\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\3rdParty\imgui\imgui_impl_win32.cpp">
+      <Filter>Source Files\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\3rdParty\imgui\imgui_tables.cpp">
+      <Filter>Source Files\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\3rdParty\imgui\imgui_widgets.cpp">
+      <Filter>Source Files\ImGui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -124,6 +151,33 @@
     </ClInclude>
     <ClInclude Include="Math\Math.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\RenderCell.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\3rdParty\imgui\imconfig.h">
+      <Filter>Source Files\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\3rdParty\imgui\imgui_impl_win32.h">
+      <Filter>Source Files\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\3rdParty\imgui\imgui.h">
+      <Filter>Header Files\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\3rdParty\imgui\imgui_impl_dx11.h">
+      <Filter>Header Files\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\3rdParty\imgui\imgui_internal.h">
+      <Filter>Header Files\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\3rdParty\imgui\imstb_rectpack.h">
+      <Filter>Header Files\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\3rdParty\imgui\imstb_textedit.h">
+      <Filter>Header Files\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\3rdParty\imgui\imstb_truetype.h">
+      <Filter>Header Files\ImGui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
