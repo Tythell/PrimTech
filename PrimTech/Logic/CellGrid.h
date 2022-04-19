@@ -2,19 +2,23 @@
 #include <vector>
 #include"../Math/Math.h"
 #include "../Graphics/Texture.h"
+#include"../Graphics/RenderCell.h"
+#include"../Colors.h"
 
 class CellGrid
 {
 public:
-	CellGrid(unsigned x, unsigned y, unsigned c = 1);
+	CellGrid(unsigned x, unsigned y, unsigned z = 1);
 	~CellGrid();
 
+	void InitRenderCell(ID3D11Device*& device, ID3D11DeviceContext*& dc);
 	void Update(float dtime);
 
+	void SetCamP(Camera& c);
 	uint8_t*& GetChar();
 private:
+	Camera* mp_cam;
 	d::XMINT2 m_resolutions;
-	int FindWeakNeighbour(int x, int y) const;
 
 	int m_gridWidth, m_gridHeight;
 
@@ -27,8 +31,9 @@ private:
 	int Coord(int x, int y) const;
 	uint8_t* mp_tileHp;
 	uint8_t* mp_tileGrid;
-	void Simulate(int x, int y);
 
 	int* m_output;
 	int* m_state;
+
+	RenderCell m_cell;
 };

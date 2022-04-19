@@ -153,7 +153,7 @@
     <ClCompile Include="Graphics\Shader.cpp" />
     <ClCompile Include="Graphics\Texture.cpp" />
     <ClCompile Include="Graphics\Transform.cpp" />
-    <ClCompile Include="Logic\Grid.cpp" />
+    <ClCompile Include="Logic\CellGrid.cpp" />
     <ClCompile Include="Utility\StringHelper.cpp" />
     <ClCompile Include="Utility\Popup.cpp" />
     <ClCompile Include="main.cpp" />
@@ -161,6 +161,7 @@
     <ClCompile Include="WindowWrap.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Colors.h" />
     <ClInclude Include="Graphics\3rdParty\imgui\imconfig.h" />
     <ClInclude Include="Graphics\3rdParty\imgui\imgui.h" />
     <ClInclude Include="Graphics\3rdParty\imgui\imgui_impl_dx11.h" />
@@ -180,7 +181,7 @@
     <ClInclude Include="Graphics\Vertex.h" />
     <ClInclude Include="Graphics\Shader.h" />
     <ClInclude Include="Graphics\Transform.h" />
-    <ClInclude Include="Logic\Grid.h" />
+    <ClInclude Include="Logic\CellGrid.h" />
     <ClInclude Include="Math\Math.h" />
     <ClInclude Include="Utility\StringHelper.h" />
     <ClInclude Include="Utility\COMException.h" />

@@ -1,15 +1,17 @@
 #include "RenderCell.h"
 
-RenderCell::RenderCell()
+RenderCell::RenderCell(int gridResX, int gridResY):
+	m_gridRes(d::XMINT2(gridResX, gridResY))
 {
+	if (gridResX == 0 || gridResY == 0)
+	{
+		Popup::Error("Cell grid not high enough, program will exit");
+		throw;
+	}
 }
 
-void RenderCell::Init(d::XMINT2 windowRes, d::XMINT2 gridRes, ID3D11Device*& device, ID3D11DeviceContext*& dc)
+void RenderCell::Init(ID3D11Device*& device, ID3D11DeviceContext*& dc)
 {
-	if (gridRes.x == 0 || gridRes.y == 0)
-		Popup::Error("Cell grid is 0, program will crash");
-	m_gridRes = gridRes;
-
 	m_dc = dc;
 	Vertex vertexes[] =
 	{
@@ -40,17 +42,15 @@ void RenderCell::Init(d::XMINT2 windowRes, d::XMINT2 gridRes, ID3D11Device*& dev
 	m_dc->IASetIndexBuffer(m_iBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 }
 
-void RenderCell::DrawCell(sm::Vector4 color, sm::Vector2 xy)
+void RenderCell::DrawCell(sm::Vector3 color, sm::Vector2 xy)
 {
 	m_dc->VSSetConstantBuffers(0, 1, m_cbuffer.GetReference());
-	m_cbuffer.getData().color = color;
+	m_cbuffer.getData().color = sm::Vector4(color.x, color.y, color.z, 1.f);
 
 	float coordX = (- m_gridRes.x / 2) + xy.x;
 	float coordY = (- m_gridRes.y / 2) + xy.y;
-	//xy.y = (m_gridRes.y / 2);
 
 	m_cbuffer.getData().world = d::XMMatrixTranspose(d::XMMatrixTranslationFromVector({coordX, -coordY}));
-
 
 	m_cbuffer.applyChange();
 	m_dc->DrawIndexed(m_iBuffer.GetBufferSize(), 0, 0);

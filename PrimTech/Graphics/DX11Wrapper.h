@@ -2,7 +2,7 @@
 #include "Shader.h"
 #include <Windows.h>
 #include "../Utility/Popup.h"
-#include"RenderCell.h"
+#include"../Logic/CellGrid.h"
 #include"Texture.h"
 #include<wrl\client.h>
 
@@ -37,6 +37,9 @@ private:
 	bool InitScene();
 	void InitConstantBuffers();
 	void UpdateConstantBuffers();
+	void ImGuiInit(HWND& hwnd);
+	void ImGuiRender();
+	void ImGuiShutDown();
 
 	Window* m_pWin = nullptr;
 
@@ -61,16 +64,18 @@ private:
 	VShader m_vShader;
 	PShader m_pShader;
 
-	VertexBuffer<Vertex> m_vbuffer;
-	IndexBuffer m_iBuffer;
+	//VertexBuffer<Vertex> m_vbuffer;
+	//IndexBuffer m_iBuffer;
 
 	//TextureMap m_fileTexture;
 
-	ConstantBuffer<Transforms> m_transformBuffer;
+	//ConstantBuffer<Transforms> m_transformBuffer;
 	Camera m_cam;
 
-	RenderCell m_pixel;
+	RenderCell m_cell;
+	CellGrid m_grid;
+	
 
-	ImGuiVars Im;
+	ImGuiVars m_i;
 };
 

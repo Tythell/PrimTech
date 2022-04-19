@@ -2,7 +2,8 @@
 #include"../WindowWrap.h"
 
 DX11Addon::DX11Addon(Window& window) :
-	m_width(window.getWinWidth()), m_height(window.getWinHeight()), m_pHWND(&window.getHWND())
+	m_width(window.getWinWidth()), m_height(window.getWinHeight()), m_pHWND(&window.getHWND()),
+	m_cell( 40,20 ), m_grid(100, 52)
 {
 	m_pWin = &window;
 
@@ -13,26 +14,20 @@ DX11Addon::DX11Addon(Window& window) :
 
 	InitShaders();
 	InitScene();
-	float scale = 3.f;
 	
 	m_cam.SetPosition(0, 0, -1);
 	//m_fileTexture.CreateFromFile("Textures/gunter2.png", m_device);
 	InitConstantBuffers();
-	m_pixel.Init(d::XMINT2(m_width, m_height), d::XMINT2(20,20), m_device, m_dc);
+	m_cell.Init(m_device, m_dc);
+	m_grid.InitRenderCell(m_device, m_dc);
+	m_grid.SetCamP(m_cam);
+	ImGuiInit(window.getHWND());
 
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO();
-	ImGui_ImplDX11_Init(m_device, m_dc);
-	ImGui_ImplWin32_Init(window.getHWND());
-	ImGui::StyleColorsDark();
 }
 
 DX11Addon::~DX11Addon()
 {
-	ImGui_ImplDX11_Shutdown();
-	ImGui_ImplWin32_Shutdown();
-	ImGui::DestroyContext();
+	ImGuiShutDown();
 
 	m_device->Release();
 	m_dc->Release();
@@ -177,7 +172,6 @@ bool DX11Addon::InitShaders()
 	{
 		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		//{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_APPEND_ALIGNED_ELEMENT, 0};
 	};
 
 	m_vShader.Init(m_device, "../x64/Debug/BaseVS.cso", layout, ARRAYSIZE(layout));
@@ -191,49 +185,49 @@ bool DX11Addon::InitShaders()
 
 bool DX11Addon::InitScene()
 {
-	Vertex vertexes[] =
-	{
-		{ -0.5f, -0.5f, 0.f, /**/ 0, 0},
-		{ -0.5, 0.5f, 0.f, /**/ 0, 1},
-		{ 0.5, 0.5f, 0.f, /**/ 1, 1},
-		{ 0.5f, -0.5f, 0.f,/**/ 1, 0},
-	};
-
-	DWORD indices[] =
-	{
-		0,1,2,
-		0,2,3
-	};
-
-	HRESULT hr = m_vbuffer.Init(m_device, vertexes, ARRAYSIZE(vertexes));
-
-	m_iBuffer.Init(m_device, indices, ARRAYSIZE(indices));
-
-
-	COM_ERROR(hr, "Failed to setup Vertex Buffer");
-
-
-	UINT offset = 0;
-	m_dc->IASetVertexBuffers(0, 1, m_vbuffer.GetReference(), m_vbuffer.GetStrideP(), &offset);
-	m_dc->IASetIndexBuffer(m_iBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
-
 	return true;
 }
 
 void DX11Addon::InitConstantBuffers()
 {
-	m_transformBuffer.Init(m_device, m_dc);
-	m_dc->VSSetConstantBuffers(0, 1, m_transformBuffer.GetReference());
 }
 
 void DX11Addon::UpdateConstantBuffers()
 {
-	//m_transformBuffer.getData().world = d::XMMatrixIdentity();
-	m_dc->VSSetConstantBuffers(0,1,m_transformBuffer.GetReference());
-	//m_cam.SetPosition(Im.f[1], 0.f, 0.f);
-	m_transformBuffer.getData().viewProj = d::XMMatrixTranspose(m_cam.GetViewM() * m_cam.GetProjM());
-	m_transformBuffer.getData().color = sm::Vector4(1.f, 0.f, 0.f, 1.f);
-	m_transformBuffer.applyChange();
+
+}
+
+void DX11Addon::ImGuiInit(HWND& hwnd)
+{
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO();
+	ImGui_ImplDX11_Init(m_device, m_dc);
+	ImGui_ImplWin32_Init(hwnd);
+	ImGui::StyleColorsDark();
+}
+
+void DX11Addon::ImGuiRender()
+{
+	ImGui_ImplDX11_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
+	ImGui::Begin("Debug");
+
+	//ImGui::SliderFloat("Ortho view", &m_i.f[0], 1.f, 100);
+	ImGui::SliderFloat("X Coord", &m_i.f[1], -20.f, 50.f, "%1.0f");
+	ImGui::SliderFloat("Y Coord", &m_i.f[2], -20, 20.f, "%1.0f");
+
+	ImGui::End();
+	ImGui::Render();
+	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+}
+
+void DX11Addon::ImGuiShutDown()
+{
+	ImGui_ImplDX11_Shutdown();
+	ImGui_ImplWin32_Shutdown();
+	ImGui::DestroyContext();
 }
 
 void DX11Addon::Render()
@@ -247,27 +241,16 @@ void DX11Addon::Render()
 	m_dc->RSSetState(m_rasterizerState);
 	m_dc->OMSetDepthStencilState(m_dsState, 0);
 	//m_dc->PSSetSamplers(0, 1, &m_sampState);
-	//m_dc->PSSetShaderResources(0, 1, m_fileTexture.GetSRVAdress());
+	m_cam.SetOrtographic(m_i.f[0] * (m_width / m_height), m_i.f[0], 0.f, 50.f);
+	m_cell.SetViewProjM(m_cam.GetProjM());
 
-	UpdateConstantBuffers();
+	m_cell.DrawCell(sm::Vector3(0.f, 1.f, 0.f), sm::Vector2(m_i.f[1], m_i.f[2]));
+	m_cell.DrawCell(WHITE_3F, sm::Vector2(1, 0));
+	m_grid.Update(0.f);
+	
 
-	m_dc->DrawIndexed(m_iBuffer.GetBufferSize(), 0, 0);
-	m_pixel.SetViewProjM(m_cam.GetProjM());
-	m_pixel.DrawCell(sm::Vector4(0.f, 1.f, 0.f, 1.f), sm::Vector2(Im.f[1], Im.f[2]));
-	m_pixel.DrawCell(sm::Vector4(0.f, 0.f, 1.f, 1.f), sm::Vector2(1, 0));
+	ImGuiRender();
 
-	ImGui_ImplDX11_NewFrame();
-	ImGui_ImplWin32_NewFrame();
-	ImGui::NewFrame();
-	ImGui::Begin("Debug");
-
-	ImGui::SliderFloat("Ortho view", &Im.f[0], 1.f, 100);
-	ImGui::SliderFloat("X Coord", &Im.f[1], -20.f, 50.f, "%1.0f");
-	ImGui::SliderFloat("Y Coord", &Im.f[2], -20, 20.f, "%1.0f");
-
-	ImGui::End();
-	ImGui::Render();
-	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-	m_cam.SetOrtographic(Im.f[0] * (m_width / m_height), Im.f[0], 0.f, 50.f);
+	
 	m_swapChain->Present(0, NULL);
 }

@@ -8,11 +8,11 @@
 class RenderCell
 {
 public:
-	RenderCell();
+	RenderCell(int gridResX, int gridResY);
 
-	void Init(d::XMINT2 windowRes, d::XMINT2 gridRes, ID3D11Device*& device, ID3D11DeviceContext*& dc);
+	void Init(ID3D11Device*& device, ID3D11DeviceContext*& dc);
 
-	void DrawCell(sm::Vector4 color, sm::Vector2 xy);
+	void DrawCell(sm::Vector3 color, sm::Vector2 xy);
 	void SetViewProjM(sm::Matrix m);
 private:
 	int m_cellSize;
