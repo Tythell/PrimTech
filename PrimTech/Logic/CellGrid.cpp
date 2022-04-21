@@ -18,7 +18,7 @@ CellGrid::CellGrid(unsigned x, unsigned y, unsigned z) :
 	FillSquare(0, 0, 1, m_gridHeight, eSTONE);
 	FillSquare(m_gridWidth-2, 0, m_gridWidth-1, m_gridHeight, eSTONE);
 	FillSquare(0, 1, m_gridWidth, 2, eSTONE);
-	FillSquare(10, 40, 30, 60, eWATER);
+	FillSquare(1, m_gridHeight - 2, m_gridWidth - 1, m_gridHeight - 1, eWATER);
 	
 	//SetTile(8, 31, eWATER);
 	//SetTile(8, 32, eWATER);
@@ -27,10 +27,10 @@ CellGrid::CellGrid(unsigned x, unsigned y, unsigned z) :
 	//{
 	//	SetTile(40, i, eWATER);
 	//}
-	FillSquare(1, 8, m_gridWidth -1, 30, eSTONE);
+	FillSquare(1, 0, m_gridWidth -1, m_gridHeight - 10, eSTONE);
 	//SetTile(24, 10, eAIR);
 	//FillSquare(24, 25, 45, 33, eWATER);
-	SetTile(24, 25, eWATER);
+	//SetTile(24, 25, eWATER);
 
 	srand((unsigned int)time(0));
 
@@ -139,7 +139,9 @@ void CellGrid::FillSquare(int x1, int y1, int x2, int y2, int material)
 			case eAIR:
 				break;
 			case eSTONE:
-				//hp = rand() % 6 + 1;
+				//hp = 6.f;
+				hp = rand() % 80 + 1;
+				hp /= 10;
 				//hp = Perlin::perlinn(x, y);
 				clr = STONE_3F;
 				break;
@@ -238,9 +240,9 @@ void CellGrid::SimulateStone(int x, int y, sm::Vector3& clr)
 	if (Cell(x, y + 1) == eWATER)
 		erosionRate += WATER_E_RATE;
 	if (Cell(x + 1, y) == eWATER)
-		erosionRate += WATER_E_RATE / 4;
+		erosionRate += WATER_E_RATE;
 	if (Cell(x - 1, y) == eWATER)
-		erosionRate += WATER_E_RATE / 4;
+		erosionRate += WATER_E_RATE;
 
 	m_state[Coord(x, y)].hp -= erosionRate;
 	clr.x *= min(m_state[Coord(x, y)].hp, 1.f);

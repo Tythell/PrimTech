@@ -56,5 +56,5 @@ private:
 	RenderCell m_cell;
 	const int NTILES;
 
-	const float WATER_E_RATE = 0.01f;
+	const float WATER_E_RATE = 0.15f;
 };

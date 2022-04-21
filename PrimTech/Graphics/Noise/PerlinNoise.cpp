@@ -1,18 +1,18 @@
 #include "PerlinNoise.h"
 #include "../Camera.h"
 
-Perlin::Perlin()
-{}
+//Perlin::Perlin()
+//{}
 
-Perlin::Perlin(unsigned int seed, uint16_t resolution, uint16_t dimensions):
-	m_seed(seed), m_resolution(resolution), m_dimensions(dimensions)
-{
-	srand(seed);
+//Perlin::Perlin(unsigned int seed, uint16_t resolution, uint16_t dimensions):
+	//m_seed(seed), m_resolution(resolution), m_dimensions(dimensions)
+//{
+	//srand(seed);
 	//Recast(seed);
-}
+//}
 
-sm::Vector2 Perlin::RandomGradient(int ix, int iy)
-{
+//sm::Vector2 Perlin::RandomGradient(int ix, int iy)
+//{
 	//const unsigned w = 8 * sizeof(unsigned);
 	//const unsigned s = w / 2;
 	//unsigned a = ix, b = iy;
@@ -26,21 +26,21 @@ sm::Vector2 Perlin::RandomGradient(int ix, int iy)
 	//sm::Vector2 v;
 	//v.x = cos(random); v.y = sin(random);
 	//return v;
-	return sm::Vector2();
-}
+	//return sm::Vector2();
+//}
 
-float Perlin::dotGridGradient(int ix, int iy, float x, float y)
-{
+//float Perlin::dotGridGradient(int ix, int iy, float x, float y)
+//{
 	//sm::Vector2 gradient = RandomGradient(ix, iy);
 	//float dx = x - (float)ix;
 	//float dy = y - (float)iy;
 
 	//return (dx*gradient.x + dy*gradient.y);
-	return 0.f;
-}
+	//return 0.f;
+//}
 
-float Perlin::perlinn(float x, float y)
-{
+//float Perlin::perlinn(float x, float y)
+//{
 	//int x0 = (int)floor(x);
 	//int x1 = x0 + 1;
 	//int y0 = (int)floor(y);
@@ -65,6 +65,13 @@ float Perlin::perlinn(float x, float y)
 	//value = InterLerp(ix0, ix1, sy);
 
 	//return value;
-	return 0.f;
-}
+	//return 0.f;
+//}
 
+void PerlinNoise::Noise1D(int count, float* fSeed, int nOctaves, float* fOutput)
+{
+	for (int x = 0; x < count; x++)
+	{
+
+	}
+}
