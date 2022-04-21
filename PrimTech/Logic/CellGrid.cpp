@@ -18,7 +18,7 @@ CellGrid::CellGrid(unsigned x, unsigned y, unsigned z) :
 	FillSquare(0, 0, 1, m_gridHeight, eSTONE);
 	FillSquare(m_gridWidth-2, 0, m_gridWidth-1, m_gridHeight, eSTONE);
 	FillSquare(0, 1, m_gridWidth, 2, eSTONE);
-	//FillSquare(10, 40, 30, 60, eWATER);
+	FillSquare(10, 40, 30, 60, eWATER);
 	
 	//SetTile(8, 31, eWATER);
 	//SetTile(8, 32, eWATER);
@@ -27,10 +27,12 @@ CellGrid::CellGrid(unsigned x, unsigned y, unsigned z) :
 	//{
 	//	SetTile(40, i, eWATER);
 	//}
-	FillSquare(20, 8, 60, 11, eSTONE);
+	FillSquare(1, 8, m_gridWidth -1, 30, eSTONE);
 	//SetTile(24, 10, eAIR);
 	//FillSquare(24, 25, 45, 33, eWATER);
 	SetTile(24, 25, eWATER);
+
+	srand((unsigned int)time(0));
 
 	//TextureMap::CreateCharFromFile("White32.png", mp_tileHp, x, y, c);
 
@@ -56,7 +58,7 @@ void CellGrid::Update(float dtime)
 	m_timer += dtime;
 
 	m_cell.SetViewProjM(mp_cam->GetProjM());
-	SetTile(70, 50, eSAND);
+	//SetTile(70, 50, eSAND);
 
 	for (int i = 0; i < m_gridWidth * m_gridHeight; i++)
 	{
@@ -114,7 +116,7 @@ void CellGrid::GameOfLife(int x, int y)
 		m_cell.DrawCell(WHITE_3F, { (float)x,(float)y });
 }
 
-float& CellGrid::Cell(int x, int y)
+int& CellGrid::Cell(int x, int y)
 {
 	return m_state[y * m_gridWidth + x].type;
 }
@@ -128,24 +130,26 @@ void CellGrid::FillSquare(int x1, int y1, int x2, int y2, int material)
 {
 	float hp = 0.f;
 	sm::Vector3 clr;
-	switch (material)
-	{
-	case eAIR:
-		break;
-	case eSTONE:
-		hp = 1.f;
-		clr = STONE_3F;
-		break;
-	case eWATER:
-		clr = MAGENTA_3F;
-		break;
-	case eSAND:
-		clr = ORANGE_3F;
-		break;
-	}
+
 	for (int x = x1; x < x2; x++)
 		for (int y = y1; y < y2; y++)
 		{
+			switch (material)
+			{
+			case eAIR:
+				break;
+			case eSTONE:
+				//hp = rand() % 6 + 1;
+				//hp = Perlin::perlinn(x, y);
+				clr = STONE_3F;
+				break;
+			case eWATER:
+				clr = MAGENTA_3F;
+				break;
+			case eSAND:
+				clr = ORANGE_3F;
+				break;
+			}
 			m_state[y * m_gridWidth + x].type = (float)material;
 			m_state[Coord(x, y)].hp = hp;
 			m_state[Coord(x, y)].clr = clr;
@@ -153,21 +157,25 @@ void CellGrid::FillSquare(int x1, int y1, int x2, int y2, int material)
 
 }
 
-void CellGrid::SetTile(int x, int y, int material)
+void CellGrid::SetTile(int x, int y, int material, float hp)
 {
-	m_state[Coord(x, y)].type = (float)material;
+	int coord = Coord(x, y);
+	m_state[coord].type = material;
 	switch (material)
 	{
 	case eSTONE:
-		m_state[Coord(x, y)].hp = 1.f;
+		m_state[coord].hp = rand() % 2 + 1;
 		break;
 	}
 }
 
 bool CellGrid::InBounds(int x, int y) const
 {
-	if(x < 0 || y < 0 || x > m_gridWidth - 1 || y < m_gridHeight - 1)
+	if (x < 0 || y < 0 || x > m_gridWidth - 1 || y > m_gridHeight - 1 )
+	{
 		return false;
+
+	}
 	return true;
 }
 
@@ -175,38 +183,33 @@ void CellGrid::SimulateWater(int x, int y)
 {
 	//auto cell = [&](int x, int y) { return m_state[y * m_gridWidth + x]; };
 
-	if (Cell(x, y - 1) == eAIR)
+	int r = (rand() % 2) ? 1 : -1;
+
+	if (InBounds(x,y-1) && Cell(x, y - 1) == eAIR)
 	{
 		m_state[Coord(x, y)].type = eAIR;
-		m_state[Coord(x, y - 1)].type = eWATER;
+		m_state[Coord(x, y -1)].type = eWATER;
 	}
-	//else if (Cell(x - 1, y - 1) == eAIR)
-	//{
-	//	m_state[Coord(x, y)].type = eAIR;
-	//	m_state[Coord(x - 1, y - 1)].type = eWATER;
-	//}
-	//else if (Cell(x + 1, y - 1) == eAIR)
-	//{
-	//	m_state[Coord(x, y)].type = eAIR;
-	//	m_state[Coord(x + 1, y - 1)].type = eWATER;
-	//}
-	//else
-	//{
-	//	if (Cell(x - 1, y) == eAIR)
-	//	{
-
-	//	}
-	//	else if (Cell(x + 1, y) == eAIR)
-	//	{
-	//		SetTile(x + 1, y, eWATER);
-	//		SetTile(x, y, eAIR);
-	//	}
-	//	else
-	//	{
-	//		SetTile(x - 2, y, eWATER);
-	//		SetTile(x, y, eAIR);
-	//	}
-	//}
+	else if (Cell(x + r, y - 1) == eAIR)
+	{
+		m_state[Coord(x, y)].type = eAIR;
+		m_state[Coord(x + r, y - 1)].type = eWATER;
+	}
+	else if (Cell(x - r, y - 1) == eAIR)
+	{
+		m_state[Coord(x, y)].type = eAIR;
+		m_state[Coord(x - r, y - 1)].type = eWATER;
+	}
+	else if (Cell(x + r, y - 0) == eAIR)
+	{
+		m_state[Coord(x, y)].type = eAIR;
+		m_state[Coord(x + r, y)].type = eWATER;
+	}
+	else if (Cell(x + r, y - 0) == eAIR)
+	{
+		m_state[Coord(x, y)].type = eAIR;
+		m_state[Coord(x + r, y)].type = eWATER;
+	}
 }
 
 void CellGrid::SimulateSand(int x, int y, sm::Vector3 &clr)
@@ -240,9 +243,9 @@ void CellGrid::SimulateStone(int x, int y, sm::Vector3& clr)
 		erosionRate += WATER_E_RATE / 4;
 
 	m_state[Coord(x, y)].hp -= erosionRate;
-	clr.x *= m_state[Coord(x, y)].hp;
-	clr.y *= m_state[Coord(x, y)].hp;
-	clr.z *= m_state[Coord(x, y)].hp;
+	clr.x *= min(m_state[Coord(x, y)].hp, 1.f);
+	clr.y *= min(m_state[Coord(x, y)].hp, 1.f);
+	clr.z *= min(m_state[Coord(x, y)].hp, 1.f);
 
 	if (m_state[Coord(x, y)].hp <= 0.f)
 		SetTile(x, y, eAIR);

@@ -4,11 +4,13 @@
 #include "../Graphics/Texture.h"
 #include"../Graphics/RenderCell.h"
 #include"../Colors.h"
+#include "../Graphics/Noise/PerlinNoise.h"
+#include<ctime>
 
 struct sCell
 {
 	float hp;
-	float type;
+	int type;
 	d::XMINT2 velocity;
 	sm::Vector3 clr;
 };
@@ -25,10 +27,10 @@ public:
 	void SetCamP(Camera& c);
 private:
 	void GameOfLife(int x, int y);
-	float& Cell(int x, int y);
+	int& Cell(int x, int y);
 	sCell& Tile(int x, int y);
 	void FillSquare(int x1, int y1, int x2, int y2, int material);
-	void SetTile(int x, int y, int material);
+	void SetTile(int x, int y, int material, float hp = 1.f);
 	bool InBounds(int x, int y) const;
 
 	void SimulateWater(int x, int y);
@@ -54,5 +56,5 @@ private:
 	RenderCell m_cell;
 	const int NTILES;
 
-	const float WATER_E_RATE = 0.02f;
+	const float WATER_E_RATE = 0.01f;
 };
