@@ -89,8 +89,8 @@ void CellGrid::Update(float dtime)
 				SimulateSand(x, y, tile.clr);
 				break;
 			}
-			
-			m_cell.DrawCell(color, { (float)x,(float)y });
+			if(cell(x,y) != eAIR)
+				m_cell.DrawCell(color, { (float)x,(float)y });
 
 			//GameOfLife(x, y);
 		}
