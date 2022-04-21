@@ -21,7 +21,6 @@ DX11Addon::DX11Addon(Window& window) :
 	m_grid.InitRenderCell(m_device, m_dc);
 	m_grid.SetCamP(m_cam);
 	ImGuiInit(window.getHWND());
-
 }
 
 DX11Addon::~DX11Addon()
@@ -213,7 +212,13 @@ void DX11Addon::ImGuiRender()
 	ImGui::NewFrame();
 	ImGui::Begin("Debug");
 
-	ImGui::SliderFloat("Ortho view", &m_i.f[0], 1.f, 100);
+	ImGui::SliderFloat("Ortho view", &im.f[0], 1.f, 100);
+	ImGui::SliderInt("Speed", &im.speed, 0, 100);
+	ImGui::Checkbox("Pause", &im.pause);
+
+	static bool b;
+
+	ImGui::Checkbox("Joe mama", &b);
 	//ImGui::SliderFloat("X Coord", &m_i.f[1], -20.f, 50.f, "%1.0f");
 	//ImGui::SliderFloat("Y Coord", &m_i.f[2], -20, 20.f, "%1.0f");
 
@@ -233,24 +238,25 @@ void DX11Addon::Render(double& deltatime)
 {
 	float bgColor[] = { .1,.1,.1,1 };
 
-	Sleep(10);
+	if (!im.pause)
+	{
+		int delay = 100 - im.speed;
+		//Sleep(delay);
 
-	m_dc->ClearRenderTargetView(m_rtv, bgColor);
-	m_dc->ClearDepthStencilView(m_dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
+		m_dc->ClearRenderTargetView(m_rtv, bgColor);
+		m_dc->ClearDepthStencilView(m_dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
 
-	m_dc->IASetInputLayout(m_vShader.GetInputLayout());
-	m_dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	m_dc->RSSetState(m_rasterizerState);
-	m_dc->OMSetDepthStencilState(m_dsState, 0);
-	//m_dc->PSSetSamplers(0, 1, &m_sampState);
-	m_cam.SetOrtographic(m_i.f[0] * (m_width / m_height), m_i.f[0], 0.f, 50.f);
+		m_dc->IASetInputLayout(m_vShader.GetInputLayout());
+		m_dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		m_dc->RSSetState(m_rasterizerState);
+		m_dc->OMSetDepthStencilState(m_dsState, 0);
+		//m_dc->PSSetSamplers(0, 1, &m_sampState);
+		m_cam.SetOrtographic(im.f[0] * (m_width / m_height), im.f[0], 0.f, 50.f);
 
-	m_grid.Update(deltatime);
-
+		m_grid.Update(deltatime);
+	}
 
 	ImGuiRender();
-
-
 	m_swapChain->Present(0, NULL);
 
 

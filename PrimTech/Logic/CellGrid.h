@@ -5,6 +5,14 @@
 #include"../Graphics/RenderCell.h"
 #include"../Colors.h"
 
+struct sCell
+{
+	float hp;
+	float type;
+	d::XMINT2 velocity;
+	sm::Vector3 clr;
+};
+
 class CellGrid
 {
 public:
@@ -15,31 +23,36 @@ public:
 	void Update(float dtime);
 
 	void SetCamP(Camera& c);
-	uint8_t*& GetChar();
 private:
 	void GameOfLife(int x, int y);
-	int& Cell(int x, int y);
+	float& Cell(int x, int y);
+	sCell& Tile(int x, int y);
+	void FillSquare(int x1, int y1, int x2, int y2, int material);
+	void SetTile(int x, int y, int material);
+	bool InBounds(int x, int y) const;
+
+	void SimulateWater(int x, int y);
+	void SimulateSand(int x, int y, sm::Vector3& clr);
+	void SimulateStone(int x, int y, sm::Vector3& clr);
+	void ErodeStone(int x, int y, float erosionRate);
+
+	enum Materials { eAIR, eSTONE, eWATER, eSAND };
 
 	Camera* mp_cam;
 	d::XMINT2 m_resolutions;
 
 	int m_gridWidth, m_gridHeight;
 
-	void refreshTiles(unsigned x, unsigned y);
-	int m_cTile = 0;
-	int m_rTile = 0;
-	int m_lTile = 0;
-	int m_bTile = 0;
-
 	int Coord(int x, int y) const;
-	uint8_t* mp_tileHp;
-	uint8_t* mp_tileGrid;
 
-	int* m_output;
-	int* m_state;
+	sCell* m_output;
+	sCell* m_state;
 
 	float m_timer = 0.f;
 	const float TIMELIMIT;
 
 	RenderCell m_cell;
+	const int NTILES;
+
+	const float WATER_E_RATE = 0.02f;
 };

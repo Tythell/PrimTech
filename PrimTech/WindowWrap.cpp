@@ -16,8 +16,8 @@ LRESULT CALLBACK MessageDirect(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 	case WM_CLOSE:
 		//if (MessageBox(hwnd, L"Leaving already?", L"[REDACTED]", MB_OKCANCEL) == IDOK)
 		//{
-		//	//MessageBox(hwnd, L"NO!", L"You can't leave", 0);
-		//	DestroyWindow(hwnd);
+		//	MessageBox(hwnd, L"NO!", L"You can't leave", 0);
+		//	//DestroyWindow(hwnd);
 		//}
 		DestroyWindow(hwnd);
 		return 0;

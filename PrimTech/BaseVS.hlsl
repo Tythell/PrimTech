@@ -25,10 +25,8 @@ VSOutput main(VSInput input)
 {
 	VSOutput output;
 	output.position = mul(float4(input.position, 1.f), mul(world, viewProj));
-	//output.position = mul(float4(input.position, 1.0f), mul(world, viewProj));
 	output.worldPos = mul(float4(input.position, 1.0f), world);
 	output.color = color;
-	//output.uv = input.uv;
 	output.color = color;
 	return output;
 }

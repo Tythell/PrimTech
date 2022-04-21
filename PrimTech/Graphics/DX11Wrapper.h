@@ -18,6 +18,8 @@ class Window;
 struct ImGuiVars
 {
 	float f[3] = {60.f,1.f, 0.f};
+	bool pause;
+	int speed = 70;
 };
 
 class DX11Addon
@@ -75,6 +77,6 @@ private:
 	CellGrid m_grid;
 	
 
-	ImGuiVars m_i;
+	ImGuiVars im;
 };
 
