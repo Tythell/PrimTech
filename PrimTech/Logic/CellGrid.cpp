@@ -96,6 +96,24 @@ void CellGrid::Update(float dtime)
 		}
 }
 
+void CellGrid::SaveImage(const char* path)
+{
+	const int dataLen = m_gridWidth * m_gridHeight;
+	uint8_t* data = new uint8_t[dataLen];
+
+	int stoneColor = STONE_1F * 255.f;
+	for (int x = 0; x < m_gridWidth; x++)
+		for (int y = 0; y < m_gridHeight; y++)
+		{
+			data[Coord(x,m_gridHeight - y - 1)] = (m_state[Coord(x,y)].type == eSTONE) ? stoneColor : 0.f;
+		}
+		//data[dataLen - x - 1] = (m_state[x].type == eSTONE) ? stoneColor : 0.f;
+
+	TextureMap::ExportCharToImage(path, data, m_gridWidth, m_gridHeight, 1);
+
+	delete data;
+}
+
 void CellGrid::SetCamP(Camera& c)
 {
 	mp_cam = &c;
@@ -140,8 +158,8 @@ void CellGrid::FillSquare(int x1, int y1, int x2, int y2, int material)
 				break;
 			case eSTONE:
 				//hp = 6.f;
-				hp = rand() % 80 + 1;
-				hp /= 10;
+				hp = rand() % 800 + 1;
+				hp /= 100;
 				//hp = Perlin::perlinn(x, y);
 				clr = STONE_3F;
 				break;
@@ -192,26 +210,26 @@ void CellGrid::SimulateWater(int x, int y)
 		m_state[Coord(x, y)].type = eAIR;
 		m_state[Coord(x, y -1)].type = eWATER;
 	}
-	else if (Cell(x + r, y - 1) == eAIR)
+	else if (InBounds(x+r,y-1) && Cell(x + r, y - 1) == eAIR)
 	{
 		m_state[Coord(x, y)].type = eAIR;
 		m_state[Coord(x + r, y - 1)].type = eWATER;
 	}
-	else if (Cell(x - r, y - 1) == eAIR)
+	else if (InBounds(x - r, y - 1) && Cell(x - r, y - 1) == eAIR)
 	{
 		m_state[Coord(x, y)].type = eAIR;
 		m_state[Coord(x - r, y - 1)].type = eWATER;
 	}
-	else if (Cell(x + r, y - 0) == eAIR)
+	else if (InBounds(x + r, y - 0) && Cell(x + r, y - 0) == eAIR)
 	{
 		m_state[Coord(x, y)].type = eAIR;
 		m_state[Coord(x + r, y)].type = eWATER;
 	}
-	else if (Cell(x + r, y - 0) == eAIR)
-	{
-		m_state[Coord(x, y)].type = eAIR;
-		m_state[Coord(x + r, y)].type = eWATER;
-	}
+	//else if (InBounds(x - r, y - 0) && Cell(x - r, y - 0) == eAIR)
+	//{
+	//	m_state[Coord(x, y)].type = eAIR;
+	//	m_state[Coord(x - r, y)].type = eWATER;
+	//}
 }
 
 void CellGrid::SimulateSand(int x, int y, sm::Vector3 &clr)
@@ -240,9 +258,9 @@ void CellGrid::SimulateStone(int x, int y, sm::Vector3& clr)
 	if (Cell(x, y + 1) == eWATER)
 		erosionRate += WATER_E_RATE;
 	if (Cell(x + 1, y) == eWATER)
-		erosionRate += WATER_E_RATE;
+		erosionRate += WATER_E_RATE * 2.f;
 	if (Cell(x - 1, y) == eWATER)
-		erosionRate += WATER_E_RATE;
+		erosionRate += WATER_E_RATE * 2.f;
 
 	m_state[Coord(x, y)].hp -= erosionRate;
 	clr.x *= min(m_state[Coord(x, y)].hp, 1.f);

@@ -3,7 +3,7 @@
 
 DX11Addon::DX11Addon(Window& window) :
 	m_width(window.getWinWidth()), m_height(window.getWinHeight()), m_pHWND(&window.getHWND()),
-	m_grid(100, 60)
+	m_grid(200, 90)
 {
 	m_pWin = &window;
 
@@ -26,6 +26,8 @@ DX11Addon::DX11Addon(Window& window) :
 DX11Addon::~DX11Addon()
 {
 	ImGuiShutDown();
+
+	delete im.buffer;
 
 	m_device->Release();
 	m_dc->Release();
@@ -212,15 +214,15 @@ void DX11Addon::ImGuiRender()
 	ImGui::NewFrame();
 	ImGui::Begin("Debug");
 
-	ImGui::SliderFloat("Ortho view", &im.f[0], 1.f, 100);
+	ImGui::SliderFloat("Ortho view", &im.f[0], 50.f, 200.f);
 	ImGui::SliderInt("Speed", &im.speed, 0, 100);
+
+	ImGui::InputText("Text", im.buffer, 16);
 	ImGui::Checkbox("Pause", &im.pause);
 
-	static bool b;
-
-	ImGui::Checkbox("Joe mama", &b);
-	//ImGui::SliderFloat("X Coord", &m_i.f[1], -20.f, 50.f, "%1.0f");
-	//ImGui::SliderFloat("Y Coord", &m_i.f[2], -20, 20.f, "%1.0f");
+	if (ImGui::Button("Export image"))
+		ExportImage(im.buffer);
+		
 
 	ImGui::End();
 	ImGui::Render();
@@ -232,6 +234,11 @@ void DX11Addon::ImGuiShutDown()
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
+}
+
+void DX11Addon::ExportImage(char* name)
+{
+	m_grid.SaveImage(name);
 }
 
 void DX11Addon::Render(double& deltatime)
@@ -251,7 +258,7 @@ void DX11Addon::Render(double& deltatime)
 		m_dc->RSSetState(m_rasterizerState);
 		m_dc->OMSetDepthStencilState(m_dsState, 0);
 		//m_dc->PSSetSamplers(0, 1, &m_sampState);
-		m_cam.SetOrtographic(im.f[0] * (m_width / m_height), im.f[0], 0.f, 50.f);
+		m_cam.SetOrtographic(im.f[0] * (static_cast<float>(m_width) / static_cast<float>(m_height)), im.f[0], 0.f, 50.f);
 
 		m_grid.Update(deltatime);
 	}

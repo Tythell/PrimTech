@@ -114,9 +114,10 @@ const unsigned char* TextureMap::CreateCharFromFile(const char* path, unsigned c
 
 void TextureMap::ExportCharToImage(const char* path, unsigned char* imageData, int width, int height, int channels)
 {
+	stbi_set_flip_vertically_on_load(false);
 	std::string ext = StringHelper::GetExtension(std::string(path));
 	if (ext == "png")
-		stbi_write_png("Image Export.png", width, height, channels, imageData, channels * width);
+		stbi_write_png(path, width, height, channels, imageData, channels * width);
 	else
 		Popup::Error(path + std::string(" is not png, no image exported"));
 }

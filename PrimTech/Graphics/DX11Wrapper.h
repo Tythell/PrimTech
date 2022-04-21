@@ -17,9 +17,10 @@ class Window;
 
 struct ImGuiVars
 {
-	float f[3] = {60.f,1.f, 0.f};
+	float f[3] = {100.f,1.f, 0.f};
 	bool pause;
 	int speed = 70;
+	char* buffer = new char[16]{"image.png"};
 };
 
 class DX11Addon
@@ -42,6 +43,7 @@ private:
 	void ImGuiInit(HWND& hwnd);
 	void ImGuiRender();
 	void ImGuiShutDown();
+	void ExportImage(char* name);
 
 	Window* m_pWin = nullptr;
 
@@ -75,7 +77,6 @@ private:
 	Camera m_cam;
 
 	CellGrid m_grid;
-	
 
 	ImGuiVars im;
 };

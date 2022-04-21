@@ -24,6 +24,8 @@ public:
 	void InitRenderCell(ID3D11Device*& device, ID3D11DeviceContext*& dc);
 	void Update(float dtime);
 
+	void SaveImage(const char* path);
+
 	void SetCamP(Camera& c);
 private:
 	void GameOfLife(int x, int y);
@@ -36,7 +38,6 @@ private:
 	void SimulateWater(int x, int y);
 	void SimulateSand(int x, int y, sm::Vector3& clr);
 	void SimulateStone(int x, int y, sm::Vector3& clr);
-	void ErodeStone(int x, int y, float erosionRate);
 
 	enum Materials { eAIR, eSTONE, eWATER, eSAND };
 
