@@ -37,6 +37,12 @@
     <Filter Include="Source Files\ImGui">
       <UniqueIdentifier>{80df9a67-c832-4992-a954-5e61db1fca2d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Noise">
+      <UniqueIdentifier>{859cbf7c-3d71-4f9a-aadd-6a1446d2e5a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Noise">
+      <UniqueIdentifier>{e3f0592c-2a80-45d0-bffe-9be99af29a02}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -95,6 +101,9 @@
     </ClCompile>
     <ClCompile Include="Graphics\3rdParty\imgui\imgui_widgets.cpp">
       <Filter>Source Files\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Noise\ImprovedPNoise.cpp">
+      <Filter>Source Files\Noise</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -181,6 +190,9 @@
     </ClInclude>
     <ClInclude Include="Colors.h">
       <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\Noise\ImprovedPNoise.h">
+      <Filter>Header Files\Noise</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

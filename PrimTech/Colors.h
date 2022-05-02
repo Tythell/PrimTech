@@ -17,8 +17,10 @@
 #define WHITE_3F {1.f,1.f,1.f}
 #define WHITE_4F {1.f,1.f,1.f, 1.f}
 
-#define STONE_1F 0.341f
-#define STONE_3F {0.341f, 0.341f, 0.341f}
+//#define STONE_1F 0.341f
+//#define STONE_3F {0.341f, 0.341f, 0.341f}
+#define STONE_1F 1.f
+#define STONE_3F {1.f,1.f,1.f}
 
 #define GOLD_3F {1.f,1.f,0.f}
 

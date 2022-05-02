@@ -58,4 +58,9 @@ private:
 	const int NTILES;
 
 	const float WATER_E_RATE = 0.15f;
+
+	PerlinWikipedia m_pnoise;
+
+	const int SEED;
+	const int PERLININTENSITY;
 };

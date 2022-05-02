@@ -3,7 +3,7 @@
 
 CellGrid::CellGrid(unsigned x, unsigned y, unsigned z) :
 	m_resolutions(x, y), m_cell(x, y), m_gridWidth(x), m_gridHeight(y), TIMELIMIT(.1f),
-	NTILES(x * y)
+	NTILES(x * y), SEED(rand()), PERLININTENSITY(3.f)
 {
 	int totalCells = x * y;
 	m_output = new sCell[totalCells];
@@ -12,33 +12,23 @@ CellGrid::CellGrid(unsigned x, unsigned y, unsigned z) :
 	memset(m_output, 0, totalCells * sizeof(sCell));
 	memset(m_state, 0, totalCells * sizeof(sCell));
 
-	//for (int i = 0; i < m_gridWidth * m_gridHeight; i++)
-		//m_state[i] = rand() % 2;
+	//FillSquare(0, 0, 1, m_gridHeight, eSTONE);
+	//FillSquare(m_gridWidth-2, 0, m_gridWidth-1, m_gridHeight, eSTONE);
+	//FillSquare(0, 1, m_gridWidth, 2, eSTONE);
+	//FillSquare(1, m_gridHeight - 2, m_gridWidth - 1, m_gridHeight - 1, eWATER);
+	for (int i = 1; i < 5; i++)
+	{
+		int xCoord = m_gridWidth / 6;
 
-	FillSquare(0, 0, 1, m_gridHeight, eSTONE);
-	FillSquare(m_gridWidth-2, 0, m_gridWidth-1, m_gridHeight, eSTONE);
-	FillSquare(0, 1, m_gridWidth, 2, eSTONE);
-	FillSquare(1, m_gridHeight - 2, m_gridWidth - 1, m_gridHeight - 1, eWATER);
-	
-	//SetTile(8, 31, eWATER);
-	//SetTile(8, 32, eWATER);
-	//SetTile(8, 33, eWATER);
-	//for (int i = 30; i < 44; i+=1)
-	//{
-	//	SetTile(40, i, eWATER);
-	//}
+		for (int j = 0; j < 4; j++)
+		{
+			SetTile(j + (xCoord * i), m_gridHeight - 2, eWATER);
+		}
+		
+	}
+
 	FillSquare(1, 0, m_gridWidth -1, m_gridHeight - 10, eSTONE);
-	//SetTile(24, 10, eAIR);
-	//FillSquare(24, 25, 45, 33, eWATER);
-	//SetTile(24, 25, eWATER);
 
-	srand((unsigned int)time(0));
-
-	//TextureMap::CreateCharFromFile("White32.png", mp_tileHp, x, y, c);
-
-	//Simulate(x / 2, 0);
-
-	//TextureMap::ExportCharToImage("testExport.png", mp_tileHp, x, y, 1);
 }
 
 CellGrid::~CellGrid()
@@ -59,6 +49,8 @@ void CellGrid::Update(float dtime)
 
 	m_cell.SetViewProjM(mp_cam->GetProjM());
 	//SetTile(70, 50, eSAND);
+
+	m_pnoise;
 
 	for (int i = 0; i < m_gridWidth * m_gridHeight; i++)
 	{
@@ -89,7 +81,7 @@ void CellGrid::Update(float dtime)
 				SimulateSand(x, y, tile.clr);
 				break;
 			}
-			if(cell(x,y) != eAIR)
+			//if(cell(x,y) != eAIR)
 				m_cell.DrawCell(color, { (float)x,(float)y });
 
 			//GameOfLife(x, y);
@@ -101,7 +93,7 @@ void CellGrid::SaveImage(const char* path)
 	const int dataLen = m_gridWidth * m_gridHeight;
 	uint8_t* data = new uint8_t[dataLen];
 
-	int stoneColor = STONE_1F * 255.f;
+	int stoneColor = int(STONE_1F * 255.f);
 	for (int x = 0; x < m_gridWidth; x++)
 		for (int y = 0; y < m_gridHeight; y++)
 		{
@@ -157,10 +149,10 @@ void CellGrid::FillSquare(int x1, int y1, int x2, int y2, int material)
 			case eAIR:
 				break;
 			case eSTONE:
-				//hp = 6.f;
-				hp = rand() % 800 + 1;
-				hp /= 100;
-				//hp = Perlin::perlinn(x, y);
+				//hp = RandomNum(0.f, 8.f, 2);
+				//hp = abs(m_pnoise.Perlin2D(x, y, .06f)) + .5f; // worlay???
+				hp = (m_pnoise.Perlin2D(x + SEED, y + SEED, .1f) + 1.f) * PERLININTENSITY;
+				/*hp /= 2.f;*/
 				clr = STONE_3F;
 				break;
 			case eWATER:
@@ -263,9 +255,15 @@ void CellGrid::SimulateStone(int x, int y, sm::Vector3& clr)
 		erosionRate += WATER_E_RATE * 2.f;
 
 	m_state[Coord(x, y)].hp -= erosionRate;
-	clr.x *= min(m_state[Coord(x, y)].hp, 1.f);
-	clr.y *= min(m_state[Coord(x, y)].hp, 1.f);
-	clr.z *= min(m_state[Coord(x, y)].hp, 1.f);
+	//clr.x *= min(m_state[Coord(x, y)].hp, 1.f);
+	//clr.y *= min(m_state[Coord(x, y)].hp, 1.f);
+	//clr.z *= min(m_state[Coord(x, y)].hp, 1.f);
+
+	float hp = m_state[Coord(x, y)].hp / 8.f;
+
+	clr.x *= hp;
+	clr.y *= hp;
+	clr.z *= hp;
 
 	if (m_state[Coord(x, y)].hp <= 0.f)
 		SetTile(x, y, eAIR);

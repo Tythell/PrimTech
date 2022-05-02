@@ -3,7 +3,7 @@
 class IndexBuffer
 {
 private:
-	ID3D11Buffer* m_buffer;
+	ID3D11Buffer* m_buffer = nullptr;
 	UINT bufferSize = 0;
 public:
 	IndexBuffer() {}

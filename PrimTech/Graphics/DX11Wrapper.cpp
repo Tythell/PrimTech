@@ -127,8 +127,8 @@ bool DX11Addon::SetupDSAndVP()
 
 	m_viewport.TopLeftX = 0;
 	m_viewport.TopLeftY = 0;
-	m_viewport.Width = m_width;
-	m_viewport.Height = m_height;
+	m_viewport.Width = (float)m_width;
+	m_viewport.Height = (float)m_height;
 	m_viewport.MinDepth = 0;
 	m_viewport.MaxDepth = 0;
 
@@ -243,7 +243,7 @@ void DX11Addon::ExportImage(char* name)
 
 void DX11Addon::Render(double& deltatime)
 {
-	float bgColor[] = { .1,.1,.1,1 };
+	float bgColor[] = { .1f,.1f,.1f,1.f };
 
 	if (!im.pause)
 	{
@@ -260,7 +260,7 @@ void DX11Addon::Render(double& deltatime)
 		//m_dc->PSSetSamplers(0, 1, &m_sampState);
 		m_cam.SetOrtographic(im.f[0] * (static_cast<float>(m_width) / static_cast<float>(m_height)), im.f[0], 0.f, 50.f);
 
-		m_grid.Update(deltatime);
+		m_grid.Update((float)deltatime);
 	}
 
 	ImGuiRender();

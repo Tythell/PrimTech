@@ -10,7 +10,7 @@ private:
 	ConstantBuffer(const ConstantBuffer<T>& rhs);
 
 private:
-	ID3D11Buffer* m_buffer;
+	ID3D11Buffer* m_buffer = nullptr;
 	ID3D11DeviceContext* m_dc = nullptr;
 	T data;
 	bool m_on = false;
