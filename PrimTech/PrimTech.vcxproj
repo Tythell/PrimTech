@@ -185,6 +185,7 @@
     <ClInclude Include="Graphics\Noise\ImprovedPNoise.h" />
     <ClInclude Include="Logic\CellGrid.h" />
     <ClInclude Include="Math\Math.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="Utility\StringHelper.h" />
     <ClInclude Include="Utility\COMException.h" />
     <ClInclude Include="Graphics\DX11Wrapper.h" />
@@ -203,6 +204,13 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Icon.ico" />
+    <Image Include="icon1.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="PrimTech.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

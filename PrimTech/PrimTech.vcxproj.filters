@@ -194,6 +194,9 @@
     <ClInclude Include="Graphics\Noise\ImprovedPNoise.h">
       <Filter>Header Files\Noise</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="BaseVS.hlsl">
@@ -202,5 +205,18 @@
     <FxCompile Include="BasePS.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Icon.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="icon1.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="PrimTech.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

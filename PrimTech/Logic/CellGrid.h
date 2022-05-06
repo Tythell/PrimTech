@@ -38,8 +38,9 @@ private:
 	void SimulateWater(int x, int y);
 	void SimulateSand(int x, int y, sm::Vector3& clr);
 	void SimulateStone(int x, int y, sm::Vector3& clr);
+	void SimulatePerlinStone(int x, int y, sm::Vector3& clr);
 
-	enum Materials { eAIR, eSTONE, eWATER, eSAND };
+	enum Materials { eAIR, eSTONE, eWATER, eSAND, eBEDROCK };
 
 	Camera* mp_cam;
 	d::XMINT2 m_resolutions;
@@ -57,10 +58,11 @@ private:
 	RenderCell m_cell;
 	const int NTILES;
 
-	const float WATER_E_RATE = 0.15f;
+	const float WATER_E_RATE;
 
 	PerlinWikipedia m_pnoise;
 
+	const int SECONDSEED;
 	const int SEED;
 	const int PERLININTENSITY;
 };
