@@ -42,11 +42,6 @@ void RenderCell::Init(ID3D11Device*& device, ID3D11DeviceContext*& dc)
 	m_dc->IASetIndexBuffer(m_iBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 }
 
-void RenderCell::SetSwapchain(IDXGISwapChain*& sc)
-{
-	m_sc = sc;
-}
-
 void RenderCell::DrawCell(sm::Vector3 color, sm::Vector2 xy)
 {
 	m_dc->VSSetConstantBuffers(0, 1, m_cbuffer.GetReference());

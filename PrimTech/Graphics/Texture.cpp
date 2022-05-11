@@ -124,8 +124,6 @@ void TextureMap::ExportCharToImage(const char* path, unsigned char* imageData, i
 
 bool TextureMap::CreatePerlinNoise(ID3D11Device*& device)
 {
-
-
 	m_isLoaded = true;
 	return true;
 }

@@ -71,8 +71,8 @@ void CellGrid::Update(float dtime)
 	{
 		m_output[i] = m_state[i];
 	}
-	for (int y = 1; y < m_gridHeight - 1; y++)
-		for (int x = xLoopStart + 1; x < xLoopEnd + 1; x++)
+	for (int y = 0; y < m_gridHeight - 1; y++)
+		for (int x = xLoopStart + 0; x < xLoopEnd + 1; x++)
 		{
 			int currentIdx = Coord(x, y);
 
@@ -116,9 +116,10 @@ void CellGrid::SaveImage(const char* path)
 	for (int x = 0; x < m_gridWidth; x++)
 		for (int y = 0; y < m_gridHeight; y++)
 		{
-			data[Coord(x, m_gridHeight - y - 1)] = (m_state[Coord(x, y)].type == eSTONE) ? stoneColor : 0.f;
+			data[Coord(x, m_gridHeight - y - 1)] = 
+				(m_state[Coord(x, y)].type == eSTONE || m_state[Coord(x, y)].type == eBEDROCK) ? 
+				stoneColor : 0.f;
 		}
-	//data[dataLen - x - 1] = (m_state[x].type == eSTONE) ? stoneColor : 0.f;
 
 	TextureMap::ExportCharToImage(path, data, m_gridWidth, m_gridHeight, 1);
 
@@ -163,51 +164,7 @@ void CellGrid::FillSquare(int x1, int y1, int x2, int y2, int material)
 	for (int x = x1; x < x2; x++)
 		for (int y = y1; y < y2; y++)
 		{
-			switch (material)
-			{
-			case eAIR:
-				break;
-			case eSTONE:
-			{
-				float noise = abs(m_pnoise.Perlin2D(x + SEED, y + SEED, .09f));
-
-
-
-				hp = noise * 10;
-				//hp = pow(hp, 2);
-				if (hp < .4f)
-					hp = .7f;
-				hp *= (float)(rand() % 1000) / 1000.f;
-				hp *= 5;
-				//hp = RandomNum(0.f, 8.f, 2);
-				//hp = abs(m_pnoise.Perlin2D(x, y, .06f)) + .4f;// worlay???
-				//hp *= 1.5f;
-				//hp = pow(hp, 100);
-				//if (hp >= 1.f)
-				//	hp = 1.f;
-
-				//hp = 1.f - hp;
-				//hp = (m_pnoise.Perlin2D(x + SEED, y + SEED, .1f) + 1.f) * PERLININTENSITY;
-				/*hp /= 2.f;*/
-				clr = STONE_3F;
-				break;
-			}
-
-			case eWATER:
-				clr = MAGENTA_3F;
-				break;
-			case eSAND:
-				clr = ORANGE_3F;
-				break;
-
-			case eBEDROCK:
-				clr = STONE_3F;
-				hp = FLT_MAX;
-				break;
-			}
-			m_state[y * m_gridWidth + x].type = material;
-			m_state[Coord(x, y)].hp = hp;
-			m_state[Coord(x, y)].clr = clr;
+			SetTile(x, y, material);
 		}
 
 }
@@ -215,13 +172,55 @@ void CellGrid::FillSquare(int x1, int y1, int x2, int y2, int material)
 void CellGrid::SetTile(int x, int y, int material, float hp)
 {
 	int coord = Coord(x, y);
-	m_state[coord].type = material;
+
+	//float hp = 0.f;
+	sm::Vector3 clr;
+
 	switch (material)
 	{
+	case eAIR:
+		break;
 	case eSTONE:
-		m_state[coord].hp = rand() % 2 + 1;
+	{
+		float noise = abs(m_pnoise.Perlin2D(x + SEED, y + SEED, .09f));
+
+
+
+		hp = noise * 10;
+		//hp = pow(hp, 2);
+		if (hp < .4f)
+			hp = .7f;
+		hp *= (float)(rand() % 1000) / 1000.f;
+		hp *= 5;
+		//hp = RandomNum(0.f, 8.f, 2);
+		//hp = abs(m_pnoise.Perlin2D(x, y, .06f)) + .4f;// worlay???
+		//hp *= 1.5f;
+		//hp = pow(hp, 100);
+		//if (hp >= 1.f)
+		//	hp = 1.f;
+
+		//hp = 1.f - hp;
+		//hp = (m_pnoise.Perlin2D(x + SEED, y + SEED, .1f) + 1.f) * PERLININTENSITY;
+		/*hp /= 2.f;*/
+		clr = STONE_3F;
 		break;
 	}
+
+	case eWATER:
+		clr = MAGENTA_3F;
+		break;
+	case eSAND:
+		clr = ORANGE_3F;
+		break;
+
+	case eBEDROCK:
+		clr = STONE_3F;
+		hp = FLT_MAX;
+		break;
+	}
+	m_state[coord].type = material;
+	m_state[coord].hp = hp;
+	m_state[coord].clr = clr;
 }
 
 bool CellGrid::InBounds(int x, int y) const
@@ -237,6 +236,9 @@ bool CellGrid::InBounds(int x, int y) const
 void CellGrid::SimulateWater(int x, int y)
 {
 	//auto cell = [&](int x, int y) { return m_state[y * m_gridWidth + x]; };
+
+	if (x == 0)
+		m_state[Coord(x, y)].type = eAIR;
 
 	int r = (rand() % 2) ? -1 : 1;
 
@@ -295,8 +297,6 @@ void CellGrid::SimulateWater(int x, int y)
 		}
 	}
 
-	if (x == 0)
-		m_state[Coord(x, y)].type = eAIR;
 }
 
 void CellGrid::SimulateSand(int x, int y, sm::Vector3& clr)

@@ -6,9 +6,13 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	srand(time(0));
-	Window window;
 
+	Window window;
 	window.init(L"PrimTech", hInstance, L"windowClass", 1800, 1000);
+
+
+	//DX11Addon dx(window);
+	//window.BindAPI(dx);
 	window.CreateDX11();
 
 	window.Run();
