@@ -16,8 +16,6 @@ CellGrid::CellGrid(unsigned x, unsigned y, unsigned z) :
 	//FillSquare(m_gridWidth-2, 0, m_gridWidth-1, m_gridHeight, eSTONE);
 	//FillSquare(0, 1, m_gridWidth, 2, eSTONE);
 	//FillSquare(1, m_gridHeight - 2, m_gridWidth - 1, m_gridHeight - 1, eWATER);
-
-
 	
 
 	//const int n = 5;
@@ -67,10 +65,10 @@ void CellGrid::Update(float dtime)
 	//	xLoopEnd = 0;
 	//}
 
-	for (int i = 0; i < m_gridWidth * m_gridHeight; i++)
-	{
-		m_output[i] = m_state[i];
-	}
+	//for (int i = 0; i < m_gridWidth * m_gridHeight; i++)
+	//{
+	//	m_output[i] = m_state[i];
+	//}
 	for (int y = 0; y < m_gridHeight - 1; y++)
 		for (int x = xLoopStart + 0; x < xLoopEnd + 1; x++)
 		{

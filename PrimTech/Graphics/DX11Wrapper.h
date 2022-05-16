@@ -65,8 +65,8 @@ private:
 	ID3D11RasterizerState* m_rasterizerState = nullptr;
 	ID3D11SamplerState* m_sampState = nullptr;
 
-	VShader m_vShader;
-	PShader m_pShader;
+	VertexShader m_vShader;
+	PixelShader m_pShader;
 
 	//VertexBuffer<Vertex> m_vbuffer;
 	//IndexBuffer m_iBuffer;
