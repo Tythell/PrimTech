@@ -27,9 +27,8 @@ struct ImGuiVars
 class DX11Addon
 {
 public:
-	DX11Addon(Window& window);
+	DX11Addon(Window& window, Camera& camera);
 	~DX11Addon();
-
 
 	void Render(double& deltatime);
 private:
@@ -75,9 +74,9 @@ private:
 	//TextureMap m_fileTexture;
 
 	//ConstantBuffer<Transforms> m_transformBuffer;
-	Camera m_cam;
+	Camera* mp_cam;
 
-	CellGrid m_grid;
+	CellGrid* m_grid;
 
 	ImGuiVars im;
 };

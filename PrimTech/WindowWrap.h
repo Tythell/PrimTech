@@ -10,7 +10,6 @@ public:
 	~Window();
 	bool init(LPCWSTR windowName, HINSTANCE hInstance, std::wstring windowClass, unsigned int width, unsigned int height);
 	bool processMsg();
-	bool BindAPI(DX11Addon& api);
 	LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 	std::wstring getWinName() const;
 	HWND& getHWND();
@@ -19,7 +18,6 @@ public:
 	
 	uint16_t getWinWidth() const;
 	uint16_t getWinHeight() const;
-	void Run();
 
 	//MouseHandler m_mouseHandler;
 private:

@@ -156,6 +156,7 @@
     <ClCompile Include="Graphics\Noise\ImprovedPNoise.cpp" />
     <ClCompile Include="Logic\CellGrid.cpp" />
     <ClCompile Include="Input\Mouse.cpp" />
+    <ClCompile Include="PrimTech.cpp" />
     <ClCompile Include="Utility\StringHelper.cpp" />
     <ClCompile Include="Utility\Popup.cpp" />
     <ClCompile Include="main.cpp" />
@@ -187,6 +188,7 @@
     <ClInclude Include="Logic\CellGrid.h" />
     <ClInclude Include="Math\Math.h" />
     <ClInclude Include="Input\Mouse.h" />
+    <ClInclude Include="PrimTech.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Utility\StringHelper.h" />
     <ClInclude Include="Utility\COMException.h" />

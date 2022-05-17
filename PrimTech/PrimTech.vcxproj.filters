@@ -43,6 +43,12 @@
     <Filter Include="Source Files\Noise">
       <UniqueIdentifier>{e3f0592c-2a80-45d0-bffe-9be99af29a02}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Input">
+      <UniqueIdentifier>{2dd9630b-7d23-4a11-9d19-3d902dfdb1ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Input">
+      <UniqueIdentifier>{da403211-6c81-4690-81f0-0ab3a18a06e8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -58,9 +64,6 @@
       <Filter>Source Files\Utility</Filter>
     </ClCompile>
     <ClCompile Include="Graphics\Shader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Graphics\Noise\PerlinNoise.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Graphics\Camera.cpp">
@@ -106,6 +109,12 @@
       <Filter>Source Files\Noise</Filter>
     </ClCompile>
     <ClCompile Include="Input\Mouse.cpp">
+      <Filter>Source Files\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Noise\PerlinNoise.cpp">
+      <Filter>Source Files\Noise</Filter>
+    </ClCompile>
+    <ClCompile Include="PrimTech.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -126,9 +135,6 @@
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
     <ClInclude Include="Graphics\Transform.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Graphics\Noise\PerlinNoise.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Graphics\Shader.h">
@@ -164,9 +170,6 @@
     <ClInclude Include="Math\Math.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics\RenderCell.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Graphics\3rdParty\imgui\imconfig.h">
       <Filter>Source Files\ImGui</Filter>
     </ClInclude>
@@ -197,11 +200,20 @@
     <ClInclude Include="Graphics\Noise\ImprovedPNoise.h">
       <Filter>Header Files\Noise</Filter>
     </ClInclude>
-    <ClInclude Include="resource.h">
+    <ClInclude Include="Input\Mouse.h">
+      <Filter>Header Files\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\Noise\PerlinNoise.h">
+      <Filter>Header Files\Noise</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\RenderCell.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="PrimTech.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Input\Mouse.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="resource.h">
+      <Filter>Resource Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

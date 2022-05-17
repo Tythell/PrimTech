@@ -96,13 +96,6 @@ bool Window::processMsg()
 	return true;
 }
 
-bool Window::BindAPI(DX11Addon& api)
-{
-	if (m_apiLoaded) return false;
-	m_pDX11 = &api;
-	return true;
-}
-
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 LRESULT Window::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -159,9 +152,9 @@ HWND& Window::getHWND()
 
 bool Window::CreateDX11()
 {
-	if (m_apiLoaded) return false;
-	m_pDX11 = new DX11Addon(*this);
-	m_apiLoaded = true;
+	//if (m_apiLoaded) return false;
+	//m_pDX11 = new DX11Addon(*this);
+	//m_apiLoaded = true;
 	return true;
 }
 
@@ -173,17 +166,6 @@ uint16_t Window::getWinWidth() const
 uint16_t Window::getWinHeight() const
 {
 	return m_windowHeight;
-}
-
-void Window::Run()
-{
-	double start, deltatime = 0.f;
-	while (processMsg())
-	{
-		start = omp_get_wtime();
-		m_pDX11->Render(deltatime);
-		deltatime = omp_get_wtime() - start;
-	}
 }
 
 Window::Window():
@@ -199,7 +181,6 @@ Window::~Window()
 
 bool Window::init(LPCWSTR windowName, HINSTANCE hInstance, std::wstring windowClass, unsigned int width, unsigned int height)
 {
-
 	m_windowName = windowName;
 	// Register window class
 	m_wndClass = windowClass;

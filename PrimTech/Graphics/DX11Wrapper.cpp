@@ -1,11 +1,11 @@
 #include "DX11Wrapper.h"
 #include"../WindowWrap.h"
 
-DX11Addon::DX11Addon(Window& window) :
-	m_width(window.getWinWidth()), m_height(window.getWinHeight()), m_pHWND(&window.getHWND()),
-	m_grid(200, 90)
+DX11Addon::DX11Addon(Window& window, Camera& camera) :
+	m_width(window.getWinWidth()), m_height(window.getWinHeight()), m_pHWND(&window.getHWND())
 {
 	m_pWin = &window;
+	mp_cam = &camera;
 
 	initSwapChain();
 	initRTV();
@@ -15,11 +15,10 @@ DX11Addon::DX11Addon(Window& window) :
 	InitShaders();
 	InitScene();
 
-	m_cam.SetPosition(0, 0, -1);
+	//m_cam->SetPosition(0, 0, -1);
 	//m_fileTexture.CreateFromFile("Textures/gunter2.png", m_device);
 	InitConstantBuffers();
 	m_grid.InitRenderCell(m_device, m_dc);
-	m_grid.SetCamP(m_cam);
 	ImGuiInit(window.getHWND());
 }
 
@@ -251,7 +250,7 @@ void DX11Addon::ImGuiShutDown()
 
 void DX11Addon::ExportImage(char* name)
 {
-	m_grid.SaveImage(name);
+	m_grid->SaveImage(name);
 }
 
 void DX11Addon::Render(double& deltatime)
@@ -271,7 +270,7 @@ void DX11Addon::Render(double& deltatime)
 		m_dc->RSSetState(m_rasterizerState);
 		m_dc->OMSetDepthStencilState(m_dsState, 0);
 		//m_dc->PSSetSamplers(0, 1, &m_sampState);
-		m_cam.SetOrtographic(im.f[0] * (static_cast<float>(m_width) / static_cast<float>(m_height)), im.f[0], 0.f, 50.f);
+		mp_cam->SetOrtographic(im.f[0] * (static_cast<float>(m_width) / static_cast<float>(m_height)), im.f[0], 0.f, 50.f);
 
 		m_grid.Update((float)deltatime);
 	}
