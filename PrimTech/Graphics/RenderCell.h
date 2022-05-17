@@ -19,7 +19,7 @@ private:
 	VertexBuffer<Vertex> m_vBuffer;
 	IndexBuffer m_iBuffer;
 	ID3D11DeviceContext* m_dc = nullptr;
-	ConstantBuffer<Transforms> m_cbuffer;
+	ConstantBuffer<cbTransforms> m_cbuffer;
 
 	d::XMINT2 m_gridRes;
 	d::XMINT2 m_windRes;

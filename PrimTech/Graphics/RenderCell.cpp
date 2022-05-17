@@ -40,11 +40,11 @@ void RenderCell::Init(ID3D11Device*& device, ID3D11DeviceContext*& dc)
 	UINT offset = 0;
 	m_dc->IASetVertexBuffers(0, 1, m_vBuffer.GetReference(), m_vBuffer.GetStrideP(), &offset);
 	m_dc->IASetIndexBuffer(m_iBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+	m_dc->VSSetConstantBuffers(0, 1, m_cbuffer.GetReference());
 }
 
 void RenderCell::DrawCell(sm::Vector3 color, sm::Vector2 xy)
 {
-	m_dc->VSSetConstantBuffers(0, 1, m_cbuffer.GetReference());
 	m_cbuffer.getData().color = sm::Vector4(color.x, color.y, color.z, 1.f);
 
 	float coordX = (-m_gridRes.x / 2) + xy.x;

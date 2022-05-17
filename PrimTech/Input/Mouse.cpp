@@ -69,10 +69,6 @@ MouseEvent MouseHandler::ReadEvent()
 
 bool MouseHandler::CheckMouseEvent(int index)
 {
-	if (!m_mouseBuffer.empty())
-	{
-		printf("hej");
-	}
 	if (!m_mouseBuffer.empty() && m_mouseBuffer.front().GetType() == index)
 	{
 		m_mouseBuffer.pop();
