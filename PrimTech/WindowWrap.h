@@ -1,5 +1,6 @@
 #pragma once
 #include"Graphics\DX11Wrapper.h"
+#include "Input/Mouse.h"
 #include <string>
 
 class Window
@@ -19,6 +20,8 @@ public:
 	uint16_t getWinWidth() const;
 	uint16_t getWinHeight() const;
 	void Run();
+
+	//MouseHandler m_mouseHandler;
 private:
 
 	DX11Addon* m_pDX11 = nullptr;

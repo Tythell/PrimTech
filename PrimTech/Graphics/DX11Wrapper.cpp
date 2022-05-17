@@ -230,11 +230,12 @@ void DX11Addon::ImGuiRender()
 		
 
 	ImGui::End();
-	if (im_appear)
+	if (MouseHandler::CheckMouseEvent(eMIDCLICK))
 	{
 		ImGui::Begin("Test");
 		ImGui::Text("Din mamma");
 		ImGui::End();
+		OutputDebugStringA("joemama\n");
 	}
 
 	ImGui::Render();

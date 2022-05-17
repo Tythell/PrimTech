@@ -1,14 +1,10 @@
 #include "WindowWrap.h"
 #include<omp.h>
 
-extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK MessageDirect(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 
-	if (ImGui_ImplWin32_WndProcHandler(hwnd, uMsg, wParam, lParam))
-	{
-		return true;
-	}
+	//if (ImGui_ImplWin32_WndProcHandler(hwnd, uMsg, wParam, lParam)) return true;
 
 	Window* const pWindow = reinterpret_cast<Window*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
 	switch (uMsg)
@@ -107,10 +103,46 @@ bool Window::BindAPI(DX11Addon& api)
 	return true;
 }
 
+extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 LRESULT Window::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	//switch (uMsg)
-	//{
+	if (ImGui_ImplWin32_WndProcHandler(hwnd, uMsg, wParam, lParam)) return true;
+	switch (uMsg)
+	{
+	case WM_LBUTTONDOWN:
+	{
+		MouseHandler::SetMouseButton(eLEFTCLICK, true);
+		break;
+	}
+	case WM_RBUTTONDOWN:
+	{
+		MouseHandler::SetMouseButton(eRIGHTCLICK, true);
+		break;
+	}
+	case WM_MBUTTONDOWN:
+	{
+		MouseHandler::SetMouseButton(eMIDCLICK, true);
+		break;
+	}
+	case WM_LBUTTONUP:
+	{
+		//m_mouseHandler.SetMouseButton(eLEFTCLICK, false);
+		MouseHandler::SetMouseButton(eLEFTCLICK, false);
+		break;
+	}
+	case WM_RBUTTONUP:
+	{
+		//m_mouseHandler.SetMouseButton(eLEFTCLICK, false);
+		MouseHandler::SetMouseButton(eRIGHTCLICK, false);
+		break;
+	}
+	case WM_MBUTTONUP:
+	{
+		//m_mouseHandler.SetMouseButton(eLEFTCLICK, false);
+		MouseHandler::SetMouseButton(eMIDCLICK, false);
+		break;;
+	}
+	}
 
 	return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
