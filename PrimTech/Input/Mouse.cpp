@@ -21,7 +21,6 @@ void MouseHandler::SetMouseButton(int index, bool b)
 {
 	if (b && !m_mouseButtonDown[index])
 	{
-		
 		switch (index)
 		{
 		case eLEFTCLICK:

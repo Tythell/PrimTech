@@ -1,6 +1,7 @@
 #pragma once
 #include "WindowWrap.h"
 #include <omp.h>
+
 class PrimTech
 {
 public:
@@ -12,7 +13,7 @@ private:
 	void Update(double& dt);
 	Window m_window;
 	DX11Addon* mp_gApi;
-
 	Camera m_camera;
+	KeyboardHandler m_kb;
 };
 

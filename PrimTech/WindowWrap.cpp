@@ -2,11 +2,7 @@
 #include<omp.h>
 
 LRESULT CALLBACK MessageDirect(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
-
-	//if (ImGui_ImplWin32_WndProcHandler(hwnd, uMsg, wParam, lParam)) return true;
-
-	Window* const pWindow = reinterpret_cast<Window*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
+{	
 	switch (uMsg)
 	{
 	case WM_CLOSE:
@@ -23,40 +19,26 @@ LRESULT CALLBACK MessageDirect(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 		return 0;
 
 	default:
-		
+	{
+		Window* const pWindow = reinterpret_cast<Window*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
 		return pWindow->WindowProc(hwnd, uMsg, wParam, lParam);
+
 	}
-	return DefWindowProc(hwnd, uMsg, wParam, lParam);
+	}
 }
-
-
 
 LRESULT CALLBACK HandleMessageSetup(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	//Window* pWin;
-	//if (uMsg == WM_NCCREATE)
-	//{
-	//	pWin = (Window*)reinterpret_cast<LPCREATESTRUCT>(lParam)->lpCreateParams;
-	//	SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pWin));
-	//}
-	//else
-	//{
-	//	pWin = reinterpret_cast<Window*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
-	//}
-	//if (pWin) 
-	//	return pWin->WindowProc(hwnd, uMsg, wParam, lParam);
-	//else
-	//	return DefWindowProc(hwnd, uMsg, wParam, lParam);
-
 	switch (uMsg)
 	{
 	case WM_NCCREATE:
 	{
 		const CREATESTRUCTW* const pCreate = reinterpret_cast<CREATESTRUCTW*>(lParam);
 		Window* pWindow = reinterpret_cast<Window*>(pCreate->lpCreateParams);
-		if (pWindow)
+		if (pWindow == nullptr)
 		{
-			throw;
+			Popup::Error("Critical error: Pointer to window is null");
+			exit(-1);
 		}
 		SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pWindow));
 		SetWindowLongPtr(hwnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(MessageDirect));
@@ -133,11 +115,27 @@ LRESULT Window::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		//m_mouseHandler.SetMouseButton(eLEFTCLICK, false);
 		MouseHandler::SetMouseButton(eMIDCLICK, false);
-		break;;
+		break;
 	}
+	case WM_KEYDOWN:
+	{
+		unsigned char key = static_cast<unsigned char>(wParam);
+		//KeyboardHandler::SetKeyState(key, true);
+		mp_kb->SetKeyState(key, true);
+		break;
+	}
+	case WM_KEYUP:
+	{
+		unsigned char key = static_cast<unsigned char>(wParam);
+		//KeyboardHandler::SetKeyState(key, false);
+		mp_kb->SetKeyState(key, false);
+		break;
+	}
+	default:
+		return DefWindowProc(hwnd, uMsg, wParam, lParam);
 	}
 
-	return DefWindowProc(hwnd, uMsg, wParam, lParam);
+	
 }
 
 std::wstring Window::getWinName() const
@@ -148,6 +146,11 @@ std::wstring Window::getWinName() const
 HWND& Window::getHWND()
 {
 	return m_hwnd;
+}
+
+void Window::SetInputP(KeyboardHandler& pkb)
+{
+	mp_kb = &pkb;
 }
 
 bool Window::CreateDX11()
@@ -168,6 +171,11 @@ uint16_t Window::getWinHeight() const
 	return m_windowHeight;
 }
 
+void Window::ShutDown()
+{
+	DestroyWindow(m_hwnd);
+}
+
 Window::Window():
 	m_windowWidth(0), m_windowHeight(0)
 {
@@ -181,6 +189,7 @@ Window::~Window()
 
 bool Window::init(LPCWSTR windowName, HINSTANCE hInstance, std::wstring windowClass, unsigned int width, unsigned int height)
 {
+	m_hInstance = hInstance;
 	m_windowName = windowName;
 	// Register window class
 	m_wndClass = windowClass;
@@ -213,11 +222,7 @@ bool Window::init(LPCWSTR windowName, HINSTANCE hInstance, std::wstring windowCl
 		CW_USEDEFAULT, CW_USEDEFAULT,
 		rect.right - rect.left,
 		rect.bottom - rect.top,
-		NULL, NULL, hInstance, NULL);
-	
-	
-
-
+		NULL, NULL, hInstance, this);
 
 	if (m_hwnd == NULL) return false;
 

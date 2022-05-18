@@ -6,6 +6,7 @@
 #include"Texture.h"
 #include<wrl\client.h>
 #include"../Input/Mouse.h"
+#include"../Input/Keyboard.h"
 
 #include"3rdParty\imgui\imgui.h"
 #include "3rdParty\imgui/imgui_impl_win32.h"
@@ -30,7 +31,11 @@ public:
 	DX11Addon(Window& window, Camera& camera);
 	~DX11Addon();
 
+
+	void SetInputP(KeyboardHandler& kb);
 	void Render(double& deltatime);
+	ID3D11Device* GetDevice() const;
+	ID3D11DeviceContext* GetDeviceContext() const;
 private:
 	bool initSwapChain();
 	bool initRTV();
@@ -76,8 +81,9 @@ private:
 	//ConstantBuffer<Transforms> m_transformBuffer;
 	Camera* mp_cam;
 
-	CellGrid* m_grid;
+	CellGrid m_grid;
 
 	ImGuiVars im;
+	KeyboardHandler* mp_kb;
 };
 

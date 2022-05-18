@@ -2,7 +2,8 @@
 #include"../WindowWrap.h"
 
 DX11Addon::DX11Addon(Window& window, Camera& camera) :
-	m_width(window.getWinWidth()), m_height(window.getWinHeight()), m_pHWND(&window.getHWND())
+	m_width(window.getWinWidth()), m_height(window.getWinHeight()), m_pHWND(&window.getHWND()),
+	m_grid(200, 90)
 {
 	m_pWin = &window;
 	mp_cam = &camera;
@@ -19,6 +20,7 @@ DX11Addon::DX11Addon(Window& window, Camera& camera) :
 	//m_fileTexture.CreateFromFile("Textures/gunter2.png", m_device);
 	InitConstantBuffers();
 	m_grid.InitRenderCell(m_device, m_dc);
+	m_grid.SetCamP(*mp_cam);
 	ImGuiInit(window.getHWND());
 }
 
@@ -133,9 +135,6 @@ bool DX11Addon::SetupDSAndVP()
 
 	m_dc->RSSetViewports(1, &m_viewport);
 
-
-
-
 	return SUCCEEDED(hr);
 }
 
@@ -213,7 +212,7 @@ void DX11Addon::ImGuiRender()
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
-	ImGui::Begin("Debug");
+	ImGui::Begin("Debug", nullptr, ImGuiWindowFlags_NoCollapse);
 
 	//ImGui::SetCursorPos
 
@@ -222,19 +221,20 @@ void DX11Addon::ImGuiRender()
 
 	ImGui::InputText("Text", im.buffer, 16);
 	ImGui::Checkbox("Pause", &im.pause);
-	ImGui::Checkbox("Test window", &im_appear);
+	//ImGui::Checkbox("Test window", &im_appear);
 
 	if (ImGui::Button("Export image"))
 		ExportImage(im.buffer);
 		
-
+	//if (mp_kb->IsKeyDown(Key::Y))
+		//m_pWin->ShutDown();
 	ImGui::End();
-	if (MouseHandler::CheckMouseEvent(eMIDCLICK))
+	if (mp_kb->IsKeyDown(Key::N))
 	{
 		ImGui::Begin("Test");
 		ImGui::Text("Din mamma");
 		ImGui::End();
-		OutputDebugStringA("joemama\n");
+		//OutputDebugStringA("joemama\n");
 	}
 
 	ImGui::Render();
@@ -250,7 +250,12 @@ void DX11Addon::ImGuiShutDown()
 
 void DX11Addon::ExportImage(char* name)
 {
-	m_grid->SaveImage(name);
+	m_grid.SaveImage(name);
+}
+
+void DX11Addon::SetInputP(KeyboardHandler& kb)
+{
+	mp_kb = &kb;
 }
 
 void DX11Addon::Render(double& deltatime)
@@ -280,3 +285,18 @@ void DX11Addon::Render(double& deltatime)
 
 
 }
+
+ID3D11Device* DX11Addon::GetDevice() const
+{
+	return m_device;
+}
+
+ID3D11DeviceContext* DX11Addon::GetDeviceContext() const
+{
+	return m_dc;
+}
+
+//void DX11Addon::SetInputP(KeyboardHandler& kb)
+//{
+//	mp_kb = &kb;
+//}

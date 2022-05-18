@@ -154,6 +154,7 @@
     <ClCompile Include="Graphics\Texture.cpp" />
     <ClCompile Include="Graphics\Transform.cpp" />
     <ClCompile Include="Graphics\Noise\ImprovedPNoise.cpp" />
+    <ClCompile Include="Input\Keyboard.cpp" />
     <ClCompile Include="Logic\CellGrid.cpp" />
     <ClCompile Include="Input\Mouse.cpp" />
     <ClCompile Include="PrimTech.cpp" />
@@ -185,6 +186,7 @@
     <ClInclude Include="Graphics\Shader.h" />
     <ClInclude Include="Graphics\Transform.h" />
     <ClInclude Include="Graphics\Noise\ImprovedPNoise.h" />
+    <ClInclude Include="Input\Keyboard.h" />
     <ClInclude Include="Logic\CellGrid.h" />
     <ClInclude Include="Math\Math.h" />
     <ClInclude Include="Input\Mouse.h" />
