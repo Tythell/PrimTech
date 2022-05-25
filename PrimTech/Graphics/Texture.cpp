@@ -91,6 +91,7 @@ bool TextureMap::CreateFromData(unsigned char* imageData, ID3D11Device*& m_devic
 	desc.CPUAccessFlags = 0;
 	desc.MiscFlags = 0;
 
+
 	D3D11_SUBRESOURCE_DATA data;
 	data.pSysMem = &imageData[0];
 	data.SysMemPitch = dimensions.x * channels;

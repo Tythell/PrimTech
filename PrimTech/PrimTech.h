@@ -1,6 +1,7 @@
 #pragma once
 #include "WindowWrap.h"
 #include <omp.h>
+#include <thread>
 
 class PrimTech
 {
@@ -9,6 +10,7 @@ public:
 	~PrimTech();
 	void Init(LPCWSTR windowName, HINSTANCE hInstance, std::wstring windowClass, unsigned int width, unsigned int height);
 	void Run();
+	void multiThreadTest();
 private:
 	void Update(double& dt);
 	Window m_window;

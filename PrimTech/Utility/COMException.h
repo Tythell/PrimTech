@@ -15,7 +15,7 @@ public:
 		m_whatMsg += L"\nFile: " + StringHelper::StringToW(file);
 		m_whatMsg += L"\nFunction: " + StringHelper::StringToW(function);
 		m_whatMsg += L"Line: " + std::to_wstring(line);
-		MessageBoxW(NULL, m_whatMsg.c_str(), L"COMError", MB_ICONERROR);
+		MessageBoxW(NULL, m_whatMsg.c_str(), L"COM_ERROR", MB_ICONERROR);
 	}
 	const wchar_t* what() const
 	{

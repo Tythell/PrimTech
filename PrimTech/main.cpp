@@ -11,6 +11,5 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	app.Init(L"PrimTech", hInstance, L"windowClass", 1800, 1000);
 	app.Run();
 
-
 	return 0;
 }

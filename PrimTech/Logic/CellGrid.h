@@ -22,7 +22,7 @@ public:
 	~CellGrid();
 
 	void InitRenderCell(ID3D11Device*& device, ID3D11DeviceContext*& dc);
-	void Update(float dtime);
+	void Update();
 
 	void SaveImage(const char* path);
 

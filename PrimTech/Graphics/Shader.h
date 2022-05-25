@@ -7,8 +7,8 @@ class Shader
 {
 public:
 	~Shader();
-	ID3D10Blob* GetBuffer();
 	virtual bool Init(ID3D11Device*& device, std::string shaderpath) = 0;
+	ID3D10Blob* GetBuffer();
 protected:
 	bool ReadBlob(std::string path);
 private:
@@ -19,8 +19,9 @@ class VertexShader : public Shader
 {
 public:
 	~VertexShader();
+	virtual bool Init(ID3D11Device*& device, std::string shaderpath) override;
 	bool InitInputLayout(ID3D11Device*& device, D3D11_INPUT_ELEMENT_DESC* desc, UINT numElements);
-	bool Init(ID3D11Device*& device, std::string shaderpath) override;
+
 	ID3D11VertexShader* GetShader();
 	ID3D11InputLayout* GetInputLayout();
 private:
@@ -32,7 +33,8 @@ class PixelShader : public Shader
 {
 public:
 	~PixelShader();
-	bool Init(ID3D11Device*& device, std::string shaderpath) override;
+	virtual bool Init(ID3D11Device*& device, std::string shaderpath) override;
+
 	ID3D11PixelShader* GetShader();
 private:
 	ID3D11PixelShader* m_pshader = nullptr;

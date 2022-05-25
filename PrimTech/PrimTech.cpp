@@ -25,15 +25,28 @@ void PrimTech::Update(double& dt)
 {
 }
 
-void PrimTech::Run()
+static bool s_finnished = false;
+void func()
 {
-	double start = 0, deltatime = 0;
-	while (m_window.processMsg())
+	while (!s_finnished)
 	{
-		start = omp_get_wtime();
-		Update(deltatime);
-		mp_gApi->Render(deltatime);
-		deltatime = omp_get_wtime() - start;
+
 	}
 }
 
+void PrimTech::Run()
+{
+	double start = 0, deltatime = 0;
+
+	bool running = true;
+	while (running)
+	{
+		start = omp_get_wtime();
+		Update(deltatime);
+		mp_gApi->Render();
+		deltatime = omp_get_wtime() - start;
+
+		running = m_window.processMsg();
+	}
+
+}

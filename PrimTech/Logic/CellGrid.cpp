@@ -48,10 +48,9 @@ void CellGrid::InitRenderCell(ID3D11Device*& device, ID3D11DeviceContext*& dc)
 	m_cell.Init(device, dc);
 }
 
-void CellGrid::Update(float dtime)
+void CellGrid::Update()
 {
 	auto cell = [&](int x, int y) { return m_state[y * m_gridWidth + x].type; };
-	m_timer += dtime;
 
 	m_cell.SetViewProjM(mp_cam->GetProjM());
 	//SetTile(70, 50, eSAND);

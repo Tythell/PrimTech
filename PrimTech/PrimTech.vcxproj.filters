@@ -221,6 +221,9 @@
     <ClInclude Include="Input\Keyboard.h">
       <Filter>Header Files\Input</Filter>
     </ClInclude>
+    <ClInclude Include="Graphics\Buffer.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="BaseVS.hlsl">

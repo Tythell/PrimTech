@@ -3,7 +3,7 @@
 void Popup::Error(std::string err)
 {
 	std::string str = "Error: " + err;
-	MessageBoxA(NULL, err.c_str(), "Error", MB_ICONERROR);
+	MessageBoxA(NULL, str.c_str(), "Joe mama", MB_ICONERROR);
 }
 
 void Popup::Error(COMException& exception)

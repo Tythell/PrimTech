@@ -33,7 +33,7 @@ public:
 
 
 	void SetInputP(KeyboardHandler& kb);
-	void Render(double& deltatime);
+	void Render();
 	ID3D11Device* GetDevice() const;
 	ID3D11DeviceContext* GetDeviceContext() const;
 private:

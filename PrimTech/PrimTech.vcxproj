@@ -165,6 +165,7 @@
     <ClCompile Include="WindowWrap.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Graphics\Buffer.h" />
     <ClInclude Include="Colors.h" />
     <ClInclude Include="Graphics\3rdParty\imgui\imconfig.h" />
     <ClInclude Include="Graphics\3rdParty\imgui\imgui.h" />

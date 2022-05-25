@@ -258,14 +258,13 @@ void DX11Addon::SetInputP(KeyboardHandler& kb)
 	mp_kb = &kb;
 }
 
-void DX11Addon::Render(double& deltatime)
+void DX11Addon::Render()
 {
 	float bgColor[] = { .1f,.1f,.1f,1.f };
 
 	if (!im.pause)
 	{
 		int delay = 100 - im.speed;
-		//Sleep(delay);
 
 		m_dc->ClearRenderTargetView(m_rtv, bgColor);
 		m_dc->ClearDepthStencilView(m_dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
@@ -277,7 +276,7 @@ void DX11Addon::Render(double& deltatime)
 		//m_dc->PSSetSamplers(0, 1, &m_sampState);
 		mp_cam->SetOrtographic(im.f[0] * (static_cast<float>(m_width) / static_cast<float>(m_height)), im.f[0], 0.f, 50.f);
 
-		m_grid.Update((float)deltatime);
+		m_grid.Update();
 	}
 
 	ImGuiRender();
