@@ -3,7 +3,7 @@
 
 CellGrid::CellGrid(unsigned x, unsigned y, unsigned z) :
 	m_resolutions(x, y), m_cell(x, y), m_gridWidth(x), m_gridHeight(y), TIMELIMIT(.1f),
-	NTILES(x* y), SEED(rand()), SECONDSEED(rand()), PERLININTENSITY(50.f), WATER_E_RATE(0.2f)
+	NTILES(x* y), SEED(rand()), SECONDSEED(rand()), PERLININTENSITY(50), WATER_E_RATE(0.2f)
 {
 	int totalCells = x * y;
 	m_output = new sCell[totalCells];
@@ -115,12 +115,12 @@ void CellGrid::SaveImage(const char* path)
 		{
 			data[Coord(x, m_gridHeight - y - 1)] = 
 				(m_state[Coord(x, y)].type == eSTONE || m_state[Coord(x, y)].type == eBEDROCK) ? 
-				stoneColor : 0.f;
+				stoneColor : 0u;
 		}
 
 	TextureMap::ExportCharToImage(path, data, m_gridWidth, m_gridHeight, 1);
 
-	delete data;
+	delete[] data;
 }
 
 void CellGrid::SetCamP(Camera& c)

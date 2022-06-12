@@ -20,7 +20,7 @@ inline float RandomNum(int n1, int n2, unsigned int decimals = 0)
 	int powD = 1;
 	if (decimals != 0)
 	{
-		powD = pow(decimals, 10);
+		powD = (int)pow(decimals, 10);
 		n1 *= powD;
 		n2 *= powD;
 	}
@@ -31,5 +31,5 @@ inline float RandomNum(int n1, int n2, unsigned int decimals = 0)
 		n1 = temp;
 	}
 
-	return (rand() % n2 + n1) / powD;
+	return float((rand() % n2 + n1) / powD);
 }

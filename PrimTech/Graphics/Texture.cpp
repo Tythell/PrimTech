@@ -49,7 +49,6 @@ bool TextureMap::CreateFromFile(const char* texturePath, ID3D11Device* device, c
 	data.SysMemPitch = textureWidth * 4;
 	data.SysMemSlicePitch = 0;
 
-	stbi_image_free;
 
 	if (FAILED(device->CreateTexture2D(&desc, &data, &texture2D)))
 	{
@@ -60,7 +59,7 @@ bool TextureMap::CreateFromFile(const char* texturePath, ID3D11Device* device, c
 	texture2D->Release();
 	m_isLoaded = true;
 
-	delete imageData;
+	stbi_image_free(imageData);
 	return SUCCEEDED(hr);
 }
 

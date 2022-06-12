@@ -221,7 +221,7 @@ PerlinNoise2DIndian::~PerlinNoise2DIndian()
 Perlin::Perlin(int rectangles) :
 	NRECTS(rectangles)
 {
-	int gradGridSize = pow(NRECTS + 1, 2);
+	int gradGridSize = (int)pow(NRECTS + 1, 2);
 
 	m_pixelGrid = new float[256 * 256];
 	m_grid = new d::XMINT2[gradGridSize];

@@ -87,49 +87,49 @@ LRESULT Window::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_LBUTTONDOWN:
 	{
 		MouseHandler::SetMouseButton(eLEFTCLICK, true);
-		break;
+		return 0;
 	}
 	case WM_RBUTTONDOWN:
 	{
 		MouseHandler::SetMouseButton(eRIGHTCLICK, true);
-		break;
+		return 0;
 	}
 	case WM_MBUTTONDOWN:
 	{
 		MouseHandler::SetMouseButton(eMIDCLICK, true);
-		break;
+		return 0;
 	}
 	case WM_LBUTTONUP:
 	{
 		//m_mouseHandler.SetMouseButton(eLEFTCLICK, false);
 		MouseHandler::SetMouseButton(eLEFTCLICK, false);
-		break;
+		return 0;
 	}
 	case WM_RBUTTONUP:
 	{
 		//m_mouseHandler.SetMouseButton(eLEFTCLICK, false);
 		MouseHandler::SetMouseButton(eRIGHTCLICK, false);
-		break;
+		return 0;
 	}
 	case WM_MBUTTONUP:
 	{
 		//m_mouseHandler.SetMouseButton(eLEFTCLICK, false);
 		MouseHandler::SetMouseButton(eMIDCLICK, false);
-		break;
+		return 0;
 	}
 	case WM_KEYDOWN:
 	{
 		unsigned char key = static_cast<unsigned char>(wParam);
 		//KeyboardHandler::SetKeyState(key, true);
 		mp_kb->SetKeyState(key, true);
-		break;
+		return 0;
 	}
 	case WM_KEYUP:
 	{
 		unsigned char key = static_cast<unsigned char>(wParam);
 		//KeyboardHandler::SetKeyState(key, false);
 		mp_kb->SetKeyState(key, false);
-		break;
+		return 0;
 	}
 	default:
 		return DefWindowProc(hwnd, uMsg, wParam, lParam);
@@ -205,8 +205,8 @@ bool Window::init(LPCWSTR windowName, HINSTANCE hInstance, std::wstring windowCl
 	wc.lpszClassName = m_wndClass.c_str();
 
 	RECT rect = {};
-	rect.left = GetSystemMetrics(SM_CXSCREEN) * .5f - width * .5f;
-	rect.top = GetSystemMetrics(SM_CYSCREEN) * .5f - height * .5f;
+	rect.left = LONG(GetSystemMetrics(SM_CXSCREEN) * .5f - width * .5f);
+	rect.top = LONG(GetSystemMetrics(SM_CYSCREEN) * .5f - height * .5f);
 	rect.right = rect.left + width;
 	rect.bottom = rect.top + height;
 

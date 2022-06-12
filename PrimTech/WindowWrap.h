@@ -29,6 +29,6 @@ private:
 	HWND m_hwnd = NULL;
 	HINSTANCE m_hInstance = NULL;
 	std::wstring m_wndClass;
-	KeyboardHandler* mp_kb;
+	KeyboardHandler* mp_kb = nullptr;
 };
 

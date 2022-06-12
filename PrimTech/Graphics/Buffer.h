@@ -132,17 +132,17 @@ public:
 		ZeroMemory(&bufferData, sizeof(D3D11_SUBRESOURCE_DATA));
 		bufferData.pSysMem = indexData;
 
-		HRESULT(device->CreateBuffer(&bufferDesc, &bufferData, &m_buffer));
+		return HRESULT(device->CreateBuffer(&bufferDesc, &bufferData, &m_buffer));
 	}
-	HRESULT CreateBuffer(const D3D11_BUFFER_DESC bufferDesc, const D3D11_SUBRESOURCE_DATA* subData, ID3D11Device*& device, T* data, UINT bufferSize)
-	{
-		if (m_buffer)
-		{
-			Popup::Error("Buffer created twice");
-			throw;
-		}
-		return HRESULT(device->CreateBuffer(&bufferDesc, data, &m_buffer));
-	}
+	//HRESULT CreateBuffer(const D3D11_BUFFER_DESC bufferDesc, const D3D11_SUBRESOURCE_DATA* subData, ID3D11Device*& device, T* data, UINT bufferSize)
+	//{
+	//	if (m_buffer)
+	//	{
+	//		Popup::Error("Buffer created twice");
+	//		throw;
+	//	}
+	//	return HRESULT(device->CreateBuffer(&bufferDesc, data, &m_buffer));
+	//}
 
 	//HRESULT CreateBuffer(ID3D11Device*& device, const BufferType& type, const BufferUsage& usage, UINT bufferSize = 1)
 	//{
@@ -158,7 +158,7 @@ public:
 	{
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
 		HRESULT hr = mp_dc->Map(m_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-		COM_ERROR(hr, "Failed to update CP");
+		COM_ERROR(hr, "Failed to update CB");
 		CopyMemory(mappedResource.pData, m_data, sizeof(T));
 		mp_dc->Unmap(m_buffer, 0);
 	}
