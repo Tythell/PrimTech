@@ -134,25 +134,6 @@ public:
 
 		return HRESULT(device->CreateBuffer(&bufferDesc, &bufferData, &m_buffer));
 	}
-	//HRESULT CreateBuffer(const D3D11_BUFFER_DESC bufferDesc, const D3D11_SUBRESOURCE_DATA* subData, ID3D11Device*& device, T* data, UINT bufferSize)
-	//{
-	//	if (m_buffer)
-	//	{
-	//		Popup::Error("Buffer created twice");
-	//		throw;
-	//	}
-	//	return HRESULT(device->CreateBuffer(&bufferDesc, data, &m_buffer));
-	//}
-
-	//HRESULT CreateBuffer(ID3D11Device*& device, const BufferType& type, const BufferUsage& usage, UINT bufferSize = 1)
-	//{
-	//	m_bufferSize = bufferSize;
-	//	D3D11_BUFFER_DESC bufferDesc;
-	//	ZeroMemory(&bufferDesc, sizeof(D3D11_BUFFER_DESC));
-	//	bufferDesc.ByteWidth = sizeof(T) * bufferSize;
-
-	//	bufferDesc.Usage = type;
-	//}
 
 	void UpdateCB()
 	{
@@ -166,8 +147,8 @@ private:
 	T* m_data = nullptr;
 	ID3D11Buffer* m_buffer = nullptr;
 	ID3D11DeviceContext* mp_dc = nullptr;
-	UINT m_stride;
-	UINT m_bufferSize;
+	UINT m_stride = 0;
+	UINT m_bufferSize = 0;
 	//BufferUsage m_usage;
 	//BufferType m_type;
 };

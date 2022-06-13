@@ -17,9 +17,9 @@ public:
 	void SetViewProjM(sm::Matrix m);
 private:
 	int m_cellSize = 0;
-	Buffer<Vertex> m_vBuffer;
+	Buffer<VertexQuad> m_vBuffer;
 	Buffer<DWORD> m_iBuffer;
-	Buffer<cbTransforms> m_cBuffer;
+	Buffer<cbTransformsQuad> m_cBuffer;
 
 
 	ID3D11DeviceContext* m_dc = nullptr;

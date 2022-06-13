@@ -7,6 +7,7 @@
 #include<wrl\client.h>
 #include"../Input/Mouse.h"
 #include"../Input/Keyboard.h"
+#include"Model.h"
 
 #include"3rdParty\imgui\imgui.h"
 #include "3rdParty\imgui/imgui_impl_win32.h"
@@ -20,7 +21,7 @@ class Window;
 struct ImGuiVars
 {
 	float f[3] = {100.f,1.f, 0.f};
-	bool pause;
+	bool pause = false;
 	int speed = 70;
 	char* buffer = new char[16]{"image.png"};
 };
@@ -56,8 +57,8 @@ private:
 
 	HWND* m_pHWND = nullptr;
 
-	ID3D11Device* m_device = nullptr;
-	ID3D11DeviceContext* m_dc = nullptr;
+	ID3D11Device* device = nullptr;
+	ID3D11DeviceContext* dc = nullptr;
 	IDXGISwapChain* m_swapChain = nullptr;
 
 	ID3D11RenderTargetView* m_rtv = nullptr;
@@ -70,20 +71,27 @@ private:
 	ID3D11RasterizerState* m_rasterizerState = nullptr;
 	ID3D11SamplerState* m_sampState = nullptr;
 
-	VertexShader m_vShader;
-	PixelShader m_pShader;
+	VertexShader m_quadVs;
+	PixelShader m_quadPs;
+
+	VertexShader m_3dvs;
+	PixelShader m_3dps;
 
 	//VertexBuffer<Vertex> m_vbuffer;
 	//IndexBuffer m_iBuffer;
 
 	//TextureMap m_fileTexture;
 
-	//ConstantBuffer<Transforms> m_transformBuffer;
+	Buffer<cbWorldTransforms3D> m_transformBuffer;
+
 	Camera* mp_cam;
 
-	CellGrid m_grid;
+	//CellGrid m_grid;
 
 	ImGuiVars im;
 	KeyboardHandler* mp_kb;
+
+	Model m_model;
+	TextureMap m_missingTexture;
 };
 

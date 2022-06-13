@@ -2,8 +2,8 @@
 #include"../WindowWrap.h"
 
 DX11Addon::DX11Addon(Window& window, Camera& camera) :
-	m_width(window.getWinWidth()), m_height(window.getWinHeight()), m_pHWND(&window.getHWND()),
-	m_grid(200, 90)
+	m_width(window.getWinWidth()), m_height(window.getWinHeight()), m_pHWND(&window.getHWND())//,
+	//m_grid(200, 90)
 {
 	m_pWin = &window;
 	mp_cam = &camera;
@@ -16,11 +16,11 @@ DX11Addon::DX11Addon(Window& window, Camera& camera) :
 	InitShaders();
 	InitScene();
 
-	//m_cam->SetPosition(0, 0, -1);
+	mp_cam->SetPosition(0, 0, -5);
 	//m_fileTexture.CreateFromFile("Textures/gunter2.png", m_device);
 	InitConstantBuffers();
-	m_grid.InitRenderCell(m_device, m_dc);
-	m_grid.SetCamP(*mp_cam);
+	//m_grid.InitRenderCell(device, dc);
+	//m_grid.SetCamP(*mp_cam);
 	ImGuiInit(window.getHWND());
 }
 
@@ -30,8 +30,8 @@ DX11Addon::~DX11Addon()
 
 	delete im.buffer;
 
-	m_device->Release();
-	m_dc->Release();
+	device->Release();
+	dc->Release();
 	m_swapChain->Release();
 	m_rtv->Release();
 	m_depthStencilBuffer->Release();
@@ -72,7 +72,7 @@ bool DX11Addon::initSwapChain()
 	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 	swapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
-	HRESULT hr = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, flags, NULL, 0, D3D11_SDK_VERSION, &swapChainDesc, &m_swapChain, &m_device, NULL, &m_dc);
+	HRESULT hr = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, flags, NULL, 0, D3D11_SDK_VERSION, &swapChainDesc, &m_swapChain, &device, NULL, &dc);
 	COM_ERROR(hr, "CreateDeviceAndSwapChain Failed");
 
 
@@ -87,10 +87,10 @@ bool DX11Addon::initRTV()
 	HRESULT hr = m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(backBuffer.GetAddressOf()));
 	COM_ERROR(hr, "Get Buffer failed");
 
-	hr = m_device->CreateRenderTargetView(backBuffer.Get(), NULL, &m_rtv);
+	hr = device->CreateRenderTargetView(backBuffer.Get(), NULL, &m_rtv);
 	COM_ERROR(hr, "RTV failed");
 
-	m_dc->OMSetRenderTargets(1, &m_rtv, m_dsView);
+	dc->OMSetRenderTargets(1, &m_rtv, m_dsView);
 
 	return true;
 }
@@ -110,10 +110,10 @@ bool DX11Addon::SetupDSAndVP()
 	depthStencilTextureDesc.CPUAccessFlags = 0;
 	depthStencilTextureDesc.MiscFlags = 0;
 
-	HRESULT hr = m_device->CreateTexture2D(&depthStencilTextureDesc, NULL, &m_depthStencilBuffer);
+	HRESULT hr = device->CreateTexture2D(&depthStencilTextureDesc, NULL, &m_depthStencilBuffer);
 	COM_ERROR(hr, "Depth stencil failed");
 
-	hr = m_device->CreateDepthStencilView(m_depthStencilBuffer, NULL, &m_dsView);
+	hr = device->CreateDepthStencilView(m_depthStencilBuffer, NULL, &m_dsView);
 	COM_ERROR(hr, "Depth Stencil View failed");
 
 	D3D11_DEPTH_STENCIL_DESC dssDesc;
@@ -123,7 +123,7 @@ bool DX11Addon::SetupDSAndVP()
 	dssDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 	dssDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
 
-	hr = m_device->CreateDepthStencilState(&dssDesc, &m_dsState);
+	hr = device->CreateDepthStencilState(&dssDesc, &m_dsState);
 	COM_ERROR(hr, "DS State failed");
 
 	m_viewport.TopLeftX = 0;
@@ -133,7 +133,7 @@ bool DX11Addon::SetupDSAndVP()
 	m_viewport.MinDepth = 0;
 	m_viewport.MaxDepth = 0;
 
-	m_dc->RSSetViewports(1, &m_viewport);
+	dc->RSSetViewports(1, &m_viewport);
 
 	return SUCCEEDED(hr);
 }
@@ -145,7 +145,7 @@ bool DX11Addon::InitRastNSampState()
 	rastDesc.FillMode = D3D11_FILL_MODE::D3D11_FILL_SOLID;
 	rastDesc.CullMode = D3D11_CULL_MODE::D3D11_CULL_NONE;
 
-	HRESULT hr = m_device->CreateRasterizerState(&rastDesc, &m_rasterizerState);
+	HRESULT hr = device->CreateRasterizerState(&rastDesc, &m_rasterizerState);
 	COM_ERROR(hr, "Rasterizer State setup failed");
 
 	D3D11_SAMPLER_DESC sampDesc;
@@ -158,7 +158,7 @@ bool DX11Addon::InitRastNSampState()
 	sampDesc.MinLOD = 0;
 	sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
-	hr = m_device->CreateSamplerState(&sampDesc, &m_sampState);
+	hr = device->CreateSamplerState(&sampDesc, &m_sampState);
 	COM_ERROR(hr, "Sampler State setup failed");
 
 	return true;
@@ -168,27 +168,45 @@ bool DX11Addon::InitShaders()
 {
 	D3D11_INPUT_ELEMENT_DESC layout[] =
 	{
+		{"POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		//{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+	};
+
+	m_quadVs.Init(device, "../x64/Debug/QuadVS.cso");
+	m_quadVs.InitInputLayout(device, layout, ARRAYSIZE(layout));
+	m_quadPs.Init(device, "../x64/Debug/QuadPS.cso");
+
+	//m_dc->VSSetShader(m_quadVs.GetShader(), NULL, 0);
+	//m_dc->PSSetShader(m_quadPs.GetShader(), NULL, 0);
+
+	D3D11_INPUT_ELEMENT_DESC layout3D[] =
+	{
 		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 	};
 
-	m_vShader.Init(m_device, "../x64/Debug/BaseVS.cso");
-	m_vShader.InitInputLayout(m_device, layout, ARRAYSIZE(layout));
-	m_pShader.Init(m_device, "../x64/Debug/BasePS.cso");
+	m_3dvs.Init(device, "../x64/Debug/vertexshader.cso");
+	m_3dvs.InitInputLayout(device, layout3D, ARRAYSIZE(layout3D));
+	m_3dps.Init(device, "../x64/Debug/pixelshader.cso");
 
-	m_dc->VSSetShader(m_vShader.GetShader(), NULL, 0);
-	m_dc->PSSetShader(m_pShader.GetShader(), NULL, 0);
 
-	return false;
+
+	return true;
 }
 
 bool DX11Addon::InitScene()
 {
+	m_model.LoadObj("Assets/models/cube.txt", device, dc);
+	m_missingTexture.CreateFromFile("Assets/Textures/missingtexture.png", device);
+
 	return true;
 }
 
 void DX11Addon::InitConstantBuffers()
 {
+	m_transformBuffer.CreateConstantBuffer(device, dc);
+	dc->VSSetConstantBuffers(0, 1, m_transformBuffer.GetReference());
 }
 
 void DX11Addon::UpdateConstantBuffers()
@@ -201,7 +219,7 @@ void DX11Addon::ImGuiInit(HWND& hwnd)
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO();
-	ImGui_ImplDX11_Init(m_device, m_dc);
+	ImGui_ImplDX11_Init(device, dc);
 	ImGui_ImplWin32_Init(hwnd);
 	ImGui::StyleColorsDark();
 }
@@ -250,7 +268,7 @@ void DX11Addon::ImGuiShutDown()
 
 void DX11Addon::ExportImage(char* name)
 {
-	m_grid.SaveImage(name);
+	//m_grid.SaveImage(name);
 }
 
 void DX11Addon::SetInputP(KeyboardHandler& kb)
@@ -264,38 +282,48 @@ void DX11Addon::Render()
 
 	if (!im.pause)
 	{
-		int delay = 100 - im.speed;
+		dc->ClearRenderTargetView(m_rtv, bgColor);
+		dc->ClearDepthStencilView(m_dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
+		//m_dc->VSSetShader(m_quadVs.GetShader(), NULL, 0);
+		//m_dc->PSSetShader(m_quadPs.GetShader(), NULL, 0);
+		//m_dc->IASetInputLayout(m_quadVs.GetInputLayout());
 
-		m_dc->ClearRenderTargetView(m_rtv, bgColor);
-		m_dc->ClearDepthStencilView(m_dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
+		dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		dc->RSSetState(m_rasterizerState);
+		dc->OMSetDepthStencilState(m_dsState, 0);
+		dc->PSSetSamplers(0, 1, &m_sampState);
+		//mp_cam->SetOrtographic(im.f[0] * (static_cast<float>(m_width) / static_cast<float>(m_height)), im.f[0], 0.f, 50.f);
 
-		m_dc->IASetInputLayout(m_vShader.GetInputLayout());
-		m_dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		m_dc->RSSetState(m_rasterizerState);
-		m_dc->OMSetDepthStencilState(m_dsState, 0);
-		//m_dc->PSSetSamplers(0, 1, &m_sampState);
-		mp_cam->SetOrtographic(im.f[0] * (static_cast<float>(m_width) / static_cast<float>(m_height)), im.f[0], 0.f, 50.f);
-
-		m_grid.Update();
+		//m_grid.Update();
 	}
+	//UpdateConstantBuffers();
+
+	UINT offset = 0;
+	dc->VSSetShader(m_3dvs.GetShader(), NULL, 0);
+	dc->PSSetShader(m_3dps.GetShader(), NULL, 0);
+
+	dc->IASetInputLayout(m_3dvs.GetInputLayout());
+	dc->VSSetConstantBuffers(0, 1, m_transformBuffer.GetReference());
+	m_transformBuffer.Data().viewProj = d::XMMatrixTranspose(mp_cam->GetViewM() * mp_cam->GetProjM());
+	static float rotate = 0.f;
+	rotate += 0.0001f;
+	m_transformBuffer.Data().world = d::XMMatrixTranspose(d::XMMatrixRotationRollPitchYawFromVector({0,rotate,0}));
+	m_transformBuffer.UpdateCB();
+
+	dc->PSSetShaderResources(0, 1, m_missingTexture.GetSRVAdress());
+
+	m_model.Draw();
 
 	ImGuiRender();
 	m_swapChain->Present(0, NULL);
-
-
 }
 
 ID3D11Device* DX11Addon::GetDevice() const
 {
-	return m_device;
+	return device;
 }
 
 ID3D11DeviceContext* DX11Addon::GetDeviceContext() const
 {
-	return m_dc;
+	return dc;
 }
-
-//void DX11Addon::SetInputP(KeyboardHandler& kb)
-//{
-//	mp_kb = &kb;
-//}

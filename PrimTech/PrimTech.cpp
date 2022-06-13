@@ -14,24 +14,17 @@ void PrimTech::Init(LPCWSTR windowName, HINSTANCE hInstance, std::wstring window
 	m_window.init(windowName, hInstance, windowClass, width, height);
 	m_window.SetInputP(m_kb);
 	
-	m_camera.SetPosition(0.f, 0.f, -1.f);
+	m_cellCam.SetPosition(0.f, 0.f, -1.f);
+	m_cam3d.SetPerspective(70, (float)width / (float)height, 0.1f, 100.f);
+	m_cam3d.SetPosition(0, 0, -1);
 	//m_camera.SetOrtographic(width, height, 0, 1);
 
-	mp_gApi = new DX11Addon(m_window, m_camera);
+	mp_gApi = new DX11Addon(m_window, m_cam3d);
 	mp_gApi->SetInputP(m_kb);
 }
 
 void PrimTech::Update(double& dt)
 {
-}
-
-static bool s_finnished = false;
-void func()
-{
-	while (!s_finnished)
-	{
-
-	}
 }
 
 void PrimTech::Run()

@@ -1,20 +1,20 @@
 #pragma once
-#include "../Math/Math.h"
+#include "Transform.h"
+#include"Buffer.h"
+#include"Vertex.h"
 #include <string>
 #include <d3d11.h>
-struct Vertex
-{
-	sm::Vector3 pos;
-	sm::Vector3 normals;
-	sm::Vector2 texCoord;
-};
+#include <fstream>
 
 class Model
 {
 public:
 	Model();
-	void Load(const std::string path, ID3D11Device*& pDevice, ID3D11DeviceContext*& pDc);
+	bool LoadObj(const std::string path, ID3D11Device*& pDevice, ID3D11DeviceContext*& pDc);
+	void LoadTriangle(ID3D11Device*& pDevice, ID3D11DeviceContext*& pDc);
+	void Draw();
 private:
-	Buffer<Vertex> m_vbuffer;
-
+	Buffer<Vertex3D> m_vbuffer;
+	ID3D11DeviceContext* dc = nullptr;
+	Transform m_transform;
 };

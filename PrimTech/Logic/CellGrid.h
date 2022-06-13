@@ -9,10 +9,10 @@
 
 struct sCell
 {
-	float hp;
-	int type;
-	d::XMINT2 velocity;
-	sm::Vector3 clr;
+	float hp = 0.f;
+	int type = 0;
+	d::XMINT2 velocity = {0,0};
+	sm::Vector3 clr = {0,0,0};
 };
 
 class CellGrid

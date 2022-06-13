@@ -1,7 +1,10 @@
 #include "RenderCell.h"
 
 RenderCell::RenderCell(int gridResX, int gridResY):
-	m_gridRes(d::XMINT2(gridResX, gridResY))
+	m_gridRes(d::XMINT2(gridResX, gridResY)),
+
+
+	m_windRes(d::XMINT2(0,0))
 {
 	if (gridResX == 0 || gridResY == 0)
 	{
@@ -13,12 +16,12 @@ RenderCell::RenderCell(int gridResX, int gridResY):
 void RenderCell::Init(ID3D11Device*& device, ID3D11DeviceContext*& dc)
 {
 	m_dc = dc;
-	Vertex vertexes[] =
+	VertexQuad vertexes[] =
 	{
-		{ -1.f, -1.f, 1.f, /**/ 0, 0},
-		{ -1.f, 0.f, 1, /**/ 0, 1},
-		{ 0.f, 0.f, 1.f, /**/ 1, 1},
-		{ 0.f, -1.f, 1.f,/**/ 1, 0},
+		{ -1.f, -1.f},
+		{ -1.f, 0.f},
+		{ 0.f, 0.f},
+		{ 0.f, -1.f},
 	};
 
 	DWORD indices[] =

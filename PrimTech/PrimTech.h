@@ -10,12 +10,12 @@ public:
 	~PrimTech();
 	void Init(LPCWSTR windowName, HINSTANCE hInstance, std::wstring windowClass, unsigned int width, unsigned int height);
 	void Run();
-	void multiThreadTest();
 private:
 	void Update(double& dt);
 	Window m_window;
-	DX11Addon* mp_gApi;
-	Camera m_camera;
+	DX11Addon* mp_gApi = nullptr;
+	Camera m_cellCam;
+	Camera m_cam3d;
 	KeyboardHandler m_kb;
 };
 

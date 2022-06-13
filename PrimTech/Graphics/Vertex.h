@@ -1,13 +1,19 @@
 #pragma once
-#include "../Math/SimpleMath.h"
-#include <array>
+#include "../Math/Math.h"
 
-struct Vertex
+struct VertexQuad
 {
-	Vertex(float x, float y, float z, float u, float v):
-		position(x,y, z), uv(u,v) {}
+	VertexQuad(float x, float y):
+		position(x,y)/*, uv(u, v)*/ {}
 
-	DirectX::XMFLOAT3 position;
-	DirectX::XMFLOAT2 uv;
+	DirectX::XMFLOAT2 position;
+	//DirectX::XMFLOAT2 uv;
+};
+
+struct Vertex3D
+{
+	sm::Vector3 position;
+	sm::Vector3 normal;
+	sm::Vector2 texCoord;
 };
 
