@@ -19,7 +19,7 @@ private:
 	int m_cellSize = 0;
 	Buffer<VertexQuad> m_vBuffer;
 	Buffer<DWORD> m_iBuffer;
-	Buffer<cbTransformsQuad> m_cBuffer;
+	Buffer<hlsl::cbTransformsQuad> m_cBuffer;
 
 
 	ID3D11DeviceContext* m_dc = nullptr;

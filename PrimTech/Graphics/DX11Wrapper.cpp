@@ -16,7 +16,6 @@ DX11Addon::DX11Addon(Window& window, Camera& camera) :
 	InitShaders();
 	InitScene();
 
-	mp_cam->SetPosition(0, 0, -5);
 	//m_fileTexture.CreateFromFile("Textures/gunter2.png", m_device);
 	InitConstantBuffers();
 	//m_grid.InitRenderCell(device, dc);
@@ -72,10 +71,19 @@ bool DX11Addon::initSwapChain()
 	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 	swapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
-	HRESULT hr = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, flags, NULL, 0, D3D11_SDK_VERSION, &swapChainDesc, &m_swapChain, &device, NULL, &dc);
+	HRESULT hr = D3D11CreateDeviceAndSwapChain(NULL,
+		D3D_DRIVER_TYPE_HARDWARE,
+		NULL,
+		flags,
+		NULL,
+		0,
+		D3D11_SDK_VERSION,
+		&swapChainDesc,
+		&m_swapChain,
+		&device,
+		NULL,
+		&dc);
 	COM_ERROR(hr, "CreateDeviceAndSwapChain Failed");
-
-
 
 	return true;
 }
@@ -90,7 +98,7 @@ bool DX11Addon::initRTV()
 	hr = device->CreateRenderTargetView(backBuffer.Get(), NULL, &m_rtv);
 	COM_ERROR(hr, "RTV failed");
 
-	dc->OMSetRenderTargets(1, &m_rtv, m_dsView);
+
 
 	return true;
 }
@@ -130,8 +138,8 @@ bool DX11Addon::SetupDSAndVP()
 	m_viewport.TopLeftY = 0;
 	m_viewport.Width = (float)m_width;
 	m_viewport.Height = (float)m_height;
-	m_viewport.MinDepth = 0;
-	m_viewport.MaxDepth = 0;
+	m_viewport.MinDepth = 0.f;
+	m_viewport.MaxDepth = 1.f;
 
 	dc->RSSetViewports(1, &m_viewport);
 
@@ -143,7 +151,7 @@ bool DX11Addon::InitRastNSampState()
 	D3D11_RASTERIZER_DESC rastDesc;
 	ZeroMemory(&rastDesc, sizeof(D3D11_RASTERIZER_DESC));
 	rastDesc.FillMode = D3D11_FILL_MODE::D3D11_FILL_SOLID;
-	rastDesc.CullMode = D3D11_CULL_MODE::D3D11_CULL_NONE;
+	rastDesc.CullMode = D3D11_CULL_MODE::D3D11_CULL_BACK;
 
 	HRESULT hr = device->CreateRasterizerState(&rastDesc, &m_rasterizerState);
 	COM_ERROR(hr, "Rasterizer State setup failed");
@@ -163,42 +171,34 @@ bool DX11Addon::InitRastNSampState()
 
 	return true;
 }
-
 bool DX11Addon::InitShaders()
 {
-	D3D11_INPUT_ELEMENT_DESC layout[] =
-	{
-		{"POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		//{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
-	};
-
-	m_quadVs.Init(device, "../x64/Debug/QuadVS.cso");
-	m_quadVs.InitInputLayout(device, layout, ARRAYSIZE(layout));
-	m_quadPs.Init(device, "../x64/Debug/QuadPS.cso");
-
-	//m_dc->VSSetShader(m_quadVs.GetShader(), NULL, 0);
-	//m_dc->PSSetShader(m_quadPs.GetShader(), NULL, 0);
-
 	D3D11_INPUT_ELEMENT_DESC layout3D[] =
 	{
-		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 	};
 
 	m_3dvs.Init(device, "../x64/Debug/vertexshader.cso");
 	m_3dvs.InitInputLayout(device, layout3D, ARRAYSIZE(layout3D));
 	m_3dps.Init(device, "../x64/Debug/pixelshader.cso");
 
-
+	dc->VSSetShader(m_3dvs.GetShader(), NULL, 0);
+	dc->PSSetShader(m_3dps.GetShader(), NULL, 0);
 
 	return true;
 }
 
 bool DX11Addon::InitScene()
 {
-	m_model.LoadObj("Assets/models/cube.txt", device, dc);
-	m_missingTexture.CreateFromFile("Assets/Textures/missingtexture.png", device);
+	m_model.Init("Assets/models/scuffball.obj", device, dc, m_transformBuffer);
+	m_bulb.Init("Assets/models/bulb.obj", device, dc, m_transformBuffer);
+	m_bulb.SetScale(1.2f);
+	m_plane.Init("Assets/models/plane.txt", device, dc, m_transformBuffer);
+	m_plane.SetPosition(0.f, -1.f, 0.f);
+	m_plane.SetScale(10.f);
+	m_missingTexture.CreateFromFile("Assets/Textures/chessboard.png", device);
 
 	return true;
 }
@@ -207,6 +207,8 @@ void DX11Addon::InitConstantBuffers()
 {
 	m_transformBuffer.CreateConstantBuffer(device, dc);
 	dc->VSSetConstantBuffers(0, 1, m_transformBuffer.GetReference());
+	m_lightbuffer.CreateConstantBuffer(device, dc);
+	dc->PSSetConstantBuffers(0, 1, m_lightbuffer.GetReference());
 }
 
 void DX11Addon::UpdateConstantBuffers()
@@ -231,19 +233,42 @@ void DX11Addon::ImGuiRender()
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 	ImGui::Begin("Debug", nullptr, ImGuiWindowFlags_NoCollapse);
-
+	ImGui::Text("Press Q to lock/unlock mouse");
 	//ImGui::SetCursorPos
+	if (ImGui::SliderInt("FOV", &im.fov, 40.f, 110.f))
+		mp_cam->SetPerspective(im.fov, (float)m_width / (float)m_height, .1f, 100.f);
 
-	ImGui::SliderFloat("Ortho view", &im.f[0], 50.f, 200.f);
-	ImGui::SliderInt("Speed", &im.speed, 0, 100);
+	//ImGui::SliderFloat("Ortho view", &im.f[0], 50.f, 200.f);
+	//ImGui::SliderInt("Speed", &im.speed, 0, 100);
 
-	ImGui::InputText("Text", im.buffer, 16);
-	ImGui::Checkbox("Pause", &im.pause);
+	//ImGui::InputText("Text", im.buffer, 16);
+	//ImGui::Checkbox("Pause", &im.pause);
+	//ImGui::SliderFloat("Offset", &im.offset, 0.f, 10.f);
+
+	ImGui::DragFloat4("Ambient", im.ambient, 0.002f, 0.f, 1.f);
+	m_lightbuffer.Data().ambientLight = { im.ambient[0], im.ambient[1], im.ambient[2] };
+	m_lightbuffer.Data().ambientStr = im.ambient[3];
+
+	//mp_cam->SetOffset(0.f, 0.f, im.offset);
 	//ImGui::Checkbox("Test window", &im_appear);
 
-	if (ImGui::Button("Export image"))
-		ExportImage(im.buffer);
-		
+	//if (ImGui::Button("Export image"))
+		//ExportImage(im.buffer);
+
+	ImGui::DragFloat3("Pointlight Position", im.pointLightPos, 0.01f);
+	ImGui::DragFloat3("PointLightColor", im.pointLightColor, 0.01f, 0.f, 1.f);
+	ImGui::SliderFloat("PointLight Strength", &im.pointLightStr, 0.f, 3.f);
+	std::string camoffsetString = "Camera offset: ";
+	camoffsetString += std::to_string(mp_cam->GetOffset().z);
+	ImGui::Text(camoffsetString.c_str());
+	if (ImGui::Button("Focus pointLight"))
+		mp_cam->SetPosition(im.pointLightPos[0], im.pointLightPos[1], im.pointLightPos[2]);
+	m_lightbuffer.Data().pointLightColor = { im.pointLightColor[0], im.pointLightColor[1], im.pointLightColor[2] };
+	m_lightbuffer.Data().pointlightStr = im.pointLightStr;
+	m_bulb.SetPosition(im.pointLightPos[0], im.pointLightPos[1], im.pointLightPos[2]);
+
+	//ImGui::DragFloat("Point light range", )
+
 	//if (mp_kb->IsKeyDown(Key::Y))
 		//m_pWin->ShutDown();
 	ImGui::End();
@@ -276,46 +301,43 @@ void DX11Addon::SetInputP(KeyboardHandler& kb)
 	mp_kb = &kb;
 }
 
-void DX11Addon::Render()
+void DX11Addon::Render(const float& deltatime)
 {
 	float bgColor[] = { .1f,.1f,.1f,1.f };
 
-	if (!im.pause)
-	{
-		dc->ClearRenderTargetView(m_rtv, bgColor);
-		dc->ClearDepthStencilView(m_dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
-		//m_dc->VSSetShader(m_quadVs.GetShader(), NULL, 0);
-		//m_dc->PSSetShader(m_quadPs.GetShader(), NULL, 0);
-		//m_dc->IASetInputLayout(m_quadVs.GetInputLayout());
-
-		dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		dc->RSSetState(m_rasterizerState);
-		dc->OMSetDepthStencilState(m_dsState, 0);
-		dc->PSSetSamplers(0, 1, &m_sampState);
-		//mp_cam->SetOrtographic(im.f[0] * (static_cast<float>(m_width) / static_cast<float>(m_height)), im.f[0], 0.f, 50.f);
-
-		//m_grid.Update();
-	}
-	//UpdateConstantBuffers();
-
-	UINT offset = 0;
-	dc->VSSetShader(m_3dvs.GetShader(), NULL, 0);
-	dc->PSSetShader(m_3dps.GetShader(), NULL, 0);
+	dc->ClearRenderTargetView(m_rtv, bgColor);
+	dc->ClearDepthStencilView(m_dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
 
 	dc->IASetInputLayout(m_3dvs.GetInputLayout());
-	dc->VSSetConstantBuffers(0, 1, m_transformBuffer.GetReference());
-	m_transformBuffer.Data().viewProj = d::XMMatrixTranspose(mp_cam->GetViewM() * mp_cam->GetProjM());
-	static float rotate = 0.f;
-	rotate += 0.0001f;
-	m_transformBuffer.Data().world = d::XMMatrixTranspose(d::XMMatrixRotationRollPitchYawFromVector({0,rotate,0}));
-	m_transformBuffer.UpdateCB();
-
+	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	dc->RSSetState(m_rasterizerState);
+	dc->OMSetDepthStencilState(m_dsState, 0);
+	dc->PSSetSamplers(0, 1, &m_sampState);
+	dc->VSSetShader(m_3dvs.GetShader(), NULL, 0);
+	dc->PSSetShader(m_3dps.GetShader(), NULL, 0);
 	dc->PSSetShaderResources(0, 1, m_missingTexture.GetSRVAdress());
 
+	dc->OMSetRenderTargets(1, &m_rtv, m_dsView);
+
+	m_transformBuffer.Data().viewProj = d::XMMatrixTranspose(mp_cam->GetViewM() * mp_cam->GetProjM());
+	m_lightbuffer.Data().direction = sm::Vector3(0.f, 1.f, 0.f);
+	m_lightbuffer.Data().position = sm::Vector3( im.pointLightPos[0], im.pointLightPos[1], im.pointLightPos[2]);
+	m_lightbuffer.UpdateCB();
+
+	m_model.SetPosition(0.f, 0.f, 3.f);
+	m_model.Rotate(0.f, 1.f * deltatime, 0.f);
+
 	m_model.Draw();
+	m_plane.Draw();
+	m_bulb.Draw();
 
 	ImGuiRender();
-	m_swapChain->Present(0, NULL);
+	m_swapChain->Present(1, NULL);
+
+	if (mp_kb->IsKeyDown(Key::ESCAPE))
+	{
+		ShutDown();
+	}
 }
 
 ID3D11Device* DX11Addon::GetDevice() const
@@ -326,4 +348,9 @@ ID3D11Device* DX11Addon::GetDevice() const
 ID3D11DeviceContext* DX11Addon::GetDeviceContext() const
 {
 	return dc;
+}
+
+void DX11Addon::ShutDown()
+{
+	DestroyWindow(*m_pHWND);
 }

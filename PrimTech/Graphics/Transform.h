@@ -1,7 +1,28 @@
 #pragma once
 #include"../Math/Math.h"
-struct Transform
+class Transform
 {
-	sm::Vector3 pos, rot, scale;
-	sm::Matrix world;
+public:
+	Transform();
+	void SetPosition(float x, float y, float z);
+	void SetPosition(sm::Vector3 v);
+	void SetRotation(float x, float y, float z);
+	void SetRotation(sm::Vector3 v);
+	void SetScale(float x, float y, float z);
+	void SetScale(float xyz);
+	void SetScale(sm::Vector3 v);
+	void Move(float x, float y, float z);
+	void Move(sm::Vector3 v);
+	void Rotate(float x, float y, float z);
+	void Rotate(sm::Vector3 v);
+	void Scale(float x, float y, float z);
+	void Scale(sm::Vector3 v);
+	void Scale(float xyz);
+
+protected:
+	sm::Matrix GetWorldTransposed();
+	void UpdateWorld();
+private:
+	sm::Vector3 m_pos, m_rot, m_scale;
+	sm::Matrix worldTransposed;
 };

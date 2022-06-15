@@ -86,33 +86,55 @@ LRESULT Window::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 	case WM_LBUTTONDOWN:
 	{
+		int x = LOWORD(lParam);
+		int y = HIWORD(lParam);
 		MouseHandler::SetMouseButton(eLEFTCLICK, true);
+		MouseHandler::AddMouseEvent(MouseEvent(MouseEvent::EventType::eLEFTCLICK, x, y));
 		return 0;
 	}
+	//case WM_LBUTTONDBLCLK: // enable in window style
+	//{
+	//	int x = LOWORD(lParam);
+	//	int y = HIWORD(lParam);
+	//	return 0;
+	//}
 	case WM_RBUTTONDOWN:
 	{
+		int x = LOWORD(lParam);
+		int y = HIWORD(lParam);
 		MouseHandler::SetMouseButton(eRIGHTCLICK, true);
+		MouseHandler::AddMouseEvent(MouseEvent(MouseEvent::EventType::eRIGHTCLICK, x, y));
 		return 0;
 	}
 	case WM_MBUTTONDOWN:
 	{
+		int x = LOWORD(lParam);
+		int y = HIWORD(lParam);
 		MouseHandler::SetMouseButton(eMIDCLICK, true);
+		MouseHandler::AddMouseEvent(MouseEvent(MouseEvent::EventType::eMIDCLICK, x, y));
 		return 0;
 	}
 	case WM_LBUTTONUP:
 	{
+		int x = LOWORD(lParam);
+		int y = HIWORD(lParam);
 		//m_mouseHandler.SetMouseButton(eLEFTCLICK, false);
 		MouseHandler::SetMouseButton(eLEFTCLICK, false);
 		return 0;
 	}
 	case WM_RBUTTONUP:
 	{
+		int x = LOWORD(lParam);
+		int y = HIWORD(lParam);
 		//m_mouseHandler.SetMouseButton(eLEFTCLICK, false);
 		MouseHandler::SetMouseButton(eRIGHTCLICK, false);
+		
 		return 0;
 	}
 	case WM_MBUTTONUP:
 	{
+		int x = LOWORD(lParam);
+		int y = HIWORD(lParam);
 		//m_mouseHandler.SetMouseButton(eLEFTCLICK, false);
 		MouseHandler::SetMouseButton(eMIDCLICK, false);
 		return 0;
@@ -121,6 +143,7 @@ LRESULT Window::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		unsigned char key = static_cast<unsigned char>(wParam);
 		//KeyboardHandler::SetKeyState(key, true);
+		mp_kb->AddKeyboardEvent(KeyboardEvent(KeyboardEvent::EventType::ePUSH, key));
 		mp_kb->SetKeyState(key, true);
 		return 0;
 	}
@@ -128,7 +151,33 @@ LRESULT Window::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		unsigned char key = static_cast<unsigned char>(wParam);
 		//KeyboardHandler::SetKeyState(key, false);
+		mp_kb->AddKeyboardEvent(KeyboardEvent(KeyboardEvent::EventType::eRELEASE, key));
 		mp_kb->SetKeyState(key, false);
+		return 0;
+		
+	}
+	case WM_INPUT:
+	{
+		UINT dataSize = 0;
+		GetRawInputData(reinterpret_cast<HRAWINPUT>(lParam), RID_INPUT, NULL, &dataSize, sizeof(RAWINPUTHEADER));
+		if (dataSize > 0)
+		{
+			std::unique_ptr<BYTE[]> rawdata = std::make_unique<BYTE[]>(dataSize);
+			if (GetRawInputData(reinterpret_cast<HRAWINPUT>(lParam), RID_INPUT, rawdata.get(), &dataSize, sizeof(RAWINPUTHEADER)) == dataSize);
+			{
+				RAWINPUT* raw = reinterpret_cast<RAWINPUT*>(rawdata.get());
+				if (raw->header.dwType == RIM_TYPEMOUSE)
+					MouseHandler::OnMouseRaw(raw->data.mouse.lLastX, raw->data.mouse.lLastY);
+			}
+		}
+		return 0;
+	}
+	case WM_MOUSEWHEEL:
+	{
+		int x = LOWORD(lParam);
+		int y = HIWORD(lParam);
+		if (GET_WHEEL_DELTA_WPARAM(wParam) > 0) MouseHandler::OnWheelUp(x, y);
+		else if (GET_WHEEL_DELTA_WPARAM(wParam) < 0) MouseHandler::OnWheelDown(x, y);
 		return 0;
 	}
 	default:
@@ -179,7 +228,19 @@ void Window::ShutDown()
 Window::Window():
 	m_windowWidth(0), m_windowHeight(0)
 {
+	static bool rawInputInitialized = false;
+	if (!rawInputInitialized)
+	{
+		RAWINPUTDEVICE rid;
 
+		rid.usUsagePage = 0x01;
+		rid.usUsage = 0x02;
+		rid.dwFlags = 0;
+		rid.hwndTarget = NULL;
+		if (RegisterRawInputDevices(&rid, 1, sizeof(rid)) == FALSE)
+			COM_ERROR(GetLastError(), "Failed to register raw mouse");
+		rawInputInitialized = true;
+	}
 }
 
 Window::~Window()
@@ -199,7 +260,7 @@ bool Window::init(LPCWSTR windowName, HINSTANCE hInstance, std::wstring windowCl
 
 	WNDCLASS wc = {};
 
-	//wc.style = CS_DBLCLKS; // om vi vill att fönstret ska registrera dubbel klicks
+	//wc.style = CS_DBLCLKS | CS_NOCLOSE; // om vi vill att fönstret ska registrera dubbel klicks
 	wc.lpfnWndProc = HandleMessageSetup;
 	wc.hInstance = hInstance;
 	wc.lpszClassName = m_wndClass.c_str();

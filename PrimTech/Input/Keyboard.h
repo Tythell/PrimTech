@@ -21,9 +21,11 @@ public:
 	~KeyboardHandler();
 	bool IsKeyDown(const unsigned char key);
 	void SetKeyState(const unsigned char key, bool b);
+	void AddKeyboardEvent(KeyboardEvent e);
+	KeyboardEvent ReadEvent();
 private:
 	bool m_isKeyDown[256]{false};
-	//std::queue<KeyboardEvent> m_keyboardBuffer;
+	std::queue<KeyboardEvent> m_keyboardBuffer;
 };
 
 namespace Key

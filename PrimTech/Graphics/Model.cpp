@@ -3,17 +3,23 @@
 #include<vector>
 #include "Model.h"
 #include<iostream>
+#include <fstream>
 
 Model::Model()
 {
 }
 
-bool Model::LoadObj(const std::string path, ID3D11Device*& pDevice, ID3D11DeviceContext*& pDc)
+void Model::Init(const std::string path, ID3D11Device*& pDevice, ID3D11DeviceContext*& pDc, Buffer<hlsl::cbWorldTransforms3D>& pCbuffer)
 {
 	dc = pDc;
+	mp_cbTransformBuffer = &pCbuffer;
+	LoadObj(path, pDevice);
+}
 
+bool Model::LoadObj(const std::string path, ID3D11Device*& pDevice)
+{
 	std::string s;
-	std::vector<sm::Vector3> v;
+	std::vector<sm::Vector4> v;
 	std::vector<sm::Vector3> vn;
 	std::vector<sm::Vector2> vt;
 	std::vector<UINT> posIndex;
@@ -36,21 +42,21 @@ bool Model::LoadObj(const std::string path, ID3D11Device*& pDevice, ID3D11Device
 		reader >> input;
 		if (input == "v")
 		{
-			DirectX::XMFLOAT3 vertex;
+			DirectX::XMFLOAT4 vertex;
 			reader >> vertex.x >> vertex.y >> vertex.z;
-			v.push_back(vertex);
+			v.emplace_back(vertex);
 		}
 		else if (input == "vt")
 		{
 			DirectX::XMFLOAT2 uv;
 			reader >> uv.x >> uv.y;
-			vt.push_back(uv);
+			vt.emplace_back(uv);
 		}
 		else if (input == "vn")
 		{
 			DirectX::XMFLOAT3 normal;
 			reader >> normal.x >> normal.y >> normal.z;
-			vn.push_back(normal);
+			vn.emplace_back(normal);
 		}
 		else if (input == "f")
 		{
@@ -80,13 +86,12 @@ bool Model::LoadObj(const std::string path, ID3D11Device*& pDevice, ID3D11Device
 	return true;
 }
 
-void Model::LoadTriangle(ID3D11Device*& pDevice, ID3D11DeviceContext*& pDc)
-{
-}
-
 void Model::Draw()
 {
-	UINT offset[] = {0};
-	dc->IASetVertexBuffers(0, 1, m_vbuffer.GetReference(), m_vbuffer.GetStrideP(), offset);
+	UINT offset = 0;
+	dc->VSSetConstantBuffers(0, 1, mp_cbTransformBuffer->GetReference());
+	mp_cbTransformBuffer->Data().world = GetWorldTransposed();
+	mp_cbTransformBuffer->UpdateCB();
+	dc->IASetVertexBuffers(0, 1, m_vbuffer.GetReference(), m_vbuffer.GetStrideP(), &offset);
 	dc->Draw(m_vbuffer.GetBufferSize(), 0);
 }

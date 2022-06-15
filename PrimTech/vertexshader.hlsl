@@ -1,14 +1,14 @@
 cbuffer TransformBuffer : register(b0)
 {
-    matrix world;
-    matrix viewProj;
+    float4x4 world;
+    float4x4 viewProj;
 };
 
 struct VSInput
 {
-    float3 localPosition : POSITION;
-    float3 localNormal : NORMAL;
+    float4 localPosition : POSITION;
     float2 texCoord : TEXCOORD;
+    float3 localNormal : NORMAL;
 };
 
 struct VSOutput
@@ -22,9 +22,9 @@ struct VSOutput
 VSOutput main(VSInput input)
 {
     VSOutput output;
-    output.position = mul(float4(input.localPosition, 1.f), mul(world, viewProj));
-    output.normal = normalize(mul(input.localNormal, (float3x3) world));
+    output.position = mul(float4(input.localPosition.xyz, 1.f), mul(world, viewProj));
     output.texCoord = input.texCoord;
-    output.worldpos = mul(float4(input.localPosition, 1.f), world).xyz;
+    output.normal = normalize(mul(input.localNormal, (float3x3) world));
+    output.worldpos = mul(float4(input.localPosition.xyz, 1.f), world).xyz;
     return output;
 }

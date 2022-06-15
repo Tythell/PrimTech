@@ -7,8 +7,8 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	srand((unsigned int)time(0));
 
-	PrimTech app;
-	app.Init(L"PrimTech", hInstance, L"windowClass", 1800, 1000);
+	pt::PrimTech app;
+	app.Init(L"PrimTech", hInstance, L"windowClass", 1800, 900);
 	app.Run();
 
 	return 0;

@@ -15,6 +15,7 @@ public:
 	{
 		eINVALID,
 		eLEFTCLICK, eRIGHTCLICK, eMIDCLICK,
+		RAW_MOVE, eSCROLLUP, eSCROLLDOWN
 	};
 	MouseEvent(EventType type, const int x, const int y);
 	EventType GetType() const;
@@ -32,6 +33,10 @@ public:
 	static void AddMouseEvent(const MouseEvent me);
 	static MouseEvent ReadEvent();
 	static bool CheckMouseEvent(int index);
+	static void OnMouseRaw(float x, float y);
+	static bool BufferIsEmpty();
+	static void OnWheelUp(int x, int y);
+	static void OnWheelDown(int x, int y);
 private:
 	static bool m_mouseButtonDown[3];
 	static std::queue<MouseEvent> m_mouseBuffer;

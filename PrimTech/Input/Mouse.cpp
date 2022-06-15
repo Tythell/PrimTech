@@ -1,7 +1,7 @@
 #include "Mouse.h"
 
 MouseEvent::MouseEvent(EventType type, const int x, const int y):
-	m_xPos(-1), m_yPos(-1), m_type(type)
+	m_xPos(x), m_yPos(y), m_type(type)
 {}
 
 MouseEvent::EventType MouseEvent::GetType() const
@@ -61,6 +61,7 @@ void MouseHandler::AddMouseEvent(const MouseEvent me)
 
 MouseEvent MouseHandler::ReadEvent()
 {
+	if (m_mouseBuffer.empty()) return MouseEvent(MouseEvent::EventType::eINVALID, 0.f, 0.f);
 	MouseEvent e = m_mouseBuffer.front();
 	m_mouseBuffer.pop();
 	return e;
@@ -74,4 +75,24 @@ bool MouseHandler::CheckMouseEvent(int index)
 		return true;
 	}
 	return false;
+}
+
+void MouseHandler::OnMouseRaw(float x, float y)
+{
+	m_mouseBuffer.push(MouseEvent(MouseEvent::EventType::RAW_MOVE, x, y));
+}
+
+bool MouseHandler::BufferIsEmpty()
+{
+	return m_mouseBuffer.empty();
+}
+
+void MouseHandler::OnWheelUp(int x, int y)
+{
+	m_mouseBuffer.push(MouseEvent(MouseEvent::EventType::eSCROLLUP, x, y));
+}
+
+void MouseHandler::OnWheelDown(int x, int y)
+{
+	m_mouseBuffer.push(MouseEvent(MouseEvent::EventType::eSCROLLDOWN, x, y));
 }

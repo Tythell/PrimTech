@@ -24,6 +24,14 @@ struct ImGuiVars
 	bool pause = false;
 	int speed = 70;
 	char* buffer = new char[16]{"image.png"};
+	float pointLightPos[3] = { 0.f,0.f,0.f };
+	float pointLightColor[3]{1.f,1.f,1.f};
+	float pointLightStr = 1.f;
+	float offset = 0.f;
+	float ambient[4] = {1.f,1.f,1.f, .2f};
+	float direction[3] = { 1.f,1.f,1.f };
+	float atten = 1.f;
+	int fov = 80.f;
 };
 
 class DX11Addon
@@ -32,11 +40,11 @@ public:
 	DX11Addon(Window& window, Camera& camera);
 	~DX11Addon();
 
-
 	void SetInputP(KeyboardHandler& kb);
-	void Render();
+	void Render(const float& deltatime);
 	ID3D11Device* GetDevice() const;
 	ID3D11DeviceContext* GetDeviceContext() const;
+	void ShutDown();
 private:
 	bool initSwapChain();
 	bool initRTV();
@@ -71,8 +79,8 @@ private:
 	ID3D11RasterizerState* m_rasterizerState = nullptr;
 	ID3D11SamplerState* m_sampState = nullptr;
 
-	VertexShader m_quadVs;
-	PixelShader m_quadPs;
+	//VertexShader m_quadVs;
+	//PixelShader m_quadPs;
 
 	VertexShader m_3dvs;
 	PixelShader m_3dps;
@@ -82,7 +90,8 @@ private:
 
 	//TextureMap m_fileTexture;
 
-	Buffer<cbWorldTransforms3D> m_transformBuffer;
+	Buffer<hlsl::cbWorldTransforms3D> m_transformBuffer;
+	Buffer<hlsl::cbLightBuffer> m_lightbuffer;
 
 	Camera* mp_cam;
 
@@ -92,6 +101,8 @@ private:
 	KeyboardHandler* mp_kb;
 
 	Model m_model;
+	Model m_plane;
+	Model m_bulb;
 	TextureMap m_missingTexture;
 };
 
