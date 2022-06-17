@@ -32,7 +32,7 @@ public:
 	sm::Vector3 GetRotation() const;;
 private:
 	void UpdateView();
-	sm::Vector3 m_position, m_rotaion, m_offset;
+	sm::Vector3 m_position, m_rotation, m_offset;
 	sm::Matrix m_viewM, m_projM;
 
 	sm::Vector3 m_forwardV, m_leftV, m_upV;

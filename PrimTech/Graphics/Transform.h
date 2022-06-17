@@ -26,3 +26,6 @@ private:
 	sm::Vector3 m_pos, m_rot, m_scale;
 	sm::Matrix worldTransposed;
 };
+
+void ForceRotation(sm::Vector3& v);
+void ForceRotation(float& x, float& y, float& z);

@@ -1,7 +1,7 @@
 #include "Camera.h"
 
 Camera::Camera():
-	m_position(0,0,0), m_rotaion(0,0,0), m_offset(0,0,0)
+	m_position(0,0,0), m_rotation(0,0,0), m_offset(0,0,0)
 {
 	UpdateView();
 }
@@ -31,13 +31,21 @@ void Camera::SetPosition(const sm::Vector3 v)
 
 void Camera::SetRotation(float x, float y, float z)
 {
-	m_rotaion = sm::Vector3(x,y,z);
+	m_rotation = sm::Vector3(x,y,z);
+	//if (m_rotation.x < 0.f || m_rotation.x > d::XM_2PI) m_rotation.x = d::XM_2PI + m_rotation.x;
+	//if (m_rotation.y < 0.f || m_rotation.y > d::XM_2PI) m_rotation.y = d::XM_2PI + m_rotation.y;
+	//if (m_rotation.z < 0.f || m_rotation.z > d::XM_2PI) m_rotation.z = d::XM_2PI + m_rotation.z;
+	ForceRotation(m_rotation);
 	UpdateView();
 }
 
 void Camera::SetRotation(const sm::Vector3 v)
 {
-	m_rotaion = v;
+	m_rotation = v;
+	//if (m_rotation.x < 0.f || m_rotation.x > d::XM_2PI) m_rotation.x = d::XM_2PI + m_rotation.x;
+	//if (m_rotation.y < 0.f || m_rotation.y > d::XM_2PI) m_rotation.y = d::XM_2PI + m_rotation.y;
+	//if (m_rotation.z < 0.f || m_rotation.z > d::XM_2PI) m_rotation.z = d::XM_2PI + m_rotation.z;
+	ForceRotation(m_rotation);
 	UpdateView();
 }
 
@@ -60,13 +68,19 @@ void Camera::Move(const sm::Vector3 v)
 
 void Camera::Rotate(float x, float y, float z)
 {
-	m_rotaion += sm::Vector3(x, y, z);
+	m_rotation += sm::Vector3(x, y, z);
+	if (m_rotation.x < 0.f || m_rotation.x > d::XM_2PI) m_rotation.x = d::XM_2PI + m_rotation.x;
+	if (m_rotation.y < 0.f || m_rotation.y > d::XM_2PI) m_rotation.y = d::XM_2PI + m_rotation.y;
+	if (m_rotation.z < 0.f || m_rotation.z > d::XM_2PI) m_rotation.z = d::XM_2PI + m_rotation.z;
 	UpdateView();
 }
 
 void Camera::Rotate(const sm::Vector3 v)
 {
-	m_rotaion += v;
+	m_rotation += v;
+	if (m_rotation.x < 0.f || m_rotation.x > d::XM_2PI) m_rotation.x = d::XM_2PI + m_rotation.x;
+	if (m_rotation.y < 0.f || m_rotation.y > d::XM_2PI) m_rotation.y = d::XM_2PI + m_rotation.y;
+	if (m_rotation.z < 0.f || m_rotation.z > d::XM_2PI) m_rotation.z = d::XM_2PI + m_rotation.z;
 	UpdateView();
 }
 
@@ -119,12 +133,12 @@ sm::Vector3 Camera::GetPosition() const
 
 sm::Vector3 Camera::GetRotation() const
 {
-	return m_rotaion;
+	return m_rotation;
 }
 
 void Camera::UpdateView()
 {
-	d::XMMATRIX camRot = d::XMMatrixRotationRollPitchYawFromVector(m_rotaion);
+	d::XMMATRIX camRot = d::XMMatrixRotationRollPitchYawFromVector(m_rotation);
 
 	d::XMVECTOR camTarget = d::XMVector3TransformCoord(sm::Vector4(0.f,0.f,1.f, 0.f ), camRot);
 	camTarget += m_position;

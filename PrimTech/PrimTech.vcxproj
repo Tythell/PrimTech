@@ -159,6 +159,7 @@
     <ClCompile Include="Input\Mouse.cpp" />
     <ClCompile Include="Graphics\Model.cpp" />
     <ClCompile Include="PrimTech.cpp" />
+    <ClCompile Include="Graphics\ResourceHandler.cpp" />
     <ClCompile Include="Utility\StringHelper.cpp" />
     <ClCompile Include="Utility\Popup.cpp" />
     <ClCompile Include="main.cpp" />
@@ -196,6 +197,7 @@
     <ClInclude Include="Graphics\Paths.h" />
     <ClInclude Include="PrimTech.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="Graphics\ResourceHandler.h" />
     <ClInclude Include="Utility\StringHelper.h" />
     <ClInclude Include="Utility\COMException.h" />
     <ClInclude Include="Graphics\DX11Wrapper.h" />

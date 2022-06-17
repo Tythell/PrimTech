@@ -4,12 +4,13 @@
 #include "Model.h"
 #include<iostream>
 #include <fstream>
+#include "ResourceHandler.h"
 
 Model::Model()
 {
 }
 
-void Model::Init(const std::string path, ID3D11Device*& pDevice, ID3D11DeviceContext*& pDc, Buffer<hlsl::cbWorldTransforms3D>& pCbuffer)
+void Model::Init(const std::string path, ID3D11Device*& pDevice, ID3D11DeviceContext*& pDc, Buffer<hlsl::cbWorldTransforms3D>& pCbuffer, bool makeLeftHanded)
 {
 	std::string fullpath = "Assets/models/" + path;
 	dc = pDc;
@@ -41,7 +42,7 @@ void Model::LoadDiffuse(const std::string path)
 {
 }
 
-bool LoadObjToBuffer(std::string path, ID3D11Device*& pDevice, Buffer<Vertex3D>& vbuffer)
+bool LoadObjToBuffer(std::string path, ID3D11Device*& pDevice, Buffer<Vertex3D>& vbuffer, bool makeLeftHanded)
 {
 	std::string s;
 	std::vector<sm::Vector4> v;
@@ -69,6 +70,7 @@ bool LoadObjToBuffer(std::string path, ID3D11Device*& pDevice, Buffer<Vertex3D>&
 		{
 			DirectX::XMFLOAT4 vertex;
 			reader >> vertex.x >> vertex.y >> vertex.z;
+			if(makeLeftHanded) vertex.z *= -1;
 			v.emplace_back(vertex);
 		}
 		else if (input == "vt")
@@ -81,6 +83,7 @@ bool LoadObjToBuffer(std::string path, ID3D11Device*& pDevice, Buffer<Vertex3D>&
 		{
 			DirectX::XMFLOAT3 normal;
 			reader >> normal.x >> normal.y >> normal.z;
+			if(makeLeftHanded) normal.z *= -1;
 			vn.emplace_back(normal);
 		}
 		else if (input == "f")
@@ -89,18 +92,28 @@ bool LoadObjToBuffer(std::string path, ID3D11Device*& pDevice, Buffer<Vertex3D>&
 			int vtIndexTemp = -1;
 			int vnIndexTemp = -1;
 			char slash;
+			Vertex3D triangle[3];
 			for (int i = 0; i < 3; i++)
 			{
 				reader >> vIndexTemp >> slash >> vtIndexTemp >> slash >> vnIndexTemp;
 				vIndexTemp--;
 				vnIndexTemp--;
 				vtIndexTemp--;
-				Vertex3D tempVert;
-				tempVert.position = v[vIndexTemp];
-				tempVert.normal = vn[vnIndexTemp];
-				tempVert.texCoord = vt[vtIndexTemp];
-				shape.emplace_back(tempVert);
+				triangle[i].position = v[vIndexTemp];
+				triangle[i].normal = vn[vnIndexTemp];
+				triangle[i].texCoord = vt[vtIndexTemp];
 			}
+			if (makeLeftHanded)
+			{
+				Vertex3D temp = triangle[0];
+				triangle[0] = triangle[2];
+				triangle[2] = temp;
+			}
+
+
+			for (int i = 0; i < 3; i++)
+				shape.emplace_back(triangle[i]);
+			
 		}
 	}
 
@@ -112,12 +125,11 @@ bool LoadObjToBuffer(std::string path, ID3D11Device*& pDevice, Buffer<Vertex3D>&
 	return true;
 }
 
-Mesh::Mesh(std::string path, ID3D11Device*& device)
+Mesh::Mesh(std::string path, ID3D11Device*& device, bool makeLeftHanded)
 {
-	if (!LoadObjToBuffer(path, device, m_vbuffer))
+	if (!LoadObjToBuffer(path, device, m_vbuffer, makeLeftHanded))
 		Popup::Error("loading model went wrong");
 	m_name = StringHelper::GetName(path);
-	//ResourceHandler::AddMesh(path, device);
 }
 
 Buffer<Vertex3D>& Mesh::GetVBuffer()
@@ -128,41 +140,4 @@ Buffer<Vertex3D>& Mesh::GetVBuffer()
 std::string Mesh::GetName() const
 {
 	return m_name;
-}
-
-std::vector<Mesh*> ResourceHandler::m_meshes;
-
-Mesh* ResourceHandler::AddMesh(std::string path, ID3D11Device*& pDevice)
-{
-	Mesh* pMesh = new Mesh(path, pDevice);
-	m_meshes.emplace_back(pMesh);
-	return pMesh;
-}
-
-Mesh& ResourceHandler::GetMesh(unsigned int index)
-{
-	return *m_meshes[index];
-}
-
-Mesh* ResourceHandler::GetMeshAdress(unsigned int index)
-{
-	return m_meshes[index];
-}
-
-int ResourceHandler::CheckMeshNameExists(std::string meshName)
-{
-	for (int i = 0; i < m_meshes.size(); i++)
-	{
-		if (m_meshes[i]->GetName() == meshName)
-			return i;
-	}
-	return -1;
-}
-
-void ResourceHandler::Unload()
-{
-	for (int i = 0; i < m_meshes.size(); i++)
-	{
-		delete m_meshes[i];
-	}
 }
