@@ -29,6 +29,8 @@ DX11Addon::~DX11Addon()
 
 	delete im.buffer;
 
+	ResourceHandler::Unload();
+
 	device->Release();
 	dc->Release();
 	m_swapChain->Release();
@@ -183,6 +185,7 @@ bool DX11Addon::InitShaders()
 	m_3dvs.Init(device, "../x64/Debug/vertexshader.cso");
 	m_3dvs.InitInputLayout(device, layout3D, ARRAYSIZE(layout3D));
 	m_3dps.Init(device, "../x64/Debug/pixelshader.cso");
+	m_3dnoLightps.Init(device, "../x64/Debug/NoLightPs.cso");
 
 	dc->VSSetShader(m_3dvs.GetShader(), NULL, 0);
 	dc->PSSetShader(m_3dps.GetShader(), NULL, 0);
@@ -326,18 +329,13 @@ void DX11Addon::Render(const float& deltatime)
 
 	m_model.SetPosition(0.f, 0.f, 3.f);
 	m_model.Rotate(0.f, 1.f * deltatime, 0.f);
-
 	m_model.Draw();
 	m_plane.Draw();
+	dc->PSSetShader(m_3dnoLightps.GetShader(), NULL, 0);
 	m_bulb.Draw();
 
 	ImGuiRender();
 	m_swapChain->Present(1, NULL);
-
-	if (mp_kb->IsKeyDown(Key::ESCAPE))
-	{
-		ShutDown();
-	}
 }
 
 ID3D11Device* DX11Addon::GetDevice() const

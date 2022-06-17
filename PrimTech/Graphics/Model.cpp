@@ -13,10 +13,25 @@ void Model::Init(const std::string path, ID3D11Device*& pDevice, ID3D11DeviceCon
 {
 	dc = pDc;
 	mp_cbTransformBuffer = &pCbuffer;
-	LoadObj(path, pDevice);
+	int meshIndex = ResourceHandler::CheckMeshNameExists(StringHelper::GetName(path));
+	if (meshIndex != -1)
+		mp_mesh = ResourceHandler::GetMeshAdress(meshIndex);
+	else
+		mp_mesh = ResourceHandler::AddMesh(path, pDevice);
+	//LoadObjToBuffer(path, pDevice, m_vbuffer);
 }
 
-bool Model::LoadObj(const std::string path, ID3D11Device*& pDevice)
+void Model::Draw()
+{
+	UINT offset = 0;
+	dc->VSSetConstantBuffers(0, 1, mp_cbTransformBuffer->GetReference());
+	mp_cbTransformBuffer->Data().world = GetWorldTransposed();
+	mp_cbTransformBuffer->UpdateCB();
+	dc->IASetVertexBuffers(0, 1, mp_mesh->GetVBuffer().GetReference(), mp_mesh->GetVBuffer().GetStrideP(), &offset);
+	dc->Draw(mp_mesh->GetVBuffer().GetBufferSize(), 0);
+}
+
+bool LoadObjToBuffer(std::string path, ID3D11Device*& pDevice, Buffer<Vertex3D>& vbuffer)
 {
 	std::string s;
 	std::vector<sm::Vector4> v;
@@ -78,7 +93,8 @@ bool Model::LoadObj(const std::string path, ID3D11Device*& pDevice)
 			}
 		}
 	}
-	if (FAILED(m_vbuffer.CreateVertexBuffer(pDevice, shape.data(), (unsigned int)shape.size())))
+
+	if (FAILED(vbuffer.CreateVertexBuffer(pDevice, shape.data(), (unsigned int)shape.size())))
 	{
 		Popup::Error("Failed to create vertex buffer");
 		return false;
@@ -86,12 +102,57 @@ bool Model::LoadObj(const std::string path, ID3D11Device*& pDevice)
 	return true;
 }
 
-void Model::Draw()
+Mesh::Mesh(std::string path, ID3D11Device*& device)
 {
-	UINT offset = 0;
-	dc->VSSetConstantBuffers(0, 1, mp_cbTransformBuffer->GetReference());
-	mp_cbTransformBuffer->Data().world = GetWorldTransposed();
-	mp_cbTransformBuffer->UpdateCB();
-	dc->IASetVertexBuffers(0, 1, m_vbuffer.GetReference(), m_vbuffer.GetStrideP(), &offset);
-	dc->Draw(m_vbuffer.GetBufferSize(), 0);
+	if (!LoadObjToBuffer(path, device, m_vbuffer))
+		Popup::Error("loading model went wrong");
+	m_name = StringHelper::GetName(path);
+	//ResourceHandler::AddMesh(path, device);
+}
+
+Buffer<Vertex3D>& Mesh::GetVBuffer()
+{
+	return m_vbuffer;
+}
+
+std::string Mesh::GetName() const
+{
+	return m_name;
+}
+
+std::vector<Mesh*> ResourceHandler::m_meshes;
+
+Mesh* ResourceHandler::AddMesh(std::string path, ID3D11Device*& pDevice)
+{
+	Mesh* pMesh = new Mesh(path, pDevice);
+	m_meshes.emplace_back(pMesh);
+	return pMesh;
+}
+
+Mesh& ResourceHandler::GetMesh(unsigned int index)
+{
+	return *m_meshes[index];
+}
+
+Mesh* ResourceHandler::GetMeshAdress(unsigned int index)
+{
+	return m_meshes[index];
+}
+
+int ResourceHandler::CheckMeshNameExists(std::string meshName)
+{
+	for (int i = 0; i < m_meshes.size(); i++)
+	{
+		if (m_meshes[i]->GetName() == meshName)
+			return i;
+	}
+	return -1;
+}
+
+void ResourceHandler::Unload()
+{
+	for (int i = 0; i < m_meshes.size(); i++)
+	{
+		delete m_meshes[i];
+	}
 }

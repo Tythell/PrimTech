@@ -84,6 +84,7 @@ private:
 
 	VertexShader m_3dvs;
 	PixelShader m_3dps;
+	PixelShader m_3dnoLightps;
 
 	//VertexBuffer<Vertex> m_vbuffer;
 	//IndexBuffer m_iBuffer;

@@ -69,6 +69,8 @@ namespace pt
 			else if (me.GetType() == MouseEvent::EventType::eSCROLLDOWN)
 				m_cam3d.Offset(0.f, 0.f, 0.5f);
 		}
+		if (m_kb.IsKeyDown(Key::ESCAPE))
+			m_window.ShutDown();
 	}
 
 	void PrimTech::HideCursor()
