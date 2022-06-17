@@ -31,6 +31,11 @@ void Model::Draw()
 	dc->Draw(mp_mesh->GetVBuffer().GetBufferSize(), 0);
 }
 
+void Model::SetMesh(Mesh& mesh)
+{
+	mp_mesh = &mesh;
+}
+
 bool LoadObjToBuffer(std::string path, ID3D11Device*& pDevice, Buffer<Vertex3D>& vbuffer)
 {
 	std::string s;

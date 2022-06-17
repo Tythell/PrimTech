@@ -112,6 +112,11 @@ sm::Vector3 Camera::GetOffset() const
 	return m_offset;
 }
 
+sm::Vector3 Camera::GetPosition() const
+{
+	return m_position;
+}
+
 void Camera::UpdateView()
 {
 	d::XMMATRIX camRot = d::XMMatrixRotationRollPitchYawFromVector(m_rotaion);

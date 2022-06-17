@@ -27,6 +27,7 @@ public:
 	sm::Vector3 GetLeftVector() const;
 	sm::Vector3 GetUpVector() const;
 	sm::Vector3 GetOffset() const;
+	sm::Vector3 GetPosition() const;
 private:
 	void UpdateView();
 	sm::Vector3 m_position, m_rotaion, m_offset;

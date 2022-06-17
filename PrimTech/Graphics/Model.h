@@ -22,7 +22,6 @@ private:
 class ResourceHandler
 {
 public:
-	~ResourceHandler();
 	static Mesh* AddMesh(std::string path, ID3D11Device*& pDevice);
 	static Mesh& GetMesh(unsigned int index);
 	static Mesh* GetMeshAdress(unsigned int index);
@@ -40,7 +39,7 @@ public:
 	Model();
 	void Init(const std::string path, ID3D11Device*& pDevice, ID3D11DeviceContext*& pDc, Buffer<hlsl::cbWorldTransforms3D>& pCbuffer);
 	void Draw();
-	//void SetMesh(Mesh& mesh);
+	void SetMesh(Mesh& mesh);
 private:
 	Mesh* mp_mesh;
 	ID3D11DeviceContext* dc = nullptr;

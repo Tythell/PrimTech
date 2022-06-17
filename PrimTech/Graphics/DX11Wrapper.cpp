@@ -203,6 +203,9 @@ bool DX11Addon::InitScene()
 	m_plane.SetScale(10.f);
 	m_missingTexture.CreateFromFile("Assets/Textures/chessboard.png", device);
 
+	m_playermodel.Init("Assets/models/dirCapsule.obj", device, dc, m_transformBuffer);
+	m_playermodel.SetScale(.1f);
+
 	return true;
 }
 
@@ -331,8 +334,11 @@ void DX11Addon::Render(const float& deltatime)
 	m_model.Rotate(0.f, 1.f * deltatime, 0.f);
 	m_model.Draw();
 	m_plane.Draw();
+	m_playermodel.SetPosition(mp_cam->GetPosition() + sm::Vector3(0.f,-0.1f,0.f));
+	m_playermodel.Draw();
 	dc->PSSetShader(m_3dnoLightps.GetShader(), NULL, 0);
 	m_bulb.Draw();
+
 
 	ImGuiRender();
 	m_swapChain->Present(1, NULL);
