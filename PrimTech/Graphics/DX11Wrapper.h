@@ -32,6 +32,7 @@ struct ImGuiVars
 	float direction[3] = { 1.f,1.f,1.f };
 	float atten = 1.f;
 	int fov = 80.f;
+	float scale[3]{ 1.f,1.f,1.f };
 };
 
 class DX11Addon
@@ -107,6 +108,7 @@ private:
 	Model m_playermodel;
 	Model m_gunter;
 	Model m_menacing;
+	Model m_handmodel;
 	TextureMap m_missingTexture;
 };
 

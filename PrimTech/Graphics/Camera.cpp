@@ -117,14 +117,19 @@ sm::Vector3 Camera::GetPosition() const
 	return m_position;
 }
 
+sm::Vector3 Camera::GetRotation() const
+{
+	return m_rotaion;
+}
+
 void Camera::UpdateView()
 {
 	d::XMMATRIX camRot = d::XMMatrixRotationRollPitchYawFromVector(m_rotaion);
 
-	d::XMVECTOR camTarget = d::XMVector3TransformCoord({ 0.f,0.f,1.f }, camRot);
+	d::XMVECTOR camTarget = d::XMVector3TransformCoord(sm::Vector4(0.f,0.f,1.f, 0.f ), camRot);
 	camTarget += m_position;
 
-	d::XMVECTOR upDir = d::XMVector2TransformCoord({ 0.f,1.f,0.f }, d::XMMatrixRotationRollPitchYawFromVector(m_rotaion));
+	d::XMVECTOR upDir = d::XMVector2TransformCoord(sm::Vector4(0.f, 1.f, 0.f, 0.f), camRot);
 
 	if (m_offset.z < 0.f) m_offset.z = 0.f;
 	else if (m_offset.z > OFFSETMAX) m_offset.z = OFFSETMAX;

@@ -1,5 +1,6 @@
 #pragma once
 #include"../Math/Simplemath.h"
+#include <string>
 namespace sm = DirectX::SimpleMath;
 namespace d = DirectX;
 
@@ -14,6 +15,27 @@ namespace d = DirectX;
 //	
 //	return rand() % n2 + n1;;
 //}
+
+inline std::string GetVectorAsString(sm::Vector3 v)
+{
+	std::string s = std::to_string(v.x);
+	s += " ";
+	s += std::to_string(v.y);
+	s += " ";
+	s += std::to_string(v.z);
+	return s;
+}
+inline std::string GetVectorAsString(sm::Vector4 v)
+{
+	std::string s = std::to_string(v.x);
+	s += " ";
+	s += std::to_string(v.y);
+	s += " ";
+	s += std::to_string(v.z);
+	s += " ";
+	s += std::to_string(v.z);
+	return s;
+}
 
 inline float RandomNum(int n1, int n2, unsigned int decimals = 0)
 {

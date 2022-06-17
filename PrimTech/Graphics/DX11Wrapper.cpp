@@ -196,6 +196,7 @@ bool DX11Addon::InitShaders()
 bool DX11Addon::InitScene()
 {
 	m_model.Init("scuffball.obj", device, dc, m_transformBuffer);
+	m_model.SetPosition(0.f, 0.f, 3.f);
 	m_bulb.Init("bulb.obj", device, dc, m_transformBuffer);
 	m_bulb.SetScale(1.2f);
 	m_plane.Init("plane.txt", device, dc, m_transformBuffer);
@@ -211,6 +212,8 @@ bool DX11Addon::InitScene()
 	m_menacing.Init("menacing.obj", device, dc, m_transformBuffer);
 	m_menacing.SetPosition(-3.f, 2.f, -6.f);
 	m_menacing.SetRotation(0.f, d::XM_PI, 0.f);
+	m_handmodel.Init("handmodel.obj", device, dc, m_transformBuffer);
+	m_handmodel.SetScale(-.1f, .1f, .1f);
 
 	return true;
 }
@@ -280,7 +283,7 @@ void DX11Addon::ImGuiRender()
 	m_bulb.SetPosition(im.pointLightPos[0], im.pointLightPos[1], im.pointLightPos[2]);
 
 	//ImGui::DragFloat("Point light range", )
-
+	ImGui::Text(GetVectorAsString(mp_cam->GetForwardVector()).c_str());
 	//if (mp_kb->IsKeyDown(Key::Y))
 		//m_pWin->ShutDown();
 	ImGui::End();
@@ -336,17 +339,21 @@ void DX11Addon::Render(const float& deltatime)
 	m_lightbuffer.Data().position = sm::Vector3( im.pointLightPos[0], im.pointLightPos[1], im.pointLightPos[2]);
 	m_lightbuffer.UpdateCB();
 
-	m_model.SetPosition(0.f, 0.f, 3.f);
 	m_model.Rotate(0.f, 1.f * deltatime, 0.f);
+	m_model.Move(-0.f, 0.f, 0.1f);
 	m_model.Draw();
 	m_plane.Draw();
 	m_playermodel.SetPosition(mp_cam->GetPosition() + sm::Vector3(0.f,-0.1f,0.f));
 	if(mp_cam->GetOffset().z != 0.f)
 		m_playermodel.Draw();
 	m_gunter.Draw();
-	m_bulb.Draw();
 	dc->PSSetShader(m_3dnoLightps.GetShader(), NULL, 0);
 	m_menacing.Draw();
+	m_bulb.Draw();
+	dc->ClearDepthStencilView(m_dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.f, 0);
+	m_handmodel.SetPosition(mp_cam->GetPosition() + sm::Vector3(0.f,-.15f, 0.f));
+	m_handmodel.SetRotation(mp_cam->GetRotation());
+	m_handmodel.Draw();
 
 	ImGuiRender();
 	m_swapChain->Present((UINT)im.useVsync, NULL);
