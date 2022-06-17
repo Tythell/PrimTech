@@ -105,6 +105,8 @@ private:
 	Model m_plane;
 	Model m_bulb;
 	Model m_playermodel;
+	Model m_gunter;
+	Model m_menacing;
 	TextureMap m_missingTexture;
 };
 

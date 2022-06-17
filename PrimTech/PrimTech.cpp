@@ -16,7 +16,6 @@ namespace pt
 
 	void PrimTech::Init(LPCWSTR windowName, HINSTANCE hInstance, std::wstring windowClass, unsigned int width, unsigned int height)
 	{
-
 		m_window.init(windowName, hInstance, windowClass, width, height);
 		m_window.SetInputP(m_kb);
 

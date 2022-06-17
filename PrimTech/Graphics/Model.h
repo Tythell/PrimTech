@@ -42,7 +42,7 @@ public:
 	void SetMesh(Mesh& mesh);
 	void LoadDiffuse(const std::string path);
 private:
-	Mesh* mp_mesh;
+	Mesh* mp_mesh = nullptr;
 	ID3D11DeviceContext* dc = nullptr;
 	Buffer<hlsl::cbWorldTransforms3D>* mp_cbTransformBuffer = nullptr;
 	TextureMap* mp_diffuse = nullptr;

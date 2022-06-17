@@ -206,6 +206,12 @@ bool DX11Addon::InitScene()
 	m_playermodel.Init("dirCapsule.obj", device, dc, m_transformBuffer);
 	m_playermodel.SetScale(.1f);
 
+	m_gunter.Init("gunter.obj", device, dc, m_transformBuffer);
+	m_gunter.SetPosition(-1.f, 2.f, -6.f);
+	m_menacing.Init("menacing.obj", device, dc, m_transformBuffer);
+	m_menacing.SetPosition(-3.f, 2.f, -6.f);
+	m_menacing.SetRotation(0.f, d::XM_PI, 0.f);
+
 	return true;
 }
 
@@ -337,9 +343,10 @@ void DX11Addon::Render(const float& deltatime)
 	m_playermodel.SetPosition(mp_cam->GetPosition() + sm::Vector3(0.f,-0.1f,0.f));
 	if(mp_cam->GetOffset().z != 0.f)
 		m_playermodel.Draw();
-	dc->PSSetShader(m_3dnoLightps.GetShader(), NULL, 0);
+	m_gunter.Draw();
 	m_bulb.Draw();
-
+	dc->PSSetShader(m_3dnoLightps.GetShader(), NULL, 0);
+	m_menacing.Draw();
 
 	ImGuiRender();
 	m_swapChain->Present((UINT)im.useVsync, NULL);
