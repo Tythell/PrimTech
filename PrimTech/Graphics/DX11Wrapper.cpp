@@ -195,15 +195,15 @@ bool DX11Addon::InitShaders()
 
 bool DX11Addon::InitScene()
 {
-	m_model.Init("Assets/models/scuffball.obj", device, dc, m_transformBuffer);
-	m_bulb.Init("Assets/models/bulb.obj", device, dc, m_transformBuffer);
+	m_model.Init("scuffball.obj", device, dc, m_transformBuffer);
+	m_bulb.Init("bulb.obj", device, dc, m_transformBuffer);
 	m_bulb.SetScale(1.2f);
-	m_plane.Init("Assets/models/plane.txt", device, dc, m_transformBuffer);
+	m_plane.Init("plane.txt", device, dc, m_transformBuffer);
 	m_plane.SetPosition(0.f, -1.f, 0.f);
 	m_plane.SetScale(10.f);
-	m_missingTexture.CreateFromFile("Assets/Textures/chessboard.png", device);
+	m_missingTexture.CreateFromFile("chessboard.png", device);
 
-	m_playermodel.Init("Assets/models/dirCapsule.obj", device, dc, m_transformBuffer);
+	m_playermodel.Init("dirCapsule.obj", device, dc, m_transformBuffer);
 	m_playermodel.SetScale(.1f);
 
 	return true;
@@ -248,7 +248,7 @@ void DX11Addon::ImGuiRender()
 	//ImGui::SliderInt("Speed", &im.speed, 0, 100);
 
 	//ImGui::InputText("Text", im.buffer, 16);
-	//ImGui::Checkbox("Pause", &im.pause);
+	ImGui::Checkbox("Vsync", &im.useVsync);
 	//ImGui::SliderFloat("Offset", &im.offset, 0.f, 10.f);
 
 	ImGui::DragFloat4("Ambient", im.ambient, 0.002f, 0.f, 1.f);
@@ -335,13 +335,14 @@ void DX11Addon::Render(const float& deltatime)
 	m_model.Draw();
 	m_plane.Draw();
 	m_playermodel.SetPosition(mp_cam->GetPosition() + sm::Vector3(0.f,-0.1f,0.f));
-	m_playermodel.Draw();
+	if(mp_cam->GetOffset().z != 0.f)
+		m_playermodel.Draw();
 	dc->PSSetShader(m_3dnoLightps.GetShader(), NULL, 0);
 	m_bulb.Draw();
 
 
 	ImGuiRender();
-	m_swapChain->Present(1, NULL);
+	m_swapChain->Present((UINT)im.useVsync, NULL);
 }
 
 ID3D11Device* DX11Addon::GetDevice() const

@@ -21,7 +21,7 @@ class Window;
 struct ImGuiVars
 {
 	float f[3] = {100.f,1.f, 0.f};
-	bool pause = false;
+	bool useVsync = true;
 	int speed = 70;
 	char* buffer = new char[16]{"image.png"};
 	float pointLightPos[3] = { 0.f,0.f,0.f };

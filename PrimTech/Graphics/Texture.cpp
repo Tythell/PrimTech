@@ -20,12 +20,14 @@ bool TextureMap::CreateFromFile(const char* texturePath, ID3D11Device* device, c
 
 	stbi_set_flip_vertically_on_load(flipUV);
 
+	std::string fullpath = "Assets/Textures/" + std::string(texturePath);
+
 	int textureWidth;
 	int textureHeight;
-	unsigned char* imageData = stbi_load(texturePath, &textureWidth, &textureHeight, nullptr, STBI_rgb_alpha);
+	unsigned char* imageData = stbi_load(fullpath.c_str(), &textureWidth, &textureHeight, nullptr, STBI_rgb_alpha);
 
 	if (!imageData)
-		Popup::Error("Texture: " + std::string(texturePath) + " not found");
+		Popup::Error("Texture: " + std::string(fullpath) + " not found");
 	//imageData = stbi_load("missingTexture.png", &textureWidth, &textureHeight, nullptr, STBI_rgb_alpha);
 
 	ID3D11Texture2D* texture2D;

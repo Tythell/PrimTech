@@ -11,13 +11,14 @@ Model::Model()
 
 void Model::Init(const std::string path, ID3D11Device*& pDevice, ID3D11DeviceContext*& pDc, Buffer<hlsl::cbWorldTransforms3D>& pCbuffer)
 {
+	std::string fullpath = "Assets/models/" + path;
 	dc = pDc;
 	mp_cbTransformBuffer = &pCbuffer;
-	int meshIndex = ResourceHandler::CheckMeshNameExists(StringHelper::GetName(path));
+	int meshIndex = ResourceHandler::CheckMeshNameExists(StringHelper::GetName(fullpath));
 	if (meshIndex != -1)
 		mp_mesh = ResourceHandler::GetMeshAdress(meshIndex);
 	else
-		mp_mesh = ResourceHandler::AddMesh(path, pDevice);
+		mp_mesh = ResourceHandler::AddMesh(fullpath, pDevice);
 	//LoadObjToBuffer(path, pDevice, m_vbuffer);
 }
 
@@ -34,6 +35,10 @@ void Model::Draw()
 void Model::SetMesh(Mesh& mesh)
 {
 	mp_mesh = &mesh;
+}
+
+void Model::LoadDiffuse(const std::string path)
+{
 }
 
 bool LoadObjToBuffer(std::string path, ID3D11Device*& pDevice, Buffer<Vertex3D>& vbuffer)
