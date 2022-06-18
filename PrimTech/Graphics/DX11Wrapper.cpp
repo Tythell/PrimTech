@@ -260,6 +260,8 @@ void DX11Addon::ImGuiRender()
 
 	//ImGui::InputText("Text", im.buffer, 16);
 	ImGui::Checkbox("Vsync", &im.useVsync);
+	ImGui::SameLine();
+	ImGui::Checkbox("Handmodel", &im.enableHandModel);
 	//ImGui::SliderFloat("Offset", &im.offset, 0.f, 10.f);
 
 	ImGui::DragFloat4("Ambient", im.ambient, 0.002f, 0.f, 1.f);
@@ -358,7 +360,8 @@ void DX11Addon::Render(const float& deltatime)
 	m_handmodel.SetPosition(mp_cam->GetPosition());
 	m_handmodel.SetRotation(-mp_cam->GetRotation().x, mp_cam->GetRotation().y, -mp_cam->GetRotation().z);
 	m_handmodel.Rotate(0.f, d::XM_PI, 0.f);
-	if (mp_cam->GetOffset().z == 0.f)
+
+	if (mp_cam->GetOffset().z == 0.f && im.enableHandModel)
 		m_handmodel.Draw();
 
 	ImGuiRender();

@@ -33,6 +33,7 @@ struct ImGuiVars
 	float atten = 1.f;
 	int fov = 80.f;
 	float scale[3]{ 1.f,1.f,1.f };
+	bool enableHandModel = false;
 };
 
 class DX11Addon

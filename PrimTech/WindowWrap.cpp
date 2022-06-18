@@ -280,7 +280,8 @@ bool Window::init(LPCWSTR windowName, HINSTANCE hInstance, std::wstring windowCl
 
 	RegisterClass(&wc);
 	m_hwnd = CreateWindowEx(0, m_wndClass.c_str(), m_windowName.c_str(), style,
-		CW_USEDEFAULT, CW_USEDEFAULT,
+		(LONG(GetSystemMetrics(SM_CXSCREEN) - m_windowWidth) / 2),
+		(LONG(GetSystemMetrics(SM_CYSCREEN) - m_windowHeight) / 3),
 		rect.right - rect.left,
 		rect.bottom - rect.top,
 		NULL, NULL, hInstance, this);
