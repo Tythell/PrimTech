@@ -120,14 +120,10 @@ sm::Matrix Transform::GetWorldTransposed()
 
 void ForceRotation(sm::Vector3& v)
 {
-	if (v.x < 0.f || v.x > d::XM_2PI) v.x += d::XM_2PI;
-	if (v.y < 0.f || v.y > d::XM_2PI) v.y += d::XM_2PI;
-	if (v.z < 0.f || v.z > d::XM_2PI) v.z += d::XM_2PI;
-}
-
-void ForceRotation(float& x, float& y, float& z)
-{
-	if (x < 0.f || x > d::XM_2PI) x += d::XM_2PI;
-	if (y < 0.f || y > d::XM_2PI) y += d::XM_2PI;
-	if (z < 0.f || z > d::XM_2PI) z += d::XM_2PI;
+	if (v.x < 0.f) v.x += d::XM_2PI;
+	if (v.y < 0.f) v.y += d::XM_2PI;
+	if (v.z < 0.f) v.z += d::XM_2PI;
+	if (v.x > d::XM_2PI) v.x -= d::XM_2PI;
+	if (v.y > d::XM_2PI) v.y -= d::XM_2PI;
+	if (v.z > d::XM_2PI) v.z -= d::XM_2PI;
 }

@@ -28,4 +28,3 @@ private:
 };
 
 void ForceRotation(sm::Vector3& v);
-void ForceRotation(float& x, float& y, float& z);

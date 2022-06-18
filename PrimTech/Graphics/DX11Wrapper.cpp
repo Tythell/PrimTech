@@ -285,7 +285,7 @@ void DX11Addon::ImGuiRender()
 	m_bulb.SetPosition(im.pointLightPos[0], im.pointLightPos[1], im.pointLightPos[2]);
 
 	//ImGui::DragFloat("Point light range", )
-	ImGui::Text(GetVectorAsString(mp_cam->GetForwardVector()).c_str());
+	ImGui::Text(GetVectorAsString(mp_cam->GetRotation()).c_str());
 	//if (mp_kb->IsKeyDown(Key::Y))
 		//m_pWin->ShutDown();
 	ImGui::End();
@@ -358,7 +358,8 @@ void DX11Addon::Render(const float& deltatime)
 	m_handmodel.SetPosition(mp_cam->GetPosition() + sm::Vector3(0.f, -0.14f, 0.f));
 	m_handmodel.SetRotation(-mp_cam->GetRotation().x, mp_cam->GetRotation().y, -mp_cam->GetRotation().z);
 	m_handmodel.Rotate(0.f, d::XM_PI, 0.f);
-	m_handmodel.Draw();
+	if(mp_cam->GetOffset().z == 0.f)
+		m_handmodel.Draw();
 
 	ImGuiRender();
 	m_swapChain->Present((UINT)im.useVsync, NULL);

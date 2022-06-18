@@ -30,6 +30,8 @@ public:
 	sm::Vector3 GetOffset() const;
 	sm::Vector3 GetPosition() const;
 	sm::Vector3 GetRotation() const;;
+
+	void SetRotationSpeed(float f);
 private:
 	void UpdateView();
 	sm::Vector3 m_position, m_rotation, m_offset;
@@ -37,5 +39,6 @@ private:
 
 	sm::Vector3 m_forwardV, m_leftV, m_upV;
 	const float OFFSETMAX = 4.f;
+	float m_rotationSpeed;
 };
 

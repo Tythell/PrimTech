@@ -68,19 +68,23 @@ void Camera::Move(const sm::Vector3 v)
 
 void Camera::Rotate(float x, float y, float z)
 {
-	m_rotation += sm::Vector3(x, y, z);
-	if (m_rotation.x < 0.f || m_rotation.x > d::XM_2PI) m_rotation.x = d::XM_2PI + m_rotation.x;
-	if (m_rotation.y < 0.f || m_rotation.y > d::XM_2PI) m_rotation.y = d::XM_2PI + m_rotation.y;
-	if (m_rotation.z < 0.f || m_rotation.z > d::XM_2PI) m_rotation.z = d::XM_2PI + m_rotation.z;
+	m_rotation += sm::Vector3(x, y, z) * (m_rotationSpeed);
+	//if (m_rotation.x > 0.f) m_rotation.x = d::XM_2PI;
+	
+	ForceRotation(m_rotation);
+	//if (m_rotation.x < 0.f || m_rotation.x > d::XM_2PI) m_rotation.x = d::XM_2PI - m_rotation.x;
+	//if (m_rotation.y < 0.f || m_rotation.y > d::XM_2PI) m_rotation.y = d::XM_2PI - m_rotation.y;
+	//if (m_rotation.z < 0.f || m_rotation.z > d::XM_2PI) m_rotation.z = d::XM_2PI - m_rotation.z;
 	UpdateView();
 }
 
 void Camera::Rotate(const sm::Vector3 v)
 {
-	m_rotation += v;
-	if (m_rotation.x < 0.f || m_rotation.x > d::XM_2PI) m_rotation.x = d::XM_2PI + m_rotation.x;
-	if (m_rotation.y < 0.f || m_rotation.y > d::XM_2PI) m_rotation.y = d::XM_2PI + m_rotation.y;
-	if (m_rotation.z < 0.f || m_rotation.z > d::XM_2PI) m_rotation.z = d::XM_2PI + m_rotation.z;
+	m_rotation += v * (m_rotationSpeed);
+	//if (m_rotation.x < 0.f || m_rotation.x > d::XM_2PI) m_rotation.x = d::XM_2PI - m_rotation.x;
+	//if (m_rotation.y < 0.f || m_rotation.y > d::XM_2PI) m_rotation.y = d::XM_2PI - m_rotation.y;
+	//if (m_rotation.z < 0.f || m_rotation.z > d::XM_2PI) m_rotation.z = d::XM_2PI - m_rotation.z;
+	ForceRotation(m_rotation);
 	UpdateView();
 }
 
@@ -134,6 +138,11 @@ sm::Vector3 Camera::GetPosition() const
 sm::Vector3 Camera::GetRotation() const
 {
 	return m_rotation;
+}
+
+void Camera::SetRotationSpeed(float f)
+{
+	m_rotationSpeed = f;
 }
 
 void Camera::UpdateView()

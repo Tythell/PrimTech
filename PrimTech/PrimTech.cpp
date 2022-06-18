@@ -30,6 +30,7 @@ namespace pt
 
 	void PrimTech::Update(const float& dt)
 	{
+		m_cam3d.SetRotationSpeed(0.001f);
 		sm::Vector3 move = { 0.f,0.f,0.f };
 		static bool canMove = true;
 		if (m_kb.IsKeyDown(Key::A)) move += m_cam3d.GetLeftVector();
@@ -61,7 +62,7 @@ namespace pt
 			MouseEvent me = MouseHandler::ReadEvent();
 			if (me.GetType() == MouseEvent::EventType::RAW_MOVE && canMove)
 			{
-				m_cam3d.Rotate(me.GetPosition().y * .005f, me.GetPosition().x * .005f, 0.f);
+				m_cam3d.Rotate(me.GetPosition().y, me.GetPosition().x, 0.f);
 			}
 			else if (me.GetType() == MouseEvent::EventType::eSCROLLUP)
 				m_cam3d.Offset(0.f, 0.f, -0.5f);

@@ -24,7 +24,7 @@ public:
 private:
 	DX11Addon* m_pDX11 = nullptr;
 	bool m_apiLoaded = false;
-	int m_windowWidth, m_windowHeight = 0;
+	int m_windowWidth = 0, m_windowHeight = 0;
 	std::wstring m_windowName;
 	HWND m_hwnd = NULL;
 	HINSTANCE m_hInstance = NULL;
