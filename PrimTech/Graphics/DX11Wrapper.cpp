@@ -355,10 +355,10 @@ void DX11Addon::Render(const float& deltatime)
 	m_menacing.Draw();
 	m_bulb.Draw();
 	dc->ClearDepthStencilView(m_dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.f, 0);
-	m_handmodel.SetPosition(mp_cam->GetPosition() + sm::Vector3(0.f, -0.14f, 0.f));
+	m_handmodel.SetPosition(mp_cam->GetPosition());
 	m_handmodel.SetRotation(-mp_cam->GetRotation().x, mp_cam->GetRotation().y, -mp_cam->GetRotation().z);
 	m_handmodel.Rotate(0.f, d::XM_PI, 0.f);
-	if(mp_cam->GetOffset().z == 0.f)
+	if (mp_cam->GetOffset().z == 0.f)
 		m_handmodel.Draw();
 
 	ImGuiRender();
