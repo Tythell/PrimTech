@@ -89,7 +89,7 @@ StyleCopReport.xml
 *.scc
 
 #Don't want to ignore .objs in Asset folder
-!PrimTech/Assets/*.obj
+!PrimTech/Assets/models/*.obj
 
 # Chutzpah Test files
 _Chutzpah*
