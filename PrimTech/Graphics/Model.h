@@ -27,7 +27,6 @@ public:
 	Model();
 	void Init(const std::string path, ID3D11Device*& pDevice, ID3D11DeviceContext*& pDc, Buffer<hlsl::cbWorldTransforms3D>& pCbuffer, bool makeLeftHanded = true);
 	void Draw();
-	void SetMesh(Mesh& mesh);
 	void LoadDiffuse(const std::string path);
 private:
 	Mesh* mp_mesh = nullptr;

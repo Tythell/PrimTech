@@ -21,7 +21,6 @@ void Model::Init(const std::string path, ID3D11Device*& pDevice, ID3D11DeviceCon
 		mp_mesh = ResourceHandler::GetMeshAdress(meshIndex);
 	else
 		mp_mesh = ResourceHandler::AddMesh(fullpath, pDevice);
-	//LoadObjToBuffer(path, pDevice, m_vbuffer);
 }
 
 void Model::Draw()
@@ -37,11 +36,6 @@ void Model::Draw()
 		dc->PSSetShaderResources(0, 1, ResourceHandler::GetTextureAdress(0)->GetSRVAdress()); // If Model has no diffuse it default to first texture in vector
 	
 	dc->Draw(mp_mesh->GetVBuffer().GetBufferSize(), 0);
-}
-
-void Model::SetMesh(Mesh& mesh)
-{
-	mp_mesh = &mesh;
 }
 
 void Model::LoadDiffuse(const std::string path)

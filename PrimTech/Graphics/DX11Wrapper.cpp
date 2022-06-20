@@ -195,21 +195,27 @@ bool DX11Addon::InitShaders()
 
 bool DX11Addon::InitScene()
 {
+	dc->IASetInputLayout(m_3dvs.GetInputLayout());
+	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	dc->RSSetState(m_rasterizerState);
+	dc->OMSetDepthStencilState(m_dsState, 0);
+	dc->PSSetSamplers(0, 1, &m_sampState);
+	dc->OMSetRenderTargets(1, &m_rtv, m_dsView);
+
 	ResourceHandler::AddTexture("chessboard.png", device); // setting missingtexture
 	m_model.Init("scuffball.obj", device, dc, m_transformBuffer);
 	m_model.SetPosition(0.f, 0.f, 3.f);
 	m_bulb.Init("bulb.obj", device, dc, m_transformBuffer);
 	m_bulb.SetScale(1.2f);
 	m_plane.Init("plane.txt", device, dc, m_transformBuffer);
-	m_plane.LoadDiffuse("gunter2.png");
 	m_plane.SetPosition(0.f, -1.f, 0.f);
 	m_plane.SetScale(10.f);
 
 	m_playermodel.Init("dirCapsule.obj", device, dc, m_transformBuffer);
 	m_playermodel.SetScale(.1f);
-	m_playermodel.LoadDiffuse("gunter2.png");
 
 	m_gunter.Init("gunter.obj", device, dc, m_transformBuffer);
+	m_gunter.LoadDiffuse("gunteruv.png");
 	m_gunter.SetPosition(-1.f, 2.f, -6.f);
 	m_gunter.SetRotation(0.f, d::XM_PI, 0.f);
 	m_menacing.Init("menacing.obj", device, dc, m_transformBuffer);
@@ -328,16 +334,16 @@ void DX11Addon::Render(const float& deltatime)
 
 	dc->ClearRenderTargetView(m_rtv, bgColor);
 	dc->ClearDepthStencilView(m_dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
-
-	dc->IASetInputLayout(m_3dvs.GetInputLayout());
-	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	dc->RSSetState(m_rasterizerState);
-	dc->OMSetDepthStencilState(m_dsState, 0);
-	dc->PSSetSamplers(0, 1, &m_sampState);
-	dc->VSSetShader(m_3dvs.GetShader(), NULL, 0);
 	dc->PSSetShader(m_3dps.GetShader(), NULL, 0);
 
-	dc->OMSetRenderTargets(1, &m_rtv, m_dsView);
+	//dc->IASetInputLayout(m_3dvs.GetInputLayout());
+	//dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	//dc->RSSetState(m_rasterizerState);
+	//dc->OMSetDepthStencilState(m_dsState, 0);
+	//dc->PSSetSamplers(0, 1, &m_sampState);
+	//dc->VSSetShader(m_3dvs.GetShader(), NULL, 0);
+	//dc->OMSetRenderTargets(1, &m_rtv, m_dsView);
+
 
 	m_transformBuffer.Data().viewProj = d::XMMatrixTranspose(mp_cam->GetViewM() * mp_cam->GetProjM());
 	m_lightbuffer.Data().direction = sm::Vector3(0.f, 1.f, 0.f);
