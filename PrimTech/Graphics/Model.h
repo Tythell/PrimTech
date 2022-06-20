@@ -32,6 +32,7 @@ public:
 private:
 	Mesh* mp_mesh = nullptr;
 	ID3D11DeviceContext* dc = nullptr;
+	ID3D11Device* device = nullptr;
 	Buffer<hlsl::cbWorldTransforms3D>* mp_cbTransformBuffer = nullptr;
 	TextureMap* mp_diffuse = nullptr;
 };

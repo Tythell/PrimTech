@@ -21,7 +21,6 @@ namespace pt
 		//Camera m_cellCam;
 		Camera m_cam3d;
 		KeyboardHandler m_kb;
-		//MouseHandler m_mouse;
 		float m_playerSpeed;
 	};
 

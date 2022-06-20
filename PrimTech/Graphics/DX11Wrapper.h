@@ -110,6 +110,5 @@ private:
 	Model m_gunter;
 	Model m_menacing;
 	Model m_handmodel;
-	TextureMap m_missingTexture;
 };
 

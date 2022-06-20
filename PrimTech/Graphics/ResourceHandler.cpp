@@ -2,6 +2,7 @@
 #include "Model.h"
 
 std::vector<Mesh*> ResourceHandler::m_meshes;
+std::vector<TextureMap*> ResourceHandler::m_textures;
 
 Mesh* ResourceHandler::AddMesh(std::string path, ID3D11Device*& pDevice, bool makeLeftHanded)
 {
@@ -20,6 +21,23 @@ Mesh* ResourceHandler::GetMeshAdress(unsigned int index)
 	return m_meshes[index];
 }
 
+TextureMap* ResourceHandler::AddTexture(std::string path, ID3D11Device*& pDevice, bool flipUV)
+{
+	TextureMap* pTexture = new TextureMap(path.c_str(), pDevice, flipUV);
+	m_textures.emplace_back(pTexture);
+	return pTexture;
+}
+
+TextureMap& ResourceHandler::GetTexture(unsigned int index)
+{
+	return *m_textures[index];
+}
+
+TextureMap* ResourceHandler::GetTextureAdress(unsigned int index)
+{
+	return m_textures[index];;
+}
+
 int ResourceHandler::CheckMeshNameExists(std::string meshName)
 {
 	for (int i = 0; i < m_meshes.size(); i++)
@@ -30,10 +48,20 @@ int ResourceHandler::CheckMeshNameExists(std::string meshName)
 	return -1;
 }
 
+int ResourceHandler::CheckTextureNameExists(std::string textureName)
+{
+	for (int i = 0; i < m_textures.size(); i++)
+	{
+		if (m_textures[i]->GetName() == textureName)
+			return i;
+	}
+	return -1;
+}
+
 void ResourceHandler::Unload()
 {
 	for (int i = 0; i < m_meshes.size(); i++)
-	{
 		delete m_meshes[i];
-	}
+	for (int i = 0; i < m_textures.size(); i++)
+		delete m_textures[i];
 }

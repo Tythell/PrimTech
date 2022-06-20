@@ -8,6 +8,11 @@
 TextureMap::TextureMap()
 {}
 
+TextureMap::TextureMap(const char* texturePath, ID3D11Device * device, const bool& flipUV)
+{
+	CreateFromFile(texturePath, device, flipUV);
+}
+
 TextureMap::~TextureMap()
 {
 	if (m_textureSRV)
@@ -19,6 +24,8 @@ bool TextureMap::CreateFromFile(const char* texturePath, ID3D11Device* device, c
 	if (m_isLoaded) return false;
 
 	stbi_set_flip_vertically_on_load(flipUV);
+
+	m_name = std::string(texturePath);
 
 	std::string fullpath = "Assets/Textures/" + std::string(texturePath);
 
@@ -138,4 +145,9 @@ ID3D11ShaderResourceView* TextureMap::GetSRV()
 ID3D11ShaderResourceView** TextureMap::GetSRVAdress()
 {
 	return &m_textureSRV;
+}
+
+std::string TextureMap::GetName() const
+{
+	return m_name;
 }

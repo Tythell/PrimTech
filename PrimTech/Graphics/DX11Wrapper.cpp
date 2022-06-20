@@ -195,17 +195,19 @@ bool DX11Addon::InitShaders()
 
 bool DX11Addon::InitScene()
 {
+	ResourceHandler::AddTexture("chessboard.png", device); // setting missingtexture
 	m_model.Init("scuffball.obj", device, dc, m_transformBuffer);
 	m_model.SetPosition(0.f, 0.f, 3.f);
 	m_bulb.Init("bulb.obj", device, dc, m_transformBuffer);
 	m_bulb.SetScale(1.2f);
 	m_plane.Init("plane.txt", device, dc, m_transformBuffer);
+	m_plane.LoadDiffuse("gunter2.png");
 	m_plane.SetPosition(0.f, -1.f, 0.f);
 	m_plane.SetScale(10.f);
-	m_missingTexture.CreateFromFile("chessboard.png", device);
 
 	m_playermodel.Init("dirCapsule.obj", device, dc, m_transformBuffer);
 	m_playermodel.SetScale(.1f);
+	m_playermodel.LoadDiffuse("gunter2.png");
 
 	m_gunter.Init("gunter.obj", device, dc, m_transformBuffer);
 	m_gunter.SetPosition(-1.f, 2.f, -6.f);
@@ -334,7 +336,6 @@ void DX11Addon::Render(const float& deltatime)
 	dc->PSSetSamplers(0, 1, &m_sampState);
 	dc->VSSetShader(m_3dvs.GetShader(), NULL, 0);
 	dc->PSSetShader(m_3dps.GetShader(), NULL, 0);
-	dc->PSSetShaderResources(0, 1, m_missingTexture.GetSRVAdress());
 
 	dc->OMSetRenderTargets(1, &m_rtv, m_dsView);
 

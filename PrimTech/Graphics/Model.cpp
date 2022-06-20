@@ -14,6 +14,7 @@ void Model::Init(const std::string path, ID3D11Device*& pDevice, ID3D11DeviceCon
 {
 	std::string fullpath = "Assets/models/" + path;
 	dc = pDc;
+	device = pDevice;
 	mp_cbTransformBuffer = &pCbuffer;
 	int meshIndex = ResourceHandler::CheckMeshNameExists(StringHelper::GetName(fullpath));
 	if (meshIndex != -1)
@@ -30,6 +31,11 @@ void Model::Draw()
 	mp_cbTransformBuffer->Data().world = GetWorldTransposed();
 	mp_cbTransformBuffer->UpdateCB();
 	dc->IASetVertexBuffers(0, 1, mp_mesh->GetVBuffer().GetReference(), mp_mesh->GetVBuffer().GetStrideP(), &offset);
+	if (mp_diffuse)
+		dc->PSSetShaderResources(0, 1, mp_diffuse->GetSRVAdress());
+	else
+		dc->PSSetShaderResources(0, 1, ResourceHandler::GetTextureAdress(0)->GetSRVAdress()); // If Model has no diffuse it default to first texture in vector
+	
 	dc->Draw(mp_mesh->GetVBuffer().GetBufferSize(), 0);
 }
 
@@ -40,6 +46,11 @@ void Model::SetMesh(Mesh& mesh)
 
 void Model::LoadDiffuse(const std::string path)
 {
+	int textureIndex = ResourceHandler::CheckTextureNameExists(StringHelper::GetName(path));
+	if (textureIndex != -1)
+		mp_diffuse = ResourceHandler::GetTextureAdress(textureIndex);
+	else
+		mp_diffuse = ResourceHandler::AddTexture(path, device);
 }
 
 bool LoadObjToBuffer(std::string path, ID3D11Device*& pDevice, Buffer<Vertex3D>& vbuffer, bool makeLeftHanded)
