@@ -19,19 +19,21 @@ void Transform::SetPosition(sm::Vector3 v)
 
 void Transform::SetRotation(float x, float y, float z)
 {
-	if (x < 0.f || x > d::XM_2PI) x = d::XM_2PI + x;
-	if (y < 0.f || y > d::XM_2PI) y = d::XM_2PI + y;
-	if (z < 0.f || z > d::XM_2PI) z = d::XM_2PI + z;
+	//if (x < 0.f || x > d::XM_2PI) x = d::XM_2PI + x;
+	//if (y < 0.f || y > d::XM_2PI) y = d::XM_2PI + y;
+	//if (z < 0.f || z > d::XM_2PI) z = d::XM_2PI + z;
 	m_rot = sm::Vector3(x, y, z);
+	ForceRotation(m_rot);
 	UpdateWorld();
 }
 
 void Transform::SetRotation(sm::Vector3 v)
 {
-	if (v.x < 0.f || v.x > d::XM_2PI) v.x = d::XM_2PI + v.x;
-	if (v.y < 0.f || v.y > d::XM_2PI) v.y = d::XM_2PI + v.y;
-	if (v.z < 0.f || v.z > d::XM_2PI) v.z = d::XM_2PI + v.z;
+	//if (v.x < 0.f || v.x > d::XM_2PI) v.x = d::XM_2PI + v.x;
+	//if (v.y < 0.f || v.y > d::XM_2PI) v.y = d::XM_2PI + v.y;
+	//if (v.z < 0.f || v.z > d::XM_2PI) v.z = d::XM_2PI + v.z;
 	m_rot = v;
+	ForceRotation(m_rot);
 	UpdateWorld();
 }
 
@@ -120,10 +122,15 @@ sm::Matrix Transform::GetWorldTransposed()
 
 void ForceRotation(sm::Vector3& v)
 {
+
+	v.x = fmodf(v.x, d::XM_2PI);
+	v.y = fmodf(v.y, d::XM_2PI);
+	v.z = fmodf(v.z, d::XM_2PI);
+
 	if (v.x < 0.f) v.x += d::XM_2PI;
 	if (v.y < 0.f) v.y += d::XM_2PI;
 	if (v.z < 0.f) v.z += d::XM_2PI;
-	if (v.x > d::XM_2PI) v.x -= d::XM_2PI;
-	if (v.y > d::XM_2PI) v.y -= d::XM_2PI;
-	if (v.z > d::XM_2PI) v.z -= d::XM_2PI;
+	//else if (v.x > d::XM_2PI) v.x -= d::XM_2PI;
+	//else if (v.y > d::XM_2PI) v.y -= d::XM_2PI;
+	//else if (v.z > d::XM_2PI) v.z -= d::XM_2PI;
 }

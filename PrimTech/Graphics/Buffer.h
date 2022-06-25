@@ -60,14 +60,13 @@ public:
 			Popup::Error("Buffer created twice");
 		}
 		m_bufferSize = bufferSize;
-		m_stride = sizeof(T);
 
 		//m_data = data;
 		
 		D3D11_BUFFER_DESC bufferDesc;
 		ZeroMemory(&bufferDesc, sizeof(D3D11_BUFFER_DESC));
 		bufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
-		bufferDesc.ByteWidth = sizeof(T) * m_bufferSize;
+		bufferDesc.ByteWidth = m_stride * m_bufferSize;
 		bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 		bufferDesc.CPUAccessFlags = 0;
 		bufferDesc.MiscFlags = 0;
@@ -90,7 +89,6 @@ public:
 
 		mp_dc = dc;
 		m_data = new T;
-		m_stride = sizeof(T);
 		m_bufferSize = 1;
 
 		D3D11_BUFFER_DESC bufferDesc;
@@ -148,7 +146,7 @@ private:
 	T* m_data = nullptr;
 	ID3D11Buffer* m_buffer = nullptr;
 	ID3D11DeviceContext* mp_dc = nullptr;
-	UINT m_stride = 0;
+	UINT m_stride = sizeof(T);
 	UINT m_bufferSize = 0;
 	//BufferUsage m_usage;
 	//BufferType m_type;

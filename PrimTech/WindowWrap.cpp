@@ -1,4 +1,5 @@
 #include "WindowWrap.h"
+#include <memory>
 #include<omp.h>
 
 LRESULT CALLBACK MessageDirect(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)

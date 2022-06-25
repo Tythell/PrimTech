@@ -110,5 +110,6 @@ private:
 	Model m_gunter;
 	Model m_menacing;
 	Model m_handmodel;
+	int m_fps = 0;
 };
 

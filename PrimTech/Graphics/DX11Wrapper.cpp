@@ -238,7 +238,6 @@ void DX11Addon::InitConstantBuffers()
 
 void DX11Addon::UpdateConstantBuffers()
 {
-
 }
 
 void DX11Addon::ImGuiInit(HWND& hwnd)
@@ -259,6 +258,9 @@ void DX11Addon::ImGuiRender()
 	ImGui::NewFrame();
 	ImGui::Begin("Debug", nullptr, ImGuiWindowFlags_NoCollapse);
 	ImGui::Text("Press Q to lock/unlock mouse");
+	std::string fpsString = "FPS: ";
+	fpsString += std::to_string(m_fps);
+	ImGui::Text(fpsString.c_str());
 	//ImGui::SetCursorPos
 	if (ImGui::SliderInt("FOV", &im.fov, 40.f, 110.f))
 		mp_cam->SetPerspective(im.fov, (float)m_width / (float)m_height, .1f, 100.f);
@@ -330,11 +332,21 @@ void DX11Addon::SetInputP(KeyboardHandler& kb)
 
 void DX11Addon::Render(const float& deltatime)
 {
-	float bgColor[] = { .1f,.1f,.1f,1.f };
+	// Calculate fps
+	static float fpsTimer = 0.f;
+	static int fpsCounter = 0;
+	fpsTimer += deltatime;
+	fpsCounter++;
+	if (fpsTimer >= 1.f)
+	{
+		m_fps = fpsCounter;
+		fpsCounter = 0;
+		fpsTimer = 0.f;
+	}
 
+	float bgColor[] = { .1f,.1f,.1f,1.f };
 	dc->ClearRenderTargetView(m_rtv, bgColor);
 	dc->ClearDepthStencilView(m_dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
-	dc->PSSetShader(m_3dps.GetShader(), NULL, 0);
 
 	//dc->IASetInputLayout(m_3dvs.GetInputLayout());
 	//dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -368,6 +380,7 @@ void DX11Addon::Render(const float& deltatime)
 	m_handmodel.SetRotation(-mp_cam->GetRotation().x, mp_cam->GetRotation().y, -mp_cam->GetRotation().z);
 	m_handmodel.Rotate(0.f, d::XM_PI, 0.f);
 
+	dc->PSSetShader(m_3dps.GetShader(), NULL, 0);
 	if (mp_cam->GetOffset().z == 0.f && im.enableHandModel)
 		m_handmodel.Draw();
 

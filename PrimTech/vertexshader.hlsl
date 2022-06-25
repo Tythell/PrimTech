@@ -20,7 +20,7 @@ struct VSOutput
 };
 
 VSOutput main(VSInput input)
-{
+{   
     VSOutput output;
     output.position = mul(float4(input.localPosition.xyz, 1.f), mul(world, viewProj));
     output.texCoord = input.texCoord;

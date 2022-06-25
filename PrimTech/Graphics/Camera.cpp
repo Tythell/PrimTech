@@ -154,8 +154,9 @@ void Camera::UpdateView()
 
 	d::XMVECTOR upDir = d::XMVector2TransformCoord(sm::Vector4(0.f, 1.f, 0.f, 0.f), camRot);
 
-	if (m_offset.z < 0.f) m_offset.z = 0.f;
-	else if (m_offset.z > OFFSETMAX) m_offset.z = OFFSETMAX;
+	//if (m_offset.z < 0.f) m_offset.z = 0.f;
+	//else if (m_offset.z > OFFSETMAX) m_offset.z = OFFSETMAX;
+	
 	sm::Matrix offsetMatrix = d::XMMatrixTranslationFromVector(m_offset);
 	m_viewM = d::XMMatrixLookAtLH(m_position, camTarget, upDir);
 

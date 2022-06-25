@@ -21,19 +21,21 @@ void Model::Init(const std::string path, ID3D11Device*& pDevice, ID3D11DeviceCon
 		mp_mesh = ResourceHandler::GetMeshAdress(meshIndex);
 	else
 		mp_mesh = ResourceHandler::AddMesh(fullpath, pDevice);
+
+	dc->VSSetConstantBuffers(0, 1, mp_cbTransformBuffer->GetReference());
 }
 
 void Model::Draw()
 {
 	UINT offset = 0;
-	dc->VSSetConstantBuffers(0, 1, mp_cbTransformBuffer->GetReference());
+	
 	mp_cbTransformBuffer->Data().world = GetWorldTransposed();
 	mp_cbTransformBuffer->UpdateCB();
 	dc->IASetVertexBuffers(0, 1, mp_mesh->GetVBuffer().GetReference(), mp_mesh->GetVBuffer().GetStrideP(), &offset);
 	if (mp_diffuse)
 		dc->PSSetShaderResources(0, 1, mp_diffuse->GetSRVAdress());
 	else
-		dc->PSSetShaderResources(0, 1, ResourceHandler::GetTextureAdress(0)->GetSRVAdress()); // If Model has no diffuse it default to first texture in vector
+		dc->PSSetShaderResources(0, 1, ResourceHandler::GetTextureAdress(0)->GetSRVAdress()); // If Model has no diffuse it will default to first texture in vector
 	
 	dc->Draw(mp_mesh->GetVBuffer().GetBufferSize(), 0);
 }
@@ -63,7 +65,6 @@ bool LoadObjToBuffer(std::string path, ID3D11Device*& pDevice, Buffer<Vertex3D>&
 
 	if (!reader.is_open())
 	{
-		Popup::Error(path + " not found");
 		return false;
 	}
 	while (std::getline(reader, s))
@@ -133,7 +134,10 @@ bool LoadObjToBuffer(std::string path, ID3D11Device*& pDevice, Buffer<Vertex3D>&
 Mesh::Mesh(std::string path, ID3D11Device*& device, bool makeLeftHanded)
 {
 	if (!LoadObjToBuffer(path, device, m_vbuffer, makeLeftHanded))
-		Popup::Error("loading model went wrong");
+	{
+		Popup::Error("loading " + path);
+		throw;
+	}
 	m_name = StringHelper::GetName(path);
 }
 

@@ -1,6 +1,8 @@
 #pragma once
 #include"../Math/Simplemath.h"
+#include <cmath>
 #include <string>
+#include <cstdint>
 namespace sm = DirectX::SimpleMath;
 namespace d = DirectX;
 
