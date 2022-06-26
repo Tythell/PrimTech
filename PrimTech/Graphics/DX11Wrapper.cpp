@@ -259,11 +259,11 @@ bool DX11Addon::InitScene()
 	m_handmodel.SetMaterialBuffer(m_materialBuffer);
 
 	m_water.Init("plane.txt", device, dc, m_transformBuffer);
-	m_water.LoadDistortion("perlin.png");
+	m_water.LoadDistortion("waterDist.png");
 	m_water.SetScale(4.f);
 	m_water.LoadDiffuse("water.png");
 	m_water.setTextureScrollSpeed(0.07f, 0.07f);
-	m_water.SetPosition(0.f, 0.f, 0.f);
+	m_water.SetPosition(-4.f, 0.f, 0.f);
 	m_water.SetMaterialBuffer(m_materialBuffer);
 
 
