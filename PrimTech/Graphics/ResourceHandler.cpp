@@ -3,8 +3,14 @@
 
 std::vector<Mesh*> ResourceHandler::m_meshes;
 std::vector<TextureMap*> ResourceHandler::m_textures;
+ID3D11Device* ResourceHandler::pDevice;
 
-Mesh* ResourceHandler::AddMesh(std::string path, ID3D11Device*& pDevice, bool makeLeftHanded)
+void ResourceHandler::SetDevice(ID3D11Device*& device)
+{
+	pDevice = device;
+}
+
+Mesh* ResourceHandler::AddMesh(std::string path, bool makeLeftHanded)
 {
 	Mesh* pMesh = new Mesh(path, pDevice);
 	m_meshes.emplace_back(pMesh);
@@ -21,7 +27,7 @@ Mesh* ResourceHandler::GetMeshAdress(unsigned int index)
 	return m_meshes[index];
 }
 
-TextureMap* ResourceHandler::AddTexture(std::string path, ID3D11Device*& pDevice, bool flipUV)
+TextureMap* ResourceHandler::AddTexture(std::string path, bool flipUV)
 {
 	TextureMap* pTexture = new TextureMap(path.c_str(), pDevice, flipUV);
 	m_textures.emplace_back(pTexture);

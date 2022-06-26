@@ -24,7 +24,7 @@ struct ImGuiVars
 	bool useVsync = true;
 	int speed = 70;
 	char* buffer = new char[16]{"image.png"};
-	float pointLightPos[3] = { 0.f,0.f,0.f };
+	float pointLightPos[3] = { 0.f,1.f,0.f };
 	float pointLightColor[3]{1.f,1.f,1.f};
 	float pointLightStr = 1.f;
 	float offset = 0.f;
@@ -47,15 +47,17 @@ public:
 	ID3D11Device* GetDevice() const;
 	ID3D11DeviceContext* GetDeviceContext() const;
 	void ShutDown();
+	void UpdateScene(const float& deltatime);
+	void CalculateFps(const float& deltatime);
 private:
 	bool initSwapChain();
 	bool initRTV();
 	bool SetupDSAndVP();
 	bool InitRastNSampState();
+	void InitBlendState();
 	bool InitShaders();
 	bool InitScene();
 	void InitConstantBuffers();
-	void UpdateConstantBuffers();
 	void ImGuiInit(HWND& hwnd);
 	void ImGuiRender();
 	void ImGuiShutDown();
@@ -76,10 +78,9 @@ private:
 	ID3D11DepthStencilView* m_dsView = nullptr;
 	ID3D11DepthStencilState* m_dsState;
 
-	D3D11_VIEWPORT m_viewport;
-
 	ID3D11RasterizerState* m_rasterizerState = nullptr;
 	ID3D11SamplerState* m_sampState = nullptr;
+	ID3D11BlendState* m_blendState = nullptr;
 
 	//VertexShader m_quadVs;
 	//PixelShader m_quadPs;
@@ -93,8 +94,9 @@ private:
 
 	//TextureMap m_fileTexture;
 
-	Buffer<hlsl::cbWorldTransforms3D> m_transformBuffer;
-	Buffer<hlsl::cbLightBuffer> m_lightbuffer;
+	Buffer<hlsl::cbpWorldTransforms3D> m_transformBuffer;
+	Buffer<hlsl::cbpLightBuffer> m_lightbuffer;
+	Buffer<hlsl::cbpMaterialBuffer> m_materialBuffer;
 
 	Camera* mp_cam;
 
@@ -110,6 +112,7 @@ private:
 	Model m_gunter;
 	Model m_menacing;
 	Model m_handmodel;
+	Model m_water;
 	int m_fps = 0;
 };
 

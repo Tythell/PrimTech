@@ -92,6 +92,8 @@ namespace pt
 		{
 			start = omp_get_wtime();
 			Update(deltatime);
+			mp_gApi->CalculateFps(deltatime);
+			mp_gApi->UpdateScene(deltatime);
 			mp_gApi->Render(deltatime);
 			deltatime = omp_get_wtime() - start;
 

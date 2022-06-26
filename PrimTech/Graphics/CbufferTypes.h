@@ -17,20 +17,22 @@ namespace hlsl
 	struct bool3 { bool x; bool y; bool z; };
 	struct bool4 { bool x; bool y; bool z; bool w; };
 
-	struct cbTransformsQuad
+	struct cbvTransformsQuad
 	{
 		float4x4 world;
 		float4x4 viewProj;
 		float4 color;
 	};
 
-	struct cbWorldTransforms3D
+	struct cbpWorldTransforms3D
 	{
 		float4x4 world;
 		float4x4 viewProj;
+		float2 texCoordOffset = {0.f,0.f};
+		float2 pad;
 	};
 
-	struct cbLightBuffer
+	struct cbpLightBuffer
 	{
 		float3 direction;
 		float p;
@@ -40,5 +42,12 @@ namespace hlsl
 		float attenuation;
 		float3 pointLightColor;
 		float pointlightStr;
+	};
+
+	struct cbpMaterialBuffer
+	{
+		int hasDistortion;
+		float2 texCoordOffset = { 0.f,0.f };
+		float transparancy;
 	};
 }

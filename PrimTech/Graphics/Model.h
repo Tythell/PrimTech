@@ -2,9 +2,7 @@
 #include "Transform.h"
 #include"Buffer.h"
 #include"Vertex.h"
-#include <string>
-#include "Texture.h"
-#include "ResourceHandler.h"
+#include "Material.h"
 
 bool LoadObjToBuffer(std::string path, ID3D11Device*& pDevice, Buffer<Vertex3D>& vbuffer, bool makeLeftHanded = true);
 
@@ -25,13 +23,17 @@ class Model : public Transform
 {
 public:
 	Model();
-	void Init(const std::string path, ID3D11Device*& pDevice, ID3D11DeviceContext*& pDc, Buffer<hlsl::cbWorldTransforms3D>& pCbuffer, bool makeLeftHanded = true);
+	void Init(const std::string path, ID3D11Device*& pDevice, ID3D11DeviceContext*& pDc, Buffer<hlsl::cbpWorldTransforms3D>& pCbuffer, bool makeLeftHanded = true);
 	void Draw();
+	void UpdateTextureScroll(const float& deltatime);
 	void LoadDiffuse(const std::string path);
+	void LoadDistortion(const std::string path);
+	void setTextureScrollSpeed(float x, float y);
+	void SetMaterialBuffer(Buffer<hlsl::cbpMaterialBuffer>& cbMaterialBuffer);
 private:
 	Mesh* mp_mesh = nullptr;
+	Material m_material;
 	ID3D11DeviceContext* dc = nullptr;
 	ID3D11Device* device = nullptr;
-	Buffer<hlsl::cbWorldTransforms3D>* mp_cbTransformBuffer = nullptr;
-	TextureMap* mp_diffuse = nullptr;
+	Buffer<hlsl::cbpWorldTransforms3D>* mp_cbTransformBuffer = nullptr;
 };

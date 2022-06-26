@@ -10,7 +10,8 @@ Model::Model()
 {
 }
 
-void Model::Init(const std::string path, ID3D11Device*& pDevice, ID3D11DeviceContext*& pDc, Buffer<hlsl::cbWorldTransforms3D>& pCbuffer, bool makeLeftHanded)
+void Model::Init(const std::string path, ID3D11Device*& pDevice, ID3D11DeviceContext*& pDc,
+	Buffer<hlsl::cbpWorldTransforms3D>& pCbuffer, bool makeLeftHanded)
 {
 	std::string fullpath = "Assets/models/" + path;
 	dc = pDc;
@@ -29,24 +30,38 @@ void Model::Draw()
 {
 	UINT offset = 0;
 	
+	m_material.Set(dc);
 	mp_cbTransformBuffer->Data().world = GetWorldTransposed();
 	mp_cbTransformBuffer->UpdateCB();
 	dc->IASetVertexBuffers(0, 1, mp_mesh->GetVBuffer().GetReference(), mp_mesh->GetVBuffer().GetStrideP(), &offset);
-	if (mp_diffuse)
-		dc->PSSetShaderResources(0, 1, mp_diffuse->GetSRVAdress());
-	else
-		dc->PSSetShaderResources(0, 1, ResourceHandler::GetTextureAdress(0)->GetSRVAdress()); // If Model has no diffuse it will default to first texture in vector
+	
 	
 	dc->Draw(mp_mesh->GetVBuffer().GetBufferSize(), 0);
 }
 
+void Model::UpdateTextureScroll(const float& deltatime)
+{
+	m_material.UpdateTextureScroll(deltatime);
+}
+
 void Model::LoadDiffuse(const std::string path)
 {
-	int textureIndex = ResourceHandler::CheckTextureNameExists(StringHelper::GetName(path));
-	if (textureIndex != -1)
-		mp_diffuse = ResourceHandler::GetTextureAdress(textureIndex);
-	else
-		mp_diffuse = ResourceHandler::AddTexture(path, device);
+	m_material.LoadDiffuse(path);
+}
+
+void Model::LoadDistortion(const std::string path)
+{
+	m_material.LoadDistortion(path);
+}
+
+void Model::setTextureScrollSpeed(float x, float y)
+{
+	m_material.SetScrollSpeed(x, y);
+}
+
+void Model::SetMaterialBuffer(Buffer<hlsl::cbpMaterialBuffer>& cbMaterialBuffer)
+{
+	m_material.SetPointers(&cbMaterialBuffer);
 }
 
 bool LoadObjToBuffer(std::string path, ID3D11Device*& pDevice, Buffer<Vertex3D>& vbuffer, bool makeLeftHanded)

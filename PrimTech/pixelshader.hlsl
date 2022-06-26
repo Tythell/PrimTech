@@ -1,4 +1,5 @@
 Texture2D diffuseMap : DIFFUSEMAP : register(t0);
+Texture2D distortionMap : DISTORTIONMAP : register(t1);
 SamplerState samplerState : SAMPLER : register(s0);
 
 cbuffer LightBuffer : register(b0)
@@ -21,11 +22,28 @@ struct PSInput
     float3 worldPos : WORLD_POS;
 };
 
+cbuffer MaterialBuffer : register(b1)
+{
+    int hasDistortion;
+    float2 texCoordOffset;
+    float transparency;
+}
+
 float4 main(PSInput input) : SV_Target
 {
-    float3 diffuse = diffuseMap.Sample(samplerState, input.texCoord);
+    float distortion;
+    if(hasDistortion)
+        distortion = distortionMap.Sample(samplerState, input.texCoord).x - 0.5f /*/ 10*/;
+    else
+        distortion = 0.f;
+    
+    distortion += texCoordOffset;
+    float4 diffuse = diffuseMap.Sample(samplerState, input.texCoord + distortion);
     float attenuation = 1.f;
     float3 faceNormal = input.normal;
+    
+    
+    
     //float dirLight = dot(faceNormal, direction);
     
     float3 obToLight = position.xyz - input.worldPos;
@@ -41,7 +59,7 @@ float4 main(PSInput input) : SV_Target
     
     float3 light = ambient + (pointLightStr * (pointLightColor * pointlightStre));
     
-    float3 final = diffuse * light;
+    float3 final = diffuse.xyz * light;
     
-    return float4(final, 1.f);
+    return float4(final, transparency);
 }

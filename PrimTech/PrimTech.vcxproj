@@ -158,6 +158,7 @@
     <ClCompile Include="Logic\CellGrid.cpp" />
     <ClCompile Include="Input\Mouse.cpp" />
     <ClCompile Include="Graphics\Model.cpp" />
+    <ClCompile Include="Graphics\Material.cpp" />
     <ClCompile Include="PrimTech.cpp" />
     <ClCompile Include="Graphics\ResourceHandler.cpp" />
     <ClCompile Include="Utility\StringHelper.cpp" />
@@ -191,6 +192,7 @@
     <ClInclude Include="Graphics\Noise\ImprovedPNoise.h" />
     <ClInclude Include="Input\Keyboard.h" />
     <ClInclude Include="Logic\CellGrid.h" />
+    <ClInclude Include="Graphics\Material.h" />
     <ClInclude Include="Math\Math.h" />
     <ClInclude Include="Input\Mouse.h" />
     <ClInclude Include="Graphics\Model.h" />

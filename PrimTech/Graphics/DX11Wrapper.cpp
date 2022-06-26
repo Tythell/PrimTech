@@ -12,12 +12,15 @@ DX11Addon::DX11Addon(Window& window, Camera& camera) :
 	initRTV();
 	SetupDSAndVP();
 	InitRastNSampState();
+	InitBlendState();
+
+	ResourceHandler::SetDevice(device);
 
 	InitShaders();
+	InitConstantBuffers();
 	InitScene();
 
 	//m_fileTexture.CreateFromFile("Textures/gunter2.png", m_device);
-	InitConstantBuffers();
 	//m_grid.InitRenderCell(device, dc);
 	//m_grid.SetCamP(*mp_cam);
 	ImGuiInit(window.getHWND());
@@ -40,6 +43,7 @@ DX11Addon::~DX11Addon()
 	m_dsState->Release();
 	m_rasterizerState->Release();
 	m_sampState->Release();
+	m_blendState->Release();
 }
 
 bool DX11Addon::initSwapChain()
@@ -136,14 +140,9 @@ bool DX11Addon::SetupDSAndVP()
 	hr = device->CreateDepthStencilState(&dssDesc, &m_dsState);
 	COM_ERROR(hr, "DS State failed");
 
-	m_viewport.TopLeftX = 0;
-	m_viewport.TopLeftY = 0;
-	m_viewport.Width = (float)m_width;
-	m_viewport.Height = (float)m_height;
-	m_viewport.MinDepth = 0.f;
-	m_viewport.MaxDepth = 1.f;
+	CD3D11_VIEWPORT viewport(0.f, 0.f, (float)m_width, (float)m_height);
 
-	dc->RSSetViewports(1, &m_viewport);
+	dc->RSSetViewports(1, &viewport);
 
 	return SUCCEEDED(hr);
 }
@@ -160,6 +159,7 @@ bool DX11Addon::InitRastNSampState()
 
 	D3D11_SAMPLER_DESC sampDesc;
 	ZeroMemory(&sampDesc, sizeof(D3D11_SAMPLER_DESC));
+	//sampDesc.Filter = D3D11_FILTER_MIN_LINEAR_MAG_POINT_MIP_LINEAR;
 	sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 	sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -173,6 +173,28 @@ bool DX11Addon::InitRastNSampState()
 
 	return true;
 }
+
+void DX11Addon::InitBlendState()
+{
+	D3D11_BLEND_DESC blendDesc;
+	ZeroMemory(&blendDesc, sizeof(D3D11_BLEND_DESC));
+
+	D3D11_RENDER_TARGET_BLEND_DESC rtbd;
+	ZeroMemory(&rtbd, sizeof(D3D11_RENDER_TARGET_BLEND_DESC));
+	rtbd.BlendEnable = true;
+	//rtbd.SrcBlend = D3D11_BLEND::D3D11_BLEND_SRC_ALPHA_SAT;
+	rtbd.SrcBlend = D3D11_BLEND::D3D11_BLEND_SRC_ALPHA;
+	rtbd.DestBlend = D3D11_BLEND::D3D11_BLEND_INV_SRC_ALPHA;
+	rtbd.BlendOp = D3D11_BLEND_OP::D3D11_BLEND_OP_ADD;
+	rtbd.SrcBlendAlpha = D3D11_BLEND::D3D11_BLEND_ONE;
+	rtbd.DestBlendAlpha = D3D11_BLEND::D3D11_BLEND_ZERO;
+	rtbd.BlendOpAlpha = D3D11_BLEND_OP::D3D11_BLEND_OP_ADD;
+	rtbd.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE::D3D11_COLOR_WRITE_ENABLE_ALL;
+	blendDesc.RenderTarget[0] = rtbd;
+	COM_ERROR(device->CreateBlendState(&blendDesc, &m_blendState), "Failed to create blend state");
+	//dc->OMSetBlendState(m_blendState, NULL, 0xFFFFFFFF);
+}
+
 bool DX11Addon::InitShaders()
 {
 	D3D11_INPUT_ELEMENT_DESC layout3D[] =
@@ -201,29 +223,50 @@ bool DX11Addon::InitScene()
 	dc->OMSetDepthStencilState(m_dsState, 0);
 	dc->PSSetSamplers(0, 1, &m_sampState);
 	dc->OMSetRenderTargets(1, &m_rtv, m_dsView);
+	dc->OMSetBlendState(m_blendState, NULL, 0xFFFFFFFF);
 
-	ResourceHandler::AddTexture("chessboard.png", device); // setting missingtexture
+	ResourceHandler::AddTexture("goalflag.png", device); // setting missingtexture
 	m_model.Init("scuffball.obj", device, dc, m_transformBuffer);
 	m_model.SetPosition(0.f, 0.f, 3.f);
+	m_model.SetMaterialBuffer(m_materialBuffer);
+
 	m_bulb.Init("bulb.obj", device, dc, m_transformBuffer);
+	m_bulb.SetMaterialBuffer(m_materialBuffer);
 	m_bulb.SetScale(1.2f);
 	m_plane.Init("plane.txt", device, dc, m_transformBuffer);
 	m_plane.SetPosition(0.f, -1.f, 0.f);
 	m_plane.SetScale(10.f);
+	m_plane.SetMaterialBuffer(m_materialBuffer);
+
+	m_plane.setTextureScrollSpeed(-0.1f, -0.1f);
 
 	m_playermodel.Init("dirCapsule.obj", device, dc, m_transformBuffer);
 	m_playermodel.SetScale(.1f);
+	m_playermodel.SetMaterialBuffer(m_materialBuffer);
 
 	m_gunter.Init("gunter.obj", device, dc, m_transformBuffer);
 	m_gunter.LoadDiffuse("gunteruv.png");
 	m_gunter.SetPosition(-1.f, 2.f, -6.f);
 	m_gunter.SetRotation(0.f, d::XM_PI, 0.f);
+	m_gunter.SetMaterialBuffer(m_materialBuffer);
+
 	m_menacing.Init("menacing.obj", device, dc, m_transformBuffer);
 	m_menacing.SetPosition(-3.f, 2.f, -6.f);
 	m_menacing.SetRotation(0.f, d::XM_PI, 0.f);
+	m_menacing.SetMaterialBuffer(m_materialBuffer);
 	m_handmodel.Init("handmodel2.obj", device, dc, m_transformBuffer);
 	m_handmodel.SetScale(.1f);
-	
+	m_handmodel.SetMaterialBuffer(m_materialBuffer);
+
+	m_water.Init("plane.txt", device, dc, m_transformBuffer);
+	m_water.LoadDistortion("perlin.png");
+	m_water.SetScale(4.f);
+	m_water.LoadDiffuse("water.png");
+	m_water.setTextureScrollSpeed(0.07f, 0.07f);
+	m_water.SetPosition(0.f, 0.f, 0.f);
+	m_water.SetMaterialBuffer(m_materialBuffer);
+
+
 
 	return true;
 }
@@ -234,10 +277,26 @@ void DX11Addon::InitConstantBuffers()
 	dc->VSSetConstantBuffers(0, 1, m_transformBuffer.GetReference());
 	m_lightbuffer.CreateConstantBuffer(device, dc);
 	dc->PSSetConstantBuffers(0, 1, m_lightbuffer.GetReference());
+	m_materialBuffer.CreateConstantBuffer(device, dc);
+	dc->PSSetConstantBuffers(1, 1, m_materialBuffer.GetReference());
 }
 
-void DX11Addon::UpdateConstantBuffers()
+void DX11Addon::UpdateScene(const float& deltatime)
 {
+	m_lightbuffer.Data().ambientLight = { im.ambient[0], im.ambient[1], im.ambient[2] };
+	m_lightbuffer.Data().ambientStr = im.ambient[3];
+	m_lightbuffer.Data().pointLightColor = { im.pointLightColor[0], im.pointLightColor[1], im.pointLightColor[2] };
+	m_lightbuffer.Data().pointlightStr = im.pointLightStr;
+
+	m_transformBuffer.Data().viewProj = d::XMMatrixTranspose(mp_cam->GetViewM() * mp_cam->GetProjM());
+	m_lightbuffer.Data().direction = sm::Vector3(0.f, 1.f, 0.f);
+	m_lightbuffer.Data().position = sm::Vector3(im.pointLightPos[0], im.pointLightPos[1], im.pointLightPos[2]);
+	m_lightbuffer.UpdateCB();
+
+	m_playermodel.SetRotation(-mp_cam->GetRotation().x, mp_cam->GetRotation().y, -mp_cam->GetRotation().z);
+	m_playermodel.Rotate(0.f, d::XM_PI, 0.f);
+	m_playermodel.SetPosition(mp_cam->GetPosition() + sm::Vector3(0.f, -0.1f, 0.f));
+	m_model.Rotate(0.f, 2.f * deltatime, 0.f);
 }
 
 void DX11Addon::ImGuiInit(HWND& hwnd)
@@ -258,32 +317,17 @@ void DX11Addon::ImGuiRender()
 	ImGui::NewFrame();
 	ImGui::Begin("Debug", nullptr, ImGuiWindowFlags_NoCollapse);
 	ImGui::Text("Press Q to lock/unlock mouse");
-	std::string fpsString = "FPS: ";
-	fpsString += std::to_string(m_fps);
+
+	std::string fpsString = "FPS: " + std::to_string(m_fps);
 	ImGui::Text(fpsString.c_str());
-	//ImGui::SetCursorPos
+
 	if (ImGui::SliderInt("FOV", &im.fov, 40.f, 110.f))
 		mp_cam->SetPerspective(im.fov, (float)m_width / (float)m_height, .1f, 100.f);
 
-	//ImGui::SliderFloat("Ortho view", &im.f[0], 50.f, 200.f);
-	//ImGui::SliderInt("Speed", &im.speed, 0, 100);
-
-	//ImGui::InputText("Text", im.buffer, 16);
 	ImGui::Checkbox("Vsync", &im.useVsync);
 	ImGui::SameLine();
 	ImGui::Checkbox("Handmodel", &im.enableHandModel);
-	//ImGui::SliderFloat("Offset", &im.offset, 0.f, 10.f);
-
 	ImGui::DragFloat4("Ambient", im.ambient, 0.002f, 0.f, 1.f);
-	m_lightbuffer.Data().ambientLight = { im.ambient[0], im.ambient[1], im.ambient[2] };
-	m_lightbuffer.Data().ambientStr = im.ambient[3];
-
-	//mp_cam->SetOffset(0.f, 0.f, im.offset);
-	//ImGui::Checkbox("Test window", &im_appear);
-
-	//if (ImGui::Button("Export image"))
-		//ExportImage(im.buffer);
-
 	ImGui::DragFloat3("Pointlight Position", im.pointLightPos, 0.01f);
 	ImGui::DragFloat3("PointLightColor", im.pointLightColor, 0.01f, 0.f, 1.f);
 	ImGui::SliderFloat("PointLight Strength", &im.pointLightStr, 0.f, 3.f);
@@ -292,22 +336,12 @@ void DX11Addon::ImGuiRender()
 	ImGui::Text(camoffsetString.c_str());
 	if (ImGui::Button("Focus pointLight"))
 		mp_cam->SetPosition(im.pointLightPos[0], im.pointLightPos[1], im.pointLightPos[2]);
-	m_lightbuffer.Data().pointLightColor = { im.pointLightColor[0], im.pointLightColor[1], im.pointLightColor[2] };
-	m_lightbuffer.Data().pointlightStr = im.pointLightStr;
+	
 	m_bulb.SetPosition(im.pointLightPos[0], im.pointLightPos[1], im.pointLightPos[2]);
 
-	//ImGui::DragFloat("Point light range", )
 	ImGui::Text(GetVectorAsString(mp_cam->GetRotation()).c_str());
-	//if (mp_kb->IsKeyDown(Key::Y))
-		//m_pWin->ShutDown();
+
 	ImGui::End();
-	if (mp_kb->IsKeyDown(Key::N))
-	{
-		ImGui::Begin("Test");
-		ImGui::Text("Din mamma");
-		ImGui::End();
-		//OutputDebugStringA("joemama\n");
-	}
 
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
@@ -325,14 +359,8 @@ void DX11Addon::ExportImage(char* name)
 	//m_grid.SaveImage(name);
 }
 
-void DX11Addon::SetInputP(KeyboardHandler& kb)
+void DX11Addon::CalculateFps(const float& deltatime)
 {
-	mp_kb = &kb;
-}
-
-void DX11Addon::Render(const float& deltatime)
-{
-	// Calculate fps
 	static float fpsTimer = 0.f;
 	static int fpsCounter = 0;
 	fpsTimer += deltatime;
@@ -343,46 +371,41 @@ void DX11Addon::Render(const float& deltatime)
 		fpsCounter = 0;
 		fpsTimer = 0.f;
 	}
+}
 
+void DX11Addon::SetInputP(KeyboardHandler& kb)
+{
+	mp_kb = &kb;
+}
+
+void DX11Addon::Render(const float& deltatime)
+{
 	float bgColor[] = { .1f,.1f,.1f,1.f };
 	dc->ClearRenderTargetView(m_rtv, bgColor);
 	dc->ClearDepthStencilView(m_dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
+	dc->OMSetBlendState(m_blendState, NULL, 0xFFFFFFFF);
 
-	//dc->IASetInputLayout(m_3dvs.GetInputLayout());
-	//dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	//dc->RSSetState(m_rasterizerState);
-	//dc->OMSetDepthStencilState(m_dsState, 0);
-	//dc->PSSetSamplers(0, 1, &m_sampState);
-	//dc->VSSetShader(m_3dvs.GetShader(), NULL, 0);
-	//dc->OMSetRenderTargets(1, &m_rtv, m_dsView);
-
-
-	m_transformBuffer.Data().viewProj = d::XMMatrixTranspose(mp_cam->GetViewM() * mp_cam->GetProjM());
-	m_lightbuffer.Data().direction = sm::Vector3(0.f, 1.f, 0.f);
-	m_lightbuffer.Data().position = sm::Vector3( im.pointLightPos[0], im.pointLightPos[1], im.pointLightPos[2]);
-	m_lightbuffer.UpdateCB();
-
-	m_model.Rotate(0.f, 2.f * deltatime, 0.f);
-	//m_model.Move(-0.f, 0.f, 0.1f);
+	dc->PSSetShader(m_3dps.GetShader(), NULL, 0);
+	m_gunter.Draw();
 	m_model.Draw();
 	m_plane.Draw();
-	m_playermodel.SetRotation(-mp_cam->GetRotation().x, mp_cam->GetRotation().y, -mp_cam->GetRotation().z);
-	m_playermodel.Rotate(0.f, d::XM_PI, 0.f);
-	m_playermodel.SetPosition(mp_cam->GetPosition() + sm::Vector3(0.f,-0.1f,0.f));
-	if(mp_cam->GetOffset().z != 0.f)
+	
+	if (mp_cam->GetOffset().z != 0.f)
 		m_playermodel.Draw();
-	m_gunter.Draw();
+
+	m_water.UpdateTextureScroll(deltatime);
+	m_water.Draw();
 	dc->PSSetShader(m_3dnoLightps.GetShader(), NULL, 0);
 	m_menacing.Draw();
 	m_bulb.Draw();
-	dc->ClearDepthStencilView(m_dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.f, 0);
-	m_handmodel.SetPosition(mp_cam->GetPosition());
-	m_handmodel.SetRotation(-mp_cam->GetRotation().x, mp_cam->GetRotation().y, -mp_cam->GetRotation().z);
-	m_handmodel.Rotate(0.f, d::XM_PI, 0.f);
-
-	dc->PSSetShader(m_3dps.GetShader(), NULL, 0);
+	
 	if (mp_cam->GetOffset().z == 0.f && im.enableHandModel)
+	{
+		dc->ClearDepthStencilView(m_dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.f, 0);
+		m_handmodel.SetPosition(mp_cam->GetPosition());
+		m_handmodel.SetRotation(-mp_cam->GetRotation().x, mp_cam->GetRotation().y + d::XM_PI, -mp_cam->GetRotation().z);
 		m_handmodel.Draw();
+	}
 
 	ImGuiRender();
 	m_swapChain->Present((UINT)im.useVsync, NULL);
