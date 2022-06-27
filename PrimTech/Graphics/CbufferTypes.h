@@ -13,9 +13,9 @@ namespace hlsl
 	using int3 = d::XMINT3;
 	using int4 = d::XMINT4;
 
-	struct bool2 { bool x; bool y; };
-	struct bool3 { bool x; bool y; bool z; };
-	struct bool4 { bool x; bool y; bool z; bool w; };
+	//struct bool2 { bool x; bool y; };
+	//struct bool3 { bool x; bool y; bool z; };
+	//struct bool4 { bool x; bool y; bool z; bool w; };
 
 	struct cbvTransformsQuad
 	{
@@ -46,8 +46,10 @@ namespace hlsl
 
 	struct cbpMaterialBuffer
 	{
-		int hasDistortion;
-		float2 texCoordOffset = { 0.f,0.f };
-		float transparancy;
+		int hasDistortion = 0;
+		float2 texCoordOffset;
+		float transparency = 1.f;
+		float2 texCoordoffsetDist;
+		int2 pad;
 	};
 }

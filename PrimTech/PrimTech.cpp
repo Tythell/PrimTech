@@ -46,8 +46,9 @@ namespace pt
 		if (canMove)
 			SetCursorPos(m_window.getWinWidth() / 2, m_window.getWinHeight() / 2);
 
-
-		if (m_kb.IsKeyDown(Key::Q) && !isclick)
+		
+		if (!m_kb.IsKeyDown(m_camlockKey)) isclick = false;
+		else if (m_kb.IsKeyDown(m_camlockKey) && !isclick)
 		{
 			isclick = true;
 			canMove = !canMove;
@@ -55,7 +56,6 @@ namespace pt
 			if (!canMove) ShowCursor();
 			else HideCursor();
 		}
-		if (!m_kb.IsKeyDown(Key::Q)) isclick = false;
 
 		while (!MouseHandler::BufferIsEmpty())
 		{
@@ -69,7 +69,7 @@ namespace pt
 			else if (me.GetType() == MouseEvent::EventType::eSCROLLDOWN)
 				m_cam3d.Offset(0.f, 0.f, 0.5f);
 		}
-		if (m_kb.IsKeyDown(Key::ESCAPE))
+		if (m_kb.IsKeyDown(m_shutDownKey))
 			m_window.ShutDown();
 	}
 

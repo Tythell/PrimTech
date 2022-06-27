@@ -10,18 +10,25 @@ Model::Model()
 {
 }
 
-void Model::Init(const std::string path, ID3D11Device*& pDevice, ID3D11DeviceContext*& pDc,
-	Buffer<hlsl::cbpWorldTransforms3D>& pCbuffer, bool makeLeftHanded)
+//void Model::SetDCandBuffer(ID3D11DeviceContext*& pdc, Buffer<hlsl::cbpWorldTransforms3D>& pCbuffer)
+//{
+//	dc = pdc;
+//	mp_cbTransformBuffer = &pCbuffer;
+//}
+
+//ID3D11DeviceContext* Model::dc;
+//Buffer<hlsl::cbpWorldTransforms3D>* Model::mp_cbTransformBuffer;
+
+void Model::Init(const std::string path, ID3D11Device*& pD, ID3D11DeviceContext*& pDc, Buffer<hlsl::cbpWorldTransforms3D>& buffer, bool makeLeftHanded)
 {
 	std::string fullpath = "Assets/models/" + path;
 	dc = pDc;
-	device = pDevice;
-	mp_cbTransformBuffer = &pCbuffer;
+	mp_cbTransformBuffer = &buffer;
 	int meshIndex = ResourceHandler::CheckMeshNameExists(StringHelper::GetName(fullpath));
 	if (meshIndex != -1)
 		mp_mesh = ResourceHandler::GetMeshAdress(meshIndex);
 	else
-		mp_mesh = ResourceHandler::AddMesh(fullpath, pDevice);
+		mp_mesh = ResourceHandler::AddMesh(fullpath);
 
 	dc->VSSetConstantBuffers(0, 1, mp_cbTransformBuffer->GetReference());
 }
@@ -44,25 +51,25 @@ void Model::UpdateTextureScroll(const float& deltatime)
 	m_material.UpdateTextureScroll(deltatime);
 }
 
-void Model::LoadDiffuse(const std::string path)
+void Model::LoadTexture(std::string path, TextureType type)
 {
-	m_material.LoadDiffuse(path);
+	m_material.LoadTexture(path, type);
 }
 
-void Model::LoadDistortion(const std::string path)
+void Model::setDiffuseScrollSpeed(float x, float y)
 {
-	m_material.LoadDistortion(path);
-}
-
-void Model::setTextureScrollSpeed(float x, float y)
-{
-	m_material.SetScrollSpeed(x, y);
+	m_material.SetDiffuseScrollSpeed(x, y);
 }
 
 void Model::SetMaterialBuffer(Buffer<hlsl::cbpMaterialBuffer>& cbMaterialBuffer)
 {
 	m_material.SetPointers(&cbMaterialBuffer);
 }
+
+//void Model::CreateMaterial(ID3D11Device*& device, ID3D11DeviceContext*& dc)
+//{
+	//m_material.Create(device, dc);
+//}
 
 bool LoadObjToBuffer(std::string path, ID3D11Device*& pDevice, Buffer<Vertex3D>& vbuffer, bool makeLeftHanded)
 {

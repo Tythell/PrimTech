@@ -22,6 +22,8 @@ namespace pt
 		Camera m_cam3d;
 		KeyboardHandler m_kb;
 		float m_playerSpeed;
+		unsigned char m_shutDownKey = Key::ESCAPE;
+		unsigned char m_camlockKey = Key::Q;
 	};
 
 };

@@ -15,6 +15,7 @@ DX11Addon::DX11Addon(Window& window, Camera& camera) :
 	InitBlendState();
 
 	ResourceHandler::SetDevice(device);
+	//Model::SetDCandBuffer(dc, m_transformBuffer);
 
 	InitShaders();
 	InitConstantBuffers();
@@ -225,7 +226,7 @@ bool DX11Addon::InitScene()
 	dc->OMSetRenderTargets(1, &m_rtv, m_dsView);
 	dc->OMSetBlendState(m_blendState, NULL, 0xFFFFFFFF);
 
-	ResourceHandler::AddTexture("goalflag.png", device); // setting missingtexture
+	ResourceHandler::AddTexture("goalflag.png"); // setting missingtexture
 	m_model.Init("scuffball.obj", device, dc, m_transformBuffer);
 	m_model.SetPosition(0.f, 0.f, 3.f);
 	m_model.SetMaterialBuffer(m_materialBuffer);
@@ -238,14 +239,14 @@ bool DX11Addon::InitScene()
 	m_plane.SetScale(10.f);
 	m_plane.SetMaterialBuffer(m_materialBuffer);
 
-	m_plane.setTextureScrollSpeed(-0.1f, -0.1f);
+	m_plane.setDiffuseScrollSpeed(-0.1f, -0.1f);
 
 	m_playermodel.Init("dirCapsule.obj", device, dc, m_transformBuffer);
 	m_playermodel.SetScale(.1f);
 	m_playermodel.SetMaterialBuffer(m_materialBuffer);
 
 	m_gunter.Init("gunter.obj", device, dc, m_transformBuffer);
-	m_gunter.LoadDiffuse("gunteruv.png");
+	m_gunter.LoadTexture("gunteruv.png", eDiffuse);
 	m_gunter.SetPosition(-1.f, 2.f, -6.f);
 	m_gunter.SetRotation(0.f, d::XM_PI, 0.f);
 	m_gunter.SetMaterialBuffer(m_materialBuffer);
@@ -259,10 +260,10 @@ bool DX11Addon::InitScene()
 	m_handmodel.SetMaterialBuffer(m_materialBuffer);
 
 	m_water.Init("plane.txt", device, dc, m_transformBuffer);
-	m_water.LoadDistortion("waterDist.png");
 	m_water.SetScale(4.f);
-	m_water.LoadDiffuse("water.png");
-	m_water.setTextureScrollSpeed(0.07f, 0.07f);
+	m_water.LoadTexture("water.png");
+	m_water.LoadTexture("waterDist.png", eDistortion);
+	m_water.setDiffuseScrollSpeed(0.07f, 0.07f);
 	m_water.SetPosition(-4.f, 0.f, 0.f);
 	m_water.SetMaterialBuffer(m_materialBuffer);
 

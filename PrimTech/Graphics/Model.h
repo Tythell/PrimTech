@@ -23,17 +23,17 @@ class Model : public Transform
 {
 public:
 	Model();
-	void Init(const std::string path, ID3D11Device*& pDevice, ID3D11DeviceContext*& pDc, Buffer<hlsl::cbpWorldTransforms3D>& pCbuffer, bool makeLeftHanded = true);
+	void Init(const std::string path, ID3D11Device*& d, ID3D11DeviceContext*& pDc, Buffer<hlsl::cbpWorldTransforms3D>& buffer, bool makeLeftHanded = true);
 	void Draw();
 	void UpdateTextureScroll(const float& deltatime);
-	void LoadDiffuse(const std::string path);
-	void LoadDistortion(const std::string path);
-	void setTextureScrollSpeed(float x, float y);
+	void LoadTexture(std::string path, TextureType type = eDiffuse);
+	void setDiffuseScrollSpeed(float x, float y);
 	void SetMaterialBuffer(Buffer<hlsl::cbpMaterialBuffer>& cbMaterialBuffer);
+
+	//static void SetDCandBuffer(ID3D11DeviceContext*& pdc, Buffer<hlsl::cbpWorldTransforms3D>& pCbuffer);
 private:
+	ID3D11DeviceContext* dc;
+	Buffer<hlsl::cbpWorldTransforms3D>* mp_cbTransformBuffer;
 	Mesh* mp_mesh = nullptr;
 	Material m_material;
-	ID3D11DeviceContext* dc = nullptr;
-	ID3D11Device* device = nullptr;
-	Buffer<hlsl::cbpWorldTransforms3D>* mp_cbTransformBuffer = nullptr;
 };
