@@ -89,7 +89,7 @@ void Material::Set(ID3D11DeviceContext*& dc)
 	if(hasDistortion)
 		dc->PSSetShaderResources(1, 1, mp_distortion->GetSRVAdress());
 	dc->PSSetConstantBuffers(1, 1, mp_matBuffer->GetReference());
-	mp_matBuffer->Data().texCoordOffset = m_diffuseOffsetSpeed;
+	mp_matBuffer->Data().texCoordOffset = m_diffuseOffsetValue;
 	mp_matBuffer->Data().texCoordoffsetDist = m_distortionValue;
 	mp_matBuffer->Data().hasDistortion = int(hasDistortion);
 	mp_matBuffer->UpdateCB();
