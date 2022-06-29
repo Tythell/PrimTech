@@ -69,12 +69,12 @@ void Material::UpdateTextureScroll(const float& deltatime)
 
 void Material::SetDiffuseScrollSpeed(float x, float y)
 {
-	m_diffuseOffsetSpeed = sm::Vector2(x, y);
+	m_diffuseOffsetSpeed = sm::Vector2(x / 10, y / 10);
 }
 
 void Material::SetDistortionScrollSpeed(float x, float y)
 {
-	m_distortionOffsetSpeed = sm::Vector2(x, y);
+	m_distortionOffsetSpeed = sm::Vector2(x / 10, y / 10);
 }
 
 void Material::Set(ID3D11DeviceContext*& dc)
@@ -92,5 +92,11 @@ void Material::Set(ID3D11DeviceContext*& dc)
 	mp_matBuffer->Data().texCoordOffset = m_diffuseOffsetValue;
 	mp_matBuffer->Data().texCoordoffsetDist = m_distortionValue;
 	mp_matBuffer->Data().hasDistortion = int(hasDistortion);
+	mp_matBuffer->Data().transparency = m_transparency;
 	mp_matBuffer->UpdateCB();
+}
+
+void Material::SetTransparency(float f)
+{
+	m_transparency = f;
 }

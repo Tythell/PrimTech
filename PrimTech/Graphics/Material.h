@@ -19,6 +19,7 @@ public:
 	void SetDiffuseScrollSpeed(float x, float y);
 	void SetDistortionScrollSpeed(float x, float y);
 	void Set(ID3D11DeviceContext*& dc);
+	void SetTransparency(float f);
 	//void Create(ID3D11Device*& d, ID3D11DeviceContext*& dc);
 private:
 	void LoadDiffuse(std::string path);
@@ -28,7 +29,7 @@ private:
 
 	sm::Vector2 m_diffuseOffsetValue, m_distortionValue;
 	sm::Vector2 m_diffuseOffsetSpeed, m_distortionOffsetSpeed;
-	float m_transparency;
+	float m_transparency = 1.f;
 
 	Buffer<hlsl::cbpMaterialBuffer>* mp_matBuffer;
 };

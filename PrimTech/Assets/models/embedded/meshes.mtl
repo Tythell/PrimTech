@@ -1,0 +1,14 @@
+newmtl iceSG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd ice.png
+Ni 1.00
+newmtl yomamaSG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd pixelart.png
+Ni 1.00

@@ -50,6 +50,7 @@ namespace hlsl
 		float2 texCoordOffset;
 		float transparency = 1.f;
 		float2 texCoordoffsetDist;
-		int2 pad;
+		int distDiv = 2;
+		int pad;
 	};
 }

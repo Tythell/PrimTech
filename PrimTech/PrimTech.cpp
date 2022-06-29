@@ -44,17 +44,25 @@ namespace pt
 		static bool isclick = false;
 
 		if (canMove)
-			SetCursorPos(m_window.getWinWidth() / 2, m_window.getWinHeight() / 2);
+			SetCursorPos(m_windowPos.x + (m_window.getWinWidth() / 2),m_windowPos.y + (m_window.getWinHeight() / 2));
 
 		
-		if (!m_kb.IsKeyDown(m_camlockKey)) isclick = false;
+		if (!m_kb.IsKeyDown(m_camlockKey))
+			isclick = false;
 		else if (m_kb.IsKeyDown(m_camlockKey) && !isclick)
 		{
 			isclick = true;
 			canMove = !canMove;
 
 			if (!canMove) ShowCursor();
-			else HideCursor();
+			else
+			{
+				HideCursor();
+				RECT rec = {};
+				GetWindowRect(m_window.getHWND(), &rec);
+				m_windowPos.x = rec.left;
+				m_windowPos.y = rec.top;
+			}
 		}
 
 		while (!MouseHandler::BufferIsEmpty())

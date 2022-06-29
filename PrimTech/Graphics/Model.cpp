@@ -66,6 +66,11 @@ void Model::SetMaterialBuffer(Buffer<hlsl::cbpMaterialBuffer>& cbMaterialBuffer)
 	m_material.SetPointers(&cbMaterialBuffer);
 }
 
+Material& Model::GetMaterial()
+{
+	return m_material;
+}
+
 //void Model::CreateMaterial(ID3D11Device*& device, ID3D11DeviceContext*& dc)
 //{
 	//m_material.Create(device, dc);

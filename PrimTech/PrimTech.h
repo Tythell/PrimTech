@@ -24,6 +24,7 @@ namespace pt
 		float m_playerSpeed;
 		unsigned char m_shutDownKey = Key::ESCAPE;
 		unsigned char m_camlockKey = Key::Q;
+		d::XMINT2 m_windowPos;
 	};
 
 };

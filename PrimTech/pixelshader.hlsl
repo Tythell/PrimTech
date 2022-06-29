@@ -28,15 +28,16 @@ cbuffer MaterialBuffer : register(b1)
     float2 texCoordOffset;
     float transparency;
     float2 texCoordoffsetDist;
-    int2 pad;
+    int distDiv;
+    int pad;
 }
 
 float4 main(PSInput input) : SV_Target
 {
-    float distortion = 0.f;
+    float2 distortion = 0.f;
     if(hasDistortion)
     {
-        distortion = distortionMap.Sample(samplerState, input.texCoord).x - 0.5f;
+        distortion = (distortionMap.Sample(samplerState, input.texCoord + texCoordoffsetDist).xy - 0.5f) / distDiv;
         //distortion /= 2;
     }
     

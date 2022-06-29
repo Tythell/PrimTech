@@ -262,12 +262,10 @@ bool DX11Addon::InitScene()
 	m_water.Init("plane.txt", device, dc, m_transformBuffer);
 	m_water.SetScale(4.f);
 	m_water.LoadTexture("water.png");
-	m_water.LoadTexture("waterDist.png", eDistortion);
-	m_water.setDiffuseScrollSpeed(0.07f, 0.07f);
+	m_water.LoadTexture("perlin.png", eDistortion);
 	m_water.SetPosition(-4.f, 0.f, 0.f);
 	m_water.SetMaterialBuffer(m_materialBuffer);
-
-
+	m_water.GetMaterial().SetTransparency(.7f);
 
 	return true;
 }
@@ -298,6 +296,8 @@ void DX11Addon::UpdateScene(const float& deltatime)
 	m_playermodel.Rotate(0.f, d::XM_PI, 0.f);
 	m_playermodel.SetPosition(mp_cam->GetPosition() + sm::Vector3(0.f, -0.1f, 0.f));
 	m_model.Rotate(0.f, 2.f * deltatime, 0.f);
+
+	m_materialBuffer.Data().distDiv = im.distDiv;
 }
 
 void DX11Addon::ImGuiInit(HWND& hwnd)
@@ -332,11 +332,25 @@ void DX11Addon::ImGuiRender()
 	ImGui::DragFloat3("Pointlight Position", im.pointLightPos, 0.01f);
 	ImGui::DragFloat3("PointLightColor", im.pointLightColor, 0.01f, 0.f, 1.f);
 	ImGui::SliderFloat("PointLight Strength", &im.pointLightStr, 0.f, 3.f);
+	const float scrollmax = .5f;
+	ImGui::SliderFloat2("Diffuse scroll", im.diffuseScrollSpeed, -scrollmax, scrollmax);
+	ImGui::SliderFloat2("Distortion scroll", im.distScrollSpeed, -scrollmax, scrollmax);
+ 	m_water.setDiffuseScrollSpeed(im.diffuseScrollSpeed[0], im.diffuseScrollSpeed[1]);
+	m_water.GetMaterial().SetDistortionScrollSpeed(im.distScrollSpeed[0], im.distScrollSpeed[1]);
+	if (ImGui::Button("Reset Scrolling"))
+	{
+		for (int i = 0; i < 2; i++)
+		{
+			im.diffuseScrollSpeed[i] = 0.f;
+			im.distScrollSpeed[i] = 0.f;
+		}
+	}
+	ImGui::SliderInt("Distortion divider", &im.distDiv, 1, 20);
 	std::string camoffsetString = "Camera offset: ";
 	camoffsetString += std::to_string(mp_cam->GetOffset().z);
 	ImGui::Text(camoffsetString.c_str());
-	if (ImGui::Button("Focus pointLight"))
-		mp_cam->SetPosition(im.pointLightPos[0], im.pointLightPos[1], im.pointLightPos[2]);
+	//if (ImGui::Button("Focus pointLight"))
+		//mp_cam->SetPosition(im.pointLightPos[0], im.pointLightPos[1], im.pointLightPos[2]);
 	
 	m_bulb.SetPosition(im.pointLightPos[0], im.pointLightPos[1], im.pointLightPos[2]);
 

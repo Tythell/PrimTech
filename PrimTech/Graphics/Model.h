@@ -29,6 +29,7 @@ public:
 	void LoadTexture(std::string path, TextureType type = eDiffuse);
 	void setDiffuseScrollSpeed(float x, float y);
 	void SetMaterialBuffer(Buffer<hlsl::cbpMaterialBuffer>& cbMaterialBuffer);
+	Material& GetMaterial();
 
 	//static void SetDCandBuffer(ID3D11DeviceContext*& pdc, Buffer<hlsl::cbpWorldTransforms3D>& pCbuffer);
 private:
