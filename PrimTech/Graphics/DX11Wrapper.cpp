@@ -15,15 +15,11 @@ DX11Addon::DX11Addon(Window& window, Camera& camera) :
 	InitBlendState();
 
 	ResourceHandler::SetDevice(device);
-	//Model::SetDCandBuffer(dc, m_transformBuffer);
 
 	InitShaders();
 	InitConstantBuffers();
 	InitScene();
 
-	//m_fileTexture.CreateFromFile("Textures/gunter2.png", m_device);
-	//m_grid.InitRenderCell(device, dc);
-	//m_grid.SetCamP(*mp_cam);
 	ImGuiInit(window.getHWND());
 }
 
@@ -227,46 +223,50 @@ bool DX11Addon::InitScene()
 	dc->OMSetBlendState(m_blendState, NULL, 0xFFFFFFFF);
 
 	ResourceHandler::AddTexture("goalflag.png"); // setting missingtexture
-	m_model.Init("scuffball.obj", device, dc, m_transformBuffer);
+	
+	m_model.Init("scuffball.obj", dc, m_transformBuffer);
 	m_model.SetPosition(0.f, 0.f, 3.f);
 	m_model.SetMaterialBuffer(m_materialBuffer);
 
-	m_bulb.Init("bulb.obj", device, dc, m_transformBuffer);
+	m_bulb.Init("bulb.obj", dc, m_transformBuffer);
 	m_bulb.SetMaterialBuffer(m_materialBuffer);
 	m_bulb.SetScale(1.2f);
-	m_plane.Init("plane.txt", device, dc, m_transformBuffer);
+	m_plane.Init("plane.txt", dc, m_transformBuffer);
 	m_plane.SetPosition(0.f, -1.f, 0.f);
 	m_plane.SetScale(10.f);
 	m_plane.SetMaterialBuffer(m_materialBuffer);
 
 	m_plane.setDiffuseScrollSpeed(-0.1f, -0.1f);
 
-	m_playermodel.Init("dirCapsule.obj", device, dc, m_transformBuffer);
+	m_playermodel.Init("dirCapsule.obj", dc, m_transformBuffer);
 	m_playermodel.SetScale(.1f);
 	m_playermodel.SetMaterialBuffer(m_materialBuffer);
 
-	m_gunter.Init("gunter.obj", device, dc, m_transformBuffer);
+	m_gunter.Init("gunter.obj", dc, m_transformBuffer);
 	m_gunter.LoadTexture("gunteruv.png", eDiffuse);
 	m_gunter.SetPosition(-1.f, 2.f, -6.f);
 	m_gunter.SetRotation(0.f, d::XM_PI, 0.f);
 	m_gunter.SetMaterialBuffer(m_materialBuffer);
 
-	m_menacing.Init("menacing.obj", device, dc, m_transformBuffer);
+	m_menacing.Init("menacing.obj", dc, m_transformBuffer);
 	m_menacing.SetPosition(-3.f, 2.f, -6.f);
 	m_menacing.SetRotation(0.f, d::XM_PI, 0.f);
 	m_menacing.SetMaterialBuffer(m_materialBuffer);
-	m_handmodel.Init("handmodel2.obj", device, dc, m_transformBuffer);
+	m_handmodel.Init("handmodel2.obj", dc, m_transformBuffer);
 	m_handmodel.SetScale(.1f);
 	m_handmodel.SetMaterialBuffer(m_materialBuffer);
 
-	m_water.Init("plane.txt", device, dc, m_transformBuffer);
+	m_water.Init("plane.txt", dc, m_transformBuffer);
 	m_water.SetScale(4.f);
 	m_water.LoadTexture("water.png");
-	m_water.LoadTexture("perlin.png", eDistortion);
+	m_water.LoadTexture("waterDist.png", eDistortion);
 	m_water.SetPosition(-4.f, 0.f, 0.f);
 	m_water.SetMaterialBuffer(m_materialBuffer);
 	m_water.GetMaterial().SetTransparency(.7f);
 
+
+	dc->VSSetConstantBuffers(0, 1, m_transformBuffer.GetReference());
+	AllModels::Addbuffers(dc, m_transformBuffer);
 	return true;
 }
 
@@ -337,6 +337,7 @@ void DX11Addon::ImGuiRender()
 	ImGui::SliderFloat2("Distortion scroll", im.distScrollSpeed, -scrollmax, scrollmax);
  	m_water.setDiffuseScrollSpeed(im.diffuseScrollSpeed[0], im.diffuseScrollSpeed[1]);
 	m_water.GetMaterial().SetDistortionScrollSpeed(im.distScrollSpeed[0], im.distScrollSpeed[1]);
+	
 	if (ImGui::Button("Reset Scrolling"))
 	{
 		for (int i = 0; i < 2; i++)
@@ -356,7 +357,10 @@ void DX11Addon::ImGuiRender()
 
 	ImGui::Text(GetVectorAsString(mp_cam->GetRotation()).c_str());
 
-	ImGui::End();
+	//ImGui::ShowDemoWindow();
+
+	ImGui::End();;
+
 
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());

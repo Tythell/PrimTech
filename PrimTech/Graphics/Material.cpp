@@ -69,12 +69,12 @@ void Material::UpdateTextureScroll(const float& deltatime)
 
 void Material::SetDiffuseScrollSpeed(float x, float y)
 {
-	m_diffuseOffsetSpeed = sm::Vector2(x / 10, y / 10);
+	m_diffuseOffsetSpeed = sm::Vector2(x, y);
 }
 
 void Material::SetDistortionScrollSpeed(float x, float y)
 {
-	m_distortionOffsetSpeed = sm::Vector2(x / 10, y / 10);
+	m_distortionOffsetSpeed = sm::Vector2(x, y);
 }
 
 void Material::Set(ID3D11DeviceContext*& dc)

@@ -141,6 +141,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Graphics\3rdParty\imgui\imgui.cpp" />
+    <ClCompile Include="Graphics\3rdParty\imgui\imgui_demo.cpp" />
     <ClCompile Include="Graphics\3rdParty\imgui\imgui_draw.cpp" />
     <ClCompile Include="Graphics\3rdParty\imgui\imgui_impl_dx11.cpp" />
     <ClCompile Include="Graphics\3rdParty\imgui\imgui_impl_win32.cpp" />

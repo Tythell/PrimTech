@@ -72,9 +72,9 @@ namespace pt
 			{
 				m_cam3d.Rotate(me.GetPosition().y, me.GetPosition().x, 0.f);
 			}
-			else if (me.GetType() == MouseEvent::EventType::eSCROLLUP)
+			else if (me.GetType() == MouseEvent::EventType::eSCROLLUP && canMove)
 				m_cam3d.Offset(0.f, 0.f, -0.5f);
-			else if (me.GetType() == MouseEvent::EventType::eSCROLLDOWN)
+			else if (me.GetType() == MouseEvent::EventType::eSCROLLDOWN && canMove)
 				m_cam3d.Offset(0.f, 0.f, 0.5f);
 		}
 		if (m_kb.IsKeyDown(m_shutDownKey))

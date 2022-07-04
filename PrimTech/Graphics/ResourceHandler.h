@@ -19,6 +19,7 @@ public:
 	static int CheckMeshNameExists(std::string meshName);
 	static int CheckTextureNameExists(std::string textureName);
 	static void Unload();
+	static ID3D11Device* GetDevice();
 private:
 	static std::vector<Mesh*> m_meshes;
 	static std::vector<TextureMap*> m_textures;

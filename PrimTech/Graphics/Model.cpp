@@ -8,6 +8,7 @@
 
 Model::Model()
 {
+	AllModels::AddModelAdress(this);
 }
 
 //void Model::SetDCandBuffer(ID3D11DeviceContext*& pdc, Buffer<hlsl::cbpWorldTransforms3D>& pCbuffer)
@@ -18,19 +19,20 @@ Model::Model()
 
 //ID3D11DeviceContext* Model::dc;
 //Buffer<hlsl::cbpWorldTransforms3D>* Model::mp_cbTransformBuffer;
+std::vector<Model*> AllModels::m_models;
 
-void Model::Init(const std::string path, ID3D11Device*& pD, ID3D11DeviceContext*& pDc, Buffer<hlsl::cbpWorldTransforms3D>& buffer, bool makeLeftHanded)
+void Model::Init(const std::string path, ID3D11DeviceContext*& pDc, Buffer<hlsl::cbpWorldTransforms3D>& buffer, bool makeLeftHanded)
 {
 	std::string fullpath = "Assets/models/" + path;
-	dc = pDc;
-	mp_cbTransformBuffer = &buffer;
+	//dc = pDc;
+	//mp_cbTransformBuffer = &buffer;
 	int meshIndex = ResourceHandler::CheckMeshNameExists(StringHelper::GetName(fullpath));
 	if (meshIndex != -1)
 		mp_mesh = ResourceHandler::GetMeshAdress(meshIndex);
 	else
 		mp_mesh = ResourceHandler::AddMesh(fullpath);
 
-	dc->VSSetConstantBuffers(0, 1, mp_cbTransformBuffer->GetReference());
+	//dc->VSSetConstantBuffers(0, 1, mp_cbTransformBuffer->GetReference());
 }
 
 void Model::Draw()
@@ -69,6 +71,12 @@ void Model::SetMaterialBuffer(Buffer<hlsl::cbpMaterialBuffer>& cbMaterialBuffer)
 Material& Model::GetMaterial()
 {
 	return m_material;
+}
+
+void Model::SetDCandBuffer(ID3D11DeviceContext*& pdc, Buffer<hlsl::cbpWorldTransforms3D>& pCbuffer)
+{
+	dc = pdc;
+	mp_cbTransformBuffer = &pCbuffer;
 }
 
 //void Model::CreateMaterial(ID3D11Device*& device, ID3D11DeviceContext*& dc)
@@ -176,4 +184,25 @@ Buffer<Vertex3D>& Mesh::GetVBuffer()
 std::string Mesh::GetName() const
 {
 	return m_name;
+}
+
+//void AllModels::Addbuffers(ID3D11DeviceContext*& dc, Buffer<hlsl::cbpWorldTransforms3D>& buffer)
+//{
+//	for (int i = 0; i < m_models.size(); i++)
+//	{
+//		m_models[i].
+//	}
+//}
+
+void AllModels::Addbuffers(ID3D11DeviceContext*& dc, Buffer<hlsl::cbpWorldTransforms3D>& buffer)
+{
+	for (int i = 0; i < m_models.size(); i++)
+	{
+		m_models[i]->SetDCandBuffer(dc, buffer);
+	}
+}
+
+void AllModels::AddModelAdress(Model* pm)
+{
+	m_models.emplace_back(pm);
 }

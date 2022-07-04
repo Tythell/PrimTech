@@ -51,8 +51,8 @@ public:
 	{
 		return &m_buffer;
 	}
-	
-	HRESULT CreateVertexBuffer(ID3D11Device*& device, T* data, UINT bufferSize)
+	// DeviceContext only needed if buffer will be changed
+	HRESULT CreateVertexBuffer(ID3D11Device*& device, T* data, UINT bufferSize, ID3D11DeviceContext* dc = NULL)
 	{
 		if (m_buffer)
 		{
@@ -62,7 +62,7 @@ public:
 		m_bufferSize = bufferSize;
 
 		//m_data = data;
-		
+		mp_dc = dc;
 		D3D11_BUFFER_DESC bufferDesc;
 		ZeroMemory(&bufferDesc, sizeof(D3D11_BUFFER_DESC));
 		bufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
@@ -102,8 +102,8 @@ public:
 		
 		return HRESULT(device->CreateBuffer(&bufferDesc, NULL, &m_buffer));
 	}
-
-	HRESULT CreateIndexBuffer(ID3D11Device*& device, T* indexData, UINT numIndices)
+	// DeviceContext only needed if buffer will be changed
+	HRESULT CreateIndexBuffer(ID3D11Device*& device, T* indexData, UINT numIndices, ID3D11DeviceContext* dc = NULL)
 	{
 		if (m_buffer)
 		{
@@ -117,7 +117,7 @@ public:
 		}
 			
 		//m_type = BufferType::eINDEX
-
+		mp_dc = dc;
 		m_bufferSize = numIndices;
 		D3D11_BUFFER_DESC bufferDesc;
 		ZeroMemory(&bufferDesc, sizeof(D3D11_BUFFER_DESC));
@@ -141,6 +141,10 @@ public:
 		COM_ERROR(hr, "Failed to update CB");
 		CopyMemory(mappedResource.pData, m_data, sizeof(T));
 		mp_dc->Unmap(m_buffer, 0);
+	}
+	ID3D11DeviceContext* GetDC() const
+	{
+		return mp_dc; // Only works if you initilized buffer with device context
 	}
 private:
 	T* m_data = nullptr;
