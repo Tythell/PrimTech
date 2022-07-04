@@ -21,7 +21,7 @@ Model::Model()
 //Buffer<hlsl::cbpWorldTransforms3D>* Model::mp_cbTransformBuffer;
 std::vector<Model*> AllModels::m_models;
 
-void Model::Init(const std::string path, ID3D11DeviceContext*& pDc, Buffer<hlsl::cbpWorldTransforms3D>& buffer, bool makeLeftHanded)
+void Model::Init(const std::string path, bool makeLeftHanded)
 {
 	std::string fullpath = "Assets/models/" + path;
 	//dc = pDc;

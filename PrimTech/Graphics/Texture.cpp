@@ -106,7 +106,11 @@ bool TextureMap::CreateFromData(unsigned char* imageData, ID3D11Device*& m_devic
 	data.SysMemSlicePitch = 0;
 
 	HRESULT hr = m_device->CreateTexture2D(&desc, &data, &texture);
-	COM_ERROR(hr, "Init texture from data failed");
+	if (FAILED(hr))
+	{
+		throw;
+	}
+	//COM_ERROR(hr, "Init texture from data failed");
 	texture->Release();
 
 	return true;

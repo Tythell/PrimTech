@@ -168,6 +168,8 @@ bool DX11Addon::InitRastNSampState()
 	hr = device->CreateSamplerState(&sampDesc, &m_sampState);
 	COM_ERROR(hr, "Sampler State setup failed");
 
+	sampDesc.Filter = D3D11_FILTER_MIN_LINEAR_MAG_POINT_MIP_LINEAR;
+
 	return true;
 }
 
@@ -205,6 +207,7 @@ bool DX11Addon::InitShaders()
 	m_3dvs.InitInputLayout(device, layout3D, ARRAYSIZE(layout3D));
 	m_3dps.Init(device, "../x64/Debug/pixelshader.cso");
 	m_3dnoLightps.Init(device, "../x64/Debug/NoLightPs.cso");
+	m_toonPS.Init(device, "../x64/Debug/ToonPS.cso");
 
 	dc->VSSetShader(m_3dvs.GetShader(), NULL, 0);
 	dc->PSSetShader(m_3dps.GetShader(), NULL, 0);
@@ -223,40 +226,44 @@ bool DX11Addon::InitScene()
 	dc->OMSetBlendState(m_blendState, NULL, 0xFFFFFFFF);
 
 	ResourceHandler::AddTexture("goalflag.png"); // setting missingtexture
+	ResourceHandler::AddTexture("ZAToon.png");
+	dc->PSSetShaderResources(2, 1, ResourceHandler::GetTexture(1).GetSRVAdress());
 	
-	m_model.Init("scuffball.obj", dc, m_transformBuffer);
+	m_model.Init("scuffball.obj");
 	m_model.SetPosition(0.f, 0.f, 3.f);
 	m_model.SetMaterialBuffer(m_materialBuffer);
 
-	m_bulb.Init("bulb.obj", dc, m_transformBuffer);
+	m_bulb.Init("bulb.obj");
 	m_bulb.SetMaterialBuffer(m_materialBuffer);
 	m_bulb.SetScale(1.2f);
-	m_plane.Init("plane.txt", dc, m_transformBuffer);
+
+	m_plane.Init("plane.txt");
+	m_plane.LoadTexture("Brick_Diffuse.jpg");
 	m_plane.SetPosition(0.f, -1.f, 0.f);
 	m_plane.SetScale(10.f);
 	m_plane.SetMaterialBuffer(m_materialBuffer);
 
 	m_plane.setDiffuseScrollSpeed(-0.1f, -0.1f);
 
-	m_playermodel.Init("dirCapsule.obj", dc, m_transformBuffer);
+	m_playermodel.Init("dirCapsule.obj");
 	m_playermodel.SetScale(.1f);
 	m_playermodel.SetMaterialBuffer(m_materialBuffer);
 
-	m_gunter.Init("gunter.obj", dc, m_transformBuffer);
+	m_gunter.Init("gunter.obj");
 	m_gunter.LoadTexture("gunteruv.png", eDiffuse);
 	m_gunter.SetPosition(-1.f, 2.f, -6.f);
 	m_gunter.SetRotation(0.f, d::XM_PI, 0.f);
 	m_gunter.SetMaterialBuffer(m_materialBuffer);
 
-	m_menacing.Init("menacing.obj", dc, m_transformBuffer);
+	m_menacing.Init("menacing.obj");
 	m_menacing.SetPosition(-3.f, 2.f, -6.f);
 	m_menacing.SetRotation(0.f, d::XM_PI, 0.f);
 	m_menacing.SetMaterialBuffer(m_materialBuffer);
-	m_handmodel.Init("handmodel2.obj", dc, m_transformBuffer);
+	m_handmodel.Init("handmodel2.obj");
 	m_handmodel.SetScale(.1f);
 	m_handmodel.SetMaterialBuffer(m_materialBuffer);
 
-	m_water.Init("plane.txt", dc, m_transformBuffer);
+	m_water.Init("plane.txt");
 	m_water.SetScale(4.f);
 	m_water.LoadTexture("water.png");
 	m_water.LoadTexture("waterDist.png", eDistortion);
@@ -310,6 +317,71 @@ void DX11Addon::ImGuiInit(HWND& hwnd)
 	ImGui::StyleColorsDark();
 }
 
+void ExportToon(char* name, unsigned char* data, int offset, const int& grad1, const int& grad2)
+{
+	unsigned int gradSize = grad2 + (255 / 2) - grad1;
+	offset += (255 / 2);
+	for (int i = 0; i < 255; i++)
+	{
+		if (i < offset)
+			data[i] = 0;
+		else
+			data[i] = 255;
+		// if index is in gradient
+		if (i < grad2 + (255 / 2) && i > grad1)
+		{
+			
+
+		}
+	}
+	TextureMap::ExportCharToImage(name, data, 255, 1, 1);
+}
+
+void DX11Addon::ImGuiGradientWindow()
+{
+	ImGui::Begin("Gradient");
+
+
+	//ImGui::Text("Gradients");
+	ImDrawList* draw_list = ImGui::GetWindowDrawList();
+	ImVec2 full_gradient_size = ImVec2(255, ImGui::GetFrameHeight());
+	float halfPoint = full_gradient_size.x / 2;
+	halfPoint += im.gradientOffset;
+	//ImVec2 gradient_size = ImVec2(im.gradient[1], ImGui::GetFrameHeight());
+	{
+
+
+		ImVec2 pbS = ImVec2(ImGui::GetCursorScreenPos().x, ImGui::GetCursorScreenPos().y);
+		ImVec2 pbE = ImVec2(pbS.x + halfPoint, full_gradient_size.y + pbS.y);
+		ImVec2 pwS = ImVec2(pbS.x + halfPoint, ImGui::GetCursorScreenPos().y /* + full_gradient_size.y */);
+		ImVec2 pwE = ImVec2(ImGui::GetCursorScreenPos().x + full_gradient_size.x, (full_gradient_size.y * 1) + pbS.y);
+		ImU32 col_a = ImGui::GetColorU32(IM_COL32(0, 0, 0, 255));
+		ImU32 col_b = ImGui::GetColorU32(IM_COL32(255, 255, 255, 255));
+
+		ImVec2 gs = ImVec2(pbE.x - ((full_gradient_size.x / 2.f) - im.gradient[0]), pbS.y);
+		//ImVec2 gs = ImVec2(pbE.x - ((full_gradient_size.x / 2.f) - im.gradient[0]), pbS.y);
+		ImVec2 ge = ImVec2(pbE.x + im.gradient[1], pwE.y);
+
+		draw_list->AddRectFilled(pbS, pbE, col_a);
+		draw_list->AddRectFilled(pwS, pwE, col_b);
+		draw_list->AddRectFilledMultiColor(gs, ge, col_a, col_b, col_b, col_a);
+		ImGui::InvisibleButton("##gradient1", full_gradient_size);
+		ImGui::SliderFloat2("grad editor", im.gradient, 1.f, 255.f / 2.f, "%.f");
+		ImGui::SliderFloat("##gradient offset", &im.gradientOffset, -full_gradient_size.x / 2.f, full_gradient_size.x / 2.f, "%.f");
+		ImGui::InputText("##imagename", im.buffer, 16);
+		ImGui::SameLine();
+		if (ImGui::Button("Export"))
+		{
+			unsigned char data[255];
+			ExportToon(im.buffer, data, im.gradientOffset, im.gradient[0], im.gradient[1]);
+		}
+	}
+
+	ImGui::End();
+}
+
+
+
 void DX11Addon::ImGuiRender()
 {
 	static bool im_appear = true;
@@ -317,6 +389,7 @@ void DX11Addon::ImGuiRender()
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 	ImGui::Begin("Debug", nullptr, ImGuiWindowFlags_NoCollapse);
+	ImGui::Checkbox("Demo window", &im.showDemoWindow);
 	ImGui::Text("Press Q to lock/unlock mouse");
 
 	std::string fpsString = "FPS: " + std::to_string(m_fps);
@@ -361,6 +434,11 @@ void DX11Addon::ImGuiRender()
 
 	ImGui::End();;
 
+	ImGuiGradientWindow();
+
+	if(im.showDemoWindow)
+		ImGui::ShowDemoWindow();
+
 
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
@@ -404,7 +482,7 @@ void DX11Addon::Render(const float& deltatime)
 	dc->ClearDepthStencilView(m_dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
 	dc->OMSetBlendState(m_blendState, NULL, 0xFFFFFFFF);
 
-	dc->PSSetShader(m_3dps.GetShader(), NULL, 0);
+	//dc->PSSetShader(m_3dps.GetShader(), NULL, 0);
 	m_gunter.Draw();
 	m_model.Draw();
 	m_plane.Draw();
@@ -412,9 +490,9 @@ void DX11Addon::Render(const float& deltatime)
 	if (mp_cam->GetOffset().z != 0.f)
 		m_playermodel.Draw();
 
-	m_water.UpdateTextureScroll(deltatime);
-	m_water.Draw();
-	dc->PSSetShader(m_3dnoLightps.GetShader(), NULL, 0);
+	//m_water.UpdateTextureScroll(deltatime);
+	//m_water.Draw();
+	dc->PSSetShader(m_toonPS.GetShader(), NULL, 0);
 	m_menacing.Draw();
 	m_bulb.Draw();
 	

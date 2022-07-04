@@ -24,7 +24,7 @@ class Model : public Transform
 public:
 	Model();
 	//void Init(const std::string path, bool makeLeftHanded = true);
-	void Init(const std::string path, ID3D11DeviceContext*& pDc, Buffer<hlsl::cbpWorldTransforms3D>& buffer, bool makeLeftHanded = true);
+	void Init(const std::string path, bool makeLeftHanded = true);
 	void Draw();
 	void UpdateTextureScroll(const float& deltatime);
 	void LoadTexture(std::string path, TextureType type = eDiffuse);

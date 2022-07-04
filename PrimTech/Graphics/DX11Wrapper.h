@@ -23,7 +23,7 @@ struct ImGuiVars
 	float f[3] = {100.f,1.f, 0.f};
 	bool useVsync = true;
 	int speed = 70;
-	char* buffer = new char[16]{"image.png"};
+	char* buffer = new char[16]{"toon.png"};
 	float pointLightPos[3] = { 0.f,1.f,0.f };
 	float pointLightColor[3]{1.f,1.f,1.f};
 	float pointLightStr = 1.f;
@@ -37,6 +37,9 @@ struct ImGuiVars
 	float diffuseScrollSpeed[2] = { -0.285f, 0.5f };
 	float distScrollSpeed[2] = { 0.5f, -0.5f };
 	int distDiv = 5;
+	bool showDemoWindow;
+	float gradient[2] = { 255.f / 2.f,1.f};
+	float gradientOffset = 0.f;
 };
 
 class DX11Addon
@@ -62,6 +65,7 @@ private:
 	bool InitScene();
 	void InitConstantBuffers();
 	void ImGuiInit(HWND& hwnd);
+	void ImGuiGradientWindow();
 	void ImGuiRender();
 	void ImGuiShutDown();
 	void ExportImage(char* name);
@@ -91,6 +95,7 @@ private:
 	VertexShader m_3dvs;
 	PixelShader m_3dps;
 	PixelShader m_3dnoLightps;
+	PixelShader m_toonPS;
 
 	//VertexBuffer<Vertex> m_vbuffer;
 	//IndexBuffer m_iBuffer;
@@ -117,5 +122,7 @@ private:
 	Model m_handmodel;
 	Model m_water;
 	int m_fps = 0;
+
+	unsigned char m_ZAToonExport[255] = {};
 };
 
