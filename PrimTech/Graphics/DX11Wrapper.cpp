@@ -205,7 +205,7 @@ bool DX11Addon::InitShaders()
 
 	m_3dvs.Init(device, "../x64/Debug/vertexshader.cso");
 	m_3dvs.InitInputLayout(device, layout3D, ARRAYSIZE(layout3D));
-	m_3dps.Init(device, "../x64/Debug/pixelshader.cso");
+	m_3dps.Init(device, "../x64/Debug/BasePS.cso");
 	m_3dnoLightps.Init(device, "../x64/Debug/NoLightPs.cso");
 	m_toonPS.Init(device, "../x64/Debug/ToonPS.cso");
 
@@ -379,8 +379,6 @@ void DX11Addon::ImGuiGradientWindow()
 
 	ImGui::End();
 }
-
-
 
 void DX11Addon::ImGuiRender()
 {

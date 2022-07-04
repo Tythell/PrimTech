@@ -259,7 +259,7 @@
     <FxCompile Include="vertexshader.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
-    <FxCompile Include="pixelshader.hlsl">
+    <FxCompile Include="basePS.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
     <FxCompile Include="NoLightPS.hlsl">

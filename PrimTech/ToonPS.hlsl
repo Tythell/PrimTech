@@ -51,11 +51,11 @@ float4 main(PSInput input) : SV_Target
     
     //float lightindex = (dot(normalize(position), faceNormal));
     float lightindex = saturate(dot(normalize(obToLight), faceNormal)) * pointlightStre;
-    lightindex /= distance;
-    lightindex = clamp(lightindex, 0.01f, 0.99f);
+    //lightindex /= distance;
     
     
     //light = max(light.x, 1.f);
+    lightindex = clamp(lightindex, 0.01f, 0.99f);
     float cellLightStr = ZAToon.Sample(samplerState, float2(lightindex, .5f));
     
     
