@@ -12,14 +12,8 @@ cbuffer LightBuffer : register(b0)
     float atten;
     float3 pointLightColor;
     float pointlightStre;
-};
-
-struct PSInput
-{
-    float4 position : SV_POSITION;
-    float3 normal : NORMAL;
-    float2 texCoord : TEXCOORD;
-    float3 worldPos : WORLD_POS;
+    float3 forwardDir;
+    int lpad;
 };
 
 cbuffer MaterialBuffer : register(b1)
@@ -31,6 +25,14 @@ cbuffer MaterialBuffer : register(b1)
     int distDiv;
     int pad;
 }
+
+struct PSInput
+{
+    float4 position : SV_POSITION;
+    float3 normal : NORMAL;
+    float2 texCoord : TEXCOORD;
+    float3 worldPos : WORLD_POS;
+};
 
 float4 main(PSInput input) : SV_Target
 {

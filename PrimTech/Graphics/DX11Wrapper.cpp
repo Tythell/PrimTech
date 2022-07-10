@@ -207,7 +207,7 @@ bool DX11Addon::InitShaders()
 	m_3dvs.InitInputLayout(device, layout3D, ARRAYSIZE(layout3D));
 	m_3dps.Init(device, "../x64/Debug/BasePS.cso");
 	m_3dnoLightps.Init(device, "../x64/Debug/NoLightPs.cso");
-	m_toonPS.Init(device, "../x64/Debug/ToonPS.cso");
+	m_toonPS.Init(device, "../x64/Debug/GradientPS.cso");
 
 	dc->VSSetShader(m_3dvs.GetShader(), NULL, 0);
 	dc->PSSetShader(m_3dps.GetShader(), NULL, 0);
@@ -238,7 +238,7 @@ bool DX11Addon::InitScene()
 	m_bulb.SetScale(1.2f);
 
 	m_plane.Init("plane.txt");
-	m_plane.LoadTexture("Brick_Diffuse.jpg");
+	m_plane.LoadTexture("gunter2.png");
 	m_plane.SetPosition(0.f, -1.f, 0.f);
 	m_plane.SetScale(10.f);
 	m_plane.SetMaterialBuffer(m_materialBuffer);
@@ -297,6 +297,8 @@ void DX11Addon::UpdateScene(const float& deltatime)
 	m_transformBuffer.Data().viewProj = d::XMMatrixTranspose(mp_cam->GetViewM() * mp_cam->GetProjM());
 	m_lightbuffer.Data().direction = sm::Vector3(0.f, 1.f, 0.f);
 	m_lightbuffer.Data().position = sm::Vector3(im.pointLightPos[0], im.pointLightPos[1], im.pointLightPos[2]);
+	m_lightbuffer.Data().forwardDir = mp_cam->GetForwardVector();
+	m_lightbuffer.Data().campos = { mp_cam->GetPosition().x, mp_cam->GetPosition().y, mp_cam->GetPosition().z, 1.f };
 	m_lightbuffer.UpdateCB();
 
 	m_playermodel.SetRotation(-mp_cam->GetRotation().x, mp_cam->GetRotation().y, -mp_cam->GetRotation().z);
@@ -406,6 +408,8 @@ void DX11Addon::ImGuiRender()
 	const float scrollmax = .5f;
 	ImGui::SliderFloat2("Diffuse scroll", im.diffuseScrollSpeed, -scrollmax, scrollmax);
 	ImGui::SliderFloat2("Distortion scroll", im.distScrollSpeed, -scrollmax, scrollmax);
+	ImGui::SliderFloat("Specular power", &im.specPow, 1.f, 1000.f);
+	m_lightbuffer.Data().specularInstensity = im.specPow;
  	m_water.setDiffuseScrollSpeed(im.diffuseScrollSpeed[0], im.diffuseScrollSpeed[1]);
 	m_water.GetMaterial().SetDistortionScrollSpeed(im.distScrollSpeed[0], im.distScrollSpeed[1]);
 	
@@ -418,6 +422,8 @@ void DX11Addon::ImGuiRender()
 		}
 	}
 	ImGui::SliderInt("Distortion divider", &im.distDiv, 1, 20);
+	ImGui::SliderFloat("Texture scale", &im.textureScale, 1.f, 10.f);
+
 	std::string camoffsetString = "Camera offset: ";
 	camoffsetString += std::to_string(mp_cam->GetOffset().z);
 	ImGui::Text(camoffsetString.c_str());
@@ -428,19 +434,34 @@ void DX11Addon::ImGuiRender()
 
 	ImGui::Text(GetVectorAsString(mp_cam->GetRotation()).c_str());
 
+	m_water.GetMaterial().SetTextureScale(im.textureScale);
+	//m_plane.GetMaterial().SetTextureScale(im.textureScale);
+
 	//ImGui::ShowDemoWindow();
 
 	ImGui::End();;
 
 	ImGuiGradientWindow();
 
+
+
 	if(im.showDemoWindow)
 		ImGui::ShowDemoWindow();
+	ImGui::Begin("Entity List");
+	static int selectedEnt = -1;
+	const char* items[] = { "Apple", "Banana", "Cherry", "Kiwi", "Mango", "Orange", "Pineapple", "Strawberry", "Watermelon" };
+	ImGui::ListBox("##entitylist", &selectedEnt, items, ARRAYSIZE(items), 9);
+	if (ImGui::Button("-1"))
+		selectedEnt = -1;
+
+	ImGui::End();
 
 
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 }
+
+#define PRINTER(name) printer(#name, )
 
 void DX11Addon::ImGuiShutDown()
 {
@@ -481,6 +502,7 @@ void DX11Addon::Render(const float& deltatime)
 	dc->OMSetBlendState(m_blendState, NULL, 0xFFFFFFFF);
 
 	//dc->PSSetShader(m_3dps.GetShader(), NULL, 0);
+	dc->PSSetShader(m_toonPS.GetShader(), NULL, 0);
 	m_gunter.Draw();
 	m_model.Draw();
 	m_plane.Draw();
@@ -488,9 +510,9 @@ void DX11Addon::Render(const float& deltatime)
 	if (mp_cam->GetOffset().z != 0.f)
 		m_playermodel.Draw();
 
-	//m_water.UpdateTextureScroll(deltatime);
-	//m_water.Draw();
-	dc->PSSetShader(m_toonPS.GetShader(), NULL, 0);
+	m_water.UpdateTextureScroll(deltatime);
+	m_water.Draw();
+	dc->PSSetShader(m_3dnoLightps.GetShader(), NULL, 0);
 	m_menacing.Draw();
 	m_bulb.Draw();
 	

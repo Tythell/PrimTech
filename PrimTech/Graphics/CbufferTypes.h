@@ -35,13 +35,16 @@ namespace hlsl
 	struct cbpLightBuffer
 	{
 		float3 direction;
-		float p;
+		float specularInstensity;
 		float3 position;
 		float ambientStr;
 		float3 ambientLight;
 		float attenuation;
 		float3 pointLightColor;
 		float pointlightStr;
+		float3 forwardDir;
+		int pp;
+		float4 campos;
 	};
 
 	struct cbpMaterialBuffer
@@ -51,6 +54,6 @@ namespace hlsl
 		float transparency = 1.f;
 		float2 texCoordoffsetDist;
 		int distDiv = 2;
-		int pad;
+		float textureScale;
 	};
 }

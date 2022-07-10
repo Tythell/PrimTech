@@ -140,6 +140,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Defines.cpp" />
     <ClCompile Include="Graphics\3rdParty\imgui\imgui.cpp" />
     <ClCompile Include="Graphics\3rdParty\imgui\imgui_demo.cpp" />
     <ClCompile Include="Graphics\3rdParty\imgui\imgui_draw.cpp" />
@@ -219,7 +220,7 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
     </FxCompile>
-    <FxCompile Include="ToonPS.hlsl">
+    <FxCompile Include="GradientPS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
     </FxCompile>

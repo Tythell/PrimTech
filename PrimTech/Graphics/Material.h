@@ -20,12 +20,14 @@ public:
 	void SetDistortionScrollSpeed(float x, float y);
 	void Set(ID3D11DeviceContext*& dc);
 	void SetTransparency(float f);
+	void SetTextureScale(float f);
 	//void Create(ID3D11Device*& d, ID3D11DeviceContext*& dc);
 private:
 	void LoadDiffuse(std::string path);
 	void LoadDistortion(std::string path);
 	TextureMap* mp_diffuse = nullptr;
 	TextureMap* mp_distortion = nullptr;
+	float m_textureScale = 1.f;
 
 	sm::Vector2 m_diffuseOffsetValue, m_distortionValue;
 	sm::Vector2 m_diffuseOffsetSpeed, m_distortionOffsetSpeed;

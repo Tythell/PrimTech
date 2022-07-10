@@ -93,10 +93,16 @@ void Material::Set(ID3D11DeviceContext*& dc)
 	mp_matBuffer->Data().texCoordoffsetDist = m_distortionValue;
 	mp_matBuffer->Data().hasDistortion = int(hasDistortion);
 	mp_matBuffer->Data().transparency = m_transparency;
+	mp_matBuffer->Data().textureScale = m_textureScale;
 	mp_matBuffer->UpdateCB();
 }
 
 void Material::SetTransparency(float f)
 {
 	m_transparency = f;
+}
+
+void Material::SetTextureScale(float f)
+{
+	m_textureScale = f;
 }

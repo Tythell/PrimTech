@@ -40,11 +40,14 @@ namespace pt
 		if (m_kb.IsKeyDown(Key::SPACE)) move += {0.f, 1.f, 0.f};
 		if (m_kb.IsKeyDown(Key::SHIFT)) move += {0.f, -1.f, 0.f};
 		move *= m_playerSpeed * dt;
-		m_cam3d.Move(move);
+		
 		static bool isclick = false;
 
 		if (canMove)
+		{
 			SetCursorPos(m_windowPos.x + (m_window.getWinWidth() / 2),m_windowPos.y + (m_window.getWinHeight() / 2));
+			m_cam3d.Move(move);
+		}
 
 		
 		if (!m_kb.IsKeyDown(m_camlockKey))

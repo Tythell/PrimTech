@@ -34,12 +34,14 @@ struct ImGuiVars
 	int fov = 80.f;
 	float scale[3]{ 1.f,1.f,1.f };
 	bool enableHandModel = false;
-	float diffuseScrollSpeed[2] = { -0.285f, 0.5f };
-	float distScrollSpeed[2] = { 0.5f, -0.5f };
-	int distDiv = 5;
+	float diffuseScrollSpeed[2] = { 0.217f, 0.f };
+	float distScrollSpeed[2] = { 0.061f, 0.f };
+	int distDiv = 3;
 	bool showDemoWindow;
 	float gradient[2] = { 255.f / 2.f,1.f};
 	float gradientOffset = 0.f;
+	float textureScale = 1.f;
+	float specPow = 1.f;
 };
 
 class DX11Addon
