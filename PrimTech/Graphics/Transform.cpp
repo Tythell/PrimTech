@@ -106,6 +106,21 @@ void Transform::Scale(float xyz)
 	UpdateWorld();
 }
 
+sm::Vector3 Transform::GetPosition() const
+{
+	return m_pos;
+}
+
+sm::Vector3 Transform::GetRotation() const
+{
+	return m_rot;
+}
+
+sm::Vector3 Transform::GetScale() const
+{
+	return m_scale;
+}
+
 void Transform::UpdateWorld()
 {
 	worldTransposed = 

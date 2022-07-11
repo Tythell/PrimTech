@@ -30,17 +30,13 @@ struct ImGuiVars
 	float offset = 0.f;
 	float ambient[4] = {1.f,1.f,1.f, .2f};
 	float direction[3] = { 1.f,1.f,1.f };
-	float atten = 1.f;
+	float atten = .5f;
 	int fov = 80.f;
 	float scale[3]{ 1.f,1.f,1.f };
 	bool enableHandModel = false;
-	float diffuseScrollSpeed[2] = { 0.217f, 0.f };
-	float distScrollSpeed[2] = { 0.061f, 0.f };
-	int distDiv = 3;
 	bool showDemoWindow;
 	float gradient[2] = { 255.f / 2.f,1.f};
 	float gradientOffset = 0.f;
-	float textureScale = 1.f;
 	float specPow = 1.f;
 };
 
@@ -123,8 +119,10 @@ private:
 	Model m_menacing;
 	Model m_handmodel;
 	Model m_water;
+	std::vector<std::string> m_modelNames;
 	int m_fps = 0;
 
 	unsigned char m_ZAToonExport[255] = {};
+	const char** m_modelNamescStr;
 };
 

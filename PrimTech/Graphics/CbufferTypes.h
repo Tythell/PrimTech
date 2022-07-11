@@ -36,15 +36,14 @@ namespace hlsl
 	{
 		float3 direction;
 		float specularInstensity;
-		float3 position;
+		float3 pointLightPosition;
 		float ambientStr;
-		float3 ambientLight;
-		float attenuation;
+		float3 ambientColor;
+		float atten;
 		float3 pointLightColor;
-		float pointlightStr;
-		float3 forwardDir;
-		int pp;
-		float4 campos;
+		float pointlightStre;
+		float3 camPos;
+		int pad;
 	};
 
 	struct cbpMaterialBuffer
@@ -55,5 +54,7 @@ namespace hlsl
 		float2 texCoordoffsetDist;
 		int distDiv = 2;
 		float textureScale;
+		float3 rimColor;
+		int rim;
 	};
 }

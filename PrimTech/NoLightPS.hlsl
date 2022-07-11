@@ -1,6 +1,32 @@
 Texture2D diffuseMap : DIFFUSEMAP : register(t0);
 SamplerState samplerState : SAMPLER : register(s0);
 
+cbuffer LightBuffer : register(b0)
+{
+    float3 direction;
+    float specularInstensity;
+    float3 pointLightPosition;
+    float ambientStr;
+    float3 ambientColor;
+    float atten;
+    float3 pointLightColor;
+    float pointlightStre;
+    float3 camPos;
+    int pad;
+};
+
+cbuffer MaterialBuffer : register(b1)
+{
+    int hasDistortion;
+    float2 texCoordOffset;
+    float transparency;
+    float2 texCoordoffsetDist;
+    int distDiv;
+    float textureScale;
+    float3 rimColor;
+    int rim;
+}
+
 struct PSInput
 {
     float4 position : SV_POSITION;
@@ -13,5 +39,12 @@ float4 main(PSInput input) : SV_Target
 {
     float3 diffuse = diffuseMap.Sample(samplerState, input.texCoord);
     
-    return float4(diffuse, 1.f);
+    float3 faceNormal = input.normal;
+    float3 camToOb = normalize(input.worldPos - camPos.xyz);
+    
+    float rimDot = 0;
+    if (rim == 1)
+        rimDot = 1 - dot(-camToOb, faceNormal);
+    
+    return float4(diffuse + (rimDot * rimColor), 1.f);
 }

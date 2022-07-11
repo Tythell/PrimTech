@@ -29,6 +29,7 @@ DX11Addon::~DX11Addon()
 
 	delete im.buffer;
 
+	delete[] m_modelNamescStr;
 	ResourceHandler::Unload();
 
 	device->Release();
@@ -41,6 +42,7 @@ DX11Addon::~DX11Addon()
 	m_rasterizerState->Release();
 	m_sampState->Release();
 	m_blendState->Release();
+
 }
 
 bool DX11Addon::initSwapChain()
@@ -207,7 +209,7 @@ bool DX11Addon::InitShaders()
 	m_3dvs.InitInputLayout(device, layout3D, ARRAYSIZE(layout3D));
 	m_3dps.Init(device, "../x64/Debug/BasePS.cso");
 	m_3dnoLightps.Init(device, "../x64/Debug/NoLightPs.cso");
-	m_toonPS.Init(device, "../x64/Debug/GradientPS.cso");
+	m_toonPS.Init(device, "../x64/Debug/LightWarpPS.cso");
 
 	dc->VSSetShader(m_3dvs.GetShader(), NULL, 0);
 	dc->PSSetShader(m_3dps.GetShader(), NULL, 0);
@@ -233,7 +235,7 @@ bool DX11Addon::InitScene()
 	m_model.SetPosition(0.f, 0.f, 3.f);
 	m_model.SetMaterialBuffer(m_materialBuffer);
 
-	m_bulb.Init("bulb.obj");
+	m_bulb.Init("bulb.obj", ModelType::eDEBUG);
 	m_bulb.SetMaterialBuffer(m_materialBuffer);
 	m_bulb.SetScale(1.2f);
 
@@ -243,9 +245,7 @@ bool DX11Addon::InitScene()
 	m_plane.SetScale(10.f);
 	m_plane.SetMaterialBuffer(m_materialBuffer);
 
-	m_plane.setDiffuseScrollSpeed(-0.1f, -0.1f);
-
-	m_playermodel.Init("dirCapsule.obj");
+	m_playermodel.Init("dirCapsule.obj", ModelType::eDEBUG);
 	m_playermodel.SetScale(.1f);
 	m_playermodel.SetMaterialBuffer(m_materialBuffer);
 
@@ -270,10 +270,19 @@ bool DX11Addon::InitScene()
 	m_water.SetPosition(-4.f, 0.f, 0.f);
 	m_water.SetMaterialBuffer(m_materialBuffer);
 	m_water.GetMaterial().SetTransparency(.7f);
-
+	m_water.GetMaterial().SetDiffuseScrollSpeed(0.217f, 0.f);
+	m_water.GetMaterial().SetDistortionScrollSpeed(0.061f, 0.f);
+	m_water.GetMaterial().SetDistortionDivider(3);
 
 	dc->VSSetConstantBuffers(0, 1, m_transformBuffer.GetReference());
-	AllModels::Addbuffers(dc, m_transformBuffer);
+	AllModels::SetBuffers(dc, m_transformBuffer);
+	AllModels::SetNamesToVector(m_modelNames);
+
+	m_modelNamescStr = new const char* [m_modelNames.size()]{""};
+	for (int i = 0; i < m_modelNames.size(); i++)
+	{
+		m_modelNamescStr[i] = m_modelNames[i].c_str();
+	}
 	return true;
 }
 
@@ -289,24 +298,22 @@ void DX11Addon::InitConstantBuffers()
 
 void DX11Addon::UpdateScene(const float& deltatime)
 {
-	m_lightbuffer.Data().ambientLight = { im.ambient[0], im.ambient[1], im.ambient[2] };
+	m_lightbuffer.Data().ambientColor = { im.ambient[0], im.ambient[1], im.ambient[2] };
 	m_lightbuffer.Data().ambientStr = im.ambient[3];
 	m_lightbuffer.Data().pointLightColor = { im.pointLightColor[0], im.pointLightColor[1], im.pointLightColor[2] };
-	m_lightbuffer.Data().pointlightStr = im.pointLightStr;
+	m_lightbuffer.Data().pointlightStre = im.pointLightStr;
 
 	m_transformBuffer.Data().viewProj = d::XMMatrixTranspose(mp_cam->GetViewM() * mp_cam->GetProjM());
 	m_lightbuffer.Data().direction = sm::Vector3(0.f, 1.f, 0.f);
-	m_lightbuffer.Data().position = sm::Vector3(im.pointLightPos[0], im.pointLightPos[1], im.pointLightPos[2]);
-	m_lightbuffer.Data().forwardDir = mp_cam->GetForwardVector();
-	m_lightbuffer.Data().campos = { mp_cam->GetPosition().x, mp_cam->GetPosition().y, mp_cam->GetPosition().z, 1.f };
+	m_lightbuffer.Data().pointLightPosition = sm::Vector3(im.pointLightPos[0], im.pointLightPos[1], im.pointLightPos[2]);
+	//m_lightbuffer.Data().forwardDir = mp_cam->GetForwardVector();
+	m_lightbuffer.Data().camPos = { mp_cam->GetPosition().x, mp_cam->GetPosition().y, mp_cam->GetPosition().z, 1.f };
 	m_lightbuffer.UpdateCB();
 
 	m_playermodel.SetRotation(-mp_cam->GetRotation().x, mp_cam->GetRotation().y, -mp_cam->GetRotation().z);
 	m_playermodel.Rotate(0.f, d::XM_PI, 0.f);
 	m_playermodel.SetPosition(mp_cam->GetPosition() + sm::Vector3(0.f, -0.1f, 0.f));
 	m_model.Rotate(0.f, 2.f * deltatime, 0.f);
-
-	m_materialBuffer.Data().distDiv = im.distDiv;
 }
 
 void DX11Addon::ImGuiInit(HWND& hwnd)
@@ -406,23 +413,11 @@ void DX11Addon::ImGuiRender()
 	ImGui::DragFloat3("PointLightColor", im.pointLightColor, 0.01f, 0.f, 1.f);
 	ImGui::SliderFloat("PointLight Strength", &im.pointLightStr, 0.f, 3.f);
 	const float scrollmax = .5f;
-	ImGui::SliderFloat2("Diffuse scroll", im.diffuseScrollSpeed, -scrollmax, scrollmax);
-	ImGui::SliderFloat2("Distortion scroll", im.distScrollSpeed, -scrollmax, scrollmax);
 	ImGui::SliderFloat("Specular power", &im.specPow, 1.f, 1000.f);
 	m_lightbuffer.Data().specularInstensity = im.specPow;
- 	m_water.setDiffuseScrollSpeed(im.diffuseScrollSpeed[0], im.diffuseScrollSpeed[1]);
-	m_water.GetMaterial().SetDistortionScrollSpeed(im.distScrollSpeed[0], im.distScrollSpeed[1]);
-	
-	if (ImGui::Button("Reset Scrolling"))
-	{
-		for (int i = 0; i < 2; i++)
-		{
-			im.diffuseScrollSpeed[i] = 0.f;
-			im.distScrollSpeed[i] = 0.f;
-		}
-	}
-	ImGui::SliderInt("Distortion divider", &im.distDiv, 1, 20);
-	ImGui::SliderFloat("Texture scale", &im.textureScale, 1.f, 10.f);
+
+	ImGui::SliderFloat("Attenuation", &im.atten, 0.f, 10.f);
+	m_lightbuffer.Data().atten = im.atten;
 
 	std::string camoffsetString = "Camera offset: ";
 	camoffsetString += std::to_string(mp_cam->GetOffset().z);
@@ -434,25 +429,116 @@ void DX11Addon::ImGuiRender()
 
 	ImGui::Text(GetVectorAsString(mp_cam->GetRotation()).c_str());
 
-	m_water.GetMaterial().SetTextureScale(im.textureScale);
-	//m_plane.GetMaterial().SetTextureScale(im.textureScale);
+	ImGui::End();
 
-	//ImGui::ShowDemoWindow();
-
-	ImGui::End();;
-
-	ImGuiGradientWindow();
+	//ImGuiGradientWindow();
 
 
 
 	if(im.showDemoWindow)
 		ImGui::ShowDemoWindow();
-	ImGui::Begin("Entity List");
+	ImGui::Begin("Model List");
 	static int selectedEnt = -1;
-	const char* items[] = { "Apple", "Banana", "Cherry", "Kiwi", "Mango", "Orange", "Pineapple", "Strawberry", "Watermelon" };
-	ImGui::ListBox("##entitylist", &selectedEnt, items, ARRAYSIZE(items), 9);
-	if (ImGui::Button("-1"))
+	bool recentlyClicked = false;
+	if (ImGui::ListBox("##entitylist", &selectedEnt, m_modelNamescStr, m_modelNames.size(), 9))
+	{
+		recentlyClicked = true;
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Deselect"))
 		selectedEnt = -1;
+	if (selectedEnt != -1)
+	{
+		Model* pSelectedModel = AllModels::GetModel(selectedEnt);
+
+		ModelType mt = pSelectedModel->GetModelType();
+
+		if (recentlyClicked) ImGui::SetNextItemOpen(true);
+		if (ImGui::CollapsingHeader(pSelectedModel->GetName().c_str()) && mt != ModelType::eDEBUG)
+		{
+			sm::Vector3 pos = pSelectedModel->GetPosition();
+			float position[3] = { pos.x, pos.y, pos.z };
+			ImGui::DragFloat3("Position", position, .02f);
+			ImGui::SameLine();
+			if (ImGui::Button("Reset##Position")) for (int i = 0; i < 3; i++)
+				position[i] = 0.f;
+			pSelectedModel->SetPosition(position[0], position[1], position[2]);
+
+			sm::Vector3 rot = pSelectedModel->GetRotation();
+			float rotation[3] = { rot.x, rot.y, rot.z };
+			ImGui::DragFloat3("Rotation", rotation, .02f);
+			
+			ImGui::SameLine();
+			if (ImGui::Button("Reset##Rotation")) 
+				for (int i = 0; i < 3; i++)
+					rotation[i] = 0.f;
+			pSelectedModel->SetRotation(rotation[0], rotation[1], rotation[2]);
+
+			sm::Vector3 scale = pSelectedModel->GetScale();
+			float scalef[3] = { scale.x, scale.y, scale.z };
+			ImGui::DragFloat3("Scale   ", scalef, .02f);
+
+			ImGui::SameLine();
+			if (ImGui::Button("Reset##Scale"))
+				for (int i = 0; i < 3; i++)
+					scalef[i] = 1.f;
+			pSelectedModel->SetScale(scalef[0], scalef[1], scalef[2]);
+		}
+
+
+		if (recentlyClicked) ImGui::SetNextItemOpen(true);
+		if (ImGui::CollapsingHeader("Material"))
+		{
+			Material* pMaterial = &pSelectedModel->GetMaterial();
+
+			sm::Vector2 diffuseSpeed(pMaterial->GetDiffuseScrollSpeed());
+			sm::Vector2 distortionSpeed(pMaterial->GetDistortionScrollSpeed());
+
+			float diffSpeed[2]{ diffuseSpeed.x, diffuseSpeed.y };
+			float distSpeed[2]{ distortionSpeed.x, distortionSpeed.y };
+
+			ImGui::SliderFloat2("Diffuse Scroll", diffSpeed, -.5f, .5f);
+			ImGui::SliderFloat2("Distortion Scroll", distSpeed, -.5f, .5f);
+			if (ImGui::Button("Reset Scrollspeed"))
+			{
+				for (int i = 0; i < 2; i++)
+				{
+					diffSpeed[i] = 0.f;
+					distSpeed[i] = 0.f;
+				}
+			}
+			ImGui::SameLine();
+			if(ImGui::Button("Reset scrollvalues"))
+				pMaterial->ResetScrollValue();
+			
+			pMaterial->SetDiffuseScrollSpeed(diffSpeed[0], diffSpeed[1]);
+			pMaterial->SetDistortionScrollSpeed(distSpeed[0], distSpeed[1]);
+
+			bool hasDistMap = pMaterial->HasDistortion();
+			if (hasDistMap)
+			{
+				int distDivider = pMaterial->GetDistortionDivider();
+				ImGui::SliderInt("Dist divider", &distDivider, 1, 20);
+				pMaterial->SetDistortionDivider(distDivider);
+			}
+
+			float transparancy = pMaterial->GetTransparancy();
+			ImGui::SliderFloat("Transparancy", &transparancy, 0.f, 1.f);
+			pMaterial->SetTransparency(transparancy);
+
+			float tiling = pMaterial->GetTextureScale();
+			ImGui::SliderFloat("Tiling", &tiling, 1.f, 10.f);
+			pMaterial->SetTextureScale(tiling);
+		}
+
+	}
+
+	for (int i = 0; i < AllModels::GetNrOfModels(); i++)
+	{
+		AllModels::GetModel(i)->GetMaterial().SetSelection(false);
+	}
+	if(selectedEnt != -1)
+		AllModels::GetModel(selectedEnt)->GetMaterial().SetSelection(true);
 
 	ImGui::End();
 
@@ -496,6 +582,7 @@ void DX11Addon::SetInputP(KeyboardHandler& kb)
 
 void DX11Addon::Render(const float& deltatime)
 {
+	static int modelAmount = AllModels::GetNrOfModels();
 	float bgColor[] = { .1f,.1f,.1f,1.f };
 	dc->ClearRenderTargetView(m_rtv, bgColor);
 	dc->ClearDepthStencilView(m_dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
@@ -510,7 +597,11 @@ void DX11Addon::Render(const float& deltatime)
 	if (mp_cam->GetOffset().z != 0.f)
 		m_playermodel.Draw();
 
-	m_water.UpdateTextureScroll(deltatime);
+	for (int i = 0; i < modelAmount; i++)
+	{
+		AllModels::GetModel(i)->UpdateTextureScroll(deltatime);
+	}
+	//m_water.UpdateTextureScroll(deltatime);
 	m_water.Draw();
 	dc->PSSetShader(m_3dnoLightps.GetShader(), NULL, 0);
 	m_menacing.Draw();

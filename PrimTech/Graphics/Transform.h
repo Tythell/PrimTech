@@ -18,7 +18,9 @@ public:
 	void Scale(float x, float y, float z);
 	void Scale(sm::Vector3 v);
 	void Scale(float xyz);
-
+	sm::Vector3 GetPosition() const;
+	sm::Vector3 GetRotation() const;
+	sm::Vector3 GetScale() const;
 protected:
 	sm::Matrix GetWorldTransposed();
 	void UpdateWorld();

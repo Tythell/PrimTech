@@ -11,26 +11,27 @@ Model::Model()
 	AllModels::AddModelAdress(this);
 }
 
-//void Model::SetDCandBuffer(ID3D11DeviceContext*& pdc, Buffer<hlsl::cbpWorldTransforms3D>& pCbuffer)
-//{
-//	dc = pdc;
-//	mp_cbTransformBuffer = &pCbuffer;
-//}
-
 //ID3D11DeviceContext* Model::dc;
 //Buffer<hlsl::cbpWorldTransforms3D>* Model::mp_cbTransformBuffer;
 std::vector<Model*> AllModels::m_models;
 
-void Model::Init(const std::string path, bool makeLeftHanded)
+void Model::Init(const std::string path, ModelType e, bool makeLeftHanded)
 {
+	m_type = e;
 	std::string fullpath = "Assets/models/" + path;
 	//dc = pDc;
 	//mp_cbTransformBuffer = &buffer;
+	m_name = "";
 	int meshIndex = ResourceHandler::CheckMeshNameExists(StringHelper::GetName(fullpath));
 	if (meshIndex != -1)
+	{
 		mp_mesh = ResourceHandler::GetMeshAdress(meshIndex);
+		m_name += "(" + std::to_string(mp_mesh->GetNrOfUses()) + ")";
+	}
 	else
 		mp_mesh = ResourceHandler::AddMesh(fullpath);
+	mp_mesh->IncreaseUses();
+	m_name += mp_mesh->GetName();
 
 	//dc->VSSetConstantBuffers(0, 1, mp_cbTransformBuffer->GetReference());
 }
@@ -58,11 +59,6 @@ void Model::LoadTexture(std::string path, TextureType type)
 	m_material.LoadTexture(path, type);
 }
 
-void Model::setDiffuseScrollSpeed(float x, float y)
-{
-	m_material.SetDiffuseScrollSpeed(x, y);
-}
-
 void Model::SetMaterialBuffer(Buffer<hlsl::cbpMaterialBuffer>& cbMaterialBuffer)
 {
 	m_material.SetPointers(&cbMaterialBuffer);
@@ -73,16 +69,26 @@ Material& Model::GetMaterial()
 	return m_material;
 }
 
+Mesh* Model::GetMeshP()
+{
+	return mp_mesh;
+}
+
+std::string Model::GetName() const
+{
+	return m_name;
+}
+
 void Model::SetDCandBuffer(ID3D11DeviceContext*& pdc, Buffer<hlsl::cbpWorldTransforms3D>& pCbuffer)
 {
 	dc = pdc;
 	mp_cbTransformBuffer = &pCbuffer;
 }
 
-//void Model::CreateMaterial(ID3D11Device*& device, ID3D11DeviceContext*& dc)
-//{
-	//m_material.Create(device, dc);
-//}
+ModelType Model::GetModelType() const
+{
+	return m_type;
+}
 
 bool LoadObjToBuffer(std::string path, ID3D11Device*& pDevice, Buffer<Vertex3D>& vbuffer, bool makeLeftHanded)
 {
@@ -186,15 +192,17 @@ std::string Mesh::GetName() const
 	return m_name;
 }
 
-//void AllModels::Addbuffers(ID3D11DeviceContext*& dc, Buffer<hlsl::cbpWorldTransforms3D>& buffer)
-//{
-//	for (int i = 0; i < m_models.size(); i++)
-//	{
-//		m_models[i].
-//	}
-//}
+void Mesh::IncreaseUses()
+{
+	m_nrOfUses++;
+}
 
-void AllModels::Addbuffers(ID3D11DeviceContext*& dc, Buffer<hlsl::cbpWorldTransforms3D>& buffer)
+int Mesh::GetNrOfUses() const
+{
+	return m_nrOfUses;
+}
+
+void AllModels::SetBuffers(ID3D11DeviceContext*& dc, Buffer<hlsl::cbpWorldTransforms3D>& buffer)
 {
 	for (int i = 0; i < m_models.size(); i++)
 	{
@@ -205,4 +213,23 @@ void AllModels::Addbuffers(ID3D11DeviceContext*& dc, Buffer<hlsl::cbpWorldTransf
 void AllModels::AddModelAdress(Model* pm)
 {
 	m_models.emplace_back(pm);
+}
+
+void AllModels::SetNamesToVector(std::vector<std::string>& v)
+{
+	v.resize(m_models.size());
+	for (int i = 0; i < v.size(); i++)
+	{
+		v[i] = m_models[i]->GetName();
+	}
+}
+
+int AllModels::GetNrOfModels()
+{
+	return (int)m_models.size();
+}
+
+Model* AllModels::GetModel(int index)
+{
+	return m_models[index];
 }
