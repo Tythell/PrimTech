@@ -99,6 +99,7 @@ bool LoadObjToBuffer(std::string path, ID3D11Device*& pDevice, Buffer<Vertex3D>&
 	std::vector<sm::Vector3> v;
 	std::vector<sm::Vector3> vn;
 	std::vector<sm::Vector2> vt;
+
 	std::vector<UINT> posIndex;
 	std::vector<UINT> normalIndex;
 	std::vector<UINT> texcoordsIndex;
@@ -120,7 +121,7 @@ bool LoadObjToBuffer(std::string path, ID3D11Device*& pDevice, Buffer<Vertex3D>&
 		{
 			DirectX::XMFLOAT3 vertex;
 			reader >> vertex.x >> vertex.y >> vertex.z;
-			if (makeLeftHanded) vertex.z *= -1;
+			//if (makeLeftHanded) vertex.z *= -1;
 			v.emplace_back(vertex);
 		}
 		else if (input == "vt")
@@ -133,7 +134,7 @@ bool LoadObjToBuffer(std::string path, ID3D11Device*& pDevice, Buffer<Vertex3D>&
 		{
 			DirectX::XMFLOAT3 normal;
 			reader >> normal.x >> normal.y >> normal.z;
-			if (makeLeftHanded) normal.z *= -1;
+			//if (makeLeftHanded) normal.z *= -1;
 			vn.emplace_back(normal);
 		}
 		else if (input == "f")
@@ -154,43 +155,12 @@ bool LoadObjToBuffer(std::string path, ID3D11Device*& pDevice, Buffer<Vertex3D>&
 				triangle[i].texCoord = vt[vtIndexTemp];
 			}
 
-			//for (uint32_t i = 0; i < shape.size(); i += 3u) {
-			//	sm::Vector3 pos0 = shape[i].position;
-			//	sm::Vector3 pos1 = shape[i + 1u].position;
-			//	sm::Vector3 pos2 = shape[i + 2u].position;
+			for (int i = 0; i < 3; i++)
+				shape.emplace_back(triangle[i]);
 
-			//	sm::Vector2 uv0 = shape[i].texCoord;
-			//	sm::Vector2 uv1 = shape[i + 1u].texCoord;
-			//	sm::Vector2 uv2 = shape[i + 2u].texCoord;
+		}
 
-			//	sm::Vector2 duv1 = uv1 - uv0;
-			//	sm::Vector2 duv2 = uv2 - uv0;
-			//	sm::Vector3 de1 = pos1 - pos0;
-			//	sm::Vector3 de2 = pos2 - pos0;
-
-			//	float f = 1.0f / (duv1.x * duv2.y - duv2.x * duv1.y);
-
-			//	sm::Vector3 t;
-			//	sm::Vector3 bt;
-
-			//	t.x = f * (duv2.y * de1.x - duv1.y * de2.x);
-			//	t.y = f * (duv2.y * de1.y - duv1.y * de2.y);
-			//	t.z = f * (duv2.y * de1.z - duv1.y * de2.z);
-
-			//	bt.x = f * (-duv2.x * de1.x + duv1.x * de2.x);
-			//	bt.y = f * (-duv2.x * de1.y + duv1.x * de2.y);
-			//	bt.z = f * (-duv2.x * de1.z + duv1.x * de2.z);
-
-			//	shape[i].tangent = (t - shape[i].normal * (shape[i].normal * t));
-			//	shape[i + 1u].tangent = (t - shape[i + 1u].normal * (shape[i + 1u].normal * t));
-			//	shape[i + 2u].tangent = (t - shape[i + 2u].normal * (shape[i + 2u].normal * t));
-
-			////	//shape[i].bi = (bt - mesh[i].norm * (mesh[i].norm * bt));
-			////	//shape[i + 1u].bi = (bt - mesh[i + 1u].norm * (mesh[i + 1u].norm * bt)).Normalized();
-			////	//shape[i + 2u].bi = (bt - mesh[i + 2u].norm * (mesh[i + 2u].norm * bt)).Normalized();
-			//}
-
-			for (int i = 0; i < shape.size(); i += 3)
+		for (int i = 0; i < shape.size(); i += 3)
 			{
 				sm::Vector2 UVA = shape[i].texCoord;
 				sm::Vector2 UVB = shape[i + 1].texCoord;
@@ -217,21 +187,6 @@ bool LoadObjToBuffer(std::string path, ID3D11Device*& pDevice, Buffer<Vertex3D>&
 				shape[i + 1].tangent = tangent;
 				shape[i + 2].tangent = tangent;
 			}
-
-			if (makeLeftHanded)
-			{
-				Vertex3D temp = triangle[0];
-				triangle[0] = triangle[2];
-				triangle[2] = temp;
-			}
-
-
-
-
-			for (int i = 0; i < 3; i++)
-				shape.emplace_back(triangle[i]);
-
-		}
 	}
 
 	if (FAILED(vbuffer.CreateVertexBuffer(pDevice, shape.data(), (unsigned int)shape.size())))

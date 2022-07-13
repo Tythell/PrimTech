@@ -152,6 +152,7 @@ bool DX11Addon::InitRastNSampState()
 	ZeroMemory(&rastDesc, sizeof(D3D11_RASTERIZER_DESC));
 	rastDesc.FillMode = D3D11_FILL_MODE::D3D11_FILL_SOLID;
 	rastDesc.CullMode = D3D11_CULL_MODE::D3D11_CULL_BACK;
+	//rastDesc.FrontCounterClockwise = true;
 
 	HRESULT hr = device->CreateRasterizerState(&rastDesc, &m_rasterizerState);
 	COM_ERROR(hr, "Rasterizer State setup failed");

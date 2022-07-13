@@ -69,8 +69,8 @@ float4 main(PSInput input) : SV_Target
         float3 normTan = normalize(input.tangent);
         float3 biNormal = normalize(cross(faceNormal, normTan));
         tbnMatr = float3x3(normTan, biNormal, faceNormal);
-        faceNormal = biNormal;
-        //faceNormal = float3(mul(mappedNormal, tbnMatr));
+        //faceNormal = biNormal;
+        faceNormal = float3(mul(mappedNormal, tbnMatr));
     }
     
     float4 diffuse = diffuseMap.Sample(samplerState, texCoord + distortion);
