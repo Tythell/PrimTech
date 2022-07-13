@@ -17,6 +17,7 @@ std::vector<Model*> AllModels::m_models;
 
 void Model::Init(const std::string path, ModelType e, bool makeLeftHanded)
 {
+	m_material.SetLeftHanded(makeLeftHanded);
 	m_type = e;
 	std::string fullpath = "Assets/models/" + path;
 	//dc = pDc;
@@ -29,7 +30,7 @@ void Model::Init(const std::string path, ModelType e, bool makeLeftHanded)
 		m_name += "(" + std::to_string(mp_mesh->GetNrOfUses()) + ")";
 	}
 	else
-		mp_mesh = ResourceHandler::AddMesh(fullpath);
+		mp_mesh = ResourceHandler::AddMesh(fullpath, makeLeftHanded);
 	mp_mesh->IncreaseUses();
 	m_name += mp_mesh->GetName();
 
@@ -95,6 +96,7 @@ ModelType Model::GetModelType() const
 
 bool LoadObjToBuffer(std::string path, ID3D11Device*& pDevice, Buffer<Vertex3D>& vbuffer, bool makeLeftHanded)
 {
+	//makeLeftHanded = false;
 	std::string s;
 	std::vector<sm::Vector3> v;
 	std::vector<sm::Vector3> vn;
@@ -121,7 +123,7 @@ bool LoadObjToBuffer(std::string path, ID3D11Device*& pDevice, Buffer<Vertex3D>&
 		{
 			DirectX::XMFLOAT3 vertex;
 			reader >> vertex.x >> vertex.y >> vertex.z;
-			//if (makeLeftHanded) vertex.z *= -1;
+			if (makeLeftHanded) vertex.z *= -1;
 			v.emplace_back(vertex);
 		}
 		else if (input == "vt")
@@ -134,7 +136,7 @@ bool LoadObjToBuffer(std::string path, ID3D11Device*& pDevice, Buffer<Vertex3D>&
 		{
 			DirectX::XMFLOAT3 normal;
 			reader >> normal.x >> normal.y >> normal.z;
-			//if (makeLeftHanded) normal.z *= -1;
+			if (makeLeftHanded) normal.z *= -1;
 			vn.emplace_back(normal);
 		}
 		else if (input == "f")
@@ -155,8 +157,12 @@ bool LoadObjToBuffer(std::string path, ID3D11Device*& pDevice, Buffer<Vertex3D>&
 				triangle[i].texCoord = vt[vtIndexTemp];
 			}
 
-			for (int i = 0; i < 3; i++)
-				shape.emplace_back(triangle[i]);
+			if(makeLeftHanded)
+				for (int i = 2; i > -1; i--)
+					shape.emplace_back(triangle[i]);
+			else
+				for (int i = 0; i < 3; i++)
+					shape.emplace_back(triangle[i]);
 
 		}
 
@@ -183,6 +189,10 @@ bool LoadObjToBuffer(std::string path, ID3D11Device*& pDevice, Buffer<Vertex3D>&
 				tangent.y = f * (dAC.y * edge1.y - dAB.y * edge2.y);
 				tangent.z = f * (dAC.y * edge1.z - dAB.y * edge2.z);
 
+				if (makeLeftHanded)
+				{
+
+				}
 				shape[i].tangent = tangent;
 				shape[i + 1].tangent = tangent;
 				shape[i + 2].tangent = tangent;

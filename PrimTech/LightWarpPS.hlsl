@@ -31,7 +31,8 @@ cbuffer MaterialBuffer : register(b1)
     float3 rimColor;
     int rim;
     int hasNormal;
-    int3 pad;
+    int LH;
+    int2 pad;
 }
 
 struct PSInput
@@ -61,20 +62,19 @@ float4 main(PSInput input) : SV_Target
     
     distortion += texCoordOffset;
     
-    float3 faceNormal = input.normal;
+    float3 normal = input.normal;
     float3x3 tbnMatr = 0;
     if(hasNormal)
     {
-        float3 mappedNormal = normalMap.Sample(samplerState, texCoord + distortion) * 2.f - 1.f;
+        float3 mappedNormal = normalize(normalMap.Sample(samplerState, texCoord + distortion) * 2.f - 1.f);
         float3 normTan = normalize(input.tangent);
-        float3 biNormal = normalize(cross(faceNormal, normTan));
-        tbnMatr = float3x3(normTan, biNormal, faceNormal);
-        //faceNormal = biNormal;
-        faceNormal = float3(mul(mappedNormal, tbnMatr));
+        float3 biNormal = (LH == 1) ? normalize(cross(normTan, normal)) : normalize(cross(normal, normTan));
+        tbnMatr = float3x3(normTan, biNormal, normal);
+        normal = float3(mul(mappedNormal, tbnMatr));
     }
     
     float4 diffuse = diffuseMap.Sample(samplerState, texCoord + distortion);
-    //float dirLight = dot(faceNormal, direction);
+    //float dirLight = dot(normal, direction);
     
     float3 lightVector = lightPos.xyz - input.worldPos;
 
@@ -87,19 +87,11 @@ float4 main(PSInput input) : SV_Target
     
     // clamped to remove sampling artifacts
     // Uses to calculated value as index on a lookup-table stored in a texture
-    //float lightindex = (false) ? saturate(dot(lightVector, faceNormal)) * pointlightStre : 0.f;
-    float lightindex = (distance <= lightDistance) ? saturate(dot(lightVector, faceNormal)) * pointlightStre : 0.f;
+    //float lightindex = (false) ? saturate(dot(lightVector, normal)) * pointlightStre : 0.f;
+    float lightindex = (distance <= lightDistance) ? saturate(dot(lightVector, normal)) * pointlightStre : 0.f;
     float3 camToOb = normalize(input.worldPos - camPos.xyz);
-    //float spec = 0.f;
-    //if (lightindex < 0.f)
-    //{
-    //    float3 v = reflect(-lightVector, faceNormal);
-    //    float specFactor = pow(max(dot(v, -camToOb), 0.f), specularInstensity);
-
-    //    spec = specFactor * specularInstensity;
-    //}
-    //float3 spec = pow(max(dot(camToOb, -reflect(camToOb, faceNormal)), 0), atten);
-    float3 specular = pow(max(dot(camToOb, -reflect(-lightVector, faceNormal)), 0.f),specularInstensity);
+   
+    float3 specular = pow(max(dot(camToOb, -reflect(-lightVector, normal)), 0.f),specularInstensity);
     
     float att = 1.f / dot(atten.xxx, float3(1.f, distance, distance));
     
@@ -115,7 +107,7 @@ float4 main(PSInput input) : SV_Target
 
     float rimDot = 0;
     if (rim == 1)
-        rimDot = 1 - dot(-camToOb, faceNormal);
+        rimDot = 1 - dot(-camToOb, normal);
     
     float3 final = diffuse.xyz * (cellLightStr) + (rimDot.rrr * rimColor);
 
@@ -123,5 +115,5 @@ float4 main(PSInput input) : SV_Target
     
     
     
-    return float4(faceNormal, transparency);
+    return float4(final, transparency);
 }

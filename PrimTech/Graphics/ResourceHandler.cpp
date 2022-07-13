@@ -12,7 +12,7 @@ void ResourceHandler::SetDevice(ID3D11Device*& device)
 
 Mesh* ResourceHandler::AddMesh(std::string path, bool makeLeftHanded)
 {
-	Mesh* pMesh = new Mesh(path, pDevice);
+	Mesh* pMesh = new Mesh(path, pDevice, makeLeftHanded);
 	m_meshes.emplace_back(pMesh);
 	return pMesh;
 }

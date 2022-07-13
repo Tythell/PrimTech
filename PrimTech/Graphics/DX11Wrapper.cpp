@@ -152,7 +152,7 @@ bool DX11Addon::InitRastNSampState()
 	ZeroMemory(&rastDesc, sizeof(D3D11_RASTERIZER_DESC));
 	rastDesc.FillMode = D3D11_FILL_MODE::D3D11_FILL_SOLID;
 	rastDesc.CullMode = D3D11_CULL_MODE::D3D11_CULL_BACK;
-	//rastDesc.FrontCounterClockwise = true;
+	rastDesc.FrontCounterClockwise = false;
 
 	HRESULT hr = device->CreateRasterizerState(&rastDesc, &m_rasterizerState);
 	COM_ERROR(hr, "Rasterizer State setup failed");
@@ -238,14 +238,15 @@ bool DX11Addon::InitScene()
 	m_model.SetPosition(0.f, 0.f, 3.f);
 	m_model.SetMaterialBuffer(m_materialBuffer);
 
-	m_plane.Init("plane.txt");
-	m_plane.LoadTexture("seamless.png");
+	m_plane.Init("scaledplane.obj");
+	m_plane.LoadTexture("Brick_Diffuse.jpg");
+	//m_plane.LoadTexture("Brick_NormalMap.jpg", eNormal);
 	m_plane.SetPosition(0.f, -1.f, 0.f);
 	m_plane.SetScale(10.f);
 	m_plane.SetMaterialBuffer(m_materialBuffer);
 
 
-	m_gunter.Init("gunter.obj");
+	m_gunter.Init("gunter.obj", ModelType::eUNSPECIFIED, true);
 	m_gunter.LoadTexture("gunteruv.png", eDiffuse);
 	m_gunter.SetPosition(-1.f, 2.f, -6.f);
 	m_gunter.SetRotation(0.f, d::XM_PI, 0.f);
@@ -400,7 +401,7 @@ void DX11Addon::ImGuiRender()
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
-	ImGui::Begin("Debug", nullptr, ImGuiWindowFlags_NoCollapse);
+	ImGui::Begin("Debug");
 	ImGui::Checkbox("Demo window", &im.showDemoWindow);
 	ImGui::Text("Press Q to lock/unlock mouse");
 
@@ -501,7 +502,7 @@ void DX11Addon::ImGuiRender()
 			float distSpeed[2]{ distortionSpeed.x, distortionSpeed.y };
 
 			ImGui::SliderFloat2("Diffuse Scroll", diffSpeed, -.5f, .5f);
-			if(hasDistMap)
+			if (hasDistMap)
 				ImGui::SliderFloat2("Distortion Scroll", distSpeed, -.5f, .5f);
 			if (ImGui::Button("Reset Scrollspeed"))
 			{
@@ -518,7 +519,7 @@ void DX11Addon::ImGuiRender()
 			pMaterial->SetDiffuseScrollSpeed(diffSpeed[0], diffSpeed[1]);
 			pMaterial->SetDistortionScrollSpeed(distSpeed[0], distSpeed[1]);
 
-			
+
 			if (hasDistMap)
 			{
 				int distDivider = pMaterial->GetDistortionDivider();

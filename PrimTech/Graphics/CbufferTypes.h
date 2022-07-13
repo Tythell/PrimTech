@@ -28,8 +28,6 @@ namespace hlsl
 	{
 		float4x4 world;
 		float4x4 viewProj;
-		float2 texCoordOffset = {0.f,0.f};
-		float2 pad;
 	};
 
 	struct cbpLightBuffer
@@ -57,6 +55,7 @@ namespace hlsl
 		float3 rimColor;
 		int rim;
 		int hasNormal;
-		int3 pad;
+		int LH;
+		int2 pad;
 	};
 }

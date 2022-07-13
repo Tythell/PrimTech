@@ -102,6 +102,7 @@ void Material::Set(ID3D11DeviceContext*& dc)
 		
 	dc->PSSetConstantBuffers(1, 1, mp_matBuffer->GetReference());
 	mp_matBuffer->Data().texCoordOffset = m_diffuseOffsetValue;
+	mp_matBuffer->Data().LH = (int)m_lefthanded;
 	mp_matBuffer->Data().texCoordoffsetDist = m_distortionValue;
 	mp_matBuffer->Data().hasDistortion = int(hasDistortion);
 	mp_matBuffer->Data().hasNormal = int(hasNormalMap);
@@ -162,6 +163,11 @@ bool Material::HasDistortion() const
 float Material::GetTransparancy() const
 {
 	return m_transparency;
+}
+
+void Material::SetLeftHanded(bool b)
+{
+	m_lefthanded = b;
 }
 
 sm::Vector2 Material::GetDiffuseScrollSpeed() const

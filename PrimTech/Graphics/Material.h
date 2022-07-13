@@ -30,6 +30,7 @@ public:
 	int GetDistortionDivider() const;
 	bool HasDistortion() const;
 	float GetTransparancy() const;
+	void SetLeftHanded(bool b);
 	
 	sm::Vector2 GetDiffuseScrollSpeed() const;
 	sm::Vector2 GetDistortionScrollSpeed() const;
@@ -45,6 +46,7 @@ private:
 	bool m_selection = false;
 	sm::Vector3 m_rimColor = GOLD_3F;
 	float m_distDivider = 0.f;
+	bool m_lefthanded = true;
 
 	sm::Vector2 m_diffuseOffsetValue, m_distortionValue;
 	sm::Vector2 m_diffuseOffsetSpeed, m_distortionOffsetSpeed;
