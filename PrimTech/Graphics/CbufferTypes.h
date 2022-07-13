@@ -43,7 +43,7 @@ namespace hlsl
 		float3 pointLightColor;
 		float pointlightStre;
 		float3 camPos;
-		int pad;
+		float pointLightDistance;
 	};
 
 	struct cbpMaterialBuffer
@@ -56,5 +56,7 @@ namespace hlsl
 		float textureScale;
 		float3 rimColor;
 		int rim;
+		int hasNormal;
+		int3 pad;
 	};
 }

@@ -27,17 +27,18 @@ struct ImGuiVars
 	float pointLightPos[3] = { 0.f,1.f,0.f };
 	float pointLightColor[3]{1.f,1.f,1.f};
 	float pointLightStr = 1.f;
+	float pointLightDistance = 10.f;
 	float offset = 0.f;
 	float ambient[4] = {1.f,1.f,1.f, .2f};
 	float direction[3] = { 1.f,1.f,1.f };
 	float atten = .5f;
-	int fov = 80.f;
+	int fov = 80;
 	float scale[3]{ 1.f,1.f,1.f };
 	bool enableHandModel = false;
 	bool showDemoWindow;
 	float gradient[2] = { 255.f / 2.f,1.f};
 	float gradientOffset = 0.f;
-	float specPow = 1.f;
+	float specPow = 50.f;
 };
 
 class DX11Addon
@@ -111,14 +112,15 @@ private:
 	ImGuiVars im;
 	KeyboardHandler* mp_kb;
 
+	Model m_playermodel;
+	Model m_bulb;
 	Model m_model;
 	Model m_plane;
-	Model m_bulb;
-	Model m_playermodel;
 	Model m_gunter;
 	Model m_menacing;
 	Model m_handmodel;
 	Model m_water;
+	Model m_cube;
 	std::vector<std::string> m_modelNames;
 	int m_fps = 0;
 

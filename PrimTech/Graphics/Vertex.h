@@ -12,8 +12,9 @@ struct VertexQuad
 
 struct Vertex3D
 {
-	sm::Vector4 position;
+	sm::Vector3 position;
 	sm::Vector2 texCoord;
 	sm::Vector3 normal;
+	sm::Vector3 tangent;
 };
 

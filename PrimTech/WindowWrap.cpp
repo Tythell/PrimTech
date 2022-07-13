@@ -164,11 +164,11 @@ LRESULT Window::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		if (dataSize > 0)
 		{
 			std::unique_ptr<BYTE[]> rawdata = std::make_unique<BYTE[]>(dataSize);
-			if (GetRawInputData(reinterpret_cast<HRAWINPUT>(lParam), RID_INPUT, rawdata.get(), &dataSize, sizeof(RAWINPUTHEADER)) == dataSize);
+			if (GetRawInputData(reinterpret_cast<HRAWINPUT>(lParam), RID_INPUT, rawdata.get(), &dataSize, sizeof(RAWINPUTHEADER)) == dataSize)
 			{
 				RAWINPUT* raw = reinterpret_cast<RAWINPUT*>(rawdata.get());
 				if (raw->header.dwType == RIM_TYPEMOUSE)
-					MouseHandler::OnMouseRaw(raw->data.mouse.lLastX, raw->data.mouse.lLastY);
+					MouseHandler::OnMouseRaw((float)raw->data.mouse.lLastX, (float)raw->data.mouse.lLastY);
 			}
 		}
 		return 0;

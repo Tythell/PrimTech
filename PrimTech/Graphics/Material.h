@@ -37,8 +37,10 @@ public:
 private:
 	void LoadDiffuse(std::string path);
 	void LoadDistortion(std::string path);
+	void LoadNormalMap(std::string path);
 	TextureMap* mp_diffuse = nullptr;
 	TextureMap* mp_distortion = nullptr;
+	TextureMap* mp_normalMap = nullptr;
 	float m_textureScale = 1.f;
 	bool m_selection = false;
 	sm::Vector3 m_rimColor = GOLD_3F;

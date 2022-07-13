@@ -6,9 +6,10 @@ cbuffer TransformBuffer : register(b0)
 
 struct VSInput
 {
-    float4 localPosition : POSITION;
+    float3 localPosition : POSITION;
     float2 texCoord : TEXCOORD;
     float3 localNormal : NORMAL;
+    float3 tangent : TANGENT;
 };
 
 struct VSOutput
@@ -17,6 +18,7 @@ struct VSOutput
     float3 normal : NORMAL;
     float2 texCoord : TEXCOORD;
     float3 worldpos : WORLD_POS;
+    float3 tangent : TANGENT;
 };
 
 VSOutput main(VSInput input)
@@ -26,5 +28,6 @@ VSOutput main(VSInput input)
     output.texCoord = input.texCoord;
     output.normal = normalize(mul(input.localNormal, (float3x3) world));
     output.worldpos = mul(float4(input.localPosition.xyz, 1.f), world).xyz;
+    output.tangent = mul(float4(input.tangent, 0.f), world);
     return output;
 }

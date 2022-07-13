@@ -200,9 +200,10 @@ bool DX11Addon::InitShaders()
 {
 	D3D11_INPUT_ELEMENT_DESC layout3D[] =
 	{
-		{"POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 	};
 
 	m_3dvs.Init(device, "../x64/Debug/vertexshader.cso");
@@ -228,26 +229,20 @@ bool DX11Addon::InitScene()
 	dc->OMSetBlendState(m_blendState, NULL, 0xFFFFFFFF);
 
 	ResourceHandler::AddTexture("goalflag.png"); // setting missingtexture
-	ResourceHandler::AddTexture("ZAToon.png");
+	ResourceHandler::AddTexture("ZANormal.png"); // Load LightWarp Texture
 	dc->PSSetShaderResources(2, 1, ResourceHandler::GetTexture(1).GetSRVAdress());
-	
+
+
 	m_model.Init("scuffball.obj");
 	m_model.SetPosition(0.f, 0.f, 3.f);
 	m_model.SetMaterialBuffer(m_materialBuffer);
 
-	m_bulb.Init("bulb.obj", ModelType::eDEBUG);
-	m_bulb.SetMaterialBuffer(m_materialBuffer);
-	m_bulb.SetScale(1.2f);
-
 	m_plane.Init("plane.txt");
-	m_plane.LoadTexture("gunter2.png");
+	m_plane.LoadTexture("seamless.png");
 	m_plane.SetPosition(0.f, -1.f, 0.f);
 	m_plane.SetScale(10.f);
 	m_plane.SetMaterialBuffer(m_materialBuffer);
 
-	m_playermodel.Init("dirCapsule.obj", ModelType::eDEBUG);
-	m_playermodel.SetScale(.1f);
-	m_playermodel.SetMaterialBuffer(m_materialBuffer);
 
 	m_gunter.Init("gunter.obj");
 	m_gunter.LoadTexture("gunteruv.png", eDiffuse);
@@ -274,11 +269,24 @@ bool DX11Addon::InitScene()
 	m_water.GetMaterial().SetDistortionScrollSpeed(0.061f, 0.f);
 	m_water.GetMaterial().SetDistortionDivider(3);
 
+	m_bulb.Init("bulb.obj", ModelType::eDEBUG);
+	m_bulb.SetMaterialBuffer(m_materialBuffer);
+	m_bulb.SetScale(1.2f);
+
+	m_playermodel.Init("dirCapsule.obj", ModelType::eDEBUG);
+	m_playermodel.SetScale(.1f);
+	m_playermodel.SetMaterialBuffer(m_materialBuffer);
+
+	m_cube.Init("kubfan3.obj");
+	m_cube.LoadTexture("Brick_Diffuse.jpg");
+	m_cube.LoadTexture("Brick_NormalMap.jpg", eNormal);
+	m_cube.SetMaterialBuffer(m_materialBuffer);
+
 	dc->VSSetConstantBuffers(0, 1, m_transformBuffer.GetReference());
 	AllModels::SetBuffers(dc, m_transformBuffer);
 	AllModels::SetNamesToVector(m_modelNames);
 
-	m_modelNamescStr = new const char* [m_modelNames.size()]{""};
+	m_modelNamescStr = new const char* [m_modelNames.size()]{ "" };
 	for (int i = 0; i < m_modelNames.size(); i++)
 	{
 		m_modelNamescStr[i] = m_modelNames[i].c_str();
@@ -339,7 +347,7 @@ void ExportToon(char* name, unsigned char* data, int offset, const int& grad1, c
 		// if index is in gradient
 		if (i < grad2 + (255 / 2) && i > grad1)
 		{
-			
+
 
 		}
 	}
@@ -349,14 +357,10 @@ void ExportToon(char* name, unsigned char* data, int offset, const int& grad1, c
 void DX11Addon::ImGuiGradientWindow()
 {
 	ImGui::Begin("Gradient");
-
-
-	//ImGui::Text("Gradients");
 	ImDrawList* draw_list = ImGui::GetWindowDrawList();
 	ImVec2 full_gradient_size = ImVec2(255, ImGui::GetFrameHeight());
 	float halfPoint = full_gradient_size.x / 2;
 	halfPoint += im.gradientOffset;
-	//ImVec2 gradient_size = ImVec2(im.gradient[1], ImGui::GetFrameHeight());
 	{
 
 
@@ -408,23 +412,26 @@ void DX11Addon::ImGuiRender()
 	ImGui::Checkbox("Vsync", &im.useVsync);
 	ImGui::SameLine();
 	ImGui::Checkbox("Handmodel", &im.enableHandModel);
-	ImGui::DragFloat4("Ambient", im.ambient, 0.002f, 0.f, 1.f);
-	ImGui::DragFloat3("Pointlight Position", im.pointLightPos, 0.01f);
-	ImGui::DragFloat3("PointLightColor", im.pointLightColor, 0.01f, 0.f, 1.f);
-	ImGui::SliderFloat("PointLight Strength", &im.pointLightStr, 0.f, 3.f);
-	const float scrollmax = .5f;
-	ImGui::SliderFloat("Specular power", &im.specPow, 1.f, 1000.f);
-	m_lightbuffer.Data().specularInstensity = im.specPow;
+	if (ImGui::CollapsingHeader("Light", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		ImGui::DragFloat4("Ambient", im.ambient, 0.002f, 0.f, 1.f);
+		ImGui::DragFloat3("Pointlight Position", im.pointLightPos, 0.01f);
+		ImGui::DragFloat3("PointLightColor", im.pointLightColor, 0.01f, 0.f, 1.f);
+		ImGui::SliderFloat("PointLight Strength", &im.pointLightStr, 0.f, 3.f);
+		ImGui::SliderFloat("Specular power", &im.specPow, 1.f, 1000.f);
+		ImGui::SliderFloat("Distance", &im.pointLightDistance, 0.f, 10.f);
+		m_lightbuffer.Data().pointLightDistance = im.pointLightDistance;
+		m_lightbuffer.Data().specularInstensity = im.specPow;
 
-	ImGui::SliderFloat("Attenuation", &im.atten, 0.f, 10.f);
-	m_lightbuffer.Data().atten = im.atten;
+		ImGui::SliderFloat("Attenuation", &im.atten, 0.f, 10.f);
+		m_lightbuffer.Data().atten = im.atten;
+	}
+
 
 	std::string camoffsetString = "Camera offset: ";
 	camoffsetString += std::to_string(mp_cam->GetOffset().z);
 	ImGui::Text(camoffsetString.c_str());
-	//if (ImGui::Button("Focus pointLight"))
-		//mp_cam->SetPosition(im.pointLightPos[0], im.pointLightPos[1], im.pointLightPos[2]);
-	
+
 	m_bulb.SetPosition(im.pointLightPos[0], im.pointLightPos[1], im.pointLightPos[2]);
 
 	ImGui::Text(GetVectorAsString(mp_cam->GetRotation()).c_str());
@@ -435,15 +442,12 @@ void DX11Addon::ImGuiRender()
 
 
 
-	if(im.showDemoWindow)
+	if (im.showDemoWindow)
 		ImGui::ShowDemoWindow();
-	ImGui::Begin("Model List");
+	ImGui::Begin("Model list");
 	static int selectedEnt = -1;
-	bool recentlyClicked = false;
-	if (ImGui::ListBox("##entitylist", &selectedEnt, m_modelNamescStr, m_modelNames.size(), 9))
-	{
-		recentlyClicked = true;
-	}
+	ImGui::ListBox("##entitylist", &selectedEnt, m_modelNamescStr, m_modelNames.size(), 9);
+
 	ImGui::SameLine();
 	if (ImGui::Button("Deselect"))
 		selectedEnt = -1;
@@ -453,8 +457,7 @@ void DX11Addon::ImGuiRender()
 
 		ModelType mt = pSelectedModel->GetModelType();
 
-		if (recentlyClicked) ImGui::SetNextItemOpen(true);
-		if (ImGui::CollapsingHeader(pSelectedModel->GetName().c_str()) && mt != ModelType::eDEBUG)
+		if (ImGui::CollapsingHeader(pSelectedModel->GetName().c_str(), ImGuiTreeNodeFlags_DefaultOpen) && mt != ModelType::eDEBUG)
 		{
 			sm::Vector3 pos = pSelectedModel->GetPosition();
 			float position[3] = { pos.x, pos.y, pos.z };
@@ -467,9 +470,9 @@ void DX11Addon::ImGuiRender()
 			sm::Vector3 rot = pSelectedModel->GetRotation();
 			float rotation[3] = { rot.x, rot.y, rot.z };
 			ImGui::DragFloat3("Rotation", rotation, .02f);
-			
+
 			ImGui::SameLine();
-			if (ImGui::Button("Reset##Rotation")) 
+			if (ImGui::Button("Reset##Rotation"))
 				for (int i = 0; i < 3; i++)
 					rotation[i] = 0.f;
 			pSelectedModel->SetRotation(rotation[0], rotation[1], rotation[2]);
@@ -485,20 +488,20 @@ void DX11Addon::ImGuiRender()
 			pSelectedModel->SetScale(scalef[0], scalef[1], scalef[2]);
 		}
 
-
-		if (recentlyClicked) ImGui::SetNextItemOpen(true);
-		if (ImGui::CollapsingHeader("Material"))
+		if (ImGui::CollapsingHeader("Material", ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			Material* pMaterial = &pSelectedModel->GetMaterial();
 
 			sm::Vector2 diffuseSpeed(pMaterial->GetDiffuseScrollSpeed());
 			sm::Vector2 distortionSpeed(pMaterial->GetDistortionScrollSpeed());
+			bool hasDistMap = pMaterial->HasDistortion();
 
 			float diffSpeed[2]{ diffuseSpeed.x, diffuseSpeed.y };
 			float distSpeed[2]{ distortionSpeed.x, distortionSpeed.y };
 
 			ImGui::SliderFloat2("Diffuse Scroll", diffSpeed, -.5f, .5f);
-			ImGui::SliderFloat2("Distortion Scroll", distSpeed, -.5f, .5f);
+			if(hasDistMap)
+				ImGui::SliderFloat2("Distortion Scroll", distSpeed, -.5f, .5f);
 			if (ImGui::Button("Reset Scrollspeed"))
 			{
 				for (int i = 0; i < 2; i++)
@@ -508,13 +511,13 @@ void DX11Addon::ImGuiRender()
 				}
 			}
 			ImGui::SameLine();
-			if(ImGui::Button("Reset scrollvalues"))
+			if (ImGui::Button("Reset scrollvalues"))
 				pMaterial->ResetScrollValue();
-			
+
 			pMaterial->SetDiffuseScrollSpeed(diffSpeed[0], diffSpeed[1]);
 			pMaterial->SetDistortionScrollSpeed(distSpeed[0], distSpeed[1]);
 
-			bool hasDistMap = pMaterial->HasDistortion();
+			
 			if (hasDistMap)
 			{
 				int distDivider = pMaterial->GetDistortionDivider();
@@ -537,7 +540,7 @@ void DX11Addon::ImGuiRender()
 	{
 		AllModels::GetModel(i)->GetMaterial().SetSelection(false);
 	}
-	if(selectedEnt != -1)
+	if (selectedEnt != -1)
 		AllModels::GetModel(selectedEnt)->GetMaterial().SetSelection(true);
 
 	ImGui::End();
@@ -593,7 +596,8 @@ void DX11Addon::Render(const float& deltatime)
 	m_gunter.Draw();
 	m_model.Draw();
 	m_plane.Draw();
-	
+	m_cube.Draw();
+
 	if (mp_cam->GetOffset().z != 0.f)
 		m_playermodel.Draw();
 
@@ -606,7 +610,7 @@ void DX11Addon::Render(const float& deltatime)
 	dc->PSSetShader(m_3dnoLightps.GetShader(), NULL, 0);
 	m_menacing.Draw();
 	m_bulb.Draw();
-	
+
 	if (mp_cam->GetOffset().z == 0.f && im.enableHandModel)
 	{
 		dc->ClearDepthStencilView(m_dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.f, 0);

@@ -16,7 +16,7 @@ void Material::LoadTexture(std::string textureName, TextureType type)
 		LoadDistortion(textureName);
 		break;
 	case eNormal:
-		Popup::Error("Normal map not supported");
+		LoadNormalMap(textureName);
 		break;
 	default:
 	{
@@ -43,7 +43,15 @@ void Material::LoadDistortion(std::string path)
 		mp_distortion = ResourceHandler::GetTextureAdress(textureIndex);
 	else
 		mp_distortion = ResourceHandler::AddTexture(path);
-	m_transparency = .8f; // temporary
+}
+
+void Material::LoadNormalMap(std::string path)
+{
+	int textureIndex = ResourceHandler::CheckTextureNameExists(StringHelper::GetName(path));
+	if (textureIndex != -1)
+		mp_normalMap = ResourceHandler::GetTextureAdress(textureIndex);
+	else
+		mp_normalMap = ResourceHandler::AddTexture(path);
 }
 
 void Material::UpdateTextureScroll(const float& deltatime)
@@ -85,13 +93,18 @@ void Material::Set(ID3D11DeviceContext*& dc)
 		dc->PSSetShaderResources(0, 1, ResourceHandler::GetTextureAdress(0)->GetSRVAdress());
 
 	bool hasDistortion = (mp_distortion != nullptr);
+	bool hasNormalMap = (mp_normalMap != nullptr);
 
 	if(hasDistortion)
 		dc->PSSetShaderResources(1, 1, mp_distortion->GetSRVAdress());
+	if(hasNormalMap)
+		dc->PSSetShaderResources(3, 1, mp_normalMap->GetSRVAdress());
+		
 	dc->PSSetConstantBuffers(1, 1, mp_matBuffer->GetReference());
 	mp_matBuffer->Data().texCoordOffset = m_diffuseOffsetValue;
 	mp_matBuffer->Data().texCoordoffsetDist = m_distortionValue;
 	mp_matBuffer->Data().hasDistortion = int(hasDistortion);
+	mp_matBuffer->Data().hasNormal = int(hasNormalMap);
 	mp_matBuffer->Data().distDiv = m_distDivider;
 	mp_matBuffer->Data().transparency = m_transparency;
 	mp_matBuffer->Data().textureScale = m_textureScale;
