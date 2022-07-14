@@ -39,6 +39,7 @@ struct ImGuiVars
 	float gradient[2] = { 255.f / 2.f,1.f};
 	float gradientOffset = 0.f;
 	float specPow = 50.f;
+	bool showSelect = true;
 };
 
 class DX11Addon
@@ -92,7 +93,7 @@ private:
 	//PixelShader m_quadPs;
 
 	VertexShader m_3dvs;
-	PixelShader m_3dps;
+	//PixelShader m_3dps;
 	PixelShader m_3dnoLightps;
 	PixelShader m_toonPS;
 

@@ -32,6 +32,7 @@ struct PSInput
     float3 normal : NORMAL;
     float2 texCoord : TEXCOORD;
     float3 worldPos : WORLD_POS;
+    float3 tangent : TANGENT;
 };
 
 float4 main(PSInput input) : SV_Target

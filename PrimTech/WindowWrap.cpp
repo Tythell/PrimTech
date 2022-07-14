@@ -289,6 +289,8 @@ bool Window::init(LPCWSTR windowName, HINSTANCE hInstance, std::wstring windowCl
 
 	if (m_hwnd == NULL) return false;
 
+	Dialogs::SetOwnerHandle(&m_hwnd);
+
 	ShowWindow(m_hwnd, SW_SHOW);
 	SetForegroundWindow(m_hwnd);
 	SetFocus(m_hwnd);

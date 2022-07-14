@@ -201,20 +201,20 @@ bool DX11Addon::InitShaders()
 {
 	D3D11_INPUT_ELEMENT_DESC layout3D[] =
 	{
-		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 	};
 
-	m_3dvs.Init(device, "../x64/Debug/vertexshader.cso");
+	m_3dvs.Init(device, "vertexshader.cso");
 	m_3dvs.InitInputLayout(device, layout3D, ARRAYSIZE(layout3D));
-	m_3dps.Init(device, "../x64/Debug/BasePS.cso");
-	m_3dnoLightps.Init(device, "../x64/Debug/NoLightPs.cso");
-	m_toonPS.Init(device, "../x64/Debug/LightWarpPS.cso");
+	//m_3dps.Init(device, "../x64/Debug/BasePS.cso");
+	m_3dnoLightps.Init(device, "NoLightPs.cso");
+	m_toonPS.Init(device, "LightWarpPS.cso");
 
 	dc->VSSetShader(m_3dvs.GetShader(), NULL, 0);
-	dc->PSSetShader(m_3dps.GetShader(), NULL, 0);
+	//dc->PSSetShader(m_3dps.GetShader(), NULL, 0);
 
 	return true;
 }
@@ -238,9 +238,9 @@ bool DX11Addon::InitScene()
 	m_model.SetPosition(0.f, 0.f, 3.f);
 	m_model.SetMaterialBuffer(m_materialBuffer);
 
-	m_plane.Init("scaledplane.obj");
+	m_plane.Init("planeDir.obj");
 	m_plane.LoadTexture("Brick_Diffuse.jpg");
-	//m_plane.LoadTexture("Brick_NormalMap.jpg", eNormal);
+	m_plane.LoadTexture("Brick_NormalMap.jpg", eNormal);
 	m_plane.SetPosition(0.f, -1.f, 0.f);
 	m_plane.SetScale(10.f);
 	m_plane.SetMaterialBuffer(m_materialBuffer);
@@ -262,8 +262,9 @@ bool DX11Addon::InitScene()
 
 	m_water.Init("plane.txt");
 	m_water.SetScale(4.f);
-	m_water.LoadTexture("water.png");
+	m_water.LoadTexture("White.png");
 	m_water.LoadTexture("waterDist.png", eDistortion);
+	m_water.LoadTexture("waterNormal.png", eNormal);
 	m_water.SetPosition(-4.f, 0.f, 0.f);
 	m_water.SetMaterialBuffer(m_materialBuffer);
 	m_water.GetMaterial().SetTransparency(.7f);
@@ -275,7 +276,7 @@ bool DX11Addon::InitScene()
 	m_bulb.SetMaterialBuffer(m_materialBuffer);
 	m_bulb.SetScale(1.2f);
 
-	m_playermodel.Init("dirCapsule.obj", ModelType::eDEBUG);
+	m_playermodel.Init("dirCapsule.obj"/*, ModelType::eDEBUG*/);
 	m_playermodel.SetScale(.1f);
 	m_playermodel.SetMaterialBuffer(m_materialBuffer);
 
@@ -402,6 +403,9 @@ void DX11Addon::ImGuiRender()
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 	ImGui::Begin("Debug");
+	static std::string testing = "";
+	if (ImGui::Button("dialog"))
+		testing = Dialogs::Saveile(".tsk");
 	ImGui::Checkbox("Demo window", &im.showDemoWindow);
 	ImGui::Text("Press Q to lock/unlock mouse");
 
@@ -481,12 +485,21 @@ void DX11Addon::ImGuiRender()
 
 			sm::Vector3 scale = pSelectedModel->GetScale();
 			float scalef[3] = { scale.x, scale.y, scale.z };
+
 			ImGui::DragFloat3("Scale   ", scalef, .02f);
+				
 
 			ImGui::SameLine();
 			if (ImGui::Button("Reset##Scale"))
 				for (int i = 0; i < 3; i++)
 					scalef[i] = 1.f;
+
+			ImGui::SameLine();
+			if (ImGui::Button("X"))
+			{
+				scalef[1] = scalef[0];
+				scalef[2] = scalef[0];
+			}
 			pSelectedModel->SetScale(scalef[0], scalef[1], scalef[2]);
 		}
 

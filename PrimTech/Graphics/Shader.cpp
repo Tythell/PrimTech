@@ -12,6 +12,7 @@ ID3D10Blob* Shader::GetBuffer()
 
 bool Shader::ReadBlob(std::string path)
 {
+	path = SHADER_DIR + path;
 	HRESULT hr = D3DReadFileToBlob(StringHelper::StringToW(path).c_str(), &mp_buffer);
 	std::string error = "Failed to load shader: " + path;
 	COM_ERROR(hr, error);

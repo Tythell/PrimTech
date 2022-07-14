@@ -31,6 +31,7 @@ public:
 	bool HasDistortion() const;
 	float GetTransparancy() const;
 	void SetLeftHanded(bool b);
+	void ExportMaterial(std::string path);
 	
 	sm::Vector2 GetDiffuseScrollSpeed() const;
 	sm::Vector2 GetDistortionScrollSpeed() const;

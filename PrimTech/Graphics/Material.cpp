@@ -170,6 +170,11 @@ void Material::SetLeftHanded(bool b)
 	m_lefthanded = b;
 }
 
+void Material::ExportMaterial(std::string path)
+{
+	
+}
+
 sm::Vector2 Material::GetDiffuseScrollSpeed() const
 {
 	return m_diffuseOffsetSpeed;

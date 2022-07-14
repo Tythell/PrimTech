@@ -12,7 +12,7 @@ cbuffer LightBuffer : register(b0)
     float3 pointLightColor;
     float pointlightStre;
     float3 camPos;
-    int pad;
+    float lightDistance;
 };
 
 cbuffer MaterialBuffer : register(b1)
@@ -25,6 +25,9 @@ cbuffer MaterialBuffer : register(b1)
     float textureScale;
     float3 rimColor;
     int rim;
+    int hasNormal;
+    int LH;
+    int2 pad;
 }
 
 struct PSInput

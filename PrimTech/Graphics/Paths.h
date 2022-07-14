@@ -1,3 +1,12 @@
 #pragma once
-// Model path
-#define ASSETS_MODEL ""
+#include <wincodec.h>
+
+#ifdef _DEBUG
+
+#define SHADER_DIR "../x64/Debug/"
+
+#else
+
+#define SHADER_DIR ((IsDebuggerPresent()) ? "../x64/Release/" : ""
+
+#endif // _DEBUG

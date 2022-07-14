@@ -135,6 +135,9 @@
     <ClCompile Include="Defines.cpp">
       <Filter>Header Files</Filter>
     </ClCompile>
+    <ClCompile Include="Utility\CommonDialogs.cpp">
+      <Filter>Source Files\Utility</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
@@ -250,6 +253,9 @@
     </ClInclude>
     <ClInclude Include="Graphics\Material.h">
       <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Utility\CommonDialogs.h">
+      <Filter>Header Files\Utility</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

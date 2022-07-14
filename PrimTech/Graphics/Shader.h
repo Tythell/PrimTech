@@ -3,6 +3,7 @@
 #pragma comment(lib, "D3DCompiler.lib")
 #include <d3dcompiler.h>
 #include "../Utility/Popup.h"
+#include "Paths.h"
 class Shader
 {
 public:

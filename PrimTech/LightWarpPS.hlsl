@@ -66,11 +66,11 @@ float4 main(PSInput input) : SV_Target
     float3x3 tbnMatr = 0;
     if(hasNormal)
     {
-        float3 mappedNormal = normalize(normalMap.Sample(samplerState, texCoord + distortion) * 2.f - 1.f);
+        float3 mappedNormal = normalMap.Sample(samplerState, texCoord + distortion) * 2.f - 1.f;
         float3 normTan = normalize(input.tangent);
         float3 biNormal = (LH == 1) ? normalize(cross(normTan, normal)) : normalize(cross(normal, normTan));
         tbnMatr = float3x3(normTan, biNormal, normal);
-        normal = float3(mul(mappedNormal, tbnMatr));
+        normal = normalize(float3(mul(mappedNormal, tbnMatr)));
     }
     
     float4 diffuse = diffuseMap.Sample(samplerState, texCoord + distortion);
@@ -94,9 +94,10 @@ float4 main(PSInput input) : SV_Target
     float3 specular = pow(max(dot(camToOb, -reflect(-lightVector, normal)), 0.f),specularInstensity);
     
     float att = 1.f / dot(atten.xxx, float3(1.f, distance, distance));
+    //float att = 1.f / dot(atten.xxx, float3(1.f, distance, distance));
     
-    specular *= att;
-    diffuse *= att;
+    specular *= atten;
+    //diffuse *= att;
     
     lightindex += specular;
     lightindex = clamp(lightindex, 0.01f, 0.99f);
