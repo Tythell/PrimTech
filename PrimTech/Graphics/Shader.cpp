@@ -10,11 +10,12 @@ ID3D10Blob* Shader::GetBuffer()
 	return mp_buffer;
 }
 
-bool Shader::ReadBlob(std::string path)
+bool Shader::ReadBlob(std::string fileName)
 {
-	path = SHADER_DIR + path;
-	HRESULT hr = D3DReadFileToBlob(StringHelper::StringToW(path).c_str(), &mp_buffer);
-	std::string error = "Failed to load shader: " + path;
+	std::string fullpath = SHADER_DIR;
+	fullpath += fileName;
+	HRESULT hr = D3DReadFileToBlob(StringHelper::StringToW(fullpath).c_str(), &mp_buffer);
+	std::string error = "Failed to load shader: " + fileName;
 	COM_ERROR(hr, error);
 	return false;
 }
@@ -32,11 +33,11 @@ bool VertexShader::InitInputLayout(ID3D11Device*& device, D3D11_INPUT_ELEMENT_DE
 	return true;
 }
 
-bool VertexShader::Init(ID3D11Device*& device, std::string shaderpath)
+bool VertexShader::Init(ID3D11Device*& device, std::string fileName)
 {
-	ReadBlob(shaderpath);
+	ReadBlob(fileName);
 	HRESULT hr = device->CreateVertexShader(GetBuffer()->GetBufferPointer(), GetBuffer()->GetBufferSize(), NULL, &m_vshader);
-	std::string error = "Failed to create shader: " + shaderpath;
+	std::string error = "Failed to create shader: " + fileName;
 	COM_ERROR(hr, error.c_str());
 
 	return true;
@@ -57,11 +58,11 @@ PixelShader::~PixelShader()
 	m_pshader->Release();
 }
 
-bool PixelShader::Init(ID3D11Device*& device, std::string shaderpath)
+bool PixelShader::Init(ID3D11Device*& device, std::string fileName)
 {
-	ReadBlob(shaderpath);
+	ReadBlob(fileName);
 	HRESULT hr = device->CreatePixelShader(GetBuffer()->GetBufferPointer(), GetBuffer()->GetBufferSize(), NULL, &m_pshader);
-	std::string error = "Failed to create shader: " + shaderpath;
+	std::string error = "Failed to create shader: " + fileName;
 	COM_ERROR(hr, error.c_str());
 	return true;
 }

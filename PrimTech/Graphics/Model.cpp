@@ -30,7 +30,7 @@ void Model::Init(const std::string path, ModelType e, bool makeLeftHanded)
 		m_name += "(" + std::to_string(mp_mesh->GetNrOfUses()) + ")";
 	}
 	else
-		mp_mesh = ResourceHandler::AddMesh(fullpath, makeLeftHanded);
+		mp_mesh = ResourceHandler::AddMesh(fullpath, m_selectBox, makeLeftHanded);
 	mp_mesh->IncreaseUses();
 	m_name += mp_mesh->GetName();
 
@@ -94,7 +94,7 @@ ModelType Model::GetModelType() const
 	return m_type;
 }
 
-bool LoadObjToBuffer(std::string path, ID3D11Device*& pDevice, Buffer<Vertex3D>& vbuffer, bool makeLeftHanded)
+bool LoadObjToBuffer(std::string path, std::vector<Vertex3D>& shape, bool makeLeftHanded)
 {
 	//makeLeftHanded = false;
 	std::string s;
@@ -106,7 +106,7 @@ bool LoadObjToBuffer(std::string path, ID3D11Device*& pDevice, Buffer<Vertex3D>&
 	std::vector<UINT> normalIndex;
 	std::vector<UINT> texcoordsIndex;
 
-	std::vector<Vertex3D> shape;
+	//std::vector<Vertex3D> shape;
 
 	std::ifstream reader(path);
 
@@ -198,23 +198,32 @@ bool LoadObjToBuffer(std::string path, ID3D11Device*& pDevice, Buffer<Vertex3D>&
 				shape[i + 2].tangent = tangent;
 			}
 	}
-
-	if (FAILED(vbuffer.CreateVertexBuffer(pDevice, shape.data(), (unsigned int)shape.size())))
-	{
-		Popup::Error("Failed to create vertex buffer");
-		return false;
-	}
 	return true;
 }
 
-Mesh::Mesh(std::string path, ID3D11Device*& device, bool makeLeftHanded)
+Mesh::Mesh(std::string path, ID3D11Device*& device, d::BoundingBox* bbox, bool makeLeftHanded)
 {
-	if (!LoadObjToBuffer(path, device, m_vbuffer, makeLeftHanded))
+	std::vector<Vertex3D> vertexes;
+
+	if (!LoadObjToBuffer(path, vertexes, makeLeftHanded))
 	{
 		Popup::Error("loading " + path);
 		throw;
 	}
 	m_name = StringHelper::GetName(path);
+
+	if (bbox)
+	{
+		std::vector<d::XMFLOAT3> positionArray;
+		positionArray.resize(vertexes.size());
+		for (int i = 0; i < vertexes.size(); i++)
+			positionArray[i] = vertexes[i].position;
+		d::BoundingBox::CreateFromPoints(*bbox, vertexes.size(), positionArray.data(), sizeof(sm::Vector3));
+	}
+
+	HRESULT hr = m_vbuffer.CreateVertexBuffer(device, vertexes.data(), vertexes.size());
+	if (FAILED(hr))
+		COM_ERROR(hr, "Failed to load vertex buffer");
 }
 
 Buffer<Vertex3D>& Mesh::GetVBuffer()
@@ -269,4 +278,43 @@ int AllModels::GetNrOfModels()
 Model* AllModels::GetModel(int index)
 {
 	return m_models[index];
+}
+
+void RenderBox::Draw(ID3D11DeviceContext*& dc)
+{
+	UINT offset = 0;
+
+	dc->IASetVertexBuffers(0, 1, m_vbuffer.GetReference(), m_vbuffer.GetStrideP(), &offset);
+	dc->IASetIndexBuffer(m_ibuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+	dc->DrawIndexed(m_ibuffer.GetBufferSize(), 0, 0);
+}
+
+Buffer<BBVertex>& RenderBox::GetVBuffer()
+{
+	return m_vbuffer;
+}
+
+void RenderBox::Init(ID3D11Device*& device)
+{
+	BBVertex vertex[]
+	{
+		{{-0.5f, 0.5f, -0.5f }}, //F TL	 0
+		{{0.5f, 0.5f, -0.5f }}, //F TR	 1
+		{{-0.5f, -0.5f, -0.5f }}, //F BL 2
+		{{0.5f, -0.5f, -0.5f }}, //F BR	 3
+		{{-0.5f, 0.5f, 0.5f }}, //B TL	 4
+		{{0.5f, 0.5f, 0.5f }}, //B TR	 5
+		{{-0.5f, -0.5f, 0.5f }}, //B BL	 6
+		{{0.5f, -0.5f, 0.5f }}, //B BR	 7
+	};
+
+	unsigned int indexes[]
+	{
+		1, 0, 0, 2, 2, 3, 3, 1, // front square
+		5, 4, 4, 6, 6, 7, 7, 5, // back square
+		0, 4, 1, 5, 2, 6, 3, 7, // connectors
+	};
+
+	m_vbuffer.CreateVertexBuffer(device, vertex, ARRAYSIZE(vertex));
+	m_ibuffer.CreateIndexBuffer(device, indexes, ARRAYSIZE(indexes));
 }

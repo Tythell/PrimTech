@@ -18,3 +18,8 @@ struct Vertex3D
 	sm::Vector3 tangent;
 };
 
+struct BBVertex
+{
+	sm::Vector3 m_position;
+	//sm::Vector3 m_color;
+};

@@ -1,5 +1,6 @@
 #pragma once
 #include <d3d11.h>
+#include "../Math/Math.h"
 #include <string>
 #include <vector>
 
@@ -10,7 +11,8 @@ class ResourceHandler
 {
 public:
 	static void SetDevice(ID3D11Device*& device);
-	static Mesh* AddMesh(std::string path, bool makeLeftHanded = true);
+	//static Mesh* AddMesh(std::string path, bool makeLeftHanded = true);
+	static Mesh* AddMesh(std::string path, d::BoundingBox& bbox, bool makeLeftHanded = true);
 	static Mesh& GetMesh(unsigned int index);
 	static Mesh* GetMeshAdress(unsigned int index);
 	static TextureMap* AddTexture(std::string path, bool flipUV = true);

@@ -7,6 +7,6 @@
 
 #else
 
-#define SHADER_DIR ((IsDebuggerPresent()) ? "../x64/Release/" : ""
+#define SHADER_DIR ((IsDebuggerPresent() == true)) ? std::string("../x64/Release/") : ""
 
 #endif // _DEBUG

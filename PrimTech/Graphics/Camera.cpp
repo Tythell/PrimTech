@@ -69,9 +69,19 @@ void Camera::Move(const sm::Vector3 v)
 void Camera::Rotate(float x, float y, float z)
 {
 	m_rotation += sm::Vector3(x, y, z) * (m_rotationSpeed);
+
+	float dummy = 0.f;
+
+	ForceRotation(dummy, m_rotation.y, m_rotation.z);
+
+	if (m_rotation.x > d::XM_PIDIV2) m_rotation.x = d::XM_PIDIV2;
+	else if (m_rotation.x < -d::XM_PIDIV2) m_rotation.x = -d::XM_PIDIV2;
+	//{
+	//	m_rotation.x = m_rotation.x - x - d::XM_PIDIV2;
+	//}
+		
 	//if (m_rotation.x > 0.f) m_rotation.x = d::XM_2PI;
 	
-	ForceRotation(m_rotation);
 	//if (m_rotation.x < 0.f || m_rotation.x > d::XM_2PI) m_rotation.x = d::XM_2PI - m_rotation.x;
 	//if (m_rotation.y < 0.f || m_rotation.y > d::XM_2PI) m_rotation.y = d::XM_2PI - m_rotation.y;
 	//if (m_rotation.z < 0.f || m_rotation.z > d::XM_2PI) m_rotation.z = d::XM_2PI - m_rotation.z;

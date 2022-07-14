@@ -2,8 +2,7 @@
 #include"../WindowWrap.h"
 
 DX11Addon::DX11Addon(Window& window, Camera& camera) :
-	m_width(window.getWinWidth()), m_height(window.getWinHeight()), m_pHWND(&window.getHWND())//,
-	//m_grid(200, 90)
+	m_width(window.getWinWidth()), m_height(window.getWinHeight()), m_pHWND(&window.getHWND())
 {
 	m_pWin = &window;
 	mp_cam = &camera;
@@ -152,7 +151,7 @@ bool DX11Addon::InitRastNSampState()
 	ZeroMemory(&rastDesc, sizeof(D3D11_RASTERIZER_DESC));
 	rastDesc.FillMode = D3D11_FILL_MODE::D3D11_FILL_SOLID;
 	rastDesc.CullMode = D3D11_CULL_MODE::D3D11_CULL_BACK;
-	rastDesc.FrontCounterClockwise = false;
+	//rastDesc.FrontCounterClockwise = false;
 
 	HRESULT hr = device->CreateRasterizerState(&rastDesc, &m_rasterizerState);
 	COM_ERROR(hr, "Rasterizer State setup failed");
@@ -209,9 +208,12 @@ bool DX11Addon::InitShaders()
 
 	m_3dvs.Init(device, "vertexshader.cso");
 	m_3dvs.InitInputLayout(device, layout3D, ARRAYSIZE(layout3D));
-	//m_3dps.Init(device, "../x64/Debug/BasePS.cso");
 	m_3dnoLightps.Init(device, "NoLightPs.cso");
 	m_toonPS.Init(device, "LightWarpPS.cso");
+
+	m_linePS.Init(device, "QuadPS.cso");
+	m_lineVS.Init(device, "QuadVS.cso");
+	m_lineVS.InitInputLayout(device, &layout3D[0], 1);
 
 	dc->VSSetShader(m_3dvs.GetShader(), NULL, 0);
 	//dc->PSSetShader(m_3dps.GetShader(), NULL, 0);
@@ -221,8 +223,6 @@ bool DX11Addon::InitShaders()
 
 bool DX11Addon::InitScene()
 {
-	dc->IASetInputLayout(m_3dvs.GetInputLayout());
-	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	dc->RSSetState(m_rasterizerState);
 	dc->OMSetDepthStencilState(m_dsState, 0);
 	dc->PSSetSamplers(0, 1, &m_sampState);
@@ -245,9 +245,9 @@ bool DX11Addon::InitScene()
 	m_plane.SetScale(10.f);
 	m_plane.SetMaterialBuffer(m_materialBuffer);
 
-
-	m_gunter.Init("gunter.obj", ModelType::eUNSPECIFIED, true);
+	m_gunter.Init("gunter.obj");
 	m_gunter.LoadTexture("gunteruv.png", eDiffuse);
+	m_gunter.LoadTexture("Brick_NormalMap.jpg", eNormal);
 	m_gunter.SetPosition(-1.f, 2.f, -6.f);
 	m_gunter.SetRotation(0.f, d::XM_PI, 0.f);
 	m_gunter.SetMaterialBuffer(m_materialBuffer);
@@ -276,7 +276,7 @@ bool DX11Addon::InitScene()
 	m_bulb.SetMaterialBuffer(m_materialBuffer);
 	m_bulb.SetScale(1.2f);
 
-	m_playermodel.Init("dirCapsule.obj"/*, ModelType::eDEBUG*/);
+	m_playermodel.Init("dirCapsule.obj");
 	m_playermodel.SetScale(.1f);
 	m_playermodel.SetMaterialBuffer(m_materialBuffer);
 
@@ -284,6 +284,7 @@ bool DX11Addon::InitScene()
 	m_cube.LoadTexture("Brick_Diffuse.jpg");
 	m_cube.LoadTexture("Brick_NormalMap.jpg", eNormal);
 	m_cube.SetMaterialBuffer(m_materialBuffer);
+	m_cube.SetPosition(-2.f, 2.f, 2.f);
 
 	dc->VSSetConstantBuffers(0, 1, m_transformBuffer.GetReference());
 	AllModels::SetBuffers(dc, m_transformBuffer);
@@ -294,6 +295,8 @@ bool DX11Addon::InitScene()
 	{
 		m_modelNamescStr[i] = m_modelNames[i].c_str();
 	}
+
+	m_renderbox.Init(device);
 	return true;
 }
 
@@ -365,8 +368,6 @@ void DX11Addon::ImGuiGradientWindow()
 	float halfPoint = full_gradient_size.x / 2;
 	halfPoint += im.gradientOffset;
 	{
-
-
 		ImVec2 pbS = ImVec2(ImGui::GetCursorScreenPos().x, ImGui::GetCursorScreenPos().y);
 		ImVec2 pbE = ImVec2(pbS.x + halfPoint, full_gradient_size.y + pbS.y);
 		ImVec2 pwS = ImVec2(pbS.x + halfPoint, ImGui::GetCursorScreenPos().y /* + full_gradient_size.y */);
@@ -576,6 +577,7 @@ void DX11Addon::ImGuiShutDown()
 
 void DX11Addon::ExportImage(char* name)
 {
+	
 	//m_grid.SaveImage(name);
 }
 
@@ -605,6 +607,10 @@ void DX11Addon::Render(const float& deltatime)
 	dc->ClearRenderTargetView(m_rtv, bgColor);
 	dc->ClearDepthStencilView(m_dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
 	dc->OMSetBlendState(m_blendState, NULL, 0xFFFFFFFF);
+	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	dc->IASetInputLayout(m_3dvs.GetInputLayout());
+	dc->VSSetShader(m_3dvs.GetShader(), NULL, 0);
+	
 
 	//dc->PSSetShader(m_3dps.GetShader(), NULL, 0);
 	dc->PSSetShader(m_toonPS.GetShader(), NULL, 0);
@@ -633,6 +639,24 @@ void DX11Addon::Render(const float& deltatime)
 		m_handmodel.SetRotation(-mp_cam->GetRotation().x, mp_cam->GetRotation().y + d::XM_PI, -mp_cam->GetRotation().z);
 		m_handmodel.Draw();
 	}
+
+	UINT offset = 0;
+	UINT stride = sizeof(sm::Vector3);
+
+	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+	dc->IASetInputLayout(m_lineVS.GetInputLayout());
+	dc->IASetVertexBuffers(0, 1, m_renderbox.GetVBuffer().GetReference(), &stride, &offset);
+	dc->VSSetShader(m_lineVS.GetShader(), NULL, 0);
+	dc->PSSetShader(m_linePS.GetShader(), NULL, 0);
+	m_transformBuffer.Data().world = d::XMMatrixTranspose(d::XMMatrixTranslation(0.f, 1.f, 0.f));
+	m_transformBuffer.UpdateCB();
+	m_renderbox.Draw(dc);
+
+	m_transformBuffer.Data().world = d::XMMatrixTranspose(d::XMMatrixTranslation(0.f, 0.f, 1.f));
+	m_transformBuffer.UpdateCB();
+	m_renderbox.Draw(dc);
+
+	
 
 	ImGuiRender();
 	m_swapChain->Present((UINT)im.useVsync, NULL);

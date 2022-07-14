@@ -4,13 +4,14 @@
 #include"Vertex.h"
 #include "Material.h"
 
-bool LoadObjToBuffer(std::string path, ID3D11Device*& pDevice, Buffer<Vertex3D>& vbuffer, bool makeLeftHanded = true);
+bool LoadObjToBuffer(std::string path, std::vector<Vertex3D>& shape, bool makeLeftHanded = true);
 
 // Contains Vertex data
 class Mesh
 {
 public:
-	Mesh(std::string path, ID3D11Device*& device, bool makeLeftHanded = true);
+	Mesh(std::string path, ID3D11Device*& device, d::BoundingBox* bbox = nullptr, bool makeLeftHanded = true);
+	// Cube/ boudning box buffer
 	Buffer<Vertex3D>& GetVBuffer();
 	std::string GetName() const;
 	void IncreaseUses();
@@ -19,6 +20,17 @@ private:
 	Buffer<Vertex3D> m_vbuffer;
 	std::string m_name = "unloaded";
 	int m_nrOfUses = 0;
+};
+
+class RenderBox
+{
+public:
+	void Draw(ID3D11DeviceContext*& dc);
+	Buffer<BBVertex>& GetVBuffer();
+	void Init(ID3D11Device*& device);
+private:
+	Buffer<BBVertex> m_vbuffer;
+	Buffer<unsigned int> m_ibuffer;
 };
 
 enum class ModelType {eUNSPECIFIED, eDEBUG};
@@ -43,6 +55,7 @@ private:
 	Material m_material;
 	std::string m_name;
 	ModelType m_type;
+	d::BoundingBox m_selectBox;
 };
 
 class AllModels

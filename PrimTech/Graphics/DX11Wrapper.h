@@ -97,6 +97,9 @@ private:
 	PixelShader m_3dnoLightps;
 	PixelShader m_toonPS;
 
+	PixelShader m_linePS;
+	VertexShader m_lineVS;
+
 	//VertexBuffer<Vertex> m_vbuffer;
 	//IndexBuffer m_iBuffer;
 
@@ -105,6 +108,8 @@ private:
 	Buffer<hlsl::cbpWorldTransforms3D> m_transformBuffer;
 	Buffer<hlsl::cbpLightBuffer> m_lightbuffer;
 	Buffer<hlsl::cbpMaterialBuffer> m_materialBuffer;
+
+	//Mesh m_selectbox;
 
 	Camera* mp_cam;
 
@@ -122,6 +127,7 @@ private:
 	Model m_handmodel;
 	Model m_water;
 	Model m_cube;
+	RenderBox m_renderbox;
 	std::vector<std::string> m_modelNames;
 	int m_fps = 0;
 

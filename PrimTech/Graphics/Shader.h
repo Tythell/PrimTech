@@ -8,10 +8,10 @@ class Shader
 {
 public:
 	~Shader();
-	virtual bool Init(ID3D11Device*& device, std::string shaderpath) = 0;
+	virtual bool Init(ID3D11Device*& device, std::string fileName) = 0;
 	ID3D10Blob* GetBuffer();
 protected:
-	bool ReadBlob(std::string path);
+	bool ReadBlob(std::string fileName);
 private:
 	ID3D10Blob* mp_buffer = nullptr;
 };

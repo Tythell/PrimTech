@@ -135,9 +135,17 @@ sm::Matrix Transform::GetWorldTransposed()
 	return worldTransposed;
 }
 
+void ForceRotation(float& x, float& y, float& z)
+{
+	sm::Vector3 v(x, y, z);
+	ForceRotation(v);
+	x = v.x;
+	y = v.y;
+	z = v.z;
+}
+
 void ForceRotation(sm::Vector3& v)
 {
-
 	v.x = fmodf(v.x, d::XM_2PI);
 	v.y = fmodf(v.y, d::XM_2PI);
 	v.z = fmodf(v.z, d::XM_2PI);
