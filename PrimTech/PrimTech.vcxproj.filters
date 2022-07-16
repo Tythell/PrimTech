@@ -51,94 +51,94 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="WindowWrap.cpp">
+    <ClCompile Include="src\WindowWrap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Utility\Popup.cpp">
+    <ClCompile Include="src\Utility\Popup.cpp">
       <Filter>Source Files\Utility</Filter>
     </ClCompile>
-    <ClCompile Include="Utility\StringHelper.cpp">
+    <ClCompile Include="src\Utility\StringHelper.cpp">
       <Filter>Source Files\Utility</Filter>
     </ClCompile>
-    <ClCompile Include="Graphics\Shader.cpp">
+    <ClCompile Include="src\Graphics\Shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Graphics\Camera.cpp">
+    <ClCompile Include="src\Graphics\Camera.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Graphics\DX11Wrapper.cpp">
+    <ClCompile Include="src\Graphics\DX11Wrapper.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Graphics\Texture.cpp">
+    <ClCompile Include="src\Graphics\Texture.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Graphics\Transform.cpp">
+    <ClCompile Include="src\Graphics\Transform.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Graphics\Vertex.cpp">
+    <ClCompile Include="src\Graphics\Vertex.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Logic\CellGrid.cpp">
+    <ClCompile Include="src\PrimTech\CellGrid.cpp">
       <Filter>Source Files\Logic</Filter>
     </ClCompile>
-    <ClCompile Include="Graphics\RenderCell.cpp">
+    <ClCompile Include="src\Graphics\RenderCell.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Graphics\3rdParty\imgui\imgui.cpp">
+    <ClCompile Include="src\Graphics\3rdParty\imgui\imgui.cpp">
       <Filter>Source Files\ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="Graphics\3rdParty\imgui\imgui_draw.cpp">
+    <ClCompile Include="src\Graphics\3rdParty\imgui\imgui_draw.cpp">
       <Filter>Source Files\ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="Graphics\3rdParty\imgui\imgui_impl_dx11.cpp">
+    <ClCompile Include="src\Graphics\3rdParty\imgui\imgui_impl_dx11.cpp">
       <Filter>Source Files\ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="Graphics\3rdParty\imgui\imgui_impl_win32.cpp">
+    <ClCompile Include="src\Graphics\3rdParty\imgui\imgui_impl_win32.cpp">
       <Filter>Source Files\ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="Graphics\3rdParty\imgui\imgui_tables.cpp">
+    <ClCompile Include="src\Graphics\3rdParty\imgui\imgui_tables.cpp">
       <Filter>Source Files\ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="Graphics\3rdParty\imgui\imgui_widgets.cpp">
+    <ClCompile Include="src\Graphics\3rdParty\imgui\imgui_widgets.cpp">
       <Filter>Source Files\ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="Graphics\Noise\ImprovedPNoise.cpp">
+    <ClCompile Include="src\Graphics\Noise\ImprovedPNoise.cpp">
       <Filter>Source Files\Noise</Filter>
     </ClCompile>
-    <ClCompile Include="Input\Mouse.cpp">
+    <ClCompile Include="src\Input\Mouse.cpp">
       <Filter>Source Files\Input</Filter>
     </ClCompile>
-    <ClCompile Include="Graphics\Noise\PerlinNoise.cpp">
+    <ClCompile Include="src\Graphics\Noise\PerlinNoise.cpp">
       <Filter>Source Files\Noise</Filter>
     </ClCompile>
-    <ClCompile Include="PrimTech.cpp">
+    <ClCompile Include="src\PrimTech.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Input\Keyboard.cpp">
+    <ClCompile Include="src\Input\Keyboard.cpp">
       <Filter>Source Files\Input</Filter>
     </ClCompile>
-    <ClCompile Include="Graphics\Model.cpp">
+    <ClCompile Include="src\Graphics\Model.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Graphics\ResourceHandler.cpp">
+    <ClCompile Include="src\Graphics\ResourceHandler.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Graphics\Material.cpp">
+    <ClCompile Include="src\Graphics\Material.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="Graphics\3rdParty\imgui\imgui_demo.cpp">
+    <ClCompile Include="src\Graphics\3rdParty\imgui\imgui_demo.cpp">
       <Filter>Source Files\ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="Utility\CommonDialogs.cpp">
+    <ClCompile Include="src\Utility\CommonDialogs.cpp">
       <Filter>Source Files\Utility</Filter>
     </ClCompile>
-    <ClCompile Include="Defines.cpp">
+    <ClCompile Include="src\Defines.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PrimTech\Scene.cpp">
+    <ClCompile Include="src\PrimTech\Scene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -146,144 +146,144 @@
     <None Include="cpp.hint" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="WindowWrap.h">
+    <ClInclude Include="src\WindowWrap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Utility\COMException.h">
+    <ClInclude Include="src\Utility\COMException.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
-    <ClInclude Include="Utility\Popup.h">
+    <ClInclude Include="src\Utility\Popup.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
-    <ClInclude Include="Utility\StringHelper.h">
+    <ClInclude Include="src\Utility\StringHelper.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics\Transform.h">
+    <ClInclude Include="src\Graphics\Transform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics\Shader.h">
+    <ClInclude Include="src\Graphics\Shader.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics\Texture.h">
+    <ClInclude Include="src\Graphics\Texture.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics\Vertex.h">
+    <ClInclude Include="src\Graphics\Vertex.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics\VertexBuffer.h">
+    <ClInclude Include="src\Graphics\VertexBuffer.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics\IndexBuffer.h">
+    <ClInclude Include="src\Graphics\IndexBuffer.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics\DX11Wrapper.h">
+    <ClInclude Include="src\Graphics\DX11Wrapper.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics\ConstantBuffer.h">
+    <ClInclude Include="src\Graphics\ConstantBuffer.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics\CbufferTypes.h">
+    <ClInclude Include="src\Graphics\CbufferTypes.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics\Camera.h">
+    <ClInclude Include="src\Graphics\Camera.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Logic\CellGrid.h">
+    <ClInclude Include="src\PrimTech\CellGrid.h">
       <Filter>Header Files\Logic</Filter>
     </ClInclude>
-    <ClInclude Include="Math\Math.h">
+    <ClInclude Include="src\Math\Math.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics\3rdParty\imgui\imconfig.h">
+    <ClInclude Include="src\Graphics\3rdParty\imgui\imconfig.h">
       <Filter>Source Files\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics\3rdParty\imgui\imgui_impl_win32.h">
+    <ClInclude Include="src\Graphics\3rdParty\imgui\imgui_impl_win32.h">
       <Filter>Source Files\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics\3rdParty\imgui\imgui.h">
+    <ClInclude Include="src\Graphics\3rdParty\imgui\imgui.h">
       <Filter>Header Files\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics\3rdParty\imgui\imgui_impl_dx11.h">
+    <ClInclude Include="src\Graphics\3rdParty\imgui\imgui_impl_dx11.h">
       <Filter>Header Files\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics\3rdParty\imgui\imgui_internal.h">
+    <ClInclude Include="src\Graphics\3rdParty\imgui\imgui_internal.h">
       <Filter>Header Files\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics\3rdParty\imgui\imstb_rectpack.h">
+    <ClInclude Include="src\Graphics\3rdParty\imgui\imstb_rectpack.h">
       <Filter>Header Files\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics\3rdParty\imgui\imstb_textedit.h">
+    <ClInclude Include="src\Graphics\3rdParty\imgui\imstb_textedit.h">
       <Filter>Header Files\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics\3rdParty\imgui\imstb_truetype.h">
+    <ClInclude Include="src\Graphics\3rdParty\imgui\imstb_truetype.h">
       <Filter>Header Files\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="Colors.h">
+    <ClInclude Include="src\Colors.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics\Noise\ImprovedPNoise.h">
+    <ClInclude Include="src\Graphics\Noise\ImprovedPNoise.h">
       <Filter>Header Files\Noise</Filter>
     </ClInclude>
-    <ClInclude Include="Input\Mouse.h">
+    <ClInclude Include="src\Input\Mouse.h">
       <Filter>Header Files\Input</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics\Noise\PerlinNoise.h">
+    <ClInclude Include="src\Graphics\Noise\PerlinNoise.h">
       <Filter>Header Files\Noise</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics\RenderCell.h">
+    <ClInclude Include="src\Graphics\RenderCell.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="PrimTech.h">
+    <ClInclude Include="src\PrimTech.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Resource Files</Filter>
     </ClInclude>
-    <ClInclude Include="Input\Keyboard.h">
+    <ClInclude Include="src\Input\Keyboard.h">
       <Filter>Header Files\Input</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics\Buffer.h">
+    <ClInclude Include="src\Graphics\Buffer.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics\Model.h">
+    <ClInclude Include="src\Graphics\Model.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics\Paths.h">
+    <ClInclude Include="src\Graphics\Paths.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics\ResourceHandler.h">
+    <ClInclude Include="src\Graphics\ResourceHandler.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics\Material.h">
+    <ClInclude Include="src\Graphics\Material.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Utility\CommonDialogs.h">
+    <ClInclude Include="src\Utility\CommonDialogs.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
-    <ClInclude Include="PrimTech\Scene.h">
+    <ClInclude Include="src\PrimTech\Scene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="QuadVS.hlsl">
+    <FxCompile Include="src\QuadVS.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
-    <FxCompile Include="QuadPS.hlsl">
+    <FxCompile Include="src\QuadPS.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
-    <FxCompile Include="vertexshader.hlsl">
+    <FxCompile Include="src\vertexshader.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
-    <FxCompile Include="basePS.hlsl">
+    <FxCompile Include="src\basePS.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
-    <FxCompile Include="NoLightPS.hlsl">
+    <FxCompile Include="src\NoLightPS.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
-    <FxCompile Include="LightWarpPS.hlsl">
+    <FxCompile Include="src\LightWarpPS.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
-    <FxCompile Include="ToonPS.hlsl">
+    <FxCompile Include="src\ToonPS.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
   </ItemGroup>

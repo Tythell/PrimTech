@@ -94,15 +94,14 @@ bool DX11Addon::initSwapChain()
 
 bool DX11Addon::initRTV()
 {
-	Microsoft::WRL::ComPtr<ID3D11Texture2D> backBuffer;
+	ID3D11Texture2D* backBuffer;
 
-	HRESULT hr = m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(backBuffer.GetAddressOf()));
+	HRESULT hr = m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&backBuffer));
 	COM_ERROR(hr, "Get Buffer failed");
 
-	hr = device->CreateRenderTargetView(backBuffer.Get(), NULL, &m_rtv);
+	hr = device->CreateRenderTargetView(backBuffer, NULL, &m_rtv);
 	COM_ERROR(hr, "RTV failed");
-
-
+	backBuffer->Release();
 
 	return true;
 }

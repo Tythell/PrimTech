@@ -2,9 +2,7 @@
 #include "Shader.h"
 #include <Windows.h>
 #include "../Utility/Popup.h"
-#include"../Logic/CellGrid.h"
 #include"Texture.h"
-#include<wrl\client.h>
 #include"../Input/Mouse.h"
 #include"../Input/Keyboard.h"
 #include"Model.h"

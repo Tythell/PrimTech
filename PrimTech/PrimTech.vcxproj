@@ -141,119 +141,119 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="PrimTech\Scene.cpp" />
-    <ClCompile Include="Utility\CommonDialogs.cpp" />
-    <ClCompile Include="Defines.cpp" />
-    <ClCompile Include="Graphics\3rdParty\imgui\imgui.cpp" />
-    <ClCompile Include="Graphics\3rdParty\imgui\imgui_demo.cpp" />
-    <ClCompile Include="Graphics\3rdParty\imgui\imgui_draw.cpp" />
-    <ClCompile Include="Graphics\3rdParty\imgui\imgui_impl_dx11.cpp" />
-    <ClCompile Include="Graphics\3rdParty\imgui\imgui_impl_win32.cpp" />
-    <ClCompile Include="Graphics\3rdParty\imgui\imgui_tables.cpp" />
-    <ClCompile Include="Graphics\3rdParty\imgui\imgui_widgets.cpp" />
-    <ClCompile Include="Graphics\Camera.cpp" />
-    <ClCompile Include="Graphics\DX11Wrapper.cpp" />
-    <ClCompile Include="Graphics\Noise\PerlinNoise.cpp" />
-    <ClCompile Include="Graphics\RenderCell.cpp" />
-    <ClCompile Include="Graphics\Shader.cpp" />
-    <ClCompile Include="Graphics\Texture.cpp" />
-    <ClCompile Include="Graphics\Transform.cpp" />
-    <ClCompile Include="Graphics\Noise\ImprovedPNoise.cpp" />
-    <ClCompile Include="Input\Keyboard.cpp" />
-    <ClCompile Include="Logic\CellGrid.cpp" />
-    <ClCompile Include="Input\Mouse.cpp" />
-    <ClCompile Include="Graphics\Model.cpp" />
-    <ClCompile Include="Graphics\Material.cpp" />
-    <ClCompile Include="PrimTech.cpp" />
-    <ClCompile Include="Graphics\ResourceHandler.cpp" />
-    <ClCompile Include="Utility\StringHelper.cpp" />
-    <ClCompile Include="Utility\Popup.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="Graphics\Vertex.cpp" />
-    <ClCompile Include="WindowWrap.cpp" />
+    <ClCompile Include="src\PrimTech\Scene.cpp" />
+    <ClCompile Include="src\Utility\CommonDialogs.cpp" />
+    <ClCompile Include="src\Defines.cpp" />
+    <ClCompile Include="src\Graphics\3rdParty\imgui\imgui.cpp" />
+    <ClCompile Include="src\Graphics\3rdParty\imgui\imgui_demo.cpp" />
+    <ClCompile Include="src\Graphics\3rdParty\imgui\imgui_draw.cpp" />
+    <ClCompile Include="src\Graphics\3rdParty\imgui\imgui_impl_dx11.cpp" />
+    <ClCompile Include="src\Graphics\3rdParty\imgui\imgui_impl_win32.cpp" />
+    <ClCompile Include="src\Graphics\3rdParty\imgui\imgui_tables.cpp" />
+    <ClCompile Include="src\Graphics\3rdParty\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="src\Graphics\Camera.cpp" />
+    <ClCompile Include="src\Graphics\DX11Wrapper.cpp" />
+    <ClCompile Include="src\Graphics\Noise\PerlinNoise.cpp" />
+    <ClCompile Include="src\Graphics\RenderCell.cpp" />
+    <ClCompile Include="src\Graphics\Shader.cpp" />
+    <ClCompile Include="src\Graphics\Texture.cpp" />
+    <ClCompile Include="src\Graphics\Transform.cpp" />
+    <ClCompile Include="src\Graphics\Noise\ImprovedPNoise.cpp" />
+    <ClCompile Include="src\Input\Keyboard.cpp" />
+    <ClCompile Include="src\PrimTech\CellGrid.cpp" />
+    <ClCompile Include="src\Input\Mouse.cpp" />
+    <ClCompile Include="src\Graphics\Model.cpp" />
+    <ClCompile Include="src\Graphics\Material.cpp" />
+    <ClCompile Include="src\PrimTech.cpp" />
+    <ClCompile Include="src\Graphics\ResourceHandler.cpp" />
+    <ClCompile Include="src\Utility\StringHelper.cpp" />
+    <ClCompile Include="src\Utility\Popup.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Graphics\Vertex.cpp" />
+    <ClCompile Include="src\WindowWrap.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="PrimTech\Scene.h" />
-    <ClInclude Include="Utility\CommonDialogs.h" />
-    <ClInclude Include="Graphics\Buffer.h" />
-    <ClInclude Include="Colors.h" />
-    <ClInclude Include="Graphics\3rdParty\imgui\imconfig.h" />
-    <ClInclude Include="Graphics\3rdParty\imgui\imgui.h" />
-    <ClInclude Include="Graphics\3rdParty\imgui\imgui_impl_dx11.h" />
-    <ClInclude Include="Graphics\3rdParty\imgui\imgui_impl_win32.h" />
-    <ClInclude Include="Graphics\3rdParty\imgui\imgui_internal.h" />
-    <ClInclude Include="Graphics\3rdParty\imgui\imstb_rectpack.h" />
-    <ClInclude Include="Graphics\3rdParty\imgui\imstb_textedit.h" />
-    <ClInclude Include="Graphics\3rdParty\imgui\imstb_truetype.h" />
-    <ClInclude Include="Graphics\Camera.h" />
-    <ClInclude Include="Graphics\CbufferTypes.h" />
-    <ClInclude Include="Graphics\ConstantBuffer.h" />
-    <ClInclude Include="Graphics\IndexBuffer.h" />
-    <ClInclude Include="Graphics\Noise\PerlinNoise.h" />
-    <ClInclude Include="Graphics\RenderCell.h" />
-    <ClInclude Include="Graphics\Texture.h" />
-    <ClInclude Include="Graphics\VertexBuffer.h" />
-    <ClInclude Include="Graphics\Vertex.h" />
-    <ClInclude Include="Graphics\Shader.h" />
-    <ClInclude Include="Graphics\Transform.h" />
-    <ClInclude Include="Graphics\Noise\ImprovedPNoise.h" />
-    <ClInclude Include="Input\Keyboard.h" />
-    <ClInclude Include="Logic\CellGrid.h" />
-    <ClInclude Include="Graphics\Material.h" />
-    <ClInclude Include="Math\Math.h" />
-    <ClInclude Include="Input\Mouse.h" />
-    <ClInclude Include="Graphics\Model.h" />
-    <ClInclude Include="Graphics\Paths.h" />
-    <ClInclude Include="PrimTech.h" />
+    <ClInclude Include="src\PrimTech\Scene.h" />
+    <ClInclude Include="src\Utility\CommonDialogs.h" />
+    <ClInclude Include="src\Graphics\Buffer.h" />
+    <ClInclude Include="src\Colors.h" />
+    <ClInclude Include="src\Graphics\3rdParty\imgui\imconfig.h" />
+    <ClInclude Include="src\Graphics\3rdParty\imgui\imgui.h" />
+    <ClInclude Include="src\Graphics\3rdParty\imgui\imgui_impl_dx11.h" />
+    <ClInclude Include="src\Graphics\3rdParty\imgui\imgui_impl_win32.h" />
+    <ClInclude Include="src\Graphics\3rdParty\imgui\imgui_internal.h" />
+    <ClInclude Include="src\Graphics\3rdParty\imgui\imstb_rectpack.h" />
+    <ClInclude Include="src\Graphics\3rdParty\imgui\imstb_textedit.h" />
+    <ClInclude Include="src\Graphics\3rdParty\imgui\imstb_truetype.h" />
+    <ClInclude Include="src\Graphics\Camera.h" />
+    <ClInclude Include="src\Graphics\CbufferTypes.h" />
+    <ClInclude Include="src\Graphics\ConstantBuffer.h" />
+    <ClInclude Include="src\Graphics\IndexBuffer.h" />
+    <ClInclude Include="src\Graphics\Noise\PerlinNoise.h" />
+    <ClInclude Include="src\Graphics\RenderCell.h" />
+    <ClInclude Include="src\Graphics\Texture.h" />
+    <ClInclude Include="src\Graphics\VertexBuffer.h" />
+    <ClInclude Include="src\Graphics\Vertex.h" />
+    <ClInclude Include="src\Graphics\Shader.h" />
+    <ClInclude Include="src\Graphics\Transform.h" />
+    <ClInclude Include="src\Graphics\Noise\ImprovedPNoise.h" />
+    <ClInclude Include="src\Input\Keyboard.h" />
+    <ClInclude Include="src\PrimTech\CellGrid.h" />
+    <ClInclude Include="src\Graphics\Material.h" />
+    <ClInclude Include="src\Math\Math.h" />
+    <ClInclude Include="src\Input\Mouse.h" />
+    <ClInclude Include="src\Graphics\Model.h" />
+    <ClInclude Include="src\Graphics\Paths.h" />
+    <ClInclude Include="src\PrimTech.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="Graphics\ResourceHandler.h" />
-    <ClInclude Include="Utility\StringHelper.h" />
-    <ClInclude Include="Utility\COMException.h" />
-    <ClInclude Include="Graphics\DX11Wrapper.h" />
-    <ClInclude Include="Utility\Popup.h" />
-    <ClInclude Include="WindowWrap.h" />
+    <ClInclude Include="src\Graphics\ResourceHandler.h" />
+    <ClInclude Include="src\Utility\StringHelper.h" />
+    <ClInclude Include="src\Utility\COMException.h" />
+    <ClInclude Include="src\Graphics\DX11Wrapper.h" />
+    <ClInclude Include="src\Utility\Popup.h" />
+    <ClInclude Include="src\WindowWrap.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="NoLightPS.hlsl">
+    <FxCompile Include="src\NoLightPS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
     </FxCompile>
-    <FxCompile Include="basePS.hlsl">
+    <FxCompile Include="src\basePS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
     </FxCompile>
-    <FxCompile Include="LightWarpPS.hlsl">
+    <FxCompile Include="src\LightWarpPS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
     </FxCompile>
-    <FxCompile Include="ToonPS.hlsl">
+    <FxCompile Include="src\ToonPS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
     </FxCompile>
-    <FxCompile Include="vertexshader.hlsl">
+    <FxCompile Include="src\vertexshader.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
     </FxCompile>
-    <FxCompile Include="QuadPS.hlsl">
+    <FxCompile Include="src\QuadPS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
     </FxCompile>
-    <FxCompile Include="QuadVS.hlsl">
+    <FxCompile Include="src\QuadVS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
