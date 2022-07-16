@@ -8,6 +8,7 @@
 #include"../Input/Mouse.h"
 #include"../Input/Keyboard.h"
 #include"Model.h"
+#include<fstream>
 
 #include"3rdParty\imgui\imgui.h"
 #include "3rdParty\imgui/imgui_impl_win32.h"
@@ -123,10 +124,10 @@ private:
 	Model m_model;
 	Model m_plane;
 	Model m_gunter;
-	Model m_menacing;
 	Model m_handmodel;
 	Model m_water;
 	Model m_cube;
+	std::vector<Model> m_models;
 	RenderBox m_renderbox;
 	std::vector<std::string> m_modelNames;
 	int m_fps = 0;

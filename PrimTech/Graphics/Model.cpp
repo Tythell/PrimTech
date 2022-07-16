@@ -5,6 +5,7 @@
 #include<iostream>
 #include <fstream>
 #include "ResourceHandler.h"
+#include "../Utility/CommonDialogs.h"
 
 Model::Model()
 {
@@ -278,6 +279,19 @@ int AllModels::GetNrOfModels()
 Model* AllModels::GetModel(int index)
 {
 	return m_models[index];
+}
+
+bool AllModels::ExportScene(std::string path)
+{
+	path = Dialogs::SaveFile("Scene(*.ptscene)\0 * .ptscene\0");
+	if (path == "")
+		return false;
+	std::ofstream writer(path, std::ios::binary | std::ios::out);
+	for (int i = 0; i < m_models.size(); i++)
+	{
+		
+	}
+	return true;
 }
 
 void RenderBox::Draw(ID3D11DeviceContext*& dc)

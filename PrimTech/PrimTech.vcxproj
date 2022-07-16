@@ -141,6 +141,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="PrimTech\Scene.cpp" />
     <ClCompile Include="Utility\CommonDialogs.cpp" />
     <ClCompile Include="Defines.cpp" />
     <ClCompile Include="Graphics\3rdParty\imgui\imgui.cpp" />
@@ -172,6 +173,7 @@
     <ClCompile Include="WindowWrap.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="PrimTech\Scene.h" />
     <ClInclude Include="Utility\CommonDialogs.h" />
     <ClInclude Include="Graphics\Buffer.h" />
     <ClInclude Include="Colors.h" />

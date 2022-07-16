@@ -8,9 +8,28 @@
 
 enum TextureType
 {
-	eDiffuse, eDistortion, eNormal, 
+	eDiffuse, eDistortion, eNormal, eTextureTypeAMOUNT
 };
 
+enum class eMaterialHeaders
+{
+	eNull,
+	eDIFFUSE, eNORMAL, eDISTORTION, eOPACITY, eTILING,
+};
+
+//struct MaterialHeader
+//{
+//	unsigned char diffuseName[16] = {};
+//	unsigned char normalName[16] = {};
+//	unsigned char distortionName[16] = {};
+//	unsigned char opacityMapName[16] = {};
+//
+//	hlsl::float2 diffSpeed;
+//	hlsl::float2 distSpeed;
+//	int distDivider;
+//	int tiling;
+//};
+#define FILENAME_MAXSIZE 32
 class Material
 {
 public:
@@ -25,29 +44,39 @@ public:
 	void SetSelection(bool b);
 	void SetRimColor(sm::Vector3 rgb);
 	void ResetScrollValue();
-	void EnableDistortion(bool b);
-	void SetDistortionDivider(int n);
+	void SetDistortionDivider(const int n);
 	int GetDistortionDivider() const;
-	bool HasDistortion() const;
 	float GetTransparancy() const;
 	void SetLeftHanded(bool b);
-	void ExportMaterial(std::string path);
+	bool ExportMaterial(std::string path);
+	void ImportMaterial(std::string path);
+	void RemoveTexture(const TextureType e);
+	std::string GetMapName(const TextureType& e) const;
 	
 	sm::Vector2 GetDiffuseScrollSpeed() const;
 	sm::Vector2 GetDistortionScrollSpeed() const;
 	float GetTextureScale() const;
+
+	bool HasTexture(const TextureType e) const;
 private:
+	//std::string GetDiffuseName() const;
+	//std::string GetDistortionMapName() const;
+	//std::string GetNormalMapName() const;
+
+	void ReadRecursion(eMaterialHeaders& header, std::ifstream& reader);
 	void LoadDiffuse(std::string path);
 	void LoadDistortion(std::string path);
 	void LoadNormalMap(std::string path);
-	TextureMap* mp_diffuse = nullptr;
-	TextureMap* mp_distortion = nullptr;
-	TextureMap* mp_normalMap = nullptr;
+	TextureMap* mp_textures[eTextureTypeAMOUNT] = { nullptr };
+	//TextureMap* mp_diffuse = nullptr;
+	//TextureMap* mp_distortion = nullptr;
+	//TextureMap* mp_normalMap = nullptr;
 	float m_textureScale = 1.f;
 	bool m_selection = false;
 	sm::Vector3 m_rimColor = GOLD_3F;
-	float m_distDivider = 0.f;
+	float m_distDivider = 1.f;
 	bool m_lefthanded = true;
+	std::string m_name;
 
 	sm::Vector2 m_diffuseOffsetValue, m_distortionValue;
 	sm::Vector2 m_diffuseOffsetSpeed, m_distortionOffsetSpeed;

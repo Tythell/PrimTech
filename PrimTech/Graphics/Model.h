@@ -66,6 +66,7 @@ public:
 	static void SetNamesToVector(std::vector<std::string>& v);
 	static int GetNrOfModels();
 	static Model* GetModel(int index);
+	static bool ExportScene(std::string path);
 private:
 	static std::vector<Model*> m_models;
 };

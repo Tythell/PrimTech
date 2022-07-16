@@ -13,6 +13,7 @@ std::string StringHelper::GetExtension(std::string filename)
 
 std::string StringHelper::GetName(std::string path)
 {
-    size_t offset = path.find_last_of('/');
-    return std::string(path.substr(offset + 1));
+    size_t offset = path.find_last_of("/");
+    size_t offset2 = path.find_last_of("\\"); 
+    return std::string(path.substr(offset + offset2 + 2));
 }

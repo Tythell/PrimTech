@@ -91,7 +91,10 @@ float4 main(PSInput input) : SV_Target
     float lightindex = (distance <= lightDistance) ? saturate(dot(lightVector, normal)) * pointlightStre : 0.f;
     float3 camToOb = normalize(input.worldPos - camPos.xyz);
    
-    float3 specular = pow(max(dot(camToOb, -reflect(-lightVector, normal)), 0.f),specularInstensity);
+    float3 specular = 0.f;
+    float specDot = dot(camToOb, -reflect(-lightVector, normal));
+    if (specDot > 0.f)
+        specular = pow(specDot, specularInstensity);
     
     float att = 1.f / dot(atten.xxx, float3(1.f, distance, distance));
     //float att = 1.f / dot(atten.xxx, float3(1.f, distance, distance));

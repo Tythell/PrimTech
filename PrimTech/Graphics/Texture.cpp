@@ -25,9 +25,15 @@ bool TextureMap::CreateFromFile(const char* texturePath, ID3D11Device* device, c
 
 	stbi_set_flip_vertically_on_load(flipUV);
 
-	m_name = std::string(texturePath);
+	
+	m_name = StringHelper::GetName(std::string(texturePath));
 
-	std::string fullpath = "Assets/Textures/" + std::string(texturePath);
+	std::string fullpath;
+	if (texturePath[1] != ':')
+		fullpath = "Assets/Textures/" + std::string(texturePath);
+	else
+		fullpath = "Assets\\Textures\\" + m_name;
+
 
 	int textureWidth;
 	int textureHeight;

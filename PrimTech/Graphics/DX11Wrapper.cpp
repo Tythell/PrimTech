@@ -18,7 +18,7 @@ DX11Addon::DX11Addon(Window& window, Camera& camera) :
 	InitShaders();
 	InitConstantBuffers();
 	InitScene();
-
+	m_renderbox.Init(device);
 	ImGuiInit(window.getHWND());
 }
 
@@ -233,44 +233,29 @@ bool DX11Addon::InitScene()
 	ResourceHandler::AddTexture("ZANormal.png"); // Load LightWarp Texture
 	dc->PSSetShaderResources(2, 1, ResourceHandler::GetTexture(1).GetSRVAdress());
 
-
 	m_model.Init("scuffball.obj");
 	m_model.SetPosition(0.f, 0.f, 3.f);
 	m_model.SetMaterialBuffer(m_materialBuffer);
+	
 
-	m_plane.Init("planeDir.obj");
-	m_plane.LoadTexture("Brick_Diffuse.jpg");
-	m_plane.LoadTexture("Brick_NormalMap.jpg", eNormal);
+	m_plane.Init("scaledplane.obj");
 	m_plane.SetPosition(0.f, -1.f, 0.f);
 	m_plane.SetScale(10.f);
 	m_plane.SetMaterialBuffer(m_materialBuffer);
+	m_plane.GetMaterial().ImportMaterial("ground.pmtrl");
 
 	m_gunter.Init("gunter.obj");
-	m_gunter.LoadTexture("gunteruv.png", eDiffuse);
-	m_gunter.LoadTexture("Brick_NormalMap.jpg", eNormal);
 	m_gunter.SetPosition(-1.f, 2.f, -6.f);
 	m_gunter.SetRotation(0.f, d::XM_PI, 0.f);
 	m_gunter.SetMaterialBuffer(m_materialBuffer);
-
-	m_menacing.Init("menacing.obj");
-	m_menacing.SetPosition(-3.f, 2.f, -6.f);
-	m_menacing.SetRotation(0.f, d::XM_PI, 0.f);
-	m_menacing.SetMaterialBuffer(m_materialBuffer);
-	m_handmodel.Init("handmodel2.obj");
-	m_handmodel.SetScale(.1f);
-	m_handmodel.SetMaterialBuffer(m_materialBuffer);
+	m_gunter.GetMaterial().ImportMaterial("gunter.pmtrl");
 
 	m_water.Init("plane.txt");
 	m_water.SetScale(4.f);
-	m_water.LoadTexture("White.png");
-	m_water.LoadTexture("waterDist.png", eDistortion);
-	m_water.LoadTexture("waterNormal.png", eNormal);
 	m_water.SetPosition(-4.f, 0.f, 0.f);
 	m_water.SetMaterialBuffer(m_materialBuffer);
+	m_water.GetMaterial().ImportMaterial("water.pmtrl");
 	m_water.GetMaterial().SetTransparency(.7f);
-	m_water.GetMaterial().SetDiffuseScrollSpeed(0.217f, 0.f);
-	m_water.GetMaterial().SetDistortionScrollSpeed(0.061f, 0.f);
-	m_water.GetMaterial().SetDistortionDivider(3);
 
 	m_bulb.Init("bulb.obj", ModelType::eDEBUG);
 	m_bulb.SetMaterialBuffer(m_materialBuffer);
@@ -281,10 +266,13 @@ bool DX11Addon::InitScene()
 	m_playermodel.SetMaterialBuffer(m_materialBuffer);
 
 	m_cube.Init("kubfan3.obj");
-	m_cube.LoadTexture("Brick_Diffuse.jpg");
-	m_cube.LoadTexture("Brick_NormalMap.jpg", eNormal);
+	m_cube.GetMaterial().ImportMaterial("materialtest.pmtrl");
 	m_cube.SetMaterialBuffer(m_materialBuffer);
 	m_cube.SetPosition(-2.f, 2.f, 2.f);
+
+	m_handmodel.Init("handmodel2.obj");
+	m_handmodel.SetScale(.1f);
+	m_handmodel.SetMaterialBuffer(m_materialBuffer);
 
 	dc->VSSetConstantBuffers(0, 1, m_transformBuffer.GetReference());
 	AllModels::SetBuffers(dc, m_transformBuffer);
@@ -296,7 +284,7 @@ bool DX11Addon::InitScene()
 		m_modelNamescStr[i] = m_modelNames[i].c_str();
 	}
 
-	m_renderbox.Init(device);
+	//m_renderbox.Init(device);
 	return true;
 }
 
@@ -397,6 +385,33 @@ void DX11Addon::ImGuiGradientWindow()
 	ImGui::End();
 }
 
+void LoadButton(Material* pMaterial, std::string name, TextureType e)
+{
+	name += pMaterial->GetMapName(e);
+	ImGui::Text(name.c_str());
+	ImGui::SameLine();
+	std::string buttonName = "Load##" + name;
+	if (ImGui::Button(buttonName.c_str()))
+	{
+		std::string newMtrlString = Dialogs::OpenFile("Texture (*.png)\0*.png\0");
+		if (newMtrlString != "")
+		{
+			pMaterial->LoadTexture(newMtrlString, e);
+		}
+	}
+	std::string remove = "Remove##";
+	remove += name;
+	if (pMaterial->HasTexture(e))
+	{
+		ImGui::SameLine();
+		if (ImGui::Button(remove.c_str()))
+		{
+			pMaterial->RemoveTexture(e);
+		}
+	}
+
+}
+
 void DX11Addon::ImGuiRender()
 {
 	static bool im_appear = true;
@@ -404,9 +419,7 @@ void DX11Addon::ImGuiRender()
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 	ImGui::Begin("Debug");
-	static std::string testing = "";
-	if (ImGui::Button("dialog"))
-		testing = Dialogs::Saveile(".tsk");
+
 	ImGui::Checkbox("Demo window", &im.showDemoWindow);
 	ImGui::Text("Press Q to lock/unlock mouse");
 
@@ -488,7 +501,7 @@ void DX11Addon::ImGuiRender()
 			float scalef[3] = { scale.x, scale.y, scale.z };
 
 			ImGui::DragFloat3("Scale   ", scalef, .02f);
-				
+
 
 			ImGui::SameLine();
 			if (ImGui::Button("Reset##Scale"))
@@ -508,9 +521,13 @@ void DX11Addon::ImGuiRender()
 		{
 			Material* pMaterial = &pSelectedModel->GetMaterial();
 
+			LoadButton(pMaterial, "Diffuse: ", eDiffuse);
+			LoadButton(pMaterial, "NormalMap: ", eNormal);
+			LoadButton(pMaterial, "DistMap: ", eDistortion);
+
 			sm::Vector2 diffuseSpeed(pMaterial->GetDiffuseScrollSpeed());
 			sm::Vector2 distortionSpeed(pMaterial->GetDistortionScrollSpeed());
-			bool hasDistMap = pMaterial->HasDistortion();
+			bool hasDistMap = pMaterial->HasTexture(eDistortion);
 
 			float diffSpeed[2]{ diffuseSpeed.x, diffuseSpeed.y };
 			float distSpeed[2]{ distortionSpeed.x, distortionSpeed.y };
@@ -548,6 +565,20 @@ void DX11Addon::ImGuiRender()
 			float tiling = pMaterial->GetTextureScale();
 			ImGui::SliderFloat("Tiling", &tiling, 1.f, 10.f);
 			pMaterial->SetTextureScale(tiling);
+
+			if (ImGui::Button("Export Material"))
+			{
+				std::string savePath = "";
+				savePath = Dialogs::SaveFile("Material (*.pmtrl)\0*.pmtrl\0");
+
+				if (savePath != "")
+				{
+					std::string test = StringHelper::GetExtension(savePath);
+					if (test != "pmtrl")
+						savePath += ".pmtrl";
+					pMaterial->ExportMaterial(savePath);
+				}
+			}
 		}
 
 	}
@@ -577,7 +608,7 @@ void DX11Addon::ImGuiShutDown()
 
 void DX11Addon::ExportImage(char* name)
 {
-	
+
 	//m_grid.SaveImage(name);
 }
 
@@ -610,10 +641,11 @@ void DX11Addon::Render(const float& deltatime)
 	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	dc->IASetInputLayout(m_3dvs.GetInputLayout());
 	dc->VSSetShader(m_3dvs.GetShader(), NULL, 0);
-	
+
 
 	//dc->PSSetShader(m_3dps.GetShader(), NULL, 0);
 	dc->PSSetShader(m_toonPS.GetShader(), NULL, 0);
+
 	m_gunter.Draw();
 	m_model.Draw();
 	m_plane.Draw();
@@ -629,8 +661,6 @@ void DX11Addon::Render(const float& deltatime)
 	//m_water.UpdateTextureScroll(deltatime);
 	m_water.Draw();
 	dc->PSSetShader(m_3dnoLightps.GetShader(), NULL, 0);
-	m_menacing.Draw();
-	m_bulb.Draw();
 
 	if (mp_cam->GetOffset().z == 0.f && im.enableHandModel)
 	{
@@ -639,7 +669,8 @@ void DX11Addon::Render(const float& deltatime)
 		m_handmodel.SetRotation(-mp_cam->GetRotation().x, mp_cam->GetRotation().y + d::XM_PI, -mp_cam->GetRotation().z);
 		m_handmodel.Draw();
 	}
-
+	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
+	m_bulb.Draw();
 	UINT offset = 0;
 	UINT stride = sizeof(sm::Vector3);
 
@@ -652,11 +683,11 @@ void DX11Addon::Render(const float& deltatime)
 	m_transformBuffer.UpdateCB();
 	m_renderbox.Draw(dc);
 
-	m_transformBuffer.Data().world = d::XMMatrixTranspose(d::XMMatrixTranslation(0.f, 0.f, 1.f));
-	m_transformBuffer.UpdateCB();
-	m_renderbox.Draw(dc);
+	//m_transformBuffer.Data().world = d::XMMatrixTranspose(d::XMMatrixTranslation(0.f, 0.f, 1.f));
+	//m_transformBuffer.UpdateCB();
+	//m_renderbox.Draw(dc);
 
-	
+
 
 	ImGuiRender();
 	m_swapChain->Present((UINT)im.useVsync, NULL);
