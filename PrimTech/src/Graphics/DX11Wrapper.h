@@ -19,9 +19,8 @@ class Window;
 
 struct ImGuiVars
 {
-	float f[3] = {100.f,1.f, 0.f};
+	//float f[3] = {100.f,1.f, 0.f};
 	bool useVsync = true;
-	int speed = 70;
 	char* buffer = new char[16]{"toon.png"};
 	float pointLightPos[3] = { 0.f,1.f,0.f };
 	float pointLightColor[3]{1.f,1.f,1.f};
@@ -38,8 +37,9 @@ struct ImGuiVars
 	float gradient[2] = { 255.f / 2.f,1.f};
 	float gradientOffset = 0.f;
 	float specPow = 50.f;
-	bool showSelect = true;
 };
+
+void RecursiveRead(Sceneheaders& header, std::vector<Model>& v, std::ifstream& reader);
 
 class DX11Addon
 {
@@ -68,6 +68,10 @@ private:
 	void ImGuiRender();
 	void ImGuiShutDown();
 	void ExportImage(char* name);
+	void ImGuiMenu();
+
+	void ImportScene(std::string path);
+	void ExportScene(std::string path);
 
 	Window* m_pWin = nullptr;
 
@@ -117,14 +121,15 @@ private:
 	ImGuiVars im;
 	KeyboardHandler* mp_kb;
 
-	Model m_playermodel;
-	Model m_bulb;
-	Model m_model;
-	Model m_plane;
-	Model m_gunter;
-	Model m_handmodel;
-	Model m_water;
-	Model m_cube;
+	//Model m_playermodel;
+	//Model m_bulb;
+	//Model m_model;
+	//Model m_plane;
+	//Model m_gunter;
+	//Model m_handmodel;
+	//Model m_water;
+	//Model m_cube;
+
 	std::vector<Model> m_models;
 	RenderBox m_renderbox;
 	std::vector<std::string> m_modelNames;

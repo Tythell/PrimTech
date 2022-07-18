@@ -51,8 +51,9 @@ public:
 	bool ExportMaterial(std::string path);
 	void ImportMaterial(std::string path);
 	void RemoveTexture(const TextureType e);
+
 	std::string GetMapName(const TextureType& e) const;
-	
+	std::string GetFileName() const;
 	sm::Vector2 GetDiffuseScrollSpeed() const;
 	sm::Vector2 GetDistortionScrollSpeed() const;
 	float GetTextureScale() const;

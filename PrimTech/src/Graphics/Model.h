@@ -33,7 +33,24 @@ private:
 	Buffer<unsigned int> m_ibuffer;
 };
 
+enum class Sceneheaders
+{
+	enull, 
+	eMODEL, 
+};
+
 enum class ModelType {eUNSPECIFIED, eDEBUG};
+
+struct ModelStruct
+{
+	char modelname[24];
+	char mtrlname[24];
+	sm::Vector3 scale;
+	sm::Vector3 rotation;
+	sm::Vector3 position;
+	ModelType type;
+};
+
 class Model : public Transform
 {
 public:
@@ -58,15 +75,15 @@ private:
 	d::BoundingBox m_selectBox;
 };
 
-class AllModels
-{
-public:
-	static void SetBuffers(ID3D11DeviceContext*& dc, Buffer<hlsl::cbpWorldTransforms3D>& buffer);
-	static void AddModelAdress(Model* d);
-	static void SetNamesToVector(std::vector<std::string>& v);
-	static int GetNrOfModels();
-	static Model* GetModel(int index);
-	static bool ExportScene(std::string path);
-private:
-	static std::vector<Model*> m_models;
-};
+//class AllModels
+//{
+//public:
+//	static void SetBuffers(ID3D11DeviceContext*& dc, Buffer<hlsl::cbpWorldTransforms3D>& buffer, Buffer<hlsl::cbpMaterialBuffer>& matBuffer);
+//	static void AddModelAdress(Model* d);
+//	static void SetNamesToVector(std::vector<std::string>& v);
+//	static int GetNrOfModels();
+//	static Model* GetModel(int index);
+//	static bool ExportScene(std::string path);
+//private:
+//	static std::vector<Model*> m_models;
+//};

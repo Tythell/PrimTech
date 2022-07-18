@@ -247,7 +247,7 @@ void Material::ImportMaterial(std::string path)
 	}
 	else
 	{
-		Popup::Error("Failed to open material");
+		POPUP_ERROR(false, ("Failed to open" + m_name));
 	}
 }
 
@@ -260,6 +260,11 @@ std::string Material::GetMapName(const TextureType& e) const
 {
 	if (!mp_textures[e]) return "does not exist";
 	return mp_textures[e]->GetName();
+}
+
+std::string Material::GetFileName() const
+{
+	return m_name;
 }
 
 sm::Vector2 Material::GetDiffuseScrollSpeed() const

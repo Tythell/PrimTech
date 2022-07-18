@@ -9,12 +9,12 @@
 
 Model::Model()
 {
-	AllModels::AddModelAdress(this);
+	//AllModels::AddModelAdress(this);
 }
-
-//ID3D11DeviceContext* Model::dc;
-//Buffer<hlsl::cbpWorldTransforms3D>* Model::mp_cbTransformBuffer;
-std::vector<Model*> AllModels::m_models;
+//
+////ID3D11DeviceContext* Model::dc;
+////Buffer<hlsl::cbpWorldTransforms3D>* Model::mp_cbTransformBuffer;
+//std::vector<Model*> AllModels::m_models;
 
 void Model::Init(const std::string path, ModelType e, bool makeLeftHanded)
 {
@@ -190,10 +190,6 @@ bool LoadObjToBuffer(std::string path, std::vector<Vertex3D>& shape, bool makeLe
 				tangent.y = f * (dAC.y * edge1.y - dAB.y * edge2.y);
 				tangent.z = f * (dAC.y * edge1.z - dAB.y * edge2.z);
 
-				if (makeLeftHanded)
-				{
-
-				}
 				shape[i].tangent = tangent;
 				shape[i + 1].tangent = tangent;
 				shape[i + 2].tangent = tangent;
@@ -213,14 +209,14 @@ Mesh::Mesh(std::string path, ID3D11Device*& device, d::BoundingBox* bbox, bool m
 	}
 	m_name = StringHelper::GetName(path);
 
-	if (bbox)
-	{
-		std::vector<d::XMFLOAT3> positionArray;
-		positionArray.resize(vertexes.size());
-		for (int i = 0; i < vertexes.size(); i++)
-			positionArray[i] = vertexes[i].position;
-		d::BoundingBox::CreateFromPoints(*bbox, vertexes.size(), positionArray.data(), sizeof(sm::Vector3));
-	}
+	//if (bbox)
+	//{
+	//	std::vector<d::XMFLOAT3> positionArray;
+	//	positionArray.resize(vertexes.size());
+	//	for (int i = 0; i < vertexes.size(); i++)
+	//		positionArray[i] = vertexes[i].position;
+	//	d::BoundingBox::CreateFromPoints(*bbox, vertexes.size(), positionArray.data(), sizeof(sm::Vector3));
+	//}
 
 	HRESULT hr = m_vbuffer.CreateVertexBuffer(device, vertexes.data(), vertexes.size());
 	if (FAILED(hr))
@@ -247,52 +243,64 @@ int Mesh::GetNrOfUses() const
 	return m_nrOfUses;
 }
 
-void AllModels::SetBuffers(ID3D11DeviceContext*& dc, Buffer<hlsl::cbpWorldTransforms3D>& buffer)
-{
-	for (int i = 0; i < m_models.size(); i++)
-	{
-		m_models[i]->SetDCandBuffer(dc, buffer);
-	}
-}
+//void AllModels::SetBuffers(ID3D11DeviceContext*& dc, Buffer<hlsl::cbpWorldTransforms3D>& buffer, Buffer<hlsl::cbpMaterialBuffer>& matBuffer)
+//{
+//	for (int i = 0; i < m_models.size(); i++)
+//	{
+//		m_models[i]->SetDCandBuffer(dc, buffer);
+//		m_models[i]->SetMaterialBuffer(matBuffer);
+//	}
+//}
 
-void AllModels::AddModelAdress(Model* pm)
-{
-	m_models.emplace_back(pm);
-}
+//void AllModels::AddModelAdress(Model* pm)
+//{
+//	m_models.emplace_back(pm);
+//}
 
-void AllModels::SetNamesToVector(std::vector<std::string>& v)
-{
-	v.resize(m_models.size());
-	for (int i = 0; i < v.size(); i++)
-	{
-		if (m_models[i]->GetModelType() != ModelType::eUNSPECIFIED)
-			v[i] = "DEBUG| ";
-		v[i] += m_models[i]->GetName();
-	}
-}
+//void AllModels::SetNamesToVector(std::vector<std::string>& v)
+//{
+	//int hej = m_models.size();
+	//hej++;
+	//v.resize(m_models.size());
+	//for (int i = 0; i < v.size(); i++)
+	//{
+	//	if (m_models[i]->GetModelType() != ModelType::eUNSPECIFIED)
+	//		v[i] = "DEBUG| ";
+	//	v[i] += m_models[i]->GetName();
+	//}
+//}
 
-int AllModels::GetNrOfModels()
-{
-	return (int)m_models.size();
-}
-
-Model* AllModels::GetModel(int index)
-{
-	return m_models[index];
-}
-
-bool AllModels::ExportScene(std::string path)
-{
-	path = Dialogs::SaveFile("Scene(*.ptscene)\0 * .ptscene\0");
-	if (path == "")
-		return false;
-	std::ofstream writer(path, std::ios::binary | std::ios::out);
-	for (int i = 0; i < m_models.size(); i++)
-	{
-		
-	}
-	return true;
-}
+//int AllModels::GetNrOfModels()
+//{
+//	return (int)m_models.size();
+//}
+//
+//Model* AllModels::GetModel(int index)
+//{
+//	return m_models[index];
+//}
+//
+//bool AllModels::ExportScene(std::string path)
+//{
+//	Sceneheaders header = Sceneheaders::eMODEL;
+//
+//	std::ofstream writer(path, std::ios::binary | std::ios::out);
+//	for (int i = 0; i < m_models.size(); i++)
+//	{
+//		ModelStruct ms;
+//		strcpy_s(ms.modelname, m_models[i]->GetName().c_str());
+//		ms.scale = m_models[i]->GetScale();
+//		ms.rotation = m_models[i]->GetRotation();
+//		ms.position = m_models[i]->GetPosition();
+//		strcpy_s(ms.mtrlname, m_models[i]->GetMaterial().GetFileName().c_str());
+//		writer.write((const char*)&header, 4);
+//		writer.write((const char*)&ms, sizeof(ModelStruct));
+//	}
+//	header = Sceneheaders::enull;
+//	writer.write((const char*)&header, 4);
+//	writer.close();
+//	return true;
+//}
 
 void RenderBox::Draw(ID3D11DeviceContext*& dc)
 {

@@ -8,7 +8,7 @@ class Dialogs
 {
 public:
 	static void SetOwnerHandle(HWND* h);
-	static std::string OpenFile(const char* filter, const char* subDir = "");
+	static std::string OpenFile(const char* filter, const char* subDir = "", int nroffilters = 1);
 	static std::string SaveFile(const char* filter, const char* subDir = "");
 private:
 	static HWND* m_ownerhandle;

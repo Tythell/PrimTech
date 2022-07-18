@@ -15,6 +15,7 @@ DX11Addon::DX11Addon(Window& window, Camera& camera) :
 
 	ResourceHandler::SetDevice(device);
 
+
 	InitShaders();
 	InitConstantBuffers();
 	InitScene();
@@ -46,13 +47,10 @@ DX11Addon::~DX11Addon()
 
 bool DX11Addon::initSwapChain()
 {
-
 	UINT flags = 0;
 #ifdef _DEBUG
 	flags = D3D11_CREATE_DEVICE_DEBUG;
 #endif // _DEBUG
-
-
 
 	DXGI_SWAP_CHAIN_DESC swapChainDesc;
 	ZeroMemory(&swapChainDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
@@ -108,18 +106,9 @@ bool DX11Addon::initRTV()
 
 bool DX11Addon::SetupDSAndVP()
 {
-	D3D11_TEXTURE2D_DESC depthStencilTextureDesc;
-	depthStencilTextureDesc.Width = m_width;
-	depthStencilTextureDesc.Height = m_height;
+	CD3D11_TEXTURE2D_DESC depthStencilTextureDesc(DXGI_FORMAT_D24_UNORM_S8_UINT, m_width, m_height);
 	depthStencilTextureDesc.MipLevels = 1;
-	depthStencilTextureDesc.ArraySize = 1;
-	depthStencilTextureDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	depthStencilTextureDesc.SampleDesc.Count = 1;
-	depthStencilTextureDesc.SampleDesc.Quality = 0;
-	depthStencilTextureDesc.Usage = D3D11_USAGE_DEFAULT;
 	depthStencilTextureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-	depthStencilTextureDesc.CPUAccessFlags = 0;
-	depthStencilTextureDesc.MiscFlags = 0;
 
 	HRESULT hr = device->CreateTexture2D(&depthStencilTextureDesc, NULL, &m_depthStencilBuffer);
 	COM_ERROR(hr, "Depth stencil failed");
@@ -230,29 +219,27 @@ bool DX11Addon::InitScene()
 
 	ResourceHandler::AddTexture("goalflag.png"); // setting missingtexture
 	ResourceHandler::AddTexture("ZANormal.png"); // Load LightWarp Texture
+	ImportScene("Scenes\\dsdsd.ptscene");
 	dc->PSSetShaderResources(2, 1, ResourceHandler::GetTexture(1).GetSRVAdress());
 
-	m_model.Init("scuffball.obj");
+	/*m_model.Init("scuffball.obj");
 	m_model.SetPosition(0.f, 0.f, 3.f);
 	m_model.SetMaterialBuffer(m_materialBuffer);
-	
+
 
 	m_plane.Init("scaledplane.obj");
 	m_plane.SetPosition(0.f, -1.f, 0.f);
 	m_plane.SetScale(10.f);
-	m_plane.SetMaterialBuffer(m_materialBuffer);
 	m_plane.GetMaterial().ImportMaterial("ground.pmtrl");
 
 	m_gunter.Init("gunter.obj");
 	m_gunter.SetPosition(-1.f, 2.f, -6.f);
 	m_gunter.SetRotation(0.f, d::XM_PI, 0.f);
-	m_gunter.SetMaterialBuffer(m_materialBuffer);
 	m_gunter.GetMaterial().ImportMaterial("gunter.pmtrl");
 
 	m_water.Init("plane.txt");
 	m_water.SetScale(4.f);
 	m_water.SetPosition(-4.f, 0.f, 0.f);
-	m_water.SetMaterialBuffer(m_materialBuffer);
 	m_water.GetMaterial().ImportMaterial("water.pmtrl");
 	m_water.GetMaterial().SetTransparency(.7f);
 
@@ -262,24 +249,24 @@ bool DX11Addon::InitScene()
 
 	m_playermodel.Init("dirCapsule.obj");
 	m_playermodel.SetScale(.1f);
-	m_playermodel.SetMaterialBuffer(m_materialBuffer);
 
 	m_cube.Init("kubfan3.obj");
 	m_cube.GetMaterial().ImportMaterial("materialtest.pmtrl");
-	m_cube.SetMaterialBuffer(m_materialBuffer);
 	m_cube.SetPosition(-2.f, 2.f, 2.f);
 
 	m_handmodel.Init("handmodel2.obj");
-	m_handmodel.SetScale(.1f);
-	m_handmodel.SetMaterialBuffer(m_materialBuffer);
+	m_handmodel.SetScale(.1f);*/
 
 	dc->VSSetConstantBuffers(0, 1, m_transformBuffer.GetReference());
-	AllModels::SetBuffers(dc, m_transformBuffer);
-	AllModels::SetNamesToVector(m_modelNames);
-
-	m_modelNamescStr = new const char* [m_modelNames.size()]{ "" };
-	for (int i = 0; i < m_modelNames.size(); i++)
+	//AllModels::SetBuffers(dc, m_transformBuffer, m_materialBuffer);
+	//AllModels::SetNamesToVector(m_modelNames);
+	m_modelNames.resize(m_models.size());
+	m_modelNamescStr = new const char* [m_models.size()]{ "" };
+	for (int i = 0; i < m_models.size(); i++)
 	{
+		m_models[i].SetMaterialBuffer(m_materialBuffer);
+		m_models[i].SetDCandBuffer(dc, m_transformBuffer);
+		m_modelNames[i] = m_models[i].GetName();
 		m_modelNamescStr[i] = m_modelNames[i].c_str();
 	}
 
@@ -311,10 +298,10 @@ void DX11Addon::UpdateScene(const float& deltatime)
 	m_lightbuffer.Data().camPos = { mp_cam->GetPosition().x, mp_cam->GetPosition().y, mp_cam->GetPosition().z, 1.f };
 	m_lightbuffer.UpdateCB();
 
-	m_playermodel.SetRotation(-mp_cam->GetRotation().x, mp_cam->GetRotation().y, -mp_cam->GetRotation().z);
-	m_playermodel.Rotate(0.f, d::XM_PI, 0.f);
-	m_playermodel.SetPosition(mp_cam->GetPosition() + sm::Vector3(0.f, -0.1f, 0.f));
-	m_model.Rotate(0.f, 2.f * deltatime, 0.f);
+	//m_playermodel.SetRotation(-mp_cam->GetRotation().x, mp_cam->GetRotation().y, -mp_cam->GetRotation().z);
+	//m_playermodel.Rotate(0.f, d::XM_PI, 0.f);
+	//m_playermodel.SetPosition(mp_cam->GetPosition() + sm::Vector3(0.f, -0.1f, 0.f));
+	//m_model.Rotate(0.f, 2.f * deltatime, 0.f);
 }
 
 void DX11Addon::ImGuiInit(HWND& hwnd)
@@ -392,7 +379,7 @@ void LoadButton(Material* pMaterial, std::string name, TextureType e)
 	std::string buttonName = "Load##" + name;
 	if (ImGui::Button(buttonName.c_str()))
 	{
-		std::string newMtrlString = Dialogs::OpenFile("Texture (*.png)\0*.png\0");
+		std::string newMtrlString = Dialogs::OpenFile("Texture (*.png)\0*.png\0 *.jpg\0", "Assets\\Textures\\", 2);
 		if (newMtrlString != "")
 		{
 			pMaterial->LoadTexture(newMtrlString, e);
@@ -417,6 +404,9 @@ void DX11Addon::ImGuiRender()
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
+
+	ImGuiMenu();
+
 	ImGui::Begin("Debug");
 
 	ImGui::Checkbox("Demo window", &im.showDemoWindow);
@@ -451,7 +441,7 @@ void DX11Addon::ImGuiRender()
 	camoffsetString += std::to_string(mp_cam->GetOffset().z);
 	ImGui::Text(camoffsetString.c_str());
 
-	m_bulb.SetPosition(im.pointLightPos[0], im.pointLightPos[1], im.pointLightPos[2]);
+	//m_bulb.SetPosition(im.pointLightPos[0], im.pointLightPos[1], im.pointLightPos[2]);
 
 	ImGui::Text(GetVectorAsString(mp_cam->GetRotation()).c_str());
 
@@ -472,7 +462,7 @@ void DX11Addon::ImGuiRender()
 		selectedEnt = -1;
 	if (selectedEnt != -1)
 	{
-		Model* pSelectedModel = AllModels::GetModel(selectedEnt);
+		Model* pSelectedModel = &m_models[selectedEnt];
 
 		ModelType mt = pSelectedModel->GetModelType();
 
@@ -568,7 +558,7 @@ void DX11Addon::ImGuiRender()
 			if (ImGui::Button("Export Material"))
 			{
 				std::string savePath = "";
-				savePath = Dialogs::SaveFile("Material (*.pmtrl)\0*.pmtrl\0");
+				savePath = Dialogs::SaveFile("Material (*.pmtrl)\0*.pmtrl\0", "Assets\\pmtrl\\");
 
 				if (savePath != "")
 				{
@@ -582,12 +572,12 @@ void DX11Addon::ImGuiRender()
 
 	}
 
-	for (int i = 0; i < AllModels::GetNrOfModels(); i++)
+	for (int i = 0; i < m_models.size(); i++)
 	{
-		AllModels::GetModel(i)->GetMaterial().SetSelection(false);
+		m_models[i].GetMaterial().SetSelection(false);
 	}
 	if (selectedEnt != -1)
-		AllModels::GetModel(selectedEnt)->GetMaterial().SetSelection(true);
+		m_models[selectedEnt].GetMaterial().SetSelection(true);
 
 	ImGui::End();
 
@@ -611,6 +601,99 @@ void DX11Addon::ExportImage(char* name)
 	//m_grid.SaveImage(name);
 }
 
+void DX11Addon::ImGuiMenu()
+{
+	if (ImGui::BeginMainMenuBar())
+	{
+		if (ImGui::BeginMenu("File"))
+		{
+			//if (ImGui::MenuItem("Open Scene...", NULL, false, true))
+			//{
+			//	std::string diapath = Dialogs::OpenFile("Scene (*.ptscene)\0*.ptscene\0)", "Scenes\\");
+			//	if (diapath != "")
+			//	{
+			//		// open scene
+			//	}
+			//}
+			if (ImGui::MenuItem("Save scene as..."))
+			{
+				std::string diapath = Dialogs::SaveFile("Scene (*.ptscene)\0*ptscene\0)", "Scenes\\");
+				if (diapath != "")
+				{
+					if (StringHelper::GetExtension(diapath) != "ptscene")
+						diapath += ".ptscene";
+					ExportScene(diapath);
+				}
+			}
+			ImGui::EndMenu();
+		}
+
+		ImGui::EndMainMenuBar();
+	}
+
+
+
+
+}
+
+//void HandleScenedataRecursive(Sceneheaders& header, std::vector<Model>& v, std::ifstream& reader)
+//{
+//	reader.read((char*)&header, 4);
+//	switch (header)
+//	{
+//	case Sceneheaders::eMODEL:
+//	{
+//		ModelStruct ms;
+//		reader.read((char*)&ms, sizeof(ModelStruct));
+//		Model model;
+//		model.Init(std::string(ms.modelname));
+//		model.SetPosition(ms.position);
+//		model.SetRotation(ms.rotation);
+//		model.SetScale(ms.position);
+//		if (std::string(ms.mtrlname) != "")
+//			model.GetMaterial().ImportMaterial(std::string(ms.mtrlname));
+//		v.emplace_back(model);
+//		HandleScenedataRecursive(header, v, reader);
+//		break;
+//	}
+//	default:
+//		break;
+//	}
+//
+//}
+
+void DX11Addon::ImportScene(std::string path)
+{
+	std::ifstream reader(path, std::ios::binary | std::ios::in);
+	if (!reader.is_open())
+		Popup::Error("Failed open scene");
+	Sceneheaders header = Sceneheaders::enull;
+
+	RecursiveRead(header, m_models, reader);
+	reader.close();
+}
+
+void DX11Addon::ExportScene(std::string path)
+{
+	Sceneheaders header = Sceneheaders::eMODEL;
+
+	std::ofstream writer(path, std::ios::binary | std::ios::out);
+	for (int i = 0; i < m_models.size(); i++)
+	{
+		ModelStruct ms;
+		strcpy_s(ms.modelname, m_models[i].GetName().c_str());
+		ms.scale = m_models[i].GetScale();
+		ms.rotation = m_models[i].GetRotation();
+		ms.position = m_models[i].GetPosition();
+		strcpy_s(ms.mtrlname, m_models[i].GetMaterial().GetFileName().c_str());
+		writer.write((const char*)&header, 4);
+		writer.write((const char*)&ms, sizeof(ModelStruct));
+	}
+	header = Sceneheaders::enull;
+	writer.write((const char*)&header, 4);
+	writer.close();
+}
+
 void DX11Addon::CalculateFps(const float& deltatime)
 {
 	static float fpsTimer = 0.f;
@@ -632,7 +715,7 @@ void DX11Addon::SetInputP(KeyboardHandler& kb)
 
 void DX11Addon::Render(const float& deltatime)
 {
-	static int modelAmount = AllModels::GetNrOfModels();
+	static int modelAmount = m_models.size();
 	float bgColor[] = { .1f,.1f,.1f,1.f };
 	dc->ClearRenderTargetView(m_rtv, bgColor);
 	dc->ClearDepthStencilView(m_dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
@@ -645,31 +728,31 @@ void DX11Addon::Render(const float& deltatime)
 	//dc->PSSetShader(m_3dps.GetShader(), NULL, 0);
 	dc->PSSetShader(m_toonPS.GetShader(), NULL, 0);
 
-	m_gunter.Draw();
-	m_model.Draw();
-	m_plane.Draw();
-	m_cube.Draw();
+	//m_gunter.Draw();
+	//m_model.Draw();
+	//m_plane.Draw();
+	//m_cube.Draw();
 
-	if (mp_cam->GetOffset().z != 0.f)
-		m_playermodel.Draw();
+	//if (mp_cam->GetOffset().z != 0.f)
+	//	m_playermodel.Draw();
 
 	for (int i = 0; i < modelAmount; i++)
 	{
-		AllModels::GetModel(i)->UpdateTextureScroll(deltatime);
+		m_models[i].UpdateTextureScroll(deltatime);
+		m_models[i].Draw();
 	}
-	//m_water.UpdateTextureScroll(deltatime);
-	m_water.Draw();
-	dc->PSSetShader(m_3dnoLightps.GetShader(), NULL, 0);
+	//m_water.Draw();
+	//dc->PSSetShader(m_3dnoLightps.GetShader(), NULL, 0);
 
-	if (mp_cam->GetOffset().z == 0.f && im.enableHandModel)
-	{
-		dc->ClearDepthStencilView(m_dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.f, 0);
-		m_handmodel.SetPosition(mp_cam->GetPosition());
-		m_handmodel.SetRotation(-mp_cam->GetRotation().x, mp_cam->GetRotation().y + d::XM_PI, -mp_cam->GetRotation().z);
-		m_handmodel.Draw();
-	}
+	//if (mp_cam->GetOffset().z == 0.f && im.enableHandModel)
+	//{
+	//	dc->ClearDepthStencilView(m_dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.f, 0);
+	//	m_handmodel.SetPosition(mp_cam->GetPosition());
+	//	m_handmodel.SetRotation(-mp_cam->GetRotation().x, mp_cam->GetRotation().y + d::XM_PI, -mp_cam->GetRotation().z);
+	//	m_handmodel.Draw();
+	//}
 	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
-	m_bulb.Draw();
+	//m_bulb.Draw();
 	UINT offset = 0;
 	UINT stride = sizeof(sm::Vector3);
 
@@ -705,4 +788,29 @@ ID3D11DeviceContext* DX11Addon::GetDeviceContext() const
 void DX11Addon::ShutDown()
 {
 	DestroyWindow(*m_pHWND);
+}
+
+void RecursiveRead(Sceneheaders& header, std::vector<Model>& v, std::ifstream& reader)
+{
+	reader.read((char*)&header, 4);
+	switch (header)
+	{
+	case Sceneheaders::eMODEL:
+	{
+		ModelStruct ms;
+		reader.read((char*)&ms, sizeof(ModelStruct));
+		Model model;
+		model.Init(std::string(ms.modelname));
+		model.SetPosition(ms.position);
+		model.SetRotation(ms.rotation);
+		model.SetScale(ms.scale);
+		if (std::string(ms.mtrlname) != "")
+			model.GetMaterial().ImportMaterial(std::string(ms.mtrlname));
+		v.emplace_back(model);
+		RecursiveRead(header, v, reader);
+		break;
+	}
+	default:
+		break;
+	}
 }

@@ -7,7 +7,7 @@ void Dialogs::SetOwnerHandle(HWND* h)
 	m_ownerhandle = h;
 }
 
-std::string Dialogs::OpenFile(const char* filter, const char* initDir)
+std::string Dialogs::OpenFile(const char* filter, const char* initDir, int nrofFilters)
 {
 	std::string initdir = std::string(initDir);
 	OPENFILENAMEA ofn;
@@ -18,7 +18,7 @@ std::string Dialogs::OpenFile(const char* filter, const char* initDir)
 	ofn.lpstrFile = szFile;
 	ofn.nMaxFile = sizeof(szFile);
 	ofn.lpstrFilter = filter;
-	ofn.nFilterIndex = 1;
+	ofn.nFilterIndex = nrofFilters;
 	ofn.lpstrInitialDir = initdir.c_str();
 	ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR | OFN_DONTADDTORECENT;
 	if (GetOpenFileNameA(&ofn))
