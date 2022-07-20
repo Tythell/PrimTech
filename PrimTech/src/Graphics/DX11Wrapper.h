@@ -5,7 +5,7 @@
 #include"Texture.h"
 #include"../Input/Mouse.h"
 #include"../Input/Keyboard.h"
-#include"Model.h"
+#include"ViewModel.h"
 #include<fstream>
 
 #include"3rdParty\imgui\imgui.h"
@@ -63,12 +63,14 @@ private:
 	bool InitShaders();
 	bool InitScene();
 	void InitConstantBuffers();
+
 	void ImGuiInit(HWND& hwnd);
 	void ImGuiGradientWindow();
 	void ImGuiRender();
 	void ImGuiShutDown();
 	void ExportImage(char* name);
 	void ImGuiMenu();
+	void ImGuiEntList();
 
 	void ImportScene(std::string path);
 	void ExportScene(std::string path);
@@ -121,15 +123,8 @@ private:
 	ImGuiVars im;
 	KeyboardHandler* mp_kb;
 
-	//Model m_playermodel;
-	//Model m_bulb;
-	//Model m_model;
-	//Model m_plane;
-	//Model m_gunter;
-	//Model m_handmodel;
-	//Model m_water;
-	//Model m_cube;
-
+	Model m_bulb;
+	ViewModel m_viewmdl;
 	std::vector<Model> m_models;
 	RenderBox m_renderbox;
 	std::vector<std::string> m_modelNames;

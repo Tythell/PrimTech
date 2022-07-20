@@ -44,6 +44,7 @@ void Material::ReadRecursion(eMaterialHeaders& header, std::ifstream& reader)
 		break;
 	case eMaterialHeaders::eDISTORTION:
 		reader.read(charBuffer, FILENAME_MAXSIZE);
+		reader.read((char*)&m_distortionOffsetSpeed, sizeof(sm::Vector2));
 		reader.read((char*)& m_distDivider, 4);
 		LoadDistortion(std::string(charBuffer));
 		break;
@@ -194,6 +195,7 @@ void Material::SetLeftHanded(bool b)
 
 bool Material::ExportMaterial(std::string path)
 {
+	m_name = StringHelper::GetName(path);
 	std::ofstream writer(path, std::ios::binary);
 	eMaterialHeaders header;
 	if (!writer.is_open())
@@ -217,6 +219,7 @@ bool Material::ExportMaterial(std::string path)
 		header = eMaterialHeaders::eDISTORTION;
 		writer.write((const char*)&header, 4);
 		writer.write((const char*)mp_textures[eDistortion]->GetName().c_str(), FILENAME_MAXSIZE);
+		writer.write((const char*)&m_distortionOffsetSpeed, sizeof(sm::Vector2));
 		writer.write((const char*)&m_distDivider, 4);
 	}
 	if (m_textureScale != 1.f)

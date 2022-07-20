@@ -243,10 +243,6 @@ bool DX11Addon::InitScene()
 	m_water.GetMaterial().ImportMaterial("water.pmtrl");
 	m_water.GetMaterial().SetTransparency(.7f);
 
-	m_bulb.Init("bulb.obj", ModelType::eDEBUG);
-	m_bulb.SetMaterialBuffer(m_materialBuffer);
-	m_bulb.SetScale(1.2f);
-
 	m_playermodel.Init("dirCapsule.obj");
 	m_playermodel.SetScale(.1f);
 
@@ -257,10 +253,20 @@ bool DX11Addon::InitScene()
 	m_handmodel.Init("handmodel2.obj");
 	m_handmodel.SetScale(.1f);*/
 
+	m_bulb.Init("bulb.obj", ModelType::eDEBUG);
+	m_bulb.SetMaterialBuffer(m_materialBuffer);
+	m_bulb.SetScale(1.2f);
+
+	m_viewmdl.Init("handmodel2.obj", mp_cam);
+	m_viewmdl.m_model.SetDCandBuffer(dc, m_transformBuffer);
+	m_viewmdl.m_model.SetMaterialBuffer(m_materialBuffer);
+	m_bulb.SetDCandBuffer(dc, m_transformBuffer);
+	m_bulb.SetMaterialBuffer(m_materialBuffer);
+
 	dc->VSSetConstantBuffers(0, 1, m_transformBuffer.GetReference());
-	//AllModels::SetBuffers(dc, m_transformBuffer, m_materialBuffer);
-	//AllModels::SetNamesToVector(m_modelNames);
+
 	m_modelNames.resize(m_models.size());
+
 	m_modelNamescStr = new const char* [m_models.size()]{ "" };
 	for (int i = 0; i < m_models.size(); i++)
 	{
@@ -379,7 +385,7 @@ void LoadButton(Material* pMaterial, std::string name, TextureType e)
 	std::string buttonName = "Load##" + name;
 	if (ImGui::Button(buttonName.c_str()))
 	{
-		std::string newMtrlString = Dialogs::OpenFile("Texture (*.png)\0*.png\0 *.jpg\0", "Assets\\Textures\\", 2);
+		std::string newMtrlString = Dialogs::OpenFile("Texture (*.png)\0*.png;*.jpg\0", "Assets\\Textures\\", 2);
 		if (newMtrlString != "")
 		{
 			pMaterial->LoadTexture(newMtrlString, e);
@@ -441,25 +447,30 @@ void DX11Addon::ImGuiRender()
 	camoffsetString += std::to_string(mp_cam->GetOffset().z);
 	ImGui::Text(camoffsetString.c_str());
 
-	//m_bulb.SetPosition(im.pointLightPos[0], im.pointLightPos[1], im.pointLightPos[2]);
+	m_bulb.SetPosition(im.pointLightPos[0], im.pointLightPos[1], im.pointLightPos[2]);
 
 	ImGui::Text(GetVectorAsString(mp_cam->GetRotation()).c_str());
 
 	ImGui::End();
 
 	//ImGuiGradientWindow();
-
+	ImGuiEntList();
 
 
 	if (im.showDemoWindow)
 		ImGui::ShowDemoWindow();
-	ImGui::Begin("Model list");
+	/*ImGui::Begin("Model list");
 	static int selectedEnt = -1;
 	ImGui::ListBox("##entitylist", &selectedEnt, m_modelNamescStr, m_modelNames.size(), 9);
 
 	ImGui::SameLine();
 	if (ImGui::Button("Deselect"))
 		selectedEnt = -1;
+	ImGui::SameLine();
+	if (ImGui::Button("pop back"))
+	{
+		m_models.erase(m_models.begin() + 1);
+	}
 	if (selectedEnt != -1)
 	{
 		Model* pSelectedModel = &m_models[selectedEnt];
@@ -579,7 +590,7 @@ void DX11Addon::ImGuiRender()
 	if (selectedEnt != -1)
 		m_models[selectedEnt].GetMaterial().SetSelection(true);
 
-	ImGui::End();
+	ImGui::End();*/
 
 
 	ImGui::Render();
@@ -636,31 +647,138 @@ void DX11Addon::ImGuiMenu()
 
 }
 
-//void HandleScenedataRecursive(Sceneheaders& header, std::vector<Model>& v, std::ifstream& reader)
-//{
-//	reader.read((char*)&header, 4);
-//	switch (header)
-//	{
-//	case Sceneheaders::eMODEL:
-//	{
-//		ModelStruct ms;
-//		reader.read((char*)&ms, sizeof(ModelStruct));
-//		Model model;
-//		model.Init(std::string(ms.modelname));
-//		model.SetPosition(ms.position);
-//		model.SetRotation(ms.rotation);
-//		model.SetScale(ms.position);
-//		if (std::string(ms.mtrlname) != "")
-//			model.GetMaterial().ImportMaterial(std::string(ms.mtrlname));
-//		v.emplace_back(model);
-//		HandleScenedataRecursive(header, v, reader);
-//		break;
-//	}
-//	default:
-//		break;
-//	}
-//
-//}
+void DX11Addon::ImGuiEntList()
+{
+	ImGui::SetNextWindowSize(ImVec2(500, 440)/*, ImGuiCond_FirstUseEver*/);
+	if (ImGui::Begin("Model List##2", (bool*)false/*, /*ImGuiWindowFlags_MenuBar*/))
+	{
+		static int selected = -1;
+		{
+			ImGui::BeginChild("Lefty", ImVec2(150, 0), true);
+			for (int i = 0; i < m_models.size(); i++)
+			{
+				if (ImGui::Selectable(m_models[i].GetName().c_str(), selected == i))
+					selected = i;
+			}
+			ImGui::EndChild();
+		}
+		ImGui::SameLine();
+		if(selected != -1)
+		{
+			Model* pSelectedModel = &m_models[selected];
+			Material* pMaterial = &pSelectedModel->GetMaterial();
+
+			ImGui::BeginGroup();
+			ImGui::Text(m_models[selected].GetName().c_str());
+			ImGui::Separator();
+			if (ImGui::CollapsingHeader("Transformations", ImGuiTreeNodeFlags_DefaultOpen))
+			{
+				sm::Vector3 pos = pSelectedModel->GetPosition();
+				float position[3] = { pos.x, pos.y, pos.z };
+				ImGui::PushItemWidth(m_width * .105f);
+				ImGui::DragFloat3("Position", position, .02f);
+				ImGui::SameLine();
+				if (ImGui::Button("Reset##Position")) for (int i = 0; i < 3; i++)
+					position[i] = 0.f;
+				pSelectedModel->SetPosition(position[0], position[1], position[2]);
+
+				sm::Vector3 rot = pSelectedModel->GetRotation();
+				float rotation[3] = { rot.x, rot.y, rot.z };
+				ImGui::DragFloat3("Rotation", rotation, .02f);
+
+				ImGui::SameLine();
+				if (ImGui::Button("Reset##Rotation"))
+					for (int i = 0; i < 3; i++)
+						rotation[i] = 0.f;
+				pSelectedModel->SetRotation(rotation[0], rotation[1], rotation[2]);
+
+				sm::Vector3 scale = pSelectedModel->GetScale();
+				float scalef[3] = { scale.x, scale.y, scale.z };
+
+				ImGui::DragFloat3("Scale   ", scalef, .02f);
+
+
+				ImGui::SameLine();
+				if (ImGui::Button("Reset##Scale"))
+					for (int i = 0; i < 3; i++)
+						scalef[i] = 1.f;
+
+				ImGui::SameLine();
+				if (ImGui::Button("X"))
+				{
+					scalef[1] = scalef[0];
+					scalef[2] = scalef[0];
+				}
+				pSelectedModel->SetScale(scalef[0], scalef[1], scalef[2]);
+			}
+			if (ImGui::CollapsingHeader("Material", ImGuiTreeNodeFlags_DefaultOpen))
+			{
+				LoadButton(pMaterial, "Diffuse: ", eDiffuse);
+				LoadButton(pMaterial, "NormalMap: ", eNormal);
+				LoadButton(pMaterial, "DistMap: ", eDistortion);
+
+				sm::Vector2 diffuseSpeed(pMaterial->GetDiffuseScrollSpeed());
+				sm::Vector2 distortionSpeed(pMaterial->GetDistortionScrollSpeed());
+				bool hasDistMap = pMaterial->HasTexture(eDistortion);
+
+				float diffSpeed[2]{ diffuseSpeed.x, diffuseSpeed.y };
+				float distSpeed[2]{ distortionSpeed.x, distortionSpeed.y };
+
+				ImGui::PushItemWidth(m_width * 0.14f);
+
+				ImGui::SliderFloat2("Diffuse Scroll", diffSpeed, -.5f, .5f);
+				if (hasDistMap)
+					ImGui::SliderFloat2("Distortion Scroll", distSpeed, -.5f, .5f);
+				if (ImGui::Button("Reset Scrollspeed"))
+				{
+					for (int i = 0; i < 2; i++)
+					{
+						diffSpeed[i] = 0.f;
+						distSpeed[i] = 0.f;
+					}
+				}
+				ImGui::SameLine();
+				if (ImGui::Button("Reset scrollvalues"))
+					pMaterial->ResetScrollValue();
+
+				pMaterial->SetDiffuseScrollSpeed(diffSpeed[0], diffSpeed[1]);
+				pMaterial->SetDistortionScrollSpeed(distSpeed[0], distSpeed[1]);
+
+				if (hasDistMap)
+				{
+					int distDivider = pMaterial->GetDistortionDivider();
+					ImGui::SliderInt("Dist divider", &distDivider, 1, 20);
+					pMaterial->SetDistortionDivider(distDivider);
+				}
+
+				float transparancy = pMaterial->GetTransparancy();
+				ImGui::SliderFloat("Transparancy", &transparancy, 0.f, 1.f);
+				pMaterial->SetTransparency(transparancy);
+
+				float tiling = pMaterial->GetTextureScale();
+				ImGui::SliderFloat("Tiling", &tiling, 1.f, 10.f);
+				pMaterial->SetTextureScale(tiling);
+
+				if (ImGui::Button("Export Material"))
+				{
+					std::string savePath = "";
+					savePath = Dialogs::SaveFile("Material (*.pmtrl)\0*.pmtrl\0", "Assets\\pmtrl\\");
+
+					if (savePath != "")
+					{
+						std::string test = StringHelper::GetExtension(savePath);
+						if (test != "pmtrl")
+							savePath += ".pmtrl";
+						pMaterial->ExportMaterial(savePath);
+					}
+				}
+			}
+			ImGui::EndGroup();
+		}
+
+	}
+	ImGui::End();
+}
 
 void DX11Addon::ImportScene(std::string path)
 {
@@ -715,7 +833,7 @@ void DX11Addon::SetInputP(KeyboardHandler& kb)
 
 void DX11Addon::Render(const float& deltatime)
 {
-	static int modelAmount = m_models.size();
+	int modelAmount = m_models.size();
 	float bgColor[] = { .1f,.1f,.1f,1.f };
 	dc->ClearRenderTargetView(m_rtv, bgColor);
 	dc->ClearDepthStencilView(m_dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
@@ -723,7 +841,6 @@ void DX11Addon::Render(const float& deltatime)
 	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	dc->IASetInputLayout(m_3dvs.GetInputLayout());
 	dc->VSSetShader(m_3dvs.GetShader(), NULL, 0);
-
 
 	//dc->PSSetShader(m_3dps.GetShader(), NULL, 0);
 	dc->PSSetShader(m_toonPS.GetShader(), NULL, 0);
@@ -742,28 +859,23 @@ void DX11Addon::Render(const float& deltatime)
 		m_models[i].Draw();
 	}
 	//m_water.Draw();
-	//dc->PSSetShader(m_3dnoLightps.GetShader(), NULL, 0);
+	dc->PSSetShader(m_3dnoLightps.GetShader(), NULL, 0);
 
-	//if (mp_cam->GetOffset().z == 0.f && im.enableHandModel)
-	//{
-	//	dc->ClearDepthStencilView(m_dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.f, 0);
-	//	m_handmodel.SetPosition(mp_cam->GetPosition());
-	//	m_handmodel.SetRotation(-mp_cam->GetRotation().x, mp_cam->GetRotation().y + d::XM_PI, -mp_cam->GetRotation().z);
-	//	m_handmodel.Draw();
-	//}
+	if (mp_cam->GetOffset().z == 0.f && im.enableHandModel)
+	{
+		dc->ClearDepthStencilView(m_dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.f, 0);
+		m_viewmdl.Draw();
+	}
 	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
-	//m_bulb.Draw();
-	UINT offset = 0;
-	UINT stride = sizeof(sm::Vector3);
+	m_bulb.Draw();
 
-	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
-	dc->IASetInputLayout(m_lineVS.GetInputLayout());
-	dc->IASetVertexBuffers(0, 1, m_renderbox.GetVBuffer().GetReference(), &stride, &offset);
 	dc->VSSetShader(m_lineVS.GetShader(), NULL, 0);
 	dc->PSSetShader(m_linePS.GetShader(), NULL, 0);
 	m_transformBuffer.Data().world = d::XMMatrixTranspose(d::XMMatrixTranslation(0.f, 1.f, 0.f));
 	m_transformBuffer.UpdateCB();
+	dc->IASetInputLayout(m_lineVS.GetInputLayout());
 	m_renderbox.Draw(dc);
+
 
 	//m_transformBuffer.Data().world = d::XMMatrixTranspose(d::XMMatrixTranslation(0.f, 0.f, 1.f));
 	//m_transformBuffer.UpdateCB();

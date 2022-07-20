@@ -305,6 +305,10 @@ int Mesh::GetNrOfUses() const
 void RenderBox::Draw(ID3D11DeviceContext*& dc)
 {
 	UINT offset = 0;
+	UINT stride = sizeof(sm::Vector3);
+
+	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+	
 
 	dc->IASetVertexBuffers(0, 1, m_vbuffer.GetReference(), m_vbuffer.GetStrideP(), &offset);
 	dc->IASetIndexBuffer(m_ibuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
