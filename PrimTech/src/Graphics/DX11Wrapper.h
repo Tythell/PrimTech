@@ -75,6 +75,7 @@ private:
 
 	void ImportScene(std::string path);
 	void ExportScene(std::string path);
+	void NewScene();
 
 	Window* m_pWin = nullptr;
 

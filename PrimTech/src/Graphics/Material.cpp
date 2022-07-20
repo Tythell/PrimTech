@@ -8,24 +8,11 @@ void Material::SetPointers(Buffer<hlsl::cbpMaterialBuffer>* cbMaterialBuffer)
 
 void Material::LoadTexture(std::string textureName, TextureType type)
 {
-	switch (type)
-	{
-	case eDiffuse:
-		LoadDiffuse(textureName);
-		break;
-	case eDistortion:
-		LoadDistortion(textureName);
-		break;
-	case eNormal:
-		LoadNormalMap(textureName);
-		break;
-	default:
-	{
-		std::string s = "Texture type " + std::to_string(type) + " does not exist";
-		Popup::Error(s);
-		break;
-	}
-	}
+	int textureIndex = ResourceHandler::CheckTextureNameExists(StringHelper::GetName(textureName));
+	if (textureIndex != -1)
+		mp_textures[type] = ResourceHandler::GetTextureAdress(textureIndex);
+	else
+		mp_textures[type] = ResourceHandler::AddTexture(textureName);
 }
 
 void Material::ReadRecursion(eMaterialHeaders& header, std::ifstream& reader)
@@ -35,21 +22,25 @@ void Material::ReadRecursion(eMaterialHeaders& header, std::ifstream& reader)
 	{
 	case eMaterialHeaders::eDIFFUSE:
 		reader.read(charBuffer, FILENAME_MAXSIZE);
-		LoadDiffuse(std::string(charBuffer));
+		LoadTexture(std::string(charBuffer), eDiffuse);
 		reader.read((char*)&m_diffuseOffsetSpeed, sizeof(sm::Vector2));
+		reader.read((char*)&m_transparency, 4);
 		break;
 	case eMaterialHeaders::eNORMAL:
 		reader.read(charBuffer, FILENAME_MAXSIZE);
-		LoadNormalMap(std::string(charBuffer));
+		LoadTexture(std::string(charBuffer), eNormal);
 		break;
 	case eMaterialHeaders::eDISTORTION:
 		reader.read(charBuffer, FILENAME_MAXSIZE);
 		reader.read((char*)&m_distortionOffsetSpeed, sizeof(sm::Vector2));
-		reader.read((char*)& m_distDivider, 4);
-		LoadDistortion(std::string(charBuffer));
+		reader.read((char*)&m_distDivider, 4);
+		if(std::string(charBuffer) != "")
+			LoadTexture(std::string(charBuffer), eDistortion);
 		break;
-	//case eMaterialHeaders::eOPACITY:
-	//	break;
+	case eMaterialHeaders::eOPACITY:
+		reader.read(charBuffer, FILENAME_MAXSIZE);
+		reader.read((char*)&m_transparency, 4);
+		break;
 	case eMaterialHeaders::eTILING:
 		reader.read((char*)&m_textureScale, 4);
 		break;
@@ -58,33 +49,6 @@ void Material::ReadRecursion(eMaterialHeaders& header, std::ifstream& reader)
 	}
 	reader.read((char*)&header, 4);
 	ReadRecursion(header, reader);
-}
-
-void Material::LoadDiffuse(std::string path)
-{
-	int textureIndex = ResourceHandler::CheckTextureNameExists(StringHelper::GetName(path));
-	if (textureIndex != -1)
-		mp_textures[eDiffuse] = ResourceHandler::GetTextureAdress(textureIndex);
-	else
-		mp_textures[eDiffuse] = ResourceHandler::AddTexture(path);
-}
-
-void Material::LoadDistortion(std::string path)
-{
-	int textureIndex = ResourceHandler::CheckTextureNameExists(StringHelper::GetName(path));
-	if (textureIndex != -1)
-		mp_textures[eDistortion] = ResourceHandler::GetTextureAdress(textureIndex);
-	else
-		mp_textures[eDistortion] = ResourceHandler::AddTexture(path);
-}
-
-void Material::LoadNormalMap(std::string path)
-{
-	int textureIndex = ResourceHandler::CheckTextureNameExists(StringHelper::GetName(path));
-	if (textureIndex != -1)
-		mp_textures[eNormal] = ResourceHandler::GetTextureAdress(textureIndex);
-	else
-		mp_textures[eNormal] = ResourceHandler::AddTexture(path);
 }
 
 void Material::UpdateTextureScroll(const float& deltatime)
@@ -121,24 +85,31 @@ void Material::SetDistortionScrollSpeed(float x, float y)
 void Material::Set(ID3D11DeviceContext*& dc)
 {
 	if (mp_textures[eDiffuse])
-		dc->PSSetShaderResources(0, 1, mp_textures[eDiffuse]->GetSRVAdress());
+		dc->PSSetShaderResources(1, 1, mp_textures[eDiffuse]->GetSRVAdress());
 	else // If Model has no diffuse it will default to first texture in vector
-		dc->PSSetShaderResources(0, 1, ResourceHandler::GetTextureAdress(0)->GetSRVAdress());
+		dc->PSSetShaderResources(1, 1, ResourceHandler::GetTextureAdress(0)->GetSRVAdress());
+
+	for (int i = 1; i < eTextureTypeAMOUNT; i++)
+	{
+		HasTexture(TextureType(i));
+		if ((mp_textures[i] != nullptr))
+			dc->PSSetShaderResources(1 + i, 1, mp_textures[i]->GetSRVAdress());
+	}
 
 	bool hasDistortion = (mp_textures[eDistortion] != nullptr);
 	bool hasNormalMap = (mp_textures[eNormal] != nullptr);
+	bool hasOpacityMap = (mp_textures[eOpacity] != nullptr);
 
-	if(hasDistortion)
-		dc->PSSetShaderResources(1, 1, mp_textures[eDistortion]->GetSRVAdress());
-	if(hasNormalMap)
-		dc->PSSetShaderResources(3, 1, mp_textures[eNormal]->GetSRVAdress());
-		
-	dc->PSSetConstantBuffers(1, 1, mp_matBuffer->GetReference());
+	mp_matBuffer->Data().textureScaleDist = m_textureScaleDist;
+	mp_matBuffer->Data().hasDistortion = int(hasDistortion);
+	mp_matBuffer->Data().hasNormal = int(hasNormalMap);
+	mp_matBuffer->Data().hasOpacityMap = int(hasOpacityMap);
+
+	//dc->PSSetConstantBuffers(1, 1, mp_matBuffer->GetReference());
 	mp_matBuffer->Data().texCoordOffset = m_diffuseOffsetValue;
 	mp_matBuffer->Data().LH = (int)m_lefthanded;
 	mp_matBuffer->Data().texCoordoffsetDist = m_distortionValue;
-	mp_matBuffer->Data().hasDistortion = int(hasDistortion);
-	mp_matBuffer->Data().hasNormal = int(hasNormalMap);
+
 	mp_matBuffer->Data().distDiv = m_distDivider;
 	mp_matBuffer->Data().transparency = m_transparency;
 	mp_matBuffer->Data().textureScale = m_textureScale;
@@ -155,6 +126,11 @@ void Material::SetTransparency(float f)
 void Material::SetTextureScale(float f)
 {
 	m_textureScale = f;
+}
+
+void Material::SetTextureScaleDist(float f)
+{
+	m_textureScaleDist = f;
 }
 
 void Material::SetSelection(bool b)
@@ -207,6 +183,7 @@ bool Material::ExportMaterial(std::string path)
 		writer.write((const char*)&header, 4);
 		writer.write((const char*)mp_textures[eDiffuse]->GetName().c_str(), FILENAME_MAXSIZE);
 		writer.write((const char*)&m_diffuseOffsetSpeed, sizeof(sm::Vector2));
+		writer.write((const char*)&m_transparency, 4);
 	}
 	if (mp_textures[eNormal] != nullptr)
 	{
@@ -221,6 +198,13 @@ bool Material::ExportMaterial(std::string path)
 		writer.write((const char*)mp_textures[eDistortion]->GetName().c_str(), FILENAME_MAXSIZE);
 		writer.write((const char*)&m_distortionOffsetSpeed, sizeof(sm::Vector2));
 		writer.write((const char*)&m_distDivider, 4);
+	}
+	if (mp_textures[eOpacity])
+	{
+		header = eMaterialHeaders::eOPACITY;
+		writer.write((const char*)&header, 4);
+		writer.write((const char*)mp_textures[eOpacity]->GetName().c_str(), FILENAME_MAXSIZE);
+		writer.write((const char*)&m_transparency, 4);
 	}
 	if (m_textureScale != 1.f)
 	{
@@ -283,6 +267,11 @@ sm::Vector2 Material::GetDistortionScrollSpeed() const
 float Material::GetTextureScale() const
 {
 	return m_textureScale;
+}
+
+float Material::GetTextureScaleDist() const
+{
+	return m_textureScaleDist;
 }
 
 bool Material::HasTexture(const TextureType e) const

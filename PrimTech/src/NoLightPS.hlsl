@@ -1,4 +1,4 @@
-Texture2D diffuseMap : DIFFUSEMAP : register(t0);
+Texture2D diffuseMap : DIFFUSEMAP : register(t1);
 SamplerState samplerState : SAMPLER : register(s0);
 
 cbuffer LightBuffer : register(b0)

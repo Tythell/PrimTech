@@ -8,7 +8,7 @@
 
 enum TextureType
 {
-	eDiffuse, eDistortion, eNormal, eTextureTypeAMOUNT
+	eDiffuse, eDistortion, eNormal, eOpacity, eTextureTypeAMOUNT
 };
 
 enum class eMaterialHeaders
@@ -41,6 +41,7 @@ public:
 	void Set(ID3D11DeviceContext*& dc);
 	void SetTransparency(float f);
 	void SetTextureScale(float f);
+	void SetTextureScaleDist(float f);
 	void SetSelection(bool b);
 	void SetRimColor(sm::Vector3 rgb);
 	void ResetScrollValue();
@@ -57,6 +58,7 @@ public:
 	sm::Vector2 GetDiffuseScrollSpeed() const;
 	sm::Vector2 GetDistortionScrollSpeed() const;
 	float GetTextureScale() const;
+	float GetTextureScaleDist() const;
 
 	bool HasTexture(const TextureType e) const;
 private:
@@ -65,14 +67,12 @@ private:
 	//std::string GetNormalMapName() const;
 
 	void ReadRecursion(eMaterialHeaders& header, std::ifstream& reader);
-	void LoadDiffuse(std::string path);
-	void LoadDistortion(std::string path);
-	void LoadNormalMap(std::string path);
+	//void LoadDiffuse(std::string path);
+	//void LoadDistortion(std::string path);
+	//void LoadNormalMap(std::string path);
 	TextureMap* mp_textures[eTextureTypeAMOUNT] = { nullptr };
-	//TextureMap* mp_diffuse = nullptr;
-	//TextureMap* mp_distortion = nullptr;
-	//TextureMap* mp_normalMap = nullptr;
 	float m_textureScale = 1.f;
+	float m_textureScaleDist = 1.f;
 	bool m_selection = false;
 	sm::Vector3 m_rimColor = GOLD_3F;
 	float m_distDivider = 1.f;

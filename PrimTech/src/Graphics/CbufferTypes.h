@@ -46,16 +46,17 @@ namespace hlsl
 
 	struct cbpMaterialBuffer
 	{
-		int hasDistortion = 0;
+		int hasDistortion;
 		float2 texCoordOffset;
-		float transparency = 1.f;
+		float transparency;
 		float2 texCoordoffsetDist;
-		int distDiv = 2;
+		int distDiv;
 		float textureScale;
 		float3 rimColor;
 		int rim;
 		int hasNormal;
 		int LH;
-		int2 pad;
+		int hasOpacityMap;
+		float textureScaleDist;
 	};
 }

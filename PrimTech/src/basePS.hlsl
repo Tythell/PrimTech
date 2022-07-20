@@ -1,5 +1,7 @@
 Texture2D diffuseMap : DIFFUSEMAP : register(t0);
 Texture2D distortionMap : DISTORTIONMAP : register(t1);
+Texture2D normalMap : NORMALMAP : register(t2);
+Texture2D opacityMap : OPACITYMAP : register(t3);
 SamplerState samplerState : SAMPLER : register(s0);
 
 cbuffer LightBuffer : register(b0)

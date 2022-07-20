@@ -218,13 +218,15 @@ bool DX11Addon::InitScene()
 
 	ResourceHandler::AddTexture("goalflag.png"); // setting missingtexture
 	ResourceHandler::AddTexture("ZANormal.png"); // Load LightWarp Texture
-	ImportScene("Scenes\\dsdsd.ptscene");
-	dc->PSSetShaderResources(2, 1, ResourceHandler::GetTexture(1).GetSRVAdress());
+	//ImportScene("Scenes\\newscene.ptscene");
+	dc->PSSetShaderResources(0, 1, ResourceHandler::GetTexture(1).GetSRVAdress());
 
 
 
 	//m_playermodel.Init("dirCapsule.obj");
 	//m_playermodel.SetScale(.1f);
+
+	NewScene();
 
 	m_bulb.Init("bulb.obj", ModelType::eDEBUG);
 	m_bulb.SetMaterialBuffer(m_materialBuffer);
@@ -395,7 +397,7 @@ void DX11Addon::ImguiDebug()
 		ImGui::DragFloat3("PointLightColor", im.pointLightColor, 0.01f, 0.f, 1.f);
 		ImGui::SliderFloat("PointLight Strength", &im.pointLightStr, 0.f, 3.f);
 		ImGui::SliderFloat("Specular power", &im.specPow, 1.f, 1000.f);
-		ImGui::SliderFloat("Distance", &im.pointLightDistance, 0.f, 10.f);
+		ImGui::SliderFloat("Distance", &im.pointLightDistance, 0.f, 100.f);
 		m_lightbuffer.Data().pointLightDistance = im.pointLightDistance;
 		m_lightbuffer.Data().specularInstensity = im.specPow;
 
@@ -458,6 +460,18 @@ void DX11Addon::ImGuiMenu()
 	{
 		if (ImGui::BeginMenu("File"))
 		{
+			if (ImGui::MenuItem("New Scene", NULL, false, true))
+			{
+				m_models.clear();
+				ResourceHandler::ResetUses();
+				NewScene();
+				//for (int i = 0; i < m_models.size(); i++)
+				//{
+				//	m_models[i].SetDCandBuffer(dc, m_transformBuffer);
+				//	m_models[i].SetMaterialBuffer(m_materialBuffer);
+				//}
+
+			}
 			if (ImGui::MenuItem("Open Scene...", NULL, false, true))
 			{
 				std::string diapath = Dialogs::OpenFile("Scene (*.ptscene)\0*.ptscene\0)", "Scenes\\");
@@ -471,7 +485,6 @@ void DX11Addon::ImGuiMenu()
 						m_models[i].SetDCandBuffer(dc, m_transformBuffer);
 						m_models[i].SetMaterialBuffer(m_materialBuffer);
 					}
-					// open scene
 				}
 			}
 			if (ImGui::MenuItem("Save scene as..."))
@@ -489,18 +502,18 @@ void DX11Addon::ImGuiMenu()
 
 		ImGui::EndMainMenuBar();
 	}
-
-
-
-
 }
 
 void DX11Addon::ImGuiEntList()
 {
-	ImGui::SetNextWindowSize(ImVec2(500, 440)/*, ImGuiCond_FirstUseEver*/);
+	ImGui::SetNextWindowSize(ImVec2(500, 400), ImGuiCond_FirstUseEver);
 	if (ImGui::Begin("Model List##2", (bool*)false/*, /*ImGuiWindowFlags_MenuBar*/))
 	{
 		static int selected = -1;
+		if (m_models.size() == 1)
+		{
+			selected = -1;
+		}
 		if (ImGui::Button(" + ##AddModel"))
 		{
 			std::string path = Dialogs::OpenFile("Model (*.obj)\0*.obj;*.txt\0", "Assets\\models\\");
@@ -512,19 +525,23 @@ void DX11Addon::ImGuiEntList()
 				newModel.SetDCandBuffer(dc, m_transformBuffer);
 				newModel.SetMaterialBuffer(m_materialBuffer);
 				m_models.emplace_back(newModel);
+				selected = m_models.size() - 1;
 			}
 		}
-		//{
-			ImGui::BeginChild("Lefty", ImVec2(150, 350), true);
-			for (int i = 0; i < m_models.size(); i++)
-			{
-				if (ImGui::Selectable(m_models[i].GetName().c_str(), selected == i))
-					selected = i;
-			}
-			ImGui::EndChild();
-		//}
 		ImGui::SameLine();
-		if(selected != -1)
+		if (ImGui::Button("Deselect"))
+			selected = -1;
+		
+		ImGui::BeginChild("Lefty", ImVec2(150, 350), true);
+		for (int i = 0; i < m_models.size(); i++)
+		{
+			if (ImGui::Selectable(m_models[i].GetName().c_str(), selected == i))
+				selected = i;
+		}
+		ImGui::EndChild();
+		
+		ImGui::SameLine();
+		if (selected != -1)
 		{
 			Model* pSelectedModel = &m_models[selected];
 			Material* pMaterial = &pSelectedModel->GetMaterial();
@@ -577,6 +594,7 @@ void DX11Addon::ImGuiEntList()
 				LoadButton(pMaterial, "Diffuse: ", eDiffuse);
 				LoadButton(pMaterial, "NormalMap: ", eNormal);
 				LoadButton(pMaterial, "DistMap: ", eDistortion);
+				LoadButton(pMaterial, "OpacityMap: ", eOpacity);
 
 				sm::Vector2 diffuseSpeed(pMaterial->GetDiffuseScrollSpeed());
 				sm::Vector2 distortionSpeed(pMaterial->GetDistortionScrollSpeed());
@@ -610,6 +628,9 @@ void DX11Addon::ImGuiEntList()
 					int distDivider = pMaterial->GetDistortionDivider();
 					ImGui::SliderInt("Dist divider", &distDivider, 1, 20);
 					pMaterial->SetDistortionDivider(distDivider);
+					float distScale = pMaterial->GetTextureScaleDist();
+					ImGui::SliderFloat("Distortion scale", &distScale, 1.f, 10.f);
+					pMaterial->SetTextureScaleDist(distScale);
 				}
 
 				float transparancy = pMaterial->GetTransparancy();
@@ -620,6 +641,20 @@ void DX11Addon::ImGuiEntList()
 				ImGui::SliderFloat("Tiling", &tiling, 1.f, 10.f);
 				pMaterial->SetTextureScale(tiling);
 
+				if (ImGui::Button("Import Material"))
+				{
+					std::string savePath = "";
+					savePath = Dialogs::OpenFile("Material (*.pmtrl)\0*.pmtrl\0", "Assets\\pmtrl\\");
+
+					if (savePath != "")
+					{
+						std::string test = StringHelper::GetExtension(savePath);
+						if (test != "pmtrl")
+							savePath += ".pmtrl";
+						pMaterial->ImportMaterial(StringHelper::GetName(savePath));
+					}
+				}
+				ImGui::SameLine();
 				if (ImGui::Button("Export Material"))
 				{
 					std::string savePath = "";
@@ -633,6 +668,7 @@ void DX11Addon::ImGuiEntList()
 						pMaterial->ExportMaterial(savePath);
 					}
 				}
+
 			}
 			ImGui::EndGroup();
 			if (mp_kb->IsKeyDown(Key::DELETEKEY))
@@ -683,6 +719,17 @@ void DX11Addon::ExportScene(std::string path)
 	header = Sceneheaders::enull;
 	writer.write((const char*)&header, 4);
 	writer.close();
+}
+
+void DX11Addon::NewScene()
+{
+  	Model groundPlane;
+	groundPlane.Init("scaledplane.obj");
+	groundPlane.SetDCandBuffer(dc, m_transformBuffer);
+	groundPlane.SetMaterialBuffer(m_materialBuffer);
+	groundPlane.Scale(10.f);
+	groundPlane.SetPosition(0.f, -.5f, 0.f);
+	m_models.emplace_back(groundPlane);
 }
 
 void DX11Addon::CalculateFps(const float& deltatime)
