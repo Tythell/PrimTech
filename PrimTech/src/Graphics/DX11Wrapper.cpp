@@ -221,36 +221,10 @@ bool DX11Addon::InitScene()
 	ImportScene("Scenes\\dsdsd.ptscene");
 	dc->PSSetShaderResources(2, 1, ResourceHandler::GetTexture(1).GetSRVAdress());
 
-	/*m_model.Init("scuffball.obj");
-	m_model.SetPosition(0.f, 0.f, 3.f);
-	m_model.SetMaterialBuffer(m_materialBuffer);
 
 
-	m_plane.Init("scaledplane.obj");
-	m_plane.SetPosition(0.f, -1.f, 0.f);
-	m_plane.SetScale(10.f);
-	m_plane.GetMaterial().ImportMaterial("ground.pmtrl");
-
-	m_gunter.Init("gunter.obj");
-	m_gunter.SetPosition(-1.f, 2.f, -6.f);
-	m_gunter.SetRotation(0.f, d::XM_PI, 0.f);
-	m_gunter.GetMaterial().ImportMaterial("gunter.pmtrl");
-
-	m_water.Init("plane.txt");
-	m_water.SetScale(4.f);
-	m_water.SetPosition(-4.f, 0.f, 0.f);
-	m_water.GetMaterial().ImportMaterial("water.pmtrl");
-	m_water.GetMaterial().SetTransparency(.7f);
-
-	m_playermodel.Init("dirCapsule.obj");
-	m_playermodel.SetScale(.1f);
-
-	m_cube.Init("kubfan3.obj");
-	m_cube.GetMaterial().ImportMaterial("materialtest.pmtrl");
-	m_cube.SetPosition(-2.f, 2.f, 2.f);
-
-	m_handmodel.Init("handmodel2.obj");
-	m_handmodel.SetScale(.1f);*/
+	//m_playermodel.Init("dirCapsule.obj");
+	//m_playermodel.SetScale(.1f);
 
 	m_bulb.Init("bulb.obj", ModelType::eDEBUG);
 	m_bulb.SetMaterialBuffer(m_materialBuffer);
@@ -490,6 +464,7 @@ void DX11Addon::ImGuiMenu()
 				if (diapath != "")
 				{
 					m_models.clear();
+					ResourceHandler::ResetUses();
 					ImportScene(diapath);
 					for (int i = 0; i < m_models.size(); i++)
 					{
@@ -528,7 +503,7 @@ void DX11Addon::ImGuiEntList()
 		static int selected = -1;
 		if (ImGui::Button(" + ##AddModel"))
 		{
-			std::string path = Dialogs::OpenFile("Model (*.obj)\0*.obj\0", "Assets\\models\\");
+			std::string path = Dialogs::OpenFile("Model (*.obj)\0*.obj;*.txt\0", "Assets\\models\\");
 			if (!path.empty())
 			{
 				Model newModel;

@@ -83,3 +83,11 @@ ID3D11Device* ResourceHandler::GetDevice()
 {
 	return pDevice;
 }
+
+void ResourceHandler::ResetUses()
+{
+	for (int i = 0; i < m_meshes.size(); i++)
+	{
+		m_meshes[i]->ResetUses();
+	}
+}

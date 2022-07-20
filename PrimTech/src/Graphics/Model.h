@@ -15,6 +15,7 @@ public:
 	Buffer<Vertex3D>& GetVBuffer();
 	std::string GetName() const;
 	void IncreaseUses();
+	void ResetUses();
 	int GetNrOfUses() const;
 private:
 	Buffer<Vertex3D> m_vbuffer;

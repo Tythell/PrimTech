@@ -238,6 +238,11 @@ void Mesh::IncreaseUses()
 	m_nrOfUses++;
 }
 
+void Mesh::ResetUses()
+{
+	m_nrOfUses = 0;
+}
+
 int Mesh::GetNrOfUses() const
 {
 	return m_nrOfUses;
