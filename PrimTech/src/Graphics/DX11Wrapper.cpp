@@ -29,7 +29,6 @@ DX11Addon::~DX11Addon()
 
 	delete im.buffer;
 
-	delete[] m_modelNamescStr;
 	ResourceHandler::Unload();
 
 	device->Release();
@@ -265,15 +264,10 @@ bool DX11Addon::InitScene()
 
 	dc->VSSetConstantBuffers(0, 1, m_transformBuffer.GetReference());
 
-	m_modelNames.resize(m_models.size());
-
-	m_modelNamescStr = new const char* [m_models.size()]{ "" };
 	for (int i = 0; i < m_models.size(); i++)
 	{
 		m_models[i].SetMaterialBuffer(m_materialBuffer);
 		m_models[i].SetDCandBuffer(dc, m_transformBuffer);
-		m_modelNames[i] = m_models[i].GetName();
-		m_modelNamescStr[i] = m_modelNames[i].c_str();
 	}
 
 	//m_renderbox.Init(device);
@@ -404,15 +398,8 @@ void LoadButton(Material* pMaterial, std::string name, TextureType e)
 
 }
 
-void DX11Addon::ImGuiRender()
+void DX11Addon::ImguiDebug()
 {
-	static bool im_appear = true;
-	ImGui_ImplDX11_NewFrame();
-	ImGui_ImplWin32_NewFrame();
-	ImGui::NewFrame();
-
-	ImGuiMenu();
-
 	ImGui::Begin("Debug");
 
 	ImGui::Checkbox("Demo window", &im.showDemoWindow);
@@ -452,6 +439,18 @@ void DX11Addon::ImGuiRender()
 	ImGui::Text(GetVectorAsString(mp_cam->GetRotation()).c_str());
 
 	ImGui::End();
+}
+
+void DX11Addon::ImGuiRender()
+{
+	ImGui_ImplDX11_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
+
+	ImguiDebug();
+	ImGuiMenu();
+
+
 
 	//ImGuiGradientWindow();
 	ImGuiEntList();
@@ -485,14 +484,21 @@ void DX11Addon::ImGuiMenu()
 	{
 		if (ImGui::BeginMenu("File"))
 		{
-			//if (ImGui::MenuItem("Open Scene...", NULL, false, true))
-			//{
-			//	std::string diapath = Dialogs::OpenFile("Scene (*.ptscene)\0*.ptscene\0)", "Scenes\\");
-			//	if (diapath != "")
-			//	{
-			//		// open scene
-			//	}
-			//}
+			if (ImGui::MenuItem("Open Scene...", NULL, false, true))
+			{
+				std::string diapath = Dialogs::OpenFile("Scene (*.ptscene)\0*.ptscene\0)", "Scenes\\");
+				if (diapath != "")
+				{
+					m_models.clear();
+					ImportScene(diapath);
+					for (int i = 0; i < m_models.size(); i++)
+					{
+						m_models[i].SetDCandBuffer(dc, m_transformBuffer);
+						m_models[i].SetMaterialBuffer(m_materialBuffer);
+					}
+					// open scene
+				}
+			}
 			if (ImGui::MenuItem("Save scene as..."))
 			{
 				std::string diapath = Dialogs::SaveFile("Scene (*.ptscene)\0*ptscene\0)", "Scenes\\");
@@ -520,15 +526,28 @@ void DX11Addon::ImGuiEntList()
 	if (ImGui::Begin("Model List##2", (bool*)false/*, /*ImGuiWindowFlags_MenuBar*/))
 	{
 		static int selected = -1;
+		if (ImGui::Button(" + ##AddModel"))
 		{
-			ImGui::BeginChild("Lefty", ImVec2(150, 0), true);
+			std::string path = Dialogs::OpenFile("Model (*.obj)\0*.obj\0", "Assets\\models\\");
+			if (!path.empty())
+			{
+				Model newModel;
+				path = StringHelper::GetName(path);
+				newModel.Init(path);
+				newModel.SetDCandBuffer(dc, m_transformBuffer);
+				newModel.SetMaterialBuffer(m_materialBuffer);
+				m_models.emplace_back(newModel);
+			}
+		}
+		//{
+			ImGui::BeginChild("Lefty", ImVec2(150, 350), true);
 			for (int i = 0; i < m_models.size(); i++)
 			{
 				if (ImGui::Selectable(m_models[i].GetName().c_str(), selected == i))
 					selected = i;
 			}
 			ImGui::EndChild();
-		}
+		//}
 		ImGui::SameLine();
 		if(selected != -1)
 		{
@@ -641,8 +660,20 @@ void DX11Addon::ImGuiEntList()
 				}
 			}
 			ImGui::EndGroup();
-		}
+			if (mp_kb->IsKeyDown(Key::DELETEKEY))
+			{
+				m_models.erase(m_models.begin() + selected);
+				selected = -1;
+			}
 
+
+		}
+		for (int i = 0; i < m_models.size(); i++)
+		{
+			m_models[i].GetMaterial().SetSelection(false);
+		}
+		if (selected != -1)
+			m_models[selected].GetMaterial().SetSelection(true);
 	}
 	ImGui::End();
 }

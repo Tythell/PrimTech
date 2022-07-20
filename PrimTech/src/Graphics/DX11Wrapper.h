@@ -69,6 +69,7 @@ private:
 	void ImGuiRender();
 	void ImGuiShutDown();
 	void ExportImage(char* name);
+	void ImguiDebug();
 	void ImGuiMenu();
 	void ImGuiEntList();
 
@@ -127,10 +128,8 @@ private:
 	ViewModel m_viewmdl;
 	std::vector<Model> m_models;
 	RenderBox m_renderbox;
-	std::vector<std::string> m_modelNames;
 	int m_fps = 0;
 
 	unsigned char m_ZAToonExport[255] = {};
-	const char** m_modelNamescStr;
 };
 
