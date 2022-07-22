@@ -385,7 +385,11 @@ void DX11Addon::ImguiDebug()
 	ImGui::Begin("Debug");
 
 	ImGui::Checkbox("Demo window", &im.showDemoWindow);
-	ImGui::Text("Press Q to lock/unlock mouse");
+	ImGui::Text("Press \"TAB\" to lock/unlock mouse");
+
+	if (ImGui::IsWindowHovered())
+		m_isHoveringWindow = true;
+
 
 	std::string fpsString = "FPS: " + std::to_string(m_fps);
 	ImGui::Text(fpsString.c_str());
@@ -429,6 +433,7 @@ void DX11Addon::ImGuiRender()
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 
+	m_isHoveringWindow = false;
 	ImguiDebug();
 	ImGuiMenu();
 
@@ -456,8 +461,12 @@ void DX11Addon::ImGuiMenu()
 {
 	if (ImGui::BeginMainMenuBar())
 	{
+		if (ImGui::IsWindowHovered())
+			m_isHoveringWindow = true;
 		if (ImGui::BeginMenu("File"))
 		{
+			if (ImGui::IsWindowHovered())
+				m_isHoveringWindow = true;
 			if (ImGui::MenuItem("New Scene", NULL, false, true))
 			{
 				m_models.clear();
@@ -501,6 +510,8 @@ void DX11Addon::ImGuiEntList()
 	ImGui::SetNextWindowSize(ImVec2(500, 400), ImGuiCond_FirstUseEver);
 	if (ImGui::Begin("Model List##2", (bool*)false/*, /*ImGuiWindowFlags_MenuBar*/))
 	{
+		if (ImGui::IsWindowHovered())
+			m_isHoveringWindow = true;
 		if (ImGui::Button(" + ##AddModel"))
 		{
 			std::string path = Dialogs::OpenFile("Model (*.obj)\0*.obj;*.txt\0", "Assets\\models\\");
@@ -515,8 +526,8 @@ void DX11Addon::ImGuiEntList()
 				m_selected = m_models.size() - 1;
 			}
 		}
-		ImGui::SameLine();
-		if (ImGui::Button("Deselect") || mp_kb->IsKeyDown(Key::F))
+		//ImGui::SameLine();
+		if (mp_kb->IsKeyDown(Key::Q))
 			m_selected = -1;
 
 		ImGui::BeginChild("Lefty", ImVec2(150, 350), true);
@@ -543,6 +554,8 @@ void DX11Addon::ImGuiEntList()
 			ImGui::Begin("Model properties");
 			Model* pSelectedModel = &m_models[m_selected];
 			Material* pMaterial = &pSelectedModel->GetMaterial();
+			if (ImGui::IsWindowHovered())
+				m_isHoveringWindow = true;
 
 			ImGui::BeginGroup();
 			ImGui::Text(m_models[m_selected].GetName().c_str());
@@ -763,7 +776,7 @@ int ClickFoo(const sm::Ray& ray, std::vector<Model>& models)
 		sm::Vector3 center = transformedBox.Center;
 		sm::Vector3 extents = transformedBox.Extents;
 		if (extents.y == 0.f) extents.y = 0.01f;
-		center = models[i].GetPosition();
+		center += models[i].GetPosition();
 		extents *= models[i].GetScale();
 
 		transformedBox.Center = center;
@@ -791,7 +804,7 @@ void DX11Addon::Click(const sm::Vector3& dir)
 	m_rLine.SetLine(mp_cam->GetPosition(), endPos);
 
 	int n = ClickFoo(ray, m_models);
-	if (n != -1)
+	if (!m_isHoveringWindow)
 		m_selected = n;
 }
 
@@ -821,7 +834,7 @@ void DX11Addon::Render(const float& deltatime)
 		sm::Vector3 extents = box.Extents * m_models[m_selected].GetScale();
 		extents *= 2;
 		if (extents.y == 0.f) extents.y = 0.01f;
-		sm::Vector3 position = m_models[m_selected].GetPosition();
+		sm::Vector3 position = m_models[m_selected].GetPosition() + box.Center;
 		sm::Matrix boxMatrix = d::XMMatrixTranspose(d::XMMatrixScalingFromVector(extents) * d::XMMatrixTranslationFromVector(position));
 		m_transformBuffer.Data().world = boxMatrix;
 		m_transformBuffer.UpdateBuffer();

@@ -23,7 +23,7 @@ namespace pt
 		KeyboardHandler m_kb;
 		float m_playerSpeed;
 		unsigned char m_shutDownKey = Key::ESCAPE;
-		unsigned char m_camlockKey = Key::Q;
+		const unsigned char m_camlockKey = Key::TAB;
 		d::XMINT2 m_windowPos;
 	};
 

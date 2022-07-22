@@ -138,5 +138,6 @@ private:
 	sm::Vector2 mouseClickPos = {0.f,0.f};
 
 	unsigned char m_ZAToonExport[255] = {};
+	bool m_isHoveringWindow = false;
 };
 
