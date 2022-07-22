@@ -385,7 +385,7 @@ void DX11Addon::ImguiDebug()
 	ImGui::Begin("Debug");
 
 	ImGui::Checkbox("Demo window", &im.showDemoWindow);
-	ImGui::Text("Press \"TAB\" to lock/unlock mouse");
+	ImGui::Text("Press \"Q\" to lock/unlock mouse");
 
 	if (ImGui::IsWindowHovered())
 		m_isHoveringWindow = true;
@@ -527,8 +527,8 @@ void DX11Addon::ImGuiEntList()
 			}
 		}
 		//ImGui::SameLine();
-		if (mp_kb->IsKeyDown(Key::Q))
-			m_selected = -1;
+		//if (mp_kb->IsKeyDown(Key::Q))
+		//	m_selected = -1;
 
 		ImGui::BeginChild("Lefty", ImVec2(150, 350), true);
 		for (int i = 0; i < m_models.size(); i++)
