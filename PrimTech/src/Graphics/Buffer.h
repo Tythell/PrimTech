@@ -10,10 +10,10 @@
 //	eCONSTANT = D3D11_BIND_INDEX_BUFFER, 
 //	eINDEX = D3D11_BIND_CONSTANT_BUFFER
 //};
-//enum BufferUsage
-//{
-//	eDEFAULT, eIMMULATBLE, eDYNAMIC
-//};
+enum BufferUsage
+{
+	eDEFAULT = D3D11_USAGE_DEFAULT, eIMMULATBLE = D3D11_USAGE_IMMUTABLE, eDYNAMIC = D3D11_USAGE_DYNAMIC
+};
 
 template<class T>
 class Buffer
@@ -43,6 +43,10 @@ public:
 	{
 		return *m_data;
 	}
+	T& ArrData(UINT index)
+	{
+		return m_data[index];
+	}
 	ID3D11Buffer* Get()const
 	{
 		return m_buffer;
@@ -51,25 +55,36 @@ public:
 	{
 		return &m_buffer;
 	}
-	// DeviceContext only needed if buffer will be changed
+	// DeviceContext only needed if buffer is dynamic
 	HRESULT CreateVertexBuffer(ID3D11Device*& device, T* data, UINT bufferSize, ID3D11DeviceContext* dc = NULL)
 	{
+		m_usage = eIMMULATBLE;
 		if (m_buffer)
 		{
 			throw;
 			Popup::Error("Buffer created twice");
 		}
+		UINT cpuFlags = 0;
+		if (dc)
+		{
+			m_usage = eDYNAMIC;
+			m_data = new T[bufferSize];
+			mp_dc = dc;
+			cpuFlags = D3D11_CPU_ACCESS_WRITE;
+		}
+
 		m_bufferSize = bufferSize;
 
 		//m_data = data;
 		mp_dc = dc;
 		D3D11_BUFFER_DESC bufferDesc;
 		ZeroMemory(&bufferDesc, sizeof(D3D11_BUFFER_DESC));
-		bufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
+		bufferDesc.Usage = (D3D11_USAGE)m_usage;
 		bufferDesc.ByteWidth = m_stride * m_bufferSize;
 		bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-		bufferDesc.CPUAccessFlags = 0;
+		bufferDesc.CPUAccessFlags = cpuFlags;
 		bufferDesc.MiscFlags = 0;
+		bufferDesc.Usage = (D3D11_USAGE)m_usage;
 
 		D3D11_SUBRESOURCE_DATA bufferData;
 		ZeroMemory(&bufferData, sizeof(D3D11_SUBRESOURCE_DATA));
@@ -80,6 +95,7 @@ public:
 
 	HRESULT CreateConstantBuffer(ID3D11Device*& device, ID3D11DeviceContext*& dc)
 	{
+		m_usage = eDYNAMIC;
 		if (m_buffer)
 		{
 			Popup::Error("Buffer created twice");
@@ -105,6 +121,7 @@ public:
 	// DeviceContext only needed if buffer will be changed
 	HRESULT CreateIndexBuffer(ID3D11Device*& device, T* indexData, UINT numIndices, ID3D11DeviceContext* dc = NULL)
 	{
+		m_usage = eIMMULATBLE;
 		if (m_buffer)
 		{
 			Popup::Error("Buffer created twice");
@@ -134,12 +151,12 @@ public:
 		return HRESULT(device->CreateBuffer(&bufferDesc, &bufferData, &m_buffer));
 	}
 
-	void UpdateCB()
+	void UpdateBuffer()
 	{
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
 		HRESULT hr = mp_dc->Map(m_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 		COM_ERROR(hr, "Failed to update CB");
-		CopyMemory(mappedResource.pData, m_data, sizeof(T));
+		CopyMemory(mappedResource.pData, m_data, sizeof(T) * m_bufferSize);
 		mp_dc->Unmap(m_buffer, 0);
 	}
 	ID3D11DeviceContext* GetDC() const
@@ -152,6 +169,6 @@ private:
 	ID3D11DeviceContext* mp_dc = nullptr;
 	UINT m_stride = sizeof(T);
 	UINT m_bufferSize = 0;
-	//BufferUsage m_usage;
+	BufferUsage m_usage = eDEFAULT;
 	//BufferType m_type;
 };

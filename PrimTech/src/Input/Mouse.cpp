@@ -2,7 +2,9 @@
 
 MouseEvent::MouseEvent(EventType type, const int x, const int y):
 	m_xPos(x), m_yPos(y), m_type(type)
-{}
+{
+	m_xPos;
+}
 
 MouseEvent::EventType MouseEvent::GetType() const
 {
@@ -19,32 +21,32 @@ std::queue<MouseEvent> MouseHandler::m_mouseBuffer;
 
 void MouseHandler::SetMouseButton(int index, bool b)
 {
-	if (b && !m_mouseButtonDown[index])
-	{
-		switch (index)
-		{
-		case eLEFTCLICK:
-		{
-			MouseEvent e(MouseEvent::EventType::eLEFTCLICK,-1,-1);
-			m_mouseBuffer.push(e);
-			break;
-		}
-		case eRIGHTCLICK:
-		{
-			MouseEvent e(MouseEvent::EventType::eRIGHTCLICK, -1, -1);
-			m_mouseBuffer.push(e);
-			break;
-		}
-		case eMIDCLICK:
-		{
-			MouseEvent e(MouseEvent::EventType::eMIDCLICK, -1, -1);
-			m_mouseBuffer.push(e);
-			break;
-		}
-		default:
-			break;
-		}
-	}
+	//if (b && !m_mouseButtonDown[index])
+	//{
+	//	switch (index)
+	//	{
+	//	case eLEFTCLICK:
+	//	{
+	//		MouseEvent e(MouseEvent::EventType::eLEFTCLICK,-1,-1);
+	//		m_mouseBuffer.push(e);
+	//		break;
+	//	}
+	//	case eRIGHTCLICK:
+	//	{
+	//		MouseEvent e(MouseEvent::EventType::eRIGHTCLICK, -1, -1);
+	//		m_mouseBuffer.push(e);
+	//		break;
+	//	}
+	//	case eMIDCLICK:
+	//	{
+	//		MouseEvent e(MouseEvent::EventType::eMIDCLICK, -1, -1);
+	//		m_mouseBuffer.push(e);
+	//		break;
+	//	}
+	//	default:
+	//		break;
+	//	}
+	//}
 
 	m_mouseButtonDown[index] = b;
 }

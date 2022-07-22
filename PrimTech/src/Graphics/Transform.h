@@ -21,8 +21,8 @@ public:
 	sm::Vector3 GetPosition() const;
 	sm::Vector3 GetRotation() const;
 	sm::Vector3 GetScale() const;
-protected:
 	sm::Matrix GetWorldTransposed();
+protected:
 	void UpdateWorld();
 private:
 	sm::Vector3 m_pos, m_rot, m_scale;

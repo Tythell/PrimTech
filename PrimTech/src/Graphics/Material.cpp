@@ -115,7 +115,7 @@ void Material::Set(ID3D11DeviceContext*& dc)
 	mp_matBuffer->Data().textureScale = m_textureScale;
 	mp_matBuffer->Data().rimColor = m_rimColor;
 	mp_matBuffer->Data().rim = (int)m_selection;
-	mp_matBuffer->UpdateCB();
+	mp_matBuffer->UpdateBuffer();
 }
 
 void Material::SetTransparency(float f)

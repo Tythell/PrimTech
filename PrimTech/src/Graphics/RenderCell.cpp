@@ -55,7 +55,7 @@ void RenderCell::DrawCell(sm::Vector3 color, sm::Vector2 xy)
 
 	m_cBuffer.Data().world = d::XMMatrixTranspose(d::XMMatrixTranslationFromVector({ coordX, coordY }));
 
-	m_cBuffer.UpdateCB();
+	m_cBuffer.UpdateBuffer();
 	m_dc->DrawIndexed(m_iBuffer.GetBufferSize(), 0, 0);
 }
 

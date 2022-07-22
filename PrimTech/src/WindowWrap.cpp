@@ -90,7 +90,8 @@ LRESULT Window::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		int x = LOWORD(lParam);
 		int y = HIWORD(lParam);
 		MouseHandler::SetMouseButton(eLEFTCLICK, true);
-		MouseHandler::AddMouseEvent(MouseEvent(MouseEvent::EventType::eLEFTCLICK, x, y));
+		MouseEvent e(MouseEvent::EventType::eLEFTCLICK, x, y);
+		MouseHandler::AddMouseEvent(e);
 		return 0;
 	}
 	//case WM_LBUTTONDBLCLK: // enable in window style
@@ -119,6 +120,7 @@ LRESULT Window::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		int x = LOWORD(lParam);
 		int y = HIWORD(lParam);
+
 		//m_mouseHandler.SetMouseButton(eLEFTCLICK, false);
 		MouseHandler::SetMouseButton(eLEFTCLICK, false);
 		return 0;

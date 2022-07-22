@@ -154,13 +154,11 @@
     <ClCompile Include="src\Graphics\Camera.cpp" />
     <ClCompile Include="src\Graphics\DX11Wrapper.cpp" />
     <ClCompile Include="src\Graphics\Noise\PerlinNoise.cpp" />
-    <ClCompile Include="src\Graphics\RenderCell.cpp" />
     <ClCompile Include="src\Graphics\Shader.cpp" />
     <ClCompile Include="src\Graphics\Texture.cpp" />
     <ClCompile Include="src\Graphics\Transform.cpp" />
     <ClCompile Include="src\Graphics\Noise\ImprovedPNoise.cpp" />
     <ClCompile Include="src\Input\Keyboard.cpp" />
-    <ClCompile Include="src\PrimTech\CellGrid.cpp" />
     <ClCompile Include="src\Input\Mouse.cpp" />
     <ClCompile Include="src\Graphics\Model.cpp" />
     <ClCompile Include="src\Graphics\Material.cpp" />
@@ -191,7 +189,6 @@
     <ClInclude Include="src\Graphics\ConstantBuffer.h" />
     <ClInclude Include="src\Graphics\IndexBuffer.h" />
     <ClInclude Include="src\Graphics\Noise\PerlinNoise.h" />
-    <ClInclude Include="src\Graphics\RenderCell.h" />
     <ClInclude Include="src\Graphics\Texture.h" />
     <ClInclude Include="src\Graphics\VertexBuffer.h" />
     <ClInclude Include="src\Graphics\Vertex.h" />
@@ -199,7 +196,6 @@
     <ClInclude Include="src\Graphics\Transform.h" />
     <ClInclude Include="src\Graphics\Noise\ImprovedPNoise.h" />
     <ClInclude Include="src\Input\Keyboard.h" />
-    <ClInclude Include="src\PrimTech\CellGrid.h" />
     <ClInclude Include="src\Graphics\Material.h" />
     <ClInclude Include="src\Math\Math.h" />
     <ClInclude Include="src\Input\Mouse.h" />

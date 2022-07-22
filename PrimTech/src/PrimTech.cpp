@@ -79,6 +79,33 @@ namespace pt
 				m_cam3d.Offset(0.f, 0.f, -0.5f);
 			else if (me.GetType() == MouseEvent::EventType::eSCROLLDOWN && canMove)
 				m_cam3d.Offset(0.f, 0.f, 0.5f);
+			else if (me.GetType() == MouseEvent::EventType::eLEFTCLICK)
+			{
+				float mouseX = me.GetPosition().x;
+				float mouseY = me.GetPosition().y;
+
+				float winWidth = m_window.getWinWidth();
+				float winHeight = m_window.getWinHeight();
+
+				float x = (2.f * mouseX) / winWidth - 1.f;
+				float y = 1.f - (2.f * mouseY) / winHeight;
+
+				sm::Vector4 clipRay(x, y, -1.f, 1.f);
+
+				sm::Vector4 eyeRay = XMVector4Transform(clipRay, d::XMMatrixInverse(nullptr, m_cam3d.GetProjM()));
+
+				eyeRay = sm::Vector4(eyeRay.x, eyeRay.y, 1.f, 0.f);
+
+				sm::Vector4 worldRay = XMVector4Transform(eyeRay, XMMatrixInverse(nullptr, m_cam3d.GetViewM()));
+
+				sm::Vector3 normRay(worldRay.x, worldRay.y, worldRay.z);
+
+				normRay.Normalize();
+
+				mp_gApi->Click(normRay);
+
+
+			}
 		}
 		if (m_kb.IsKeyDown(m_shutDownKey))
 			m_window.ShutDown();

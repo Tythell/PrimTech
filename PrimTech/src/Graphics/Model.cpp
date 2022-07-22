@@ -47,7 +47,7 @@ void Model::Draw()
 
 	m_material.Set(dc);
 	mp_cbTransformBuffer->Data().world = GetWorldTransposed();
-	mp_cbTransformBuffer->UpdateCB();
+	mp_cbTransformBuffer->UpdateBuffer();
 	dc->IASetVertexBuffers(0, 1, mp_mesh->GetVBuffer().GetReference(), mp_mesh->GetVBuffer().GetStrideP(), &offset);
 
 
@@ -93,6 +93,11 @@ void Model::SetDCandBuffer(ID3D11DeviceContext*& pdc, Buffer<hlsl::cbpWorldTrans
 ModelType Model::GetModelType() const
 {
 	return m_type;
+}
+
+d::BoundingBox Model::GetBBox() const
+{
+	return m_selectBox;
 }
 
 bool LoadObjToBuffer(std::string path, std::vector<Vertex3D>& shape, bool makeLeftHanded)
@@ -209,14 +214,14 @@ Mesh::Mesh(std::string path, ID3D11Device*& device, d::BoundingBox* bbox, bool m
 	}
 	m_name = StringHelper::GetName(path);
 
-	//if (bbox)
-	//{
-	//	std::vector<d::XMFLOAT3> positionArray;
-	//	positionArray.resize(vertexes.size());
-	//	for (int i = 0; i < vertexes.size(); i++)
-	//		positionArray[i] = vertexes[i].position;
-	//	d::BoundingBox::CreateFromPoints(*bbox, vertexes.size(), positionArray.data(), sizeof(sm::Vector3));
-	//}
+	if (bbox)
+	{
+		std::vector<d::XMFLOAT3> positionArray;
+		positionArray.resize(vertexes.size());
+		for (int i = 0; i < vertexes.size(); i++)
+			positionArray[i] = vertexes[i].position;
+		d::BoundingBox::CreateFromPoints(*bbox, vertexes.size(), positionArray.data(), sizeof(sm::Vector3));
+	}
 
 	HRESULT hr = m_vbuffer.CreateVertexBuffer(device, vertexes.data(), vertexes.size());
 	if (FAILED(hr))
@@ -310,11 +315,8 @@ int Mesh::GetNrOfUses() const
 void RenderBox::Draw(ID3D11DeviceContext*& dc)
 {
 	UINT offset = 0;
-	UINT stride = sizeof(sm::Vector3);
-
 	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
 	
-
 	dc->IASetVertexBuffers(0, 1, m_vbuffer.GetReference(), m_vbuffer.GetStrideP(), &offset);
 	dc->IASetIndexBuffer(m_ibuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 	dc->DrawIndexed(m_ibuffer.GetBufferSize(), 0, 0);
@@ -329,14 +331,14 @@ void RenderBox::Init(ID3D11Device*& device)
 {
 	BBVertex vertex[]
 	{
-		{{-0.5f, 0.5f, -0.5f }}, //F TL	 0
-		{{0.5f, 0.5f, -0.5f }}, //F TR	 1
-		{{-0.5f, -0.5f, -0.5f }}, //F BL 2
-		{{0.5f, -0.5f, -0.5f }}, //F BR	 3
-		{{-0.5f, 0.5f, 0.5f }}, //B TL	 4
-		{{0.5f, 0.5f, 0.5f }}, //B TR	 5
-		{{-0.5f, -0.5f, 0.5f }}, //B BL	 6
-		{{0.5f, -0.5f, 0.5f }}, //B BR	 7
+		{{-0.5f, 0.5f, -0.5f }, WHITE_3F}, //F TL	 0
+		{{0.5f, 0.5f, -0.5f }, WHITE_3F}, //F TR	 1
+		{{-0.5f, -0.5f, -0.5f }, WHITE_3F}, //F BL 2
+		{{0.5f, -0.5f, -0.5f }, WHITE_3F}, //F BR	 3
+		{{-0.5f, 0.5f, 0.5f }, WHITE_3F}, //B TL	 4
+		{{0.5f, 0.5f, 0.5f }, WHITE_3F}, //B TR	 5
+		{{-0.5f, -0.5f, 0.5f }, WHITE_3F}, //B BL	 6
+		{{0.5f, -0.5f, 0.5f }, WHITE_3F}, //B BR	 7
 	};
 
 	unsigned int indexes[]
@@ -348,4 +350,34 @@ void RenderBox::Init(ID3D11Device*& device)
 
 	m_vbuffer.CreateVertexBuffer(device, vertex, ARRAYSIZE(vertex));
 	m_ibuffer.CreateIndexBuffer(device, indexes, ARRAYSIZE(indexes));
+}
+
+void RenderBox::SetBox(d::BoundingBox box)
+{
+}
+
+void RenderLine::Draw(ID3D11DeviceContext*& dc)
+{
+	UINT offset = 0;
+	dc->IASetVertexBuffers(0, 1, m_vbuffer.GetReference(), m_vbuffer.GetStrideP(), &offset);
+	dc->Draw(2, 0);
+}
+
+void RenderLine::Init(ID3D11Device*& device, ID3D11DeviceContext*& dc)
+{
+	BBVertex line[]
+	{
+		{{0.f, 0.f, -.5f}, WHITE_3F},
+		{{0.f, 0.f, .5f}, BLUE_3F},
+	};
+	m_vbuffer.CreateVertexBuffer(device, line, ARRAYSIZE(line), dc);
+}
+
+void RenderLine::SetLine(sm::Vector3 start, sm::Vector3 end)
+{
+	m_vbuffer.ArrData(0).m_position = start;
+	m_vbuffer.ArrData(0).m_color = WHITE_3F;
+	m_vbuffer.ArrData(1).m_position = end;
+	m_vbuffer.ArrData(1).m_color = BLUE_3F;
+	m_vbuffer.UpdateBuffer();
 }

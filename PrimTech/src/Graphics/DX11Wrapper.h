@@ -54,6 +54,8 @@ public:
 	void ShutDown();
 	void UpdateScene(const float& deltatime);
 	void CalculateFps(const float& deltatime);
+
+	void Click(const sm::Vector3& dir);
 private:
 	bool initSwapChain();
 	bool initRTV();
@@ -68,7 +70,6 @@ private:
 	void ImGuiGradientWindow();
 	void ImGuiRender();
 	void ImGuiShutDown();
-	void ExportImage(char* name);
 	void ImguiDebug();
 	void ImGuiMenu();
 	void ImGuiEntList();
@@ -125,11 +126,16 @@ private:
 	ImGuiVars im;
 	KeyboardHandler* mp_kb;
 
+	int m_selected = -1;
 	Model m_bulb;
 	ViewModel m_viewmdl;
 	std::vector<Model> m_models;
 	RenderBox m_renderbox;
+	sm::Ray m_ray;
 	int m_fps = 0;
+	RenderLine m_rLine;
+
+	sm::Vector2 mouseClickPos = {0.f,0.f};
 
 	unsigned char m_ZAToonExport[255] = {};
 };

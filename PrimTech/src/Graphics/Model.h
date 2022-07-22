@@ -23,12 +23,23 @@ private:
 	int m_nrOfUses = 0;
 };
 
-class RenderBox
+class RenderLine
+{
+public:
+	void Draw(ID3D11DeviceContext*& dc);
+	void Init(ID3D11Device*& device, ID3D11DeviceContext*& dc);
+	void SetLine(sm::Vector3 start, sm::Vector3 end);
+private:
+	Buffer<BBVertex> m_vbuffer;
+};
+
+class RenderBox : public Transform
 {
 public:
 	void Draw(ID3D11DeviceContext*& dc);
 	Buffer<BBVertex>& GetVBuffer();
 	void Init(ID3D11Device*& device);
+	void SetBox(d::BoundingBox box);
 private:
 	Buffer<BBVertex> m_vbuffer;
 	Buffer<unsigned int> m_ibuffer;
@@ -66,6 +77,7 @@ public:
 	std::string GetName() const;
 	void SetDCandBuffer(ID3D11DeviceContext*& pdc, Buffer<hlsl::cbpWorldTransforms3D>& pCbuffer);
 	ModelType GetModelType() const;
+	d::BoundingBox GetBBox() const;
 private:
 	ID3D11DeviceContext* dc = nullptr;
 	Buffer<hlsl::cbpWorldTransforms3D>* mp_cbTransformBuffer = nullptr;

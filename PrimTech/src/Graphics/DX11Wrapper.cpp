@@ -41,7 +41,6 @@ DX11Addon::~DX11Addon()
 	m_rasterizerState->Release();
 	m_sampState->Release();
 	m_blendState->Release();
-
 }
 
 bool DX11Addon::initSwapChain()
@@ -193,6 +192,12 @@ bool DX11Addon::InitShaders()
 		{"TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 	};
 
+	D3D11_INPUT_ELEMENT_DESC lineLayout[] =
+	{
+		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA},
+		{"COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA},
+	};
+
 	m_3dvs.Init(device, "vertexshader.cso");
 	m_3dvs.InitInputLayout(device, layout3D, ARRAYSIZE(layout3D));
 	m_3dnoLightps.Init(device, "NoLightPs.cso");
@@ -200,7 +205,7 @@ bool DX11Addon::InitShaders()
 
 	m_linePS.Init(device, "QuadPS.cso");
 	m_lineVS.Init(device, "QuadVS.cso");
-	m_lineVS.InitInputLayout(device, &layout3D[0], 1);
+	m_lineVS.InitInputLayout(device, lineLayout, ARRAYSIZE(lineLayout));
 
 	dc->VSSetShader(m_3dvs.GetShader(), NULL, 0);
 	//dc->PSSetShader(m_3dps.GetShader(), NULL, 0);
@@ -218,21 +223,22 @@ bool DX11Addon::InitScene()
 
 	ResourceHandler::AddTexture("goalflag.png"); // setting missingtexture
 	ResourceHandler::AddTexture("ZANormal.png"); // Load LightWarp Texture
-	//ImportScene("Scenes\\newscene.ptscene");
 	dc->PSSetShaderResources(0, 1, ResourceHandler::GetTexture(1).GetSRVAdress());
 
+	m_rLine.Init(device, dc);
 
+	ImportScene("Scenes\\ball.ptscene");
 
 	//m_playermodel.Init("dirCapsule.obj");
 	//m_playermodel.SetScale(.1f);
 
-	NewScene();
+	//NewScene();
 
 	m_bulb.Init("bulb.obj", ModelType::eDEBUG);
-	m_bulb.SetMaterialBuffer(m_materialBuffer);
 	m_bulb.SetScale(1.2f);
-
 	m_viewmdl.Init("handmodel2.obj", mp_cam);
+	m_bulb.SetMaterialBuffer(m_materialBuffer);
+
 	m_viewmdl.m_model.SetDCandBuffer(dc, m_transformBuffer);
 	m_viewmdl.m_model.SetMaterialBuffer(m_materialBuffer);
 	m_bulb.SetDCandBuffer(dc, m_transformBuffer);
@@ -272,7 +278,7 @@ void DX11Addon::UpdateScene(const float& deltatime)
 	m_lightbuffer.Data().pointLightPosition = sm::Vector3(im.pointLightPos[0], im.pointLightPos[1], im.pointLightPos[2]);
 	//m_lightbuffer.Data().forwardDir = mp_cam->GetForwardVector();
 	m_lightbuffer.Data().camPos = { mp_cam->GetPosition().x, mp_cam->GetPosition().y, mp_cam->GetPosition().z, 1.f };
-	m_lightbuffer.UpdateCB();
+	m_lightbuffer.UpdateBuffer();
 
 	//m_playermodel.SetRotation(-mp_cam->GetRotation().x, mp_cam->GetRotation().y, -mp_cam->GetRotation().z);
 	//m_playermodel.Rotate(0.f, d::XM_PI, 0.f);
@@ -426,8 +432,6 @@ void DX11Addon::ImGuiRender()
 	ImguiDebug();
 	ImGuiMenu();
 
-
-
 	//ImGuiGradientWindow();
 	ImGuiEntList();
 
@@ -448,12 +452,6 @@ void DX11Addon::ImGuiShutDown()
 	ImGui::DestroyContext();
 }
 
-void DX11Addon::ExportImage(char* name)
-{
-
-	//m_grid.SaveImage(name);
-}
-
 void DX11Addon::ImGuiMenu()
 {
 	if (ImGui::BeginMainMenuBar())
@@ -465,12 +463,6 @@ void DX11Addon::ImGuiMenu()
 				m_models.clear();
 				ResourceHandler::ResetUses();
 				NewScene();
-				//for (int i = 0; i < m_models.size(); i++)
-				//{
-				//	m_models[i].SetDCandBuffer(dc, m_transformBuffer);
-				//	m_models[i].SetMaterialBuffer(m_materialBuffer);
-				//}
-
 			}
 			if (ImGui::MenuItem("Open Scene...", NULL, false, true))
 			{
@@ -489,7 +481,7 @@ void DX11Addon::ImGuiMenu()
 			}
 			if (ImGui::MenuItem("Save scene as..."))
 			{
-				std::string diapath = Dialogs::SaveFile("Scene (*.ptscene)\0*ptscene\0)", "Scenes\\");
+				std::string diapath = Dialogs::SaveFile("Scene (*.ptscene)\0*.ptscene\0)", "Scenes\\");
 				if (diapath != "")
 				{
 					if (StringHelper::GetExtension(diapath) != "ptscene")
@@ -509,11 +501,6 @@ void DX11Addon::ImGuiEntList()
 	ImGui::SetNextWindowSize(ImVec2(500, 400), ImGuiCond_FirstUseEver);
 	if (ImGui::Begin("Model List##2", (bool*)false/*, /*ImGuiWindowFlags_MenuBar*/))
 	{
-		static int selected = -1;
-		if (m_models.size() == 1)
-		{
-			selected = -1;
-		}
 		if (ImGui::Button(" + ##AddModel"))
 		{
 			std::string path = Dialogs::OpenFile("Model (*.obj)\0*.obj;*.txt\0", "Assets\\models\\");
@@ -525,29 +512,40 @@ void DX11Addon::ImGuiEntList()
 				newModel.SetDCandBuffer(dc, m_transformBuffer);
 				newModel.SetMaterialBuffer(m_materialBuffer);
 				m_models.emplace_back(newModel);
-				selected = m_models.size() - 1;
+				m_selected = m_models.size() - 1;
 			}
 		}
 		ImGui::SameLine();
-		if (ImGui::Button("Deselect"))
-			selected = -1;
-		
+		if (ImGui::Button("Deselect") || mp_kb->IsKeyDown(Key::F))
+			m_selected = -1;
+
 		ImGui::BeginChild("Lefty", ImVec2(150, 350), true);
 		for (int i = 0; i < m_models.size(); i++)
 		{
-			if (ImGui::Selectable(m_models[i].GetName().c_str(), selected == i))
-				selected = i;
+			if (ImGui::Selectable(m_models[i].GetName().c_str(), m_selected == i))
+				m_selected = i;
+			//if(ImGui::GetMouseClickedCount(ImGuiMouseButton))
+			//if (ImGui::BeginPopupContextWindow())
+			//{
+			//	//ImGui::Text("dun dun duun");
+			//	m_selected = -1;
+			//	ImGui::EndPopup();
+			//	ImGui::SetWindowFocus();
+			//}
 		}
 		ImGui::EndChild();
-		
-		ImGui::SameLine();
-		if (selected != -1)
+		ImGui::End();
+
+
+		/*ImGui::SameLine();*/
+		if (m_selected != -1)
 		{
-			Model* pSelectedModel = &m_models[selected];
+			ImGui::Begin("Model properties");
+			Model* pSelectedModel = &m_models[m_selected];
 			Material* pMaterial = &pSelectedModel->GetMaterial();
 
 			ImGui::BeginGroup();
-			ImGui::Text(m_models[selected].GetName().c_str());
+			ImGui::Text(m_models[m_selected].GetName().c_str());
 			ImGui::Separator();
 			if (ImGui::CollapsingHeader("Transformations", ImGuiTreeNodeFlags_DefaultOpen))
 			{
@@ -673,20 +671,20 @@ void DX11Addon::ImGuiEntList()
 			ImGui::EndGroup();
 			if (mp_kb->IsKeyDown(Key::DELETEKEY))
 			{
-				m_models.erase(m_models.begin() + selected);
-				selected = -1;
+				m_models.erase(m_models.begin() + m_selected);
+				m_selected = -1;
 			}
 
-
+			ImGui::End();
 		}
-		for (int i = 0; i < m_models.size(); i++)
-		{
-			m_models[i].GetMaterial().SetSelection(false);
-		}
-		if (selected != -1)
-			m_models[selected].GetMaterial().SetSelection(true);
+		//for (int i = 0; i < m_models.size(); i++)
+		//{
+		//	m_models[i].GetMaterial().SetSelection(false);
+		//}
+		//if (m_selected != -1)
+		//	m_models[m_selected].GetMaterial().SetSelection(true);
 	}
-	ImGui::End();
+
 }
 
 void DX11Addon::ImportScene(std::string path)
@@ -702,13 +700,19 @@ void DX11Addon::ImportScene(std::string path)
 
 void DX11Addon::ExportScene(std::string path)
 {
-	Sceneheaders header = Sceneheaders::eMODEL;
-
 	std::ofstream writer(path, std::ios::binary | std::ios::out);
+
+	Sceneheaders header = Sceneheaders::eMODEL;
 	for (int i = 0; i < m_models.size(); i++)
 	{
 		ModelStruct ms;
 		strcpy_s(ms.modelname, m_models[i].GetName().c_str());
+		if (ms.modelname[0] == '(')
+		{
+			std::string strCopy(ms.modelname);
+			strCopy = strCopy.substr(3);
+			sprintf_s(ms.modelname, strCopy.c_str());
+		}
 		ms.scale = m_models[i].GetScale();
 		ms.rotation = m_models[i].GetRotation();
 		ms.position = m_models[i].GetPosition();
@@ -723,7 +727,8 @@ void DX11Addon::ExportScene(std::string path)
 
 void DX11Addon::NewScene()
 {
-  	Model groundPlane;
+	m_selected = -1;
+	Model groundPlane;
 	groundPlane.Init("scaledplane.obj");
 	groundPlane.SetDCandBuffer(dc, m_transformBuffer);
 	groundPlane.SetMaterialBuffer(m_materialBuffer);
@@ -746,6 +751,50 @@ void DX11Addon::CalculateFps(const float& deltatime)
 	}
 }
 
+int ClickFoo(const sm::Ray& ray, std::vector<Model>& models)
+{
+	float distance = D3D11_FLOAT32_MAX;
+	int index = -1;
+
+	d::BoundingBox transformedBox;
+	for (int i = 0; i < models.size(); i++)
+	{
+		transformedBox = models[i].GetBBox();
+		sm::Vector3 center = transformedBox.Center;
+		sm::Vector3 extents = transformedBox.Extents;
+		if (extents.y == 0.f) extents.y = 0.01f;
+		center = models[i].GetPosition();
+		extents *= models[i].GetScale();
+
+		transformedBox.Center = center;
+		transformedBox.Extents = extents;
+
+		float localDistance = 0.f;
+		if (ray.Intersects(transformedBox, distance))
+		{
+			if (localDistance <= distance)
+			{
+				distance = localDistance;
+				index = i;
+			}
+		}
+	}
+	return index;
+}
+
+void DX11Addon::Click(const sm::Vector3& dir)
+{
+	sm::Ray ray;
+	ray.position = mp_cam->GetPosition();
+	ray.direction = dir;
+	sm::Vector3 endPos = dir + mp_cam->GetPosition();
+	m_rLine.SetLine(mp_cam->GetPosition(), endPos);
+
+	int n = ClickFoo(ray, m_models);
+	if (n != -1)
+		m_selected = n;
+}
+
 void DX11Addon::SetInputP(KeyboardHandler& kb)
 {
 	mp_kb = &kb;
@@ -758,17 +807,35 @@ void DX11Addon::Render(const float& deltatime)
 	dc->ClearRenderTargetView(m_rtv, bgColor);
 	dc->ClearDepthStencilView(m_dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
 	dc->OMSetBlendState(m_blendState, NULL, 0xFFFFFFFF);
-	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
+	dc->IASetInputLayout(m_lineVS.GetInputLayout());
+	dc->VSSetShader(m_lineVS.GetShader(), NULL, 0);
+	dc->PSSetShader(m_linePS.GetShader(), NULL, 0);
+
+	if (m_selected != -1)
+	{
+
+		//m_transformBuffer.Data().world = d::XMMatrixTranspose(d::XMMatrixTranslation(0.f, 1.f, 0.f));
+		d::BoundingBox box = m_models[m_selected].GetBBox();
+		sm::Vector3 extents = box.Extents * m_models[m_selected].GetScale();
+		extents *= 2;
+		if (extents.y == 0.f) extents.y = 0.01f;
+		sm::Vector3 position = m_models[m_selected].GetPosition();
+		sm::Matrix boxMatrix = d::XMMatrixTranspose(d::XMMatrixScalingFromVector(extents) * d::XMMatrixTranslationFromVector(position));
+		m_transformBuffer.Data().world = boxMatrix;
+		m_transformBuffer.UpdateBuffer();
+		m_renderbox.Draw(dc);
+	}
+
+	//m_transformBuffer.Data().world = d::XMMatrixIdentity();
+	//m_transformBuffer.UpdateBuffer();
+	//m_rLine.Draw(dc);
 	dc->IASetInputLayout(m_3dvs.GetInputLayout());
 	dc->VSSetShader(m_3dvs.GetShader(), NULL, 0);
-
+	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	//dc->PSSetShader(m_3dps.GetShader(), NULL, 0);
 	dc->PSSetShader(m_toonPS.GetShader(), NULL, 0);
-
-	//m_gunter.Draw();
-	//m_model.Draw();
-	//m_plane.Draw();
-	//m_cube.Draw();
 
 	//if (mp_cam->GetOffset().z != 0.f)
 	//	m_playermodel.Draw();
@@ -786,15 +853,10 @@ void DX11Addon::Render(const float& deltatime)
 		dc->ClearDepthStencilView(m_dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.f, 0);
 		m_viewmdl.Draw();
 	}
-	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
 	m_bulb.Draw();
 
-	dc->VSSetShader(m_lineVS.GetShader(), NULL, 0);
-	dc->PSSetShader(m_linePS.GetShader(), NULL, 0);
-	m_transformBuffer.Data().world = d::XMMatrixTranspose(d::XMMatrixTranslation(0.f, 1.f, 0.f));
-	m_transformBuffer.UpdateCB();
-	dc->IASetInputLayout(m_lineVS.GetInputLayout());
-	m_renderbox.Draw(dc);
+
+
 
 
 	//m_transformBuffer.Data().world = d::XMMatrixTranspose(d::XMMatrixTranslation(0.f, 0.f, 1.f));
@@ -831,6 +893,12 @@ void RecursiveRead(Sceneheaders& header, std::vector<Model>& v, std::ifstream& r
 	{
 		ModelStruct ms;
 		reader.read((char*)&ms, sizeof(ModelStruct));
+		if (ms.modelname[0] == '(')
+		{
+			std::string strCopy(ms.modelname);
+			strCopy = strCopy.substr(3);
+			sprintf_s(ms.modelname, strCopy.c_str());
+		}
 		Model model;
 		model.Init(std::string(ms.modelname));
 		model.SetPosition(ms.position);
