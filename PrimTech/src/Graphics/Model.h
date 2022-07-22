@@ -10,17 +10,19 @@ bool LoadObjToBuffer(std::string path, std::vector<Vertex3D>& shape, bool makeLe
 class Mesh
 {
 public:
-	Mesh(std::string path, ID3D11Device*& device, d::BoundingBox* bbox = nullptr, bool makeLeftHanded = true);
+	Mesh(std::string path, ID3D11Device*& device, bool makeLeftHanded = true);
 	// Cube/ boudning box buffer
 	Buffer<Vertex3D>& GetVBuffer();
 	std::string GetName() const;
 	void IncreaseUses();
 	void ResetUses();
 	int GetNrOfUses() const;
+	d::BoundingBox GetBBox() const;
 private:
 	Buffer<Vertex3D> m_vbuffer;
 	std::string m_name = "unloaded";
 	int m_nrOfUses = 0;
+	d::BoundingBox m_bbox;
 };
 
 class RenderLine
@@ -85,7 +87,7 @@ private:
 	Material m_material;
 	std::string m_name;
 	ModelType m_type;
-	d::BoundingBox m_selectBox;
+	//d::BoundingBox m_selectBox;
 };
 
 //class AllModels

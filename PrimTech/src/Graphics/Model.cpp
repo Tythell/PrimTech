@@ -31,7 +31,7 @@ void Model::Init(const std::string path, ModelType e, bool makeLeftHanded)
 		m_name += "(" + std::to_string(mp_mesh->GetNrOfUses()) + ")";
 	}
 	else
-		mp_mesh = ResourceHandler::AddMesh(fullpath, m_selectBox, makeLeftHanded);
+		mp_mesh = ResourceHandler::AddMesh(fullpath, makeLeftHanded);
 	mp_mesh->IncreaseUses();
 	m_name += mp_mesh->GetName();
 
@@ -97,7 +97,7 @@ ModelType Model::GetModelType() const
 
 d::BoundingBox Model::GetBBox() const
 {
-	return m_selectBox;
+	return mp_mesh->GetBBox();
 }
 
 bool LoadObjToBuffer(std::string path, std::vector<Vertex3D>& shape, bool makeLeftHanded)
@@ -203,7 +203,7 @@ bool LoadObjToBuffer(std::string path, std::vector<Vertex3D>& shape, bool makeLe
 	return true;
 }
 
-Mesh::Mesh(std::string path, ID3D11Device*& device, d::BoundingBox* bbox, bool makeLeftHanded)
+Mesh::Mesh(std::string path, ID3D11Device*& device, bool makeLeftHanded)
 {
 	std::vector<Vertex3D> vertexes;
 
@@ -214,14 +214,12 @@ Mesh::Mesh(std::string path, ID3D11Device*& device, d::BoundingBox* bbox, bool m
 	}
 	m_name = StringHelper::GetName(path);
 
-	if (bbox)
-	{
-		std::vector<d::XMFLOAT3> positionArray;
-		positionArray.resize(vertexes.size());
-		for (int i = 0; i < vertexes.size(); i++)
-			positionArray[i] = vertexes[i].position;
-		d::BoundingBox::CreateFromPoints(*bbox, vertexes.size(), positionArray.data(), sizeof(sm::Vector3));
-	}
+
+	std::vector<d::XMFLOAT3> positionArray;
+	positionArray.resize(vertexes.size());
+	for (int i = 0; i < vertexes.size(); i++)
+		positionArray[i] = vertexes[i].position;
+	d::BoundingBox::CreateFromPoints(m_bbox, vertexes.size(), positionArray.data(), sizeof(sm::Vector3));
 
 	HRESULT hr = m_vbuffer.CreateVertexBuffer(device, vertexes.data(), vertexes.size());
 	if (FAILED(hr))
@@ -251,6 +249,11 @@ void Mesh::ResetUses()
 int Mesh::GetNrOfUses() const
 {
 	return m_nrOfUses;
+}
+
+d::BoundingBox Mesh::GetBBox() const
+{
+	return m_bbox;
 }
 
 //void AllModels::SetBuffers(ID3D11DeviceContext*& dc, Buffer<hlsl::cbpWorldTransforms3D>& buffer, Buffer<hlsl::cbpMaterialBuffer>& matBuffer)
