@@ -228,12 +228,12 @@ bool DX11Addon::InitScene()
 	m_rLine.Init(device, dc);
 	m_sphere.Init(device, dc);
 
-	//ImportScene("Scenes\\ball.ptscene");
+	ImportScene("Scenes\\handmodel.ptscene");
 
 	//m_playermodel.Init("dirCapsule.obj");
 	//m_playermodel.SetScale(.1f);
 
-	NewScene();
+	//NewScene();
 
 	m_bulb.Init("bulb.obj", ModelType::eDEBUG);
 	m_bulb.SetScale(1.2f);
@@ -691,12 +691,12 @@ void DX11Addon::ImGuiEntList()
 
 			ImGui::End();
 		}
-		//for (int i = 0; i < m_models.size(); i++)
-		//{
-		//	m_models[i].GetMaterial().SetSelection(false);
-		//}
-		//if (m_selected != -1)
-		//	m_models[m_selected].GetMaterial().SetSelection(true);
+		for (int i = 0; i < m_models.size(); i++)
+		{
+			m_models[i].GetMaterial().SetSelection(false);
+		}
+		if (m_selected != -1)
+			m_models[m_selected].GetMaterial().SetSelection(true);
 	}
 
 }
@@ -790,14 +790,13 @@ int ClickFoo(const sm::Ray& ray, std::vector<Model>& models)
 		//sm::Vector3 extents = transformedBox.Extents;
 		float radius = transformedSphere.Radius;
 		//if (extents.y == 0.f) extents.y = 0.01f;
-		center += models[i].GetPosition();
+		//center += models[i].GetPosition();
 		radius *= GetHighestValue(models[i].GetScale());
 
-		sm::Matrix rotMat = d::XMMatrixRotationRollPitchYawFromVector(models[i].GetRotation());
-		sm::Matrix scaleMat = d::XMMatrixScalingFromVector(models[i].GetScale());
-		sm::Vector3 transformedCenter = d::XMVector3TransformCoord(center, rotMat * scaleMat);
-
-		
+		//sm::Matrix rotMat = d::XMMatrixRotationRollPitchYawFromVector(models[i].GetRotation());
+		//sm::Matrix scaleMat = d::XMMatrixScalingFromVector(models[i].GetScale());
+		//sm::Matrix posMat = d::XMMatrixTranslationFromVector(models[i].GetPosition());
+		sm::Vector3 transformedCenter = d::XMVector3TransformCoord(center, models[i].GetWorld());
 
 		transformedSphere.Center = transformedCenter;
 		transformedSphere.Radius = radius;
@@ -826,6 +825,11 @@ int ClickFoo(const sm::Ray& ray, std::vector<Model>& models)
 					}
 				}
 			}
+			//if (t > maxDistance)
+			//{
+			//	maxDistance = t;
+			//	index = i;
+			//}
 
 		}
 	}
@@ -877,7 +881,7 @@ void DX11Addon::Render(const float& deltatime)
 
 		sm::Matrix rotMat = d::XMMatrixRotationRollPitchYawFromVector(m_models[m_selected].GetRotation());
 		sm::Matrix scaleMat = d::XMMatrixScalingFromVector(m_models[m_selected].GetScale());
-		sm::Vector3 transformedCenter = d::XMVector3TransformCoord(center, rotMat * scaleMat);
+		sm::Vector3 transformedCenter = d::XMVector3TransformCoord(center, scaleMat * rotMat);
 
 
 		//sm::Vector3 scalar = d::XMVector3TransformCoord(center, d::XMMatrixScalingFromVector(m_models[m_selected].GetScale()));

@@ -138,8 +138,7 @@ sm::Matrix Transform::GetWorldTransposed()
 sm::Matrix Transform::GetWorld()
 {
 	sm::Matrix world = worldTransposed;
-	world.Transpose();
-	return world;
+	return world.Transpose();
 ;
 }
 
