@@ -22,6 +22,7 @@ public:
 	sm::Vector3 GetRotation() const;
 	sm::Vector3 GetScale() const;
 	sm::Matrix GetWorldTransposed();
+	sm::Matrix GetWorldInversed();
 protected:
 	void UpdateWorld();
 private:

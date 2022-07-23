@@ -794,16 +794,32 @@ int ClickFoo(const sm::Ray& ray, std::vector<Model>& models)
 
 		transformedSphere.Center = center;
 		transformedSphere.Radius = radius;
-		//transformedBox.Extents = extents;
 
 		float localDistance = 0.f;
-		if (ray.Intersects(transformedSphere, distance))
+		if (ray.Intersects(transformedSphere, localDistance))
 		{
-			if (localDistance <= distance)
+			sm::Ray localSpaceRay;
+			sm::Matrix invWorld = models[i].GetWorldInversed();
+			localSpaceRay.position = d::XMVector3TransformCoord(ray.position, invWorld);
+			localSpaceRay.direction = d::XMVector3TransformNormal(ray.direction, invWorld);
+			localSpaceRay.direction.Normalize();
+			Buffer<Vertex3D>* pVbuffer = &models[i].GetMeshP()->GetVBuffer();
+			UINT nOTriangles = pVbuffer->GetBufferSize() / 3;
+			for (int j = 0; j < nOTriangles; j++)
 			{
-				distance = localDistance;
-				index = i;
+				sm::Vector3 tri0 = pVbuffer->Data((j * 3) + 0).position;
+				sm::Vector3 tri1 = pVbuffer->Data((j * 3) + 1).position;
+				sm::Vector3 tri2 = pVbuffer->Data((j * 3) + 2).position;
+				if (localSpaceRay.Intersects(tri0, tri1, tri2, localDistance))
+				{
+					if (localDistance <= distance)
+					{
+						distance = localDistance;
+						index = i;
+					}
+				}
 			}
+
 		}
 	}
 	return index;
@@ -847,7 +863,7 @@ void DX11Addon::Render(const float& deltatime)
 		d::BoundingSphere sphere;
 		sphere = m_models[m_selected].GetBSphere();
 		float radius = sphere.Radius * GetHighestValue(m_models[m_selected].GetScale());
-		radius *= 2;
+		radius *= 2.0f;
 		//if (extents.y == 0.f) extents.y = 0.01f;
 		sm::Vector3 position = m_models[m_selected].GetPosition() + sphere.Center;
 		sm::Matrix boxMatrix = d::XMMatrixTranspose(d::XMMatrixScaling(radius, radius, radius) * d::XMMatrixTranslationFromVector(position));

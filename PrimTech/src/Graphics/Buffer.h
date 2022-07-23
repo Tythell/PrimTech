@@ -4,12 +4,12 @@
 #include"CbufferTypes.h"
 
 
-//enum BufferType
-//{
-//	eVERTEX = D3D11_BIND_VERTEX_BUFFER, 
-//	eCONSTANT = D3D11_BIND_INDEX_BUFFER, 
-//	eINDEX = D3D11_BIND_CONSTANT_BUFFER
-//};
+enum BufferType : int
+{
+	eVERTEX = D3D11_BIND_VERTEX_BUFFER, 
+	eCONSTANT = D3D11_BIND_INDEX_BUFFER, 
+	eINDEX = D3D11_BIND_CONSTANT_BUFFER
+};
 enum BufferUsage
 {
 	eDEFAULT = D3D11_USAGE_DEFAULT, eIMMULATBLE = D3D11_USAGE_IMMUTABLE, eDYNAMIC = D3D11_USAGE_DYNAMIC
@@ -39,11 +39,7 @@ public:
 	{
 		return m_bufferSize;
 	}
-	T& Data()
-	{
-		return *m_data;
-	}
-	T& ArrData(UINT index)
+	T& Data(UINT index = 0)
 	{
 		return m_data[index];
 	}
@@ -58,17 +54,18 @@ public:
 	// DeviceContext only needed if buffer is dynamic
 	HRESULT CreateVertexBuffer(ID3D11Device*& device, T* data, UINT bufferSize, ID3D11DeviceContext* dc = NULL)
 	{
+		POPUP_ERROR((m_buffer == nullptr), "Buffer created twice");
+
 		m_usage = eIMMULATBLE;
-		if (m_buffer)
-		{
-			throw;
-			Popup::Error("Buffer created twice");
-		}
 		UINT cpuFlags = 0;
+		m_data = new T[bufferSize];
+		for (int i = 0; i < bufferSize; i++)
+		{
+			m_data[i] = data[i];
+		}
 		if (dc)
 		{
 			m_usage = eDYNAMIC;
-			m_data = new T[bufferSize];
 			mp_dc = dc;
 			cpuFlags = D3D11_CPU_ACCESS_WRITE;
 		}
@@ -147,6 +144,47 @@ public:
 		D3D11_SUBRESOURCE_DATA bufferData;
 		ZeroMemory(&bufferData, sizeof(D3D11_SUBRESOURCE_DATA));
 		bufferData.pSysMem = indexData;
+
+		return HRESULT(device->CreateBuffer(&bufferDesc, &bufferData, &m_buffer));
+	}
+
+	HRESULT CreateBuffer(BufferType type, ID3D11Device*& device, T* data, UINT size, ID3D11DeviceContext* dc = NULL)
+	{
+		m_bufferSize = size;
+		mp_dc = dc;
+		m_usage = eIMMULATBLE;
+		if (m_buffer)
+		{
+			throw;
+			Popup::Error("Buffer created twice");
+		}
+		UINT cpuFlags = 0;
+		m_data = new T[size];
+		for (int i = 0; i < size; i++)
+		{
+			m_data[i] = data[i];
+		}
+		if (dc)
+		{
+			m_usage = eDYNAMIC;
+			mp_dc = dc;
+			cpuFlags = D3D11_CPU_ACCESS_WRITE;
+		}
+
+		//m_data = data;
+		mp_dc = dc;
+		D3D11_BUFFER_DESC bufferDesc;
+		ZeroMemory(&bufferDesc, sizeof(D3D11_BUFFER_DESC));
+		bufferDesc.Usage = (D3D11_USAGE)m_usage;
+		bufferDesc.ByteWidth = m_stride * m_bufferSize;
+		bufferDesc.BindFlags = (UINT)type;
+		bufferDesc.CPUAccessFlags = cpuFlags;
+		bufferDesc.MiscFlags = 0;
+		bufferDesc.Usage = (UINT)m_usage;
+
+		D3D11_SUBRESOURCE_DATA bufferData;
+		ZeroMemory(&bufferData, sizeof(D3D11_SUBRESOURCE_DATA));
+		bufferData.pSysMem = data;
 
 		return HRESULT(device->CreateBuffer(&bufferDesc, &bufferData, &m_buffer));
 	}

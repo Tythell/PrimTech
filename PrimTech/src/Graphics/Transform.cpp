@@ -135,6 +135,15 @@ sm::Matrix Transform::GetWorldTransposed()
 	return worldTransposed;
 }
 
+sm::Matrix Transform::GetWorldInversed()
+{
+	sm::Matrix matrix =
+		d::XMMatrixInverse(nullptr, DirectX::XMMatrixTranslationFromVector(m_pos)) *
+		d::XMMatrixInverse(nullptr, DirectX::XMMatrixRotationRollPitchYawFromVector(m_rot)) *
+		d::XMMatrixInverse(nullptr, DirectX::XMMatrixScalingFromVector(m_scale));
+	return matrix;
+}
+
 void ForceRotation(float& x, float& y, float& z)
 {
 	sm::Vector3 v(x, y, z);

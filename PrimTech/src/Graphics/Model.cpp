@@ -219,7 +219,10 @@ Mesh::Mesh(std::string path, ID3D11Device*& device, bool makeLeftHanded)
 	positionArray.resize(vertexes.size());
 	for (int i = 0; i < vertexes.size(); i++)
 		positionArray[i] = vertexes[i].position;
-	d::BoundingSphere::CreateFromPoints(m_bsphere, vertexes.size(), positionArray.data(), sizeof(sm::Vector3));
+	d::BoundingBox box;
+	d::BoundingBox::CreateFromPoints(box, positionArray.size(), positionArray.data(), sizeof(sm::Vector3));
+	d::BoundingSphere::CreateFromBoundingBox(m_bsphere, box);
+	//d::BoundingSphere::CreateFromPoints(m_bsphere, vertexes.size(), positionArray.data(), sizeof(sm::Vector3));
 
 	HRESULT hr = m_vbuffer.CreateVertexBuffer(device, vertexes.data(), vertexes.size());
 	if (FAILED(hr))
@@ -383,10 +386,10 @@ void RenderLine::Init(ID3D11Device*& device, ID3D11DeviceContext*& dc)
 
 void RenderLine::SetLine(sm::Vector3 start, sm::Vector3 end)
 {
-	m_vbuffer.ArrData(0).m_position = start;
-	m_vbuffer.ArrData(0).m_color = WHITE_3F;
-	m_vbuffer.ArrData(1).m_position = end;
-	m_vbuffer.ArrData(1).m_color = BLUE_3F;
+	m_vbuffer.Data(0).m_position = start;
+	m_vbuffer.Data(0).m_color = WHITE_3F;
+	m_vbuffer.Data(1).m_position = end;
+	m_vbuffer.Data(1).m_color = BLUE_3F;
 	m_vbuffer.UpdateBuffer();
 }
 
