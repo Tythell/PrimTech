@@ -134,6 +134,7 @@ private:
 	sm::Ray m_ray;
 	int m_fps = 0;
 	RenderLine m_rLine;
+	RenderSphere m_sphere;
 
 	sm::Vector2 mouseClickPos = {0.f,0.f};
 

@@ -62,14 +62,7 @@ public:
 
 	bool HasTexture(const TextureType e) const;
 private:
-	//std::string GetDiffuseName() const;
-	//std::string GetDistortionMapName() const;
-	//std::string GetNormalMapName() const;
-
 	void ReadRecursion(eMaterialHeaders& header, std::ifstream& reader);
-	//void LoadDiffuse(std::string path);
-	//void LoadDistortion(std::string path);
-	//void LoadNormalMap(std::string path);
 	TextureMap* mp_textures[eTextureTypeAMOUNT] = { nullptr };
 	float m_textureScale = 1.f;
 	float m_textureScaleDist = 1.f;

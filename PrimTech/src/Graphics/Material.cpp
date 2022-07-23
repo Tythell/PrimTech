@@ -39,6 +39,7 @@ void Material::ReadRecursion(eMaterialHeaders& header, std::ifstream& reader)
 		break;
 	case eMaterialHeaders::eOPACITY:
 		reader.read(charBuffer, FILENAME_MAXSIZE);
+		LoadTexture(std::string(charBuffer), eOpacity);
 		reader.read((char*)&m_transparency, 4);
 		break;
 	case eMaterialHeaders::eTILING:
@@ -204,7 +205,7 @@ bool Material::ExportMaterial(std::string path)
 		header = eMaterialHeaders::eOPACITY;
 		writer.write((const char*)&header, 4);
 		writer.write((const char*)mp_textures[eOpacity]->GetName().c_str(), FILENAME_MAXSIZE);
-		writer.write((const char*)&m_transparency, 4);
+		//writer.write((const char*)&m_transparency, 4);
 	}
 	if (m_textureScale != 1.f)
 	{

@@ -226,13 +226,14 @@ bool DX11Addon::InitScene()
 	dc->PSSetShaderResources(0, 1, ResourceHandler::GetTexture(1).GetSRVAdress());
 
 	m_rLine.Init(device, dc);
+	m_sphere.Init(device, dc);
 
-	ImportScene("Scenes\\ball.ptscene");
+	//ImportScene("Scenes\\ball.ptscene");
 
 	//m_playermodel.Init("dirCapsule.obj");
 	//m_playermodel.SetScale(.1f);
 
-	//NewScene();
+	NewScene();
 
 	m_bulb.Init("bulb.obj", ModelType::eDEBUG);
 	m_bulb.SetScale(1.2f);
@@ -764,26 +765,39 @@ void DX11Addon::CalculateFps(const float& deltatime)
 	}
 }
 
+float GetHighestValue(const sm::Vector3& v)
+{
+	float arr[3] = { v.x, v.y, v.z };
+	float value = -999999;
+	for (int i = 0; i < 3; i++)
+	{
+		if (arr[i] > value) value = arr[i];
+	}
+	return value;
+}
+
 int ClickFoo(const sm::Ray& ray, std::vector<Model>& models)
 {
 	float distance = D3D11_FLOAT32_MAX;
 	int index = -1;
 
-	d::BoundingBox transformedBox;
+	d::BoundingSphere transformedSphere;
 	for (int i = 0; i < models.size(); i++)
 	{
-		transformedBox = models[i].GetBBox();
-		sm::Vector3 center = transformedBox.Center;
-		sm::Vector3 extents = transformedBox.Extents;
-		if (extents.y == 0.f) extents.y = 0.01f;
+		transformedSphere = models[i].GetBSphere();
+		sm::Vector3 center = transformedSphere.Center;
+		//sm::Vector3 extents = transformedBox.Extents;
+		float radius = transformedSphere.Radius;
+		//if (extents.y == 0.f) extents.y = 0.01f;
 		center += models[i].GetPosition();
-		extents *= models[i].GetScale();
+		radius *= GetHighestValue(models[i].GetScale());
 
-		transformedBox.Center = center;
-		transformedBox.Extents = extents;
+		transformedSphere.Center = center;
+		transformedSphere.Radius = radius;
+		//transformedBox.Extents = extents;
 
 		float localDistance = 0.f;
-		if (ray.Intersects(transformedBox, distance))
+		if (ray.Intersects(transformedSphere, distance))
 		{
 			if (localDistance <= distance)
 			{
@@ -830,17 +844,18 @@ void DX11Addon::Render(const float& deltatime)
 	{
 
 		//m_transformBuffer.Data().world = d::XMMatrixTranspose(d::XMMatrixTranslation(0.f, 1.f, 0.f));
-		d::BoundingBox box = m_models[m_selected].GetBBox();
-		sm::Vector3 extents = box.Extents * m_models[m_selected].GetScale();
-		extents *= 2;
-		if (extents.y == 0.f) extents.y = 0.01f;
-		sm::Vector3 position = m_models[m_selected].GetPosition() + box.Center;
-		sm::Matrix boxMatrix = d::XMMatrixTranspose(d::XMMatrixScalingFromVector(extents) * d::XMMatrixTranslationFromVector(position));
+		d::BoundingSphere sphere;
+		sphere = m_models[m_selected].GetBSphere();
+		float radius = sphere.Radius * GetHighestValue(m_models[m_selected].GetScale());
+		radius *= 2;
+		//if (extents.y == 0.f) extents.y = 0.01f;
+		sm::Vector3 position = m_models[m_selected].GetPosition() + sphere.Center;
+		sm::Matrix boxMatrix = d::XMMatrixTranspose(d::XMMatrixScaling(radius, radius, radius) * d::XMMatrixTranslationFromVector(position));
 		m_transformBuffer.Data().world = boxMatrix;
 		m_transformBuffer.UpdateBuffer();
-		m_renderbox.Draw(dc);
+		m_sphere.Draw(dc);
 	}
-
+	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
 	//m_transformBuffer.Data().world = d::XMMatrixIdentity();
 	//m_transformBuffer.UpdateBuffer();
 	//m_rLine.Draw(dc);

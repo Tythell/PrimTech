@@ -7,10 +7,10 @@
 #include "ResourceHandler.h"
 #include "../Utility/CommonDialogs.h"
 
-Model::Model()
-{
+//Model::Model()
+//{
 	//AllModels::AddModelAdress(this);
-}
+//}
 //
 ////ID3D11DeviceContext* Model::dc;
 ////Buffer<hlsl::cbpWorldTransforms3D>* Model::mp_cbTransformBuffer;
@@ -95,9 +95,9 @@ ModelType Model::GetModelType() const
 	return m_type;
 }
 
-d::BoundingBox Model::GetBBox() const
+d::BoundingSphere Model::GetBSphere() const
 {
-	return mp_mesh->GetBBox();
+	return mp_mesh->GetBSphere();
 }
 
 bool LoadObjToBuffer(std::string path, std::vector<Vertex3D>& shape, bool makeLeftHanded)
@@ -219,7 +219,7 @@ Mesh::Mesh(std::string path, ID3D11Device*& device, bool makeLeftHanded)
 	positionArray.resize(vertexes.size());
 	for (int i = 0; i < vertexes.size(); i++)
 		positionArray[i] = vertexes[i].position;
-	d::BoundingBox::CreateFromPoints(m_bbox, vertexes.size(), positionArray.data(), sizeof(sm::Vector3));
+	d::BoundingSphere::CreateFromPoints(m_bsphere, vertexes.size(), positionArray.data(), sizeof(sm::Vector3));
 
 	HRESULT hr = m_vbuffer.CreateVertexBuffer(device, vertexes.data(), vertexes.size());
 	if (FAILED(hr))
@@ -251,9 +251,9 @@ int Mesh::GetNrOfUses() const
 	return m_nrOfUses;
 }
 
-d::BoundingBox Mesh::GetBBox() const
+d::BoundingSphere Mesh::GetBSphere() const
 {
-	return m_bbox;
+	return m_bsphere;
 }
 
 //void AllModels::SetBuffers(ID3D11DeviceContext*& dc, Buffer<hlsl::cbpWorldTransforms3D>& buffer, Buffer<hlsl::cbpMaterialBuffer>& matBuffer)
@@ -363,7 +363,7 @@ void RenderLine::Draw(ID3D11DeviceContext*& dc)
 {
 	UINT offset = 0;
 	dc->IASetVertexBuffers(0, 1, m_vbuffer.GetReference(), m_vbuffer.GetStrideP(), &offset);
-	dc->Draw(2, 0);
+	dc->DrawIndexed(m_ibuffer.GetBufferSize(), 0, 0);
 }
 
 void RenderLine::Init(ID3D11Device*& device, ID3D11DeviceContext*& dc)
@@ -373,7 +373,12 @@ void RenderLine::Init(ID3D11Device*& device, ID3D11DeviceContext*& dc)
 		{{0.f, 0.f, -.5f}, WHITE_3F},
 		{{0.f, 0.f, .5f}, BLUE_3F},
 	};
+	unsigned int index[]
+	{
+		0,1
+	};
 	m_vbuffer.CreateVertexBuffer(device, line, ARRAYSIZE(line), dc);
+	m_ibuffer.CreateIndexBuffer(device, index, ARRAYSIZE(index));
 }
 
 void RenderLine::SetLine(sm::Vector3 start, sm::Vector3 end)
@@ -383,4 +388,50 @@ void RenderLine::SetLine(sm::Vector3 start, sm::Vector3 end)
 	m_vbuffer.ArrData(1).m_position = end;
 	m_vbuffer.ArrData(1).m_color = BLUE_3F;
 	m_vbuffer.UpdateBuffer();
+}
+
+void RenderShape::Draw(ID3D11DeviceContext*& dc)
+{
+	UINT offset = 0;
+	dc->IASetVertexBuffers(0, 1, m_vbuffer.GetReference(), m_vbuffer.GetStrideP(), &offset);
+	dc->IASetIndexBuffer(m_ibuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+	dc->DrawIndexed(m_ibuffer.GetBufferSize(), 0, 0);
+}
+
+void RenderSphere::Init(ID3D11Device*& device, ID3D11DeviceContext*& dc)
+{
+	const float corner = 0.37f;
+	sm::Vector3 color = WHITE_3F;
+	BBVertex circles[]
+	{
+		{{0.f, 0.5f, 0.f}, color}, // 0
+		{{corner, corner, 0.f}, color}, // 1
+		{{0.5f, 0.f, 0.f}, color}, // 2
+		{{corner, -corner, 0.f}, color}, // 3
+		{{0.f, -0.5f, 0.f}, color}, // 4
+		{{-corner, -corner, 0.f}, color}, // 5
+		{{-0.5f, 0.f, 0.f}, color}, // 6
+		{{-corner, corner, 0.f}, color}, // 7
+
+		{{0, corner, corner}, color}, // 8
+		{{0, corner, -corner}, color}, // 9
+		{{0, 0.f, 0.5f}, color}, // 10 
+		{{0, 0.f, -0.5f}, color}, // 11
+		{{0, -corner, corner}, color}, // 12
+		{{0, -corner, -corner}, color}, // 13
+
+		{{-corner, 0.f, -corner}, color}, // 14
+		{{-corner, 0.f, corner}, color}, // 15
+		{{corner, 0.f, corner}, color}, // 16
+		{{corner, 0.f, -corner}, color}, // 17
+	};
+	m_vbuffer.CreateVertexBuffer(device, circles, ARRAYSIZE(circles));
+	unsigned int circleIndexes[]
+	{
+		0, 1, 2, 3, 4, 5, 6, 7, 0,
+		8, 10, 12, 4, 13, 11, 
+		14, 6, 15, 10, 16, 2, 17, 11,
+		 9, 0,
+	};
+	m_ibuffer.CreateIndexBuffer(device, circleIndexes, ARRAYSIZE(circleIndexes));
 }

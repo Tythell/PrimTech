@@ -17,22 +17,37 @@ public:
 	void IncreaseUses();
 	void ResetUses();
 	int GetNrOfUses() const;
-	d::BoundingBox GetBBox() const;
+	d::BoundingSphere GetBSphere() const;
 private:
 	Buffer<Vertex3D> m_vbuffer;
 	std::string m_name = "unloaded";
 	int m_nrOfUses = 0;
-	d::BoundingBox m_bbox;
+	d::BoundingSphere m_bsphere;
 };
 
-class RenderLine
+class RenderShape
 {
 public:
-	void Draw(ID3D11DeviceContext*& dc);
-	void Init(ID3D11Device*& device, ID3D11DeviceContext*& dc);
-	void SetLine(sm::Vector3 start, sm::Vector3 end);
-private:
+	virtual void Draw(ID3D11DeviceContext*& dc);
+	virtual void Init(ID3D11Device*& device, ID3D11DeviceContext*& dc) = 0;
+protected:
 	Buffer<BBVertex> m_vbuffer;
+	Buffer<unsigned int> m_ibuffer;
+};
+
+class RenderSphere : public RenderShape
+{
+public:
+	// Inherited via RenderShape
+	virtual void Init(ID3D11Device*& device, ID3D11DeviceContext*& dc) override;
+};
+
+class RenderLine : public RenderShape
+{
+public:
+	virtual void Draw(ID3D11DeviceContext*& dc) override;
+	virtual void Init(ID3D11Device*& device, ID3D11DeviceContext*& dc) override;
+	void SetLine(sm::Vector3 start, sm::Vector3 end);
 };
 
 class RenderBox : public Transform
@@ -68,7 +83,7 @@ struct ModelStruct
 class Model : public Transform
 {
 public:
-	Model();
+	//Model();
 	void Init(const std::string path, ModelType e = ModelType(0), bool makeLeftHanded = true);
 	void Draw();
 	void UpdateTextureScroll(const float& deltatime);
@@ -79,26 +94,12 @@ public:
 	std::string GetName() const;
 	void SetDCandBuffer(ID3D11DeviceContext*& pdc, Buffer<hlsl::cbpWorldTransforms3D>& pCbuffer);
 	ModelType GetModelType() const;
-	d::BoundingBox GetBBox() const;
+	d::BoundingSphere GetBSphere() const;
 private:
 	ID3D11DeviceContext* dc = nullptr;
 	Buffer<hlsl::cbpWorldTransforms3D>* mp_cbTransformBuffer = nullptr;
 	Mesh* mp_mesh = nullptr;
 	Material m_material;
-	std::string m_name;
-	ModelType m_type;
-	//d::BoundingBox m_selectBox;
+	std::string m_name = "";
+	ModelType m_type = ModelType::eUNSPECIFIED;
 };
-
-//class AllModels
-//{
-//public:
-//	static void SetBuffers(ID3D11DeviceContext*& dc, Buffer<hlsl::cbpWorldTransforms3D>& buffer, Buffer<hlsl::cbpMaterialBuffer>& matBuffer);
-//	static void AddModelAdress(Model* d);
-//	static void SetNamesToVector(std::vector<std::string>& v);
-//	static int GetNrOfModels();
-//	static Model* GetModel(int index);
-//	static bool ExportScene(std::string path);
-//private:
-//	static std::vector<Model*> m_models;
-//};
