@@ -778,7 +778,8 @@ float GetHighestValue(const sm::Vector3& v)
 
 int ClickFoo(const sm::Ray& ray, std::vector<Model>& models)
 {
-	float distance = D3D11_FLOAT32_MAX;
+	float maxDistance = -100.f;
+	float t = 0.f;
 	int index = -1;
 
 	d::BoundingSphere transformedSphere;
@@ -795,8 +796,8 @@ int ClickFoo(const sm::Ray& ray, std::vector<Model>& models)
 		transformedSphere.Center = center;
 		transformedSphere.Radius = radius;
 
-		float localDistance = 0.f;
-		if (ray.Intersects(transformedSphere, localDistance))
+		
+		if (ray.Intersects(transformedSphere, t))
 		{
 			sm::Ray localSpaceRay;
 			sm::Matrix invWorld = models[i].GetWorldInversed();
@@ -810,11 +811,11 @@ int ClickFoo(const sm::Ray& ray, std::vector<Model>& models)
 				sm::Vector3 tri0 = pVbuffer->Data((j * 3) + 0).position;
 				sm::Vector3 tri1 = pVbuffer->Data((j * 3) + 1).position;
 				sm::Vector3 tri2 = pVbuffer->Data((j * 3) + 2).position;
-				if (localSpaceRay.Intersects(tri0, tri1, tri2, localDistance))
+				if (localSpaceRay.Intersects(tri0, tri1, tri2, t))
 				{
-					if (localDistance <= distance)
+					if (t > maxDistance)
 					{
-						distance = localDistance;
+						maxDistance = t;
 						index = i;
 					}
 				}
