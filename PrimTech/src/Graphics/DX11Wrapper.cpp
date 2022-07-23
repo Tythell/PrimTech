@@ -793,7 +793,13 @@ int ClickFoo(const sm::Ray& ray, std::vector<Model>& models)
 		center += models[i].GetPosition();
 		radius *= GetHighestValue(models[i].GetScale());
 
-		transformedSphere.Center = center;
+		sm::Matrix rotMat = d::XMMatrixRotationRollPitchYawFromVector(models[i].GetRotation());
+		sm::Matrix scaleMat = d::XMMatrixScalingFromVector(models[i].GetScale());
+		sm::Vector3 transformedCenter = d::XMVector3TransformCoord(center, rotMat * scaleMat);
+
+		
+
+		transformedSphere.Center = transformedCenter;
 		transformedSphere.Radius = radius;
 
 		
@@ -863,6 +869,21 @@ void DX11Addon::Render(const float& deltatime)
 		//m_transformBuffer.Data().world = d::XMMatrixTranspose(d::XMMatrixTranslation(0.f, 1.f, 0.f));
 		d::BoundingSphere sphere;
 		sphere = m_models[m_selected].GetBSphere();
+		sm::Vector3 center = sphere.Center;
+		//center = d::XMVector3TransformCoord(center, d::XMMatrixRotationRollPitchYawFromVector(m_models[m_selected].GetRotation()));
+
+
+
+
+		sm::Matrix rotMat = d::XMMatrixRotationRollPitchYawFromVector(m_models[m_selected].GetRotation());
+		sm::Matrix scaleMat = d::XMMatrixScalingFromVector(m_models[m_selected].GetScale());
+		sm::Vector3 transformedCenter = d::XMVector3TransformCoord(center, rotMat * scaleMat);
+
+
+		//sm::Vector3 scalar = d::XMVector3TransformCoord(center, d::XMMatrixScalingFromVector(m_models[m_selected].GetScale()));
+		center = transformedCenter;
+		//center *= d::XMVector3TransformCoord(center, d::XMMatrixRotationRollPitchYawFromVector(m_models[m_selected].GetRotation()));
+		sphere.Center = center;
 		float radius = sphere.Radius * GetHighestValue(m_models[m_selected].GetScale());
 		radius *= 2.0f;
 		//if (extents.y == 0.f) extents.y = 0.01f;

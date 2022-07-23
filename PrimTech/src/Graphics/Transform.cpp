@@ -135,6 +135,14 @@ sm::Matrix Transform::GetWorldTransposed()
 	return worldTransposed;
 }
 
+sm::Matrix Transform::GetWorld()
+{
+	sm::Matrix world = worldTransposed;
+	world.Transpose();
+	return world;
+;
+}
+
 sm::Matrix Transform::GetWorldInversed()
 {
 	sm::Matrix matrix =
