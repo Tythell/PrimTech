@@ -12,7 +12,7 @@
 #include "3rdParty\imgui/imgui_impl_win32.h"
 #include "3rdParty\imgui/imgui_impl_dx11.h"
 
-#include "3rdParty/imguizmo/z/ImGuizmo.h"
+//#include "3rdParty/imguizmo/z/ImGuizmo.h"
 
 namespace sm = DirectX::SimpleMath;
 using Vector2i = DirectX::XMINT2;

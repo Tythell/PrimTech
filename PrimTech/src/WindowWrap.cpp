@@ -85,6 +85,11 @@ LRESULT Window::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	if (ImGui_ImplWin32_WndProcHandler(hwnd, uMsg, wParam, lParam)) return true;
 	switch (uMsg)
 	{
+	case WM_ACTIVATE: 
+	{
+		m_isFocused = (LOWORD(wParam));
+		return 0;
+	}
 	case WM_LBUTTONDOWN:
 	{
 		int x = LOWORD(lParam);
@@ -226,6 +231,11 @@ uint16_t Window::getWinHeight() const
 void Window::ShutDown()
 {
 	DestroyWindow(m_hwnd);
+}
+
+bool Window::GetIsFocused() const
+{
+	return m_isFocused;
 }
 
 Window::Window():

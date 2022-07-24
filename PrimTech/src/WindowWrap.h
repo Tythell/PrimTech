@@ -22,6 +22,7 @@ public:
 	uint16_t getWinWidth() const;
 	uint16_t getWinHeight() const;
 	void ShutDown();
+	bool GetIsFocused() const;
 private:
 	DX11Addon* m_pDX11 = nullptr;
 	bool m_apiLoaded = false;
@@ -31,5 +32,6 @@ private:
 	HINSTANCE m_hInstance = NULL;
 	std::wstring m_wndClass;
 	KeyboardHandler* mp_kb = nullptr;
+	bool m_isFocused = true;
 };
 

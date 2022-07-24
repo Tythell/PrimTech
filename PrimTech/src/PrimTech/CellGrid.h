@@ -55,7 +55,7 @@ private:
 	float m_timer = 0.f;
 	const float TIMELIMIT;
 
-	RenderCell m_cell;
+	//RenderCell m_cell;
 	const int NTILES;
 
 	const float WATER_E_RATE;

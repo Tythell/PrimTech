@@ -43,7 +43,7 @@ namespace pt
 		
 		static bool isclick = false;
 
-		if (canMove)
+		if (canMove && m_window.GetIsFocused())
 		{
 			SetCursorPos(m_windowPos.x + (m_window.getWinWidth() / 2),m_windowPos.y + (m_window.getWinHeight() / 2));
 		}
