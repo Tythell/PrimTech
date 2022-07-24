@@ -19,7 +19,7 @@ DX11Addon::DX11Addon(Window& window, Camera& camera) :
 	InitShaders();
 	InitConstantBuffers();
 	InitScene();
-	m_renderbox.Init(device);
+	m_renderbox.Init(device, dc);
 	ImGuiInit(window.getHWND());
 }
 
@@ -228,7 +228,7 @@ bool DX11Addon::InitScene()
 	m_rLine.Init(device, dc);
 	m_sphere.Init(device, dc);
 
-	ImportScene("Scenes\\handmodel.ptscene");
+	ImportScene("Scenes\\DefaultScene.ptscene");
 
 	//m_playermodel.Init("dirCapsule.obj");
 	//m_playermodel.SetScale(.1f);
@@ -401,6 +401,10 @@ void DX11Addon::ImguiDebug()
 	ImGui::Checkbox("Vsync", &im.useVsync);
 	ImGui::SameLine();
 	ImGui::Checkbox("Handmodel", &im.enableHandModel);
+	ImGui::SameLine();
+	ImGui::Checkbox("Raycast", &im.drawRayCast);
+	ImGui::SameLine();
+	ImGui::Checkbox("BCircle", &im.drawBCircle);
 	if (ImGui::CollapsingHeader("Light", ImGuiTreeNodeFlags_DefaultOpen))
 	{
 		ImGui::DragFloat4("Ambient", im.ambient, 0.002f, 0.f, 1.f);
@@ -433,6 +437,9 @@ void DX11Addon::ImGuiRender()
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
+	//ImGuizmo::BeginFrame();
+
+	//ImGuizmo::SetOrthographic(false);
 
 	m_isHoveringWindow = false;
 	ImguiDebug();
@@ -527,23 +534,23 @@ void DX11Addon::ImGuiEntList()
 				m_selected = m_models.size() - 1;
 			}
 		}
-		//ImGui::SameLine();
-		//if (mp_kb->IsKeyDown(Key::Q))
-		//	m_selected = -1;
 
 		ImGui::BeginChild("Lefty", ImVec2(150, 350), true);
+		if (ImGui::IsWindowHovered())
+			m_isHoveringWindow = true;
 		for (int i = 0; i < m_models.size(); i++)
 		{
 			if (ImGui::Selectable(m_models[i].GetName().c_str(), m_selected == i))
 				m_selected = i;
-			//if(ImGui::GetMouseClickedCount(ImGuiMouseButton))
-			//if (ImGui::BeginPopupContextWindow())
-			//{
-			//	//ImGui::Text("dun dun duun");
-			//	m_selected = -1;
-			//	ImGui::EndPopup();
-			//	ImGui::SetWindowFocus();
-			//}
+			//if(ImGui::GetMouseClickedCount(ImGuiMouseButton())
+
+		}
+		if (ImGui::BeginPopupContextWindow())
+		{
+			ImGui::Text("dun dun duun");
+			//m_selected = -1;
+			//ImGui::SetWindowFocus();
+			ImGui::EndPopup();
 		}
 		ImGui::EndChild();
 		ImGui::End();
@@ -776,9 +783,16 @@ float GetHighestValue(const sm::Vector3& v)
 	return value;
 }
 
+float GetAvarageValue(const sm::Vector3& v)
+{
+	float value = (v.x + v.y + v.z) / 3;
+
+	return value;
+}
+
 int ClickFoo(const sm::Ray& ray, std::vector<Model>& models)
 {
-	float maxDistance = -100.f;
+	float maxDistance = 100.f;
 	float t = 0.f;
 	int index = -1;
 
@@ -787,22 +801,18 @@ int ClickFoo(const sm::Ray& ray, std::vector<Model>& models)
 	{
 		transformedSphere = models[i].GetBSphere();
 		sm::Vector3 center = transformedSphere.Center;
-		//sm::Vector3 extents = transformedBox.Extents;
+
 		float radius = transformedSphere.Radius;
-		//if (extents.y == 0.f) extents.y = 0.01f;
-		//center += models[i].GetPosition();
+
 		radius *= GetHighestValue(models[i].GetScale());
 
-		//sm::Matrix rotMat = d::XMMatrixRotationRollPitchYawFromVector(models[i].GetRotation());
-		//sm::Matrix scaleMat = d::XMMatrixScalingFromVector(models[i].GetScale());
-		//sm::Matrix posMat = d::XMMatrixTranslationFromVector(models[i].GetPosition());
 		sm::Vector3 transformedCenter = d::XMVector3TransformCoord(center, models[i].GetWorld());
 
 		transformedSphere.Center = transformedCenter;
 		transformedSphere.Radius = radius;
 
-		
-		if (ray.Intersects(transformedSphere, t))
+		float dummy = 0.f;
+		if (ray.Intersects(transformedSphere, dummy))
 		{
 			sm::Ray localSpaceRay;
 			sm::Matrix invWorld = models[i].GetWorldInversed();
@@ -818,7 +828,9 @@ int ClickFoo(const sm::Ray& ray, std::vector<Model>& models)
 				sm::Vector3 tri2 = pVbuffer->Data((j * 3) + 2).position;
 				if (localSpaceRay.Intersects(tri0, tri1, tri2, t))
 				{
-					if (t > maxDistance)
+					// Multiply distnace to world space
+					t *= GetAvarageValue(models[i].GetScale());
+					if (t < maxDistance)
 					{
 						maxDistance = t;
 						index = i;
@@ -838,15 +850,17 @@ int ClickFoo(const sm::Ray& ray, std::vector<Model>& models)
 
 void DX11Addon::Click(const sm::Vector3& dir)
 {
-	sm::Ray ray;
-	ray.position = mp_cam->GetPosition();
-	ray.direction = dir;
-	sm::Vector3 endPos = dir + mp_cam->GetPosition();
-	m_rLine.SetLine(mp_cam->GetPosition(), endPos);
-
-	int n = ClickFoo(ray, m_models);
 	if (!m_isHoveringWindow)
+	{
+		sm::Ray ray;
+		ray.position = mp_cam->GetPosition();
+		ray.direction = dir;
+		sm::Vector3 endPos = dir + mp_cam->GetPosition();
+		m_rLine.SetLine(mp_cam->GetPosition(), endPos);
+
+		int n = ClickFoo(ray, m_models);
 		m_selected = n;
+	}
 }
 
 void DX11Addon::SetInputP(KeyboardHandler& kb)
@@ -867,7 +881,7 @@ void DX11Addon::Render(const float& deltatime)
 	dc->VSSetShader(m_lineVS.GetShader(), NULL, 0);
 	dc->PSSetShader(m_linePS.GetShader(), NULL, 0);
 
-	if (m_selected != -1)
+	if (im.drawBCircle && m_selected != -1)
 	{
 
 		//m_transformBuffer.Data().world = d::XMMatrixTranspose(d::XMMatrixTranslation(0.f, 1.f, 0.f));
@@ -897,10 +911,15 @@ void DX11Addon::Render(const float& deltatime)
 		m_transformBuffer.UpdateBuffer();
 		m_sphere.Draw(dc);
 	}
-	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
-	//m_transformBuffer.Data().world = d::XMMatrixIdentity();
-	//m_transformBuffer.UpdateBuffer();
-	//m_rLine.Draw(dc);
+	
+	if (im.drawRayCast)
+	{
+		dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
+		m_transformBuffer.Data().world = d::XMMatrixIdentity();
+		m_transformBuffer.UpdateBuffer();
+		m_rLine.Draw(dc);
+	}
+
 	dc->IASetInputLayout(m_3dvs.GetInputLayout());
 	dc->VSSetShader(m_3dvs.GetShader(), NULL, 0);
 	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -924,10 +943,6 @@ void DX11Addon::Render(const float& deltatime)
 		m_viewmdl.Draw();
 	}
 	m_bulb.Draw();
-
-
-
-
 
 	//m_transformBuffer.Data().world = d::XMMatrixTranspose(d::XMMatrixTranslation(0.f, 0.f, 1.f));
 	//m_transformBuffer.UpdateCB();

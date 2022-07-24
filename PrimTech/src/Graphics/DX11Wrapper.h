@@ -12,6 +12,8 @@
 #include "3rdParty\imgui/imgui_impl_win32.h"
 #include "3rdParty\imgui/imgui_impl_dx11.h"
 
+#include "3rdParty/imguizmo/z/ImGuizmo.h"
+
 namespace sm = DirectX::SimpleMath;
 using Vector2i = DirectX::XMINT2;
 
@@ -19,7 +21,6 @@ class Window;
 
 struct ImGuiVars
 {
-	//float f[3] = {100.f,1.f, 0.f};
 	bool useVsync = true;
 	char* buffer = new char[16]{"toon.png"};
 	float pointLightPos[3] = { 0.f,1.f,0.f };
@@ -27,7 +28,7 @@ struct ImGuiVars
 	float pointLightStr = 1.f;
 	float pointLightDistance = 10.f;
 	float offset = 0.f;
-	float ambient[4] = {1.f,1.f,1.f, .2f};
+	float ambient[4] = {1.f,1.f,1.f,.2f};
 	float direction[3] = { 0.f, 1.f, 0.f };
 	float atten = .5f;
 	int fov = 80;
@@ -37,6 +38,8 @@ struct ImGuiVars
 	float gradient[2] = { 255.f / 2.f,1.f};
 	float gradientOffset = 0.f;
 	float specPow = 50.f;
+	bool drawRayCast = false;
+	bool drawBCircle = false;
 };
 
 void RecursiveRead(Sceneheaders& header, std::vector<Model>& v, std::ifstream& reader);
@@ -97,31 +100,18 @@ private:
 	ID3D11SamplerState* m_sampState = nullptr;
 	ID3D11BlendState* m_blendState = nullptr;
 
-	//VertexShader m_quadVs;
-	//PixelShader m_quadPs;
-
 	VertexShader m_3dvs;
-	//PixelShader m_3dps;
 	PixelShader m_3dnoLightps;
 	PixelShader m_toonPS;
 
 	PixelShader m_linePS;
 	VertexShader m_lineVS;
 
-	//VertexBuffer<Vertex> m_vbuffer;
-	//IndexBuffer m_iBuffer;
-
-	//TextureMap m_fileTexture;
-
 	Buffer<hlsl::cbpWorldTransforms3D> m_transformBuffer;
 	Buffer<hlsl::cbpLightBuffer> m_lightbuffer;
 	Buffer<hlsl::cbpMaterialBuffer> m_materialBuffer;
 
-	//Mesh m_selectbox;
-
 	Camera* mp_cam;
-
-	//CellGrid m_grid;
 
 	ImGuiVars im;
 	KeyboardHandler* mp_kb;
@@ -138,7 +128,7 @@ private:
 
 	sm::Vector2 mouseClickPos = {0.f,0.f};
 
-	unsigned char m_ZAToonExport[255] = {};
+	//unsigned char m_ZAToonExport[255] = {};
 	bool m_isHoveringWindow = false;
 };
 

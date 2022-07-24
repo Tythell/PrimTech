@@ -1,0 +1,3 @@
+[submodule "PrimTech/src/Graphics/3rdParty/imguizmo/z"]
+	path = PrimTech/src/Graphics/3rdParty/imguizmo/z
+	url = https://github.com/CedricGuillemet/ImGuizmo

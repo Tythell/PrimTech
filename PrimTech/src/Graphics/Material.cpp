@@ -92,19 +92,14 @@ void Material::Set(ID3D11DeviceContext*& dc)
 
 	for (int i = 1; i < eTextureTypeAMOUNT; i++)
 	{
-		HasTexture(TextureType(i));
-		if ((mp_textures[i] != nullptr))
+		if (HasTexture(TextureType(i)))
 			dc->PSSetShaderResources(1 + i, 1, mp_textures[i]->GetSRVAdress());
 	}
 
-	bool hasDistortion = (mp_textures[eDistortion] != nullptr);
-	bool hasNormalMap = (mp_textures[eNormal] != nullptr);
-	bool hasOpacityMap = (mp_textures[eOpacity] != nullptr);
-
 	mp_matBuffer->Data().textureScaleDist = m_textureScaleDist;
-	mp_matBuffer->Data().hasDistortion = int(hasDistortion);
-	mp_matBuffer->Data().hasNormal = int(hasNormalMap);
-	mp_matBuffer->Data().hasOpacityMap = int(hasOpacityMap);
+	mp_matBuffer->Data().hasDistortion = int(HasTexture(eDistortion));
+	mp_matBuffer->Data().hasNormal = int(HasTexture(eNormal));
+	mp_matBuffer->Data().hasOpacityMap = int(HasTexture(eOpacity));
 
 	//dc->PSSetConstantBuffers(1, 1, mp_matBuffer->GetReference());
 	mp_matBuffer->Data().texCoordOffset = m_diffuseOffsetValue;

@@ -119,7 +119,11 @@ float4 main(PSInput input) : SV_Target
     if (rim == 1)
         rimDot = 1 - dot(-camToOb, normal);
     
-    float3 final = diffuse.xyz * (cellLightStr) + (rimDot.rrr * rimColor);
+    float rimamount = 0.85f;
+    
+    float rimIntesnity = smoothstep(rimamount - 0.001, rimamount + 0.001f, rimDot);
+    
+    float3 final = diffuse.xyz * (cellLightStr) + (rimDot.xxx * rimColor);
 
     
     

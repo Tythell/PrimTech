@@ -55,6 +55,7 @@ public:
 	HRESULT CreateVertexBuffer(ID3D11Device*& device, T* data, UINT bufferSize, ID3D11DeviceContext* dc = NULL)
 	{
 		POPUP_ERROR((m_buffer == nullptr), "Buffer created twice");
+		m_type = eVERTEX;
 
 		m_usage = eIMMULATBLE;
 		UINT cpuFlags = 0;
@@ -92,6 +93,7 @@ public:
 
 	HRESULT CreateConstantBuffer(ID3D11Device*& device, ID3D11DeviceContext*& dc)
 	{
+		m_type = eCONSTANT;
 		m_usage = eDYNAMIC;
 		if (m_buffer)
 		{
@@ -118,6 +120,7 @@ public:
 	// DeviceContext only needed if buffer will be changed
 	HRESULT CreateIndexBuffer(ID3D11Device*& device, T* indexData, UINT numIndices, ID3D11DeviceContext* dc = NULL)
 	{
+		m_type = eINDEX;
 		m_usage = eIMMULATBLE;
 		if (m_buffer)
 		{
@@ -150,6 +153,7 @@ public:
 
 	HRESULT CreateBuffer(BufferType type, ID3D11Device*& device, T* data, UINT size, ID3D11DeviceContext* dc = NULL)
 	{
+		m_type = type;
 		m_bufferSize = size;
 		mp_dc = dc;
 		m_usage = eIMMULATBLE;
@@ -208,5 +212,5 @@ private:
 	UINT m_stride = sizeof(T);
 	UINT m_bufferSize = 0;
 	BufferUsage m_usage = eDEFAULT;
-	//BufferType m_type;
+	BufferType m_type = BufferType(0);
 };

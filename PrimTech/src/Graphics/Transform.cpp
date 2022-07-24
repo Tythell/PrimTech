@@ -139,7 +139,6 @@ sm::Matrix Transform::GetWorld()
 {
 	sm::Matrix world = worldTransposed;
 	return world.Transpose();
-;
 }
 
 sm::Matrix Transform::GetWorldInversed()

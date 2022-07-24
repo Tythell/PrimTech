@@ -141,6 +141,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Graphics\RenderShapes.cpp" />
     <ClCompile Include="src\PrimTech\Scene.cpp" />
     <ClCompile Include="src\Utility\CommonDialogs.cpp" />
     <ClCompile Include="src\Defines.cpp" />
@@ -172,6 +173,7 @@
     <ClCompile Include="src\Graphics\ViewModel.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Graphics\RenderShapes.h" />
     <ClInclude Include="src\PrimTech\Scene.h" />
     <ClInclude Include="src\Utility\CommonDialogs.h" />
     <ClInclude Include="src\Graphics\Buffer.h" />
