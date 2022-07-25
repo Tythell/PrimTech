@@ -19,11 +19,7 @@ void Transform::SetPosition(sm::Vector3 v)
 
 void Transform::SetRotation(float x, float y, float z)
 {
-	//if (x < 0.f || x > d::XM_2PI) x = d::XM_2PI + x;
-	//if (y < 0.f || y > d::XM_2PI) y = d::XM_2PI + y;
-	//if (z < 0.f || z > d::XM_2PI) z = d::XM_2PI + z;
-	m_rot = sm::Vector3(x, y, z);
-	ForceRotation(m_rot);
+	SetRotation(sm::Vector3(x, y, z));
 	UpdateWorld();
 }
 
@@ -34,7 +30,17 @@ void Transform::SetRotation(sm::Vector3 v)
 	//if (v.z < 0.f || v.z > d::XM_2PI) v.z = d::XM_2PI + v.z;
 	m_rot = v;
 	ForceRotation(m_rot);
+	//if (v.x + v.y + v.z != 0.f)
+		//printf("");
+	//sm::Quaternion quat = quat.CreateFromYawPitchRoll(v.x, v.y, v.z);
+	
+	//m_rot = quat;
 	UpdateWorld();
+}
+
+void Transform::SetRotation(sm::Quaternion q)
+{
+	m_rot = q.ToEuler();
 }
 
 void Transform::SetScale(float x, float y, float z)
@@ -69,20 +75,14 @@ void Transform::Move(sm::Vector3 v)
 
 void Transform::Rotate(float x, float y, float z)
 {
-	m_rot += sm::Vector3(x, y, z);
-	//if (m_rot.x < 0.f || m_rot.x > d::XM_2PI) m_rot.x = d::XM_2PI + m_rot.x;
-	//if (m_rot.y < 0.f || m_rot.y > d::XM_2PI) m_rot.y = d::XM_2PI + m_rot.y;
-	//if (m_rot.z < 0.f || m_rot.z > d::XM_2PI) m_rot.z = d::XM_2PI + m_rot.z;
-	ForceRotation(m_rot);
+	Rotate(sm::Vector3(x, y, z));
 	UpdateWorld();
 }
 
 void Transform::Rotate(sm::Vector3 v)
 {
+	//sm::Quaternion quat = quat.CreateFromYawPitchRoll(v.x, v.y, v.z);
 	m_rot += v;
-	//if (m_rot.x < 0.f || m_rot.x > d::XM_2PI) m_rot.x = d::XM_2PI + m_rot.x;
-	//if (m_rot.y < 0.f || m_rot.y > d::XM_2PI) m_rot.y = d::XM_2PI + m_rot.y;
-	//if (m_rot.z < 0.f || m_rot.z > d::XM_2PI) m_rot.z = d::XM_2PI + m_rot.z;
 	ForceRotation(m_rot);
 
 	UpdateWorld();
@@ -106,6 +106,11 @@ void Transform::Scale(float xyz)
 	UpdateWorld();
 }
 
+void Transform::SetWorldMatrix(sm::Matrix m)
+{
+	worldTransposed = m.Transpose();
+}
+
 sm::Vector3 Transform::GetPosition() const
 {
 	return m_pos;
@@ -113,6 +118,8 @@ sm::Vector3 Transform::GetPosition() const
 
 sm::Vector3 Transform::GetRotation() const
 {
+	//sm::Vector3 eulerRotation = m_rot.ToEuler();
+	//return eulerRotation;
 	return m_rot;
 }
 
@@ -148,6 +155,12 @@ sm::Matrix Transform::GetWorldInversed()
 		d::XMMatrixInverse(nullptr, DirectX::XMMatrixRotationRollPitchYawFromVector(m_rot)) *
 		d::XMMatrixInverse(nullptr, DirectX::XMMatrixScalingFromVector(m_scale));
 	return matrix;
+}
+
+sm::Quaternion Transform::GetRotationQuaternion() const
+{
+	sm::Quaternion quat = quat.CreateFromYawPitchRoll(m_rot.x, m_rot.y, m_rot.z);
+	return quat;
 }
 
 void ForceRotation(float& x, float& y, float& z)

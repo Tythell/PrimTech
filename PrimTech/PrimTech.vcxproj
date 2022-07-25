@@ -117,6 +117,7 @@
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)PrimTech/src/Graphics/3rdParty/imgui/;$(SolutionDir)PrimTech/src/Graphics/3rdParty/ImGuizmo/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -142,6 +143,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Graphics\3rdParty\ImGuizmo\GraphEditor.cpp" />
+    <ClCompile Include="src\Graphics\3rdParty\ImGuizmo\ImCurveEdit.cpp" />
+    <ClCompile Include="src\Graphics\3rdParty\ImGuizmo\ImGradient.cpp" />
+    <ClCompile Include="src\Graphics\3rdParty\ImGuizmo\ImGuizmo.cpp" />
+    <ClCompile Include="src\Graphics\3rdParty\ImGuizmo\ImSequencer.cpp" />
     <ClCompile Include="src\Graphics\RenderShapes.cpp" />
     <ClCompile Include="src\PrimTech\Scene.cpp" />
     <ClCompile Include="src\Utility\CommonDialogs.cpp" />
@@ -174,6 +180,12 @@
     <ClCompile Include="src\Graphics\ViewModel.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Graphics\3rdParty\ImGuizmo\GraphEditor.h" />
+    <ClInclude Include="src\Graphics\3rdParty\ImGuizmo\ImCurveEdit.h" />
+    <ClInclude Include="src\Graphics\3rdParty\ImGuizmo\ImGradient.h" />
+    <ClInclude Include="src\Graphics\3rdParty\ImGuizmo\ImGuizmo.h" />
+    <ClInclude Include="src\Graphics\3rdParty\ImGuizmo\ImSequencer.h" />
+    <ClInclude Include="src\Graphics\3rdParty\ImGuizmo\ImZoomSlider.h" />
     <ClInclude Include="src\Graphics\RenderShapes.h" />
     <ClInclude Include="src\PrimTech\Scene.h" />
     <ClInclude Include="src\Utility\CommonDialogs.h" />

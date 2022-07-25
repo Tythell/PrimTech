@@ -47,8 +47,9 @@ namespace pt
 		{
 			SetCursorPos(m_windowPos.x + (m_window.getWinWidth() / 2),m_windowPos.y + (m_window.getWinHeight() / 2));
 		}
-			m_cam3d.Move(move);
-
+		m_cam3d.Move(move);
+		
+		mp_gApi->SetCanMove(canMove);
 		
 		if (!m_kb.IsKeyDown(m_camlockKey))
 			isclick = false;

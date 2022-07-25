@@ -49,6 +49,12 @@
     <Filter Include="Source Files\Input">
       <UniqueIdentifier>{da403211-6c81-4690-81f0-0ab3a18a06e8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\ImGui\ImGuizmo">
+      <UniqueIdentifier>{44df7968-43f1-4480-8d3d-b358dd0d483b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ImGui\imguizmo">
+      <UniqueIdentifier>{a7bc2e06-1e97-41b9-9164-2b1215daed7d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -140,6 +146,21 @@
     </ClCompile>
     <ClCompile Include="src\Graphics\RenderShapes.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\3rdParty\ImGuizmo\GraphEditor.cpp">
+      <Filter>Source Files\ImGui\imguizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\3rdParty\ImGuizmo\ImCurveEdit.cpp">
+      <Filter>Source Files\ImGui\imguizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\3rdParty\ImGuizmo\ImGradient.cpp">
+      <Filter>Source Files\ImGui\imguizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\3rdParty\ImGuizmo\ImGuizmo.cpp">
+      <Filter>Source Files\ImGui\imguizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\3rdParty\ImGuizmo\ImSequencer.cpp">
+      <Filter>Source Files\ImGui\imguizmo</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -262,6 +283,24 @@
     </ClInclude>
     <ClInclude Include="src\Graphics\RenderShapes.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\3rdParty\ImGuizmo\GraphEditor.h">
+      <Filter>Header Files\ImGui\ImGuizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\3rdParty\ImGuizmo\ImCurveEdit.h">
+      <Filter>Header Files\ImGui\ImGuizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\3rdParty\ImGuizmo\ImGradient.h">
+      <Filter>Header Files\ImGui\ImGuizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\3rdParty\ImGuizmo\ImGuizmo.h">
+      <Filter>Header Files\ImGui\ImGuizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\3rdParty\ImGuizmo\ImSequencer.h">
+      <Filter>Header Files\ImGui\ImGuizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\3rdParty\ImGuizmo\ImZoomSlider.h">
+      <Filter>Header Files\ImGui\ImGuizmo</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -8,11 +8,13 @@
 #include"ViewModel.h"
 #include<fstream>
 
-#include"3rdParty\imgui\imgui.h"
-#include "3rdParty\imgui/imgui_impl_win32.h"
-#include "3rdParty\imgui/imgui_impl_dx11.h"
+#include "imgui.h"
+#include "imgui_impl_win32.h"
+#include "imgui_impl_dx11.h"
 
-//#include "3rdParty/imguizmo/z/ImGuizmo.h"
+#include "ImGuizmo.h"
+
+#define IMGUI_DEFINE_MATH_OPERATORS
 
 namespace sm = DirectX::SimpleMath;
 using Vector2i = DirectX::XMINT2;
@@ -59,6 +61,7 @@ public:
 	void CalculateFps(const float& deltatime);
 
 	void Click(const sm::Vector3& dir);
+	void SetCanMove(bool b);
 private:
 	bool initSwapChain();
 	bool initRTV();
@@ -76,6 +79,7 @@ private:
 	void ImguiDebug();
 	void ImGuiMenu();
 	void ImGuiEntList();
+	void ImGuizmo();
 
 	void ImportScene(std::string path);
 	void ExportScene(std::string path);
@@ -130,5 +134,6 @@ private:
 
 	//unsigned char m_ZAToonExport[255] = {};
 	bool m_isHoveringWindow = false;
+	bool m_canMove = true;
 };
 
