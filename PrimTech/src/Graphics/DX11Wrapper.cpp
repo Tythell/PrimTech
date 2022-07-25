@@ -783,16 +783,20 @@ void DX11Addon::ImGuizmo()
 
 		ImGuizmo::Manipulate(view, proj, op, ImGuizmo::LOCAL, model);
 
-		m_models[m_selected].SetWorldMatrix(world);
+		if (ImGuizmo::IsUsing())
+		{
+			m_models[m_selected].SetWorldMatrix(world);
 
-		sm::Vector3 pos;
-		sm::Vector3 scale;
-		sm::Quaternion rot;
-		world.Decompose(scale, rot, pos);
+			sm::Vector3 pos;
+			sm::Vector3 scale;
+			sm::Quaternion rot;
+			world.Decompose(scale, rot, pos);
 
-		m_models[m_selected].SetRotation(rot);
-		m_models[m_selected].SetPosition(pos);
-		m_models[m_selected].SetScale(scale);
+			m_models[m_selected].SetRotation(rot);
+			m_models[m_selected].SetPosition(pos);
+			m_models[m_selected].SetScale(scale);
+		}
+		
 
 
 		//d::xmquater
