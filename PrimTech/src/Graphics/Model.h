@@ -11,7 +11,6 @@ class Mesh
 {
 public:
 	Mesh(std::string path, ID3D11Device*& device, bool makeLeftHanded = true);
-	// Cube/ boudning box buffer
 	Buffer<Vertex3D>& GetVBuffer();
 	std::string GetName() const;
 	void IncreaseUses();

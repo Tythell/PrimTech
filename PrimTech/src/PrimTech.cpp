@@ -32,11 +32,12 @@ namespace pt
 	{
 		m_cam3d.SetRotationSpeed(0.001f);
 		sm::Vector3 move = { 0.f,0.f,0.f };
+		//bool canMove = MouseHandler::GetIsMouseDown(eRIGHTCLICK);
 		static bool canMove = true;
 		if (m_kb.IsKeyDown(Key::A)) move += m_cam3d.GetLeftVector();
 		if (m_kb.IsKeyDown(Key::D)) move += -m_cam3d.GetLeftVector();
-		if (m_kb.IsKeyDown(Key::W)) move += m_cam3d.GetForwardVector();
-		if (m_kb.IsKeyDown(Key::S)) move += -m_cam3d.GetForwardVector();
+		if (m_kb.IsKeyDown(Key::W)) move += m_cam3d.GetForwardVectorNoY();
+		if (m_kb.IsKeyDown(Key::S)) move += -m_cam3d.GetForwardVectorNoY();
 		if (m_kb.IsKeyDown(Key::SPACE)) move += {0.f, 1.f, 0.f};
 		if (m_kb.IsKeyDown(Key::SHIFT)) move += {0.f, -1.f, 0.f};
 		move *= m_playerSpeed * dt;
@@ -104,8 +105,6 @@ namespace pt
 				normRay.Normalize();
 
 				mp_gApi->Click(normRay);
-
-
 			}
 		}
 		if (m_kb.IsKeyDown(m_shutDownKey))

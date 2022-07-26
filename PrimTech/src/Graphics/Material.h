@@ -63,6 +63,7 @@ public:
 	bool HasTexture(const TextureType e) const;
 private:
 	void ReadRecursion(eMaterialHeaders& header, std::ifstream& reader);
+	void ClearMaterial();
 	TextureMap* mp_textures[eTextureTypeAMOUNT] = { nullptr };
 	float m_textureScale = 1.f;
 	float m_textureScaleDist = 1.f;

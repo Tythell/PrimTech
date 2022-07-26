@@ -25,9 +25,11 @@ public:
 	sm::Matrix GetProjM() const;
 
 	sm::Vector3 GetForwardVector() const;
+	sm::Vector3 GetForwardVectorNoY() const;
 	sm::Vector3 GetLeftVector() const;
 	sm::Vector3 GetUpVector() const;
 	sm::Vector3 GetOffset() const;
+	sm::Vector3 GetRelativeOffset() const;
 	sm::Vector3 GetPosition() const;
 	sm::Vector3 GetRotation() const;;
 

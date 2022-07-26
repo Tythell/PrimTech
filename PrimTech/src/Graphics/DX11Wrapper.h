@@ -42,6 +42,8 @@ struct ImGuiVars
 	float specPow = 50.f;
 	bool drawRayCast = false;
 	bool drawBCircle = false;
+	ImGuizmo::MODE transformMode = ImGuizmo::MODE::LOCAL;
+	bool showSelection = true;
 };
 
 void RecursiveRead(Sceneheaders& header, std::vector<Model>& v, std::ifstream& reader);
@@ -123,6 +125,7 @@ private:
 	int m_selected = -1;
 	Model m_bulb;
 	ViewModel m_viewmdl;
+	Model m_playermodel;
 	std::vector<Model> m_models;
 	RenderBox m_renderbox;
 	sm::Ray m_ray;

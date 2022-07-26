@@ -125,6 +125,13 @@ sm::Vector3 Camera::GetForwardVector() const
 	return m_forwardV;
 }
 
+sm::Vector3 Camera::GetForwardVectorNoY() const
+{
+	sm::Vector3 v(m_forwardV.x, 0.f, m_forwardV.z);
+	v.Normalize();
+	return v;
+}
+
 sm::Vector3 Camera::GetLeftVector() const
 {
 	return m_leftV;
@@ -138,6 +145,11 @@ sm::Vector3 Camera::GetUpVector() const
 sm::Vector3 Camera::GetOffset() const
 {
 	return m_offset;
+}
+
+sm::Vector3 Camera::GetRelativeOffset() const
+{
+	return d::XMVector3TransformCoord(m_offset, d::XMMatrixRotationRollPitchYawFromVector(m_rotation));
 }
 
 sm::Vector3 Camera::GetPosition() const
@@ -170,8 +182,7 @@ void Camera::UpdateView()
 	sm::Matrix offsetMatrix = d::XMMatrixTranslationFromVector(m_offset);
 	m_viewM = d::XMMatrixLookAtLH(m_position, camTarget, upDir);
 
-
-	m_viewM =  m_viewM * offsetMatrix;
+	m_viewM *= offsetMatrix;
 
 
 	m_forwardV = d::XMVector3TransformCoord({ 0,0,1 }, camRot);

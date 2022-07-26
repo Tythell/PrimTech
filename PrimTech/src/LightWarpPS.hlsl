@@ -109,10 +109,11 @@ float4 main(PSInput input) : SV_Target
     //diffuse *= att;
     
     lightindex += specular;
+    lightindex /= distance;
     lightindex = clamp(lightindex, 0.01f, 0.99f);
     float3 cellLightStr = ZAToon.Sample(samplerState, float2(lightindex, .5f)).x;
     
-    cellLightStr /= distance;
+    //cellLightStr /= distance;
     
 
     float rimDot = 0;

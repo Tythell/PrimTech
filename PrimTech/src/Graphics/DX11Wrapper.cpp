@@ -227,23 +227,25 @@ bool DX11Addon::InitScene()
 	dc->OMSetBlendState(m_blendState, NULL, 0xFFFFFFFF);
 
 	ResourceHandler::AddTexture("goalflag.png"); // setting missingtexture
-	ResourceHandler::AddTexture("ZANormal.png"); // Load LightWarp Texture
+	ResourceHandler::AddTexture("ZAToon.png"); // Load LightWarp Texture
 	dc->PSSetShaderResources(0, 1, ResourceHandler::GetTexture(1).GetSRVAdress());
 
 	m_rLine.Init(device, dc);
 	m_sphere.Init(device, dc);
 
-	ImportScene("Scenes\\DefaultScene.ptscene");
+	//ImportScene("Scenes\\DefaultScene.ptscene");
+	NewScene();
 
-	//m_playermodel.Init("dirCapsule.obj");
-	//m_playermodel.SetScale(.1f);
+	m_playermodel.Init("dirCapsule.obj");
+	m_playermodel.SetScale(.1f);
 
-	//NewScene();
 
 	m_bulb.Init("bulb.obj", ModelType::eDEBUG);
 	m_bulb.SetScale(1.2f);
 	m_viewmdl.Init("handmodel2.obj", mp_cam);
 	m_bulb.SetMaterialBuffer(m_materialBuffer);
+	m_playermodel.SetMaterialBuffer(m_materialBuffer);
+	m_playermodel.SetDCandBuffer(dc, m_transformBuffer);
 
 	m_viewmdl.m_model.SetDCandBuffer(dc, m_transformBuffer);
 	m_viewmdl.m_model.SetMaterialBuffer(m_materialBuffer);
@@ -286,9 +288,9 @@ void DX11Addon::UpdateScene(const float& deltatime)
 	m_lightbuffer.Data().camPos = { mp_cam->GetPosition().x, mp_cam->GetPosition().y, mp_cam->GetPosition().z, 1.f };
 	m_lightbuffer.UpdateBuffer();
 
-	//m_playermodel.SetRotation(-mp_cam->GetRotation().x, mp_cam->GetRotation().y, -mp_cam->GetRotation().z);
-	//m_playermodel.Rotate(0.f, d::XM_PI, 0.f);
-	//m_playermodel.SetPosition(mp_cam->GetPosition() + sm::Vector3(0.f, -0.1f, 0.f));
+	m_playermodel.SetRotation(0.f/*-mp_cam->GetRotation().x*/, mp_cam->GetRotation().y, 0.f);
+	m_playermodel.Rotate(0.f, d::XM_PI, 0.f);
+	m_playermodel.SetPosition(mp_cam->GetPosition() + sm::Vector3(0.f, -0.1f, 0.f));
 	//m_model.Rotate(0.f, 2.f * deltatime, 0.f);
 }
 
@@ -399,6 +401,11 @@ void DX11Addon::ImguiDebug()
 	std::string fpsString = "FPS: " + std::to_string(m_fps);
 	ImGui::Text(fpsString.c_str());
 
+	ImGui::Checkbox("Show selection", &im.showSelection);
+	ImGui::RadioButton("local", (int*)&im.transformMode, 0); ImGui::SameLine();
+	ImGui::RadioButton("world", (int*)&im.transformMode, 1);
+	
+
 	if (ImGui::SliderInt("FOV", &im.fov, 40.f, 110.f))
 		mp_cam->SetPerspective(im.fov, (float)m_width / (float)m_height, .1f, 100.f);
 
@@ -459,7 +466,7 @@ void DX11Addon::ImGuiRender()
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 }
 
-#define PRINTER(name) printer(#name, )
+//#define PRINTER(name) printer(#name, )
 
 void DX11Addon::ImGuiShutDown()
 {
@@ -650,9 +657,6 @@ void DX11Addon::ImGuiEntList()
 					int distDivider = pMaterial->GetDistortionDivider();
 					ImGui::SliderInt("Dist divider", &distDivider, 1, 20);
 					pMaterial->SetDistortionDivider(distDivider);
-					float distScale = pMaterial->GetTextureScaleDist();
-					ImGui::SliderFloat("Distortion scale", &distScale, 1.f, 10.f);
-					pMaterial->SetTextureScaleDist(distScale);
 				}
 
 				float transparancy = pMaterial->GetTransparancy();
@@ -662,6 +666,12 @@ void DX11Addon::ImGuiEntList()
 				float tiling = pMaterial->GetTextureScale();
 				ImGui::SliderFloat("Tiling", &tiling, 1.f, 10.f);
 				pMaterial->SetTextureScale(tiling);
+				if (hasDistMap)
+				{
+					float distScale = pMaterial->GetTextureScaleDist();
+					ImGui::SliderFloat("Distortion scale", &distScale, 1.f, 10.f);
+					pMaterial->SetTextureScaleDist(distScale);
+				}
 
 				if (ImGui::Button("Import Material"))
 				{
@@ -705,7 +715,7 @@ void DX11Addon::ImGuiEntList()
 		{
 			m_models[i].GetMaterial().SetSelection(false);
 		}
-		if (m_selected != -1 && !m_canMove)
+		if (m_selected != -1 && im.showSelection)
 			m_models[m_selected].GetMaterial().SetSelection(true);
 	}
 
@@ -781,7 +791,7 @@ void DX11Addon::ImGuizmo()
 		const auto proj = reinterpret_cast<const float*>(&camProj);
 		const auto view = reinterpret_cast<const float*>(&camViewM);
 
-		ImGuizmo::Manipulate(view, proj, op, ImGuizmo::LOCAL, model);
+		ImGuizmo::Manipulate(view, proj, op, im.transformMode, model);
 
 		if (ImGuizmo::IsUsing())
 		{
@@ -913,11 +923,12 @@ void DX11Addon::Click(const sm::Vector3& dir)
 	if (!m_isHoveringWindow)
 	{
 		sm::Ray ray;
-		ray.position = mp_cam->GetPosition();
+		ray.position = mp_cam->GetPosition() - mp_cam->GetRelativeOffset();
 		ray.direction = dir;
-		sm::Vector3 endPos = dir + mp_cam->GetPosition();
-		m_rLine.SetLine(mp_cam->GetPosition(), endPos);
-
+#ifdef _DEBUG
+		sm::Vector3 endPos = ray.position + dir;
+		m_rLine.SetLine(ray.position, endPos);
+#endif // _DEBUG
 		int n = ClickFoo(ray, m_models);
 		m_selected = n;
 	}
@@ -986,8 +997,8 @@ void DX11Addon::Render(const float& deltatime)
 	//dc->PSSetShader(m_3dps.GetShader(), NULL, 0);
 	dc->PSSetShader(m_toonPS.GetShader(), NULL, 0);
 
-	//if (mp_cam->GetOffset().z != 0.f)
-	//	m_playermodel.Draw();
+	if (mp_cam->GetOffset().z != 0.f)
+		m_playermodel.Draw();
 
 	for (int i = 0; i < modelAmount; i++)
 	{

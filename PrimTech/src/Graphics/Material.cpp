@@ -34,13 +34,13 @@ void Material::ReadRecursion(eMaterialHeaders& header, std::ifstream& reader)
 		reader.read(charBuffer, FILENAME_MAXSIZE);
 		reader.read((char*)&m_distortionOffsetSpeed, sizeof(sm::Vector2));
 		reader.read((char*)&m_distDivider, 4);
-		if(std::string(charBuffer) != "")
-			LoadTexture(std::string(charBuffer), eDistortion);
+		//if(std::string(charBuffer) != "")
+		LoadTexture(std::string(charBuffer), eDistortion);
 		break;
 	case eMaterialHeaders::eOPACITY:
 		reader.read(charBuffer, FILENAME_MAXSIZE);
 		LoadTexture(std::string(charBuffer), eOpacity);
-		reader.read((char*)&m_transparency, 4);
+		//reader.read((char*)&m_transparency, 4);
 		break;
 	case eMaterialHeaders::eTILING:
 		reader.read((char*)&m_textureScale, 4);
@@ -50,6 +50,21 @@ void Material::ReadRecursion(eMaterialHeaders& header, std::ifstream& reader)
 	}
 	reader.read((char*)&header, 4);
 	ReadRecursion(header, reader);
+}
+
+void Material::ClearMaterial()
+{
+	for (int i = 0; i < eTextureTypeAMOUNT; i++)
+	{
+		mp_textures[i] = nullptr;
+	}
+	m_textureScale = 1.f;
+	m_textureScaleDist = 1.f;
+	m_distDivider = 1.f;
+	m_name = "";
+	m_transparency = 1.f;
+	m_diffuseOffsetValue = { 0.f, 0.f }; m_distortionValue = { 0.f, 0.f };
+	m_diffuseOffsetSpeed = { 0.f, 0.f }; m_distortionOffsetSpeed = { 0.f, 0.f };
 }
 
 void Material::UpdateTextureScroll(const float& deltatime)
@@ -195,7 +210,7 @@ bool Material::ExportMaterial(std::string path)
 		writer.write((const char*)&m_distortionOffsetSpeed, sizeof(sm::Vector2));
 		writer.write((const char*)&m_distDivider, 4);
 	}
-	if (mp_textures[eOpacity])
+	if (mp_textures[eOpacity] != nullptr)
 	{
 		header = eMaterialHeaders::eOPACITY;
 		writer.write((const char*)&header, 4);
@@ -216,6 +231,7 @@ bool Material::ExportMaterial(std::string path)
 
 void Material::ImportMaterial(std::string path)
 {
+	ClearMaterial();
 	m_name = path;
 	std::string err = "Failed to open: " + path;
 	path = "Assets/pmtrl/" + path;
