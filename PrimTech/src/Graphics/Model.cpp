@@ -21,8 +21,6 @@ void Model::Init(const std::string path, ModelType e, bool makeLeftHanded)
 	m_material.SetLeftHanded(makeLeftHanded);
 	m_type = e;
 	std::string fullpath = "Assets/models/" + path;
-	//dc = pDc;
-	//mp_cbTransformBuffer = &buffer;
 	m_name = "";
 	int meshIndex = ResourceHandler::CheckMeshNameExists(StringHelper::GetName(fullpath));
 	if (meshIndex != -1)

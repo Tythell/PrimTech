@@ -30,6 +30,7 @@ public:
 	sm::Vector3 GetUpVector() const;
 	sm::Vector3 GetOffset() const;
 	sm::Vector3 GetRelativeOffset() const;
+	sm::Vector3 GetPositionNoOffset() const;
 	sm::Vector3 GetPosition() const;
 	sm::Vector3 GetRotation() const;;
 

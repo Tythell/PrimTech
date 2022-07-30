@@ -152,9 +152,14 @@ sm::Vector3 Camera::GetRelativeOffset() const
 	return d::XMVector3TransformCoord(m_offset, d::XMMatrixRotationRollPitchYawFromVector(m_rotation));
 }
 
-sm::Vector3 Camera::GetPosition() const
+sm::Vector3 Camera::GetPositionNoOffset() const
 {
 	return m_position;
+}
+
+sm::Vector3 Camera::GetPosition() const
+{
+	return m_position - GetRelativeOffset();
 }
 
 sm::Vector3 Camera::GetRotation() const

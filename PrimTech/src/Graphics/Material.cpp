@@ -1,11 +1,6 @@
 #include "Material.h"
 #include <fstream>
 
-void Material::SetPointers(Buffer<hlsl::cbpMaterialBuffer>* cbMaterialBuffer)
-{
-	mp_matBuffer = cbMaterialBuffer;
-}
-
 void Material::LoadTexture(std::string textureName, TextureType type)
 {
 	int textureIndex = ResourceHandler::CheckTextureNameExists(StringHelper::GetName(textureName));
@@ -188,7 +183,7 @@ bool Material::ExportMaterial(std::string path)
 	if (!writer.is_open())
 		Popup::Error("Failed to export material");
 
-	if (mp_textures[eDiffuse] != nullptr)
+	if (HasTexture(eDiffuse))
 	{
 		header = eMaterialHeaders::eDIFFUSE;
 		writer.write((const char*)&header, 4);
@@ -196,13 +191,13 @@ bool Material::ExportMaterial(std::string path)
 		writer.write((const char*)&m_diffuseOffsetSpeed, sizeof(sm::Vector2));
 		writer.write((const char*)&m_transparency, 4);
 	}
-	if (mp_textures[eNormal] != nullptr)
+	if (HasTexture(eNormal))
 	{
 		header = eMaterialHeaders::eNORMAL;
 		writer.write((const char*)&header, 4);
 		writer.write((const char*)mp_textures[eNormal]->GetName().c_str(), FILENAME_MAXSIZE);
 	}
-	if (mp_textures[eDistortion] != nullptr)
+	if (HasTexture(eDistortion))
 	{
 		header = eMaterialHeaders::eDISTORTION;
 		writer.write((const char*)&header, 4);
@@ -210,7 +205,7 @@ bool Material::ExportMaterial(std::string path)
 		writer.write((const char*)&m_distortionOffsetSpeed, sizeof(sm::Vector2));
 		writer.write((const char*)&m_distDivider, 4);
 	}
-	if (mp_textures[eOpacity] != nullptr)
+	if (HasTexture(eOpacity))
 	{
 		header = eMaterialHeaders::eOPACITY;
 		writer.write((const char*)&header, 4);
@@ -235,19 +230,14 @@ void Material::ImportMaterial(std::string path)
 	m_name = path;
 	std::string err = "Failed to open: " + path;
 	path = "Assets/pmtrl/" + path;
- 	std::ifstream reader(path.c_str(), std::ios::binary | std::ios::in);
-	if (reader.is_open())
-	{
-		eMaterialHeaders header = eMaterialHeaders::eNull;
-		reader.read((char*)&header, 4);
+	std::ifstream reader(path.c_str(), std::ios::binary | std::ios::in);
+	POPUP_ERROR(reader.is_open(), ("Failed to open" + m_name));
 
-		ReadRecursion(header, reader);
-		reader.close();
-	}
-	else
-	{
-		POPUP_ERROR(false, ("Failed to open" + m_name));
-	}
+	eMaterialHeaders header = eMaterialHeaders::eNull;
+	reader.read((char*)&header, 4);
+
+	ReadRecursion(header, reader);
+	reader.close();
 }
 
 void Material::RemoveTexture(const TextureType e)
@@ -289,4 +279,9 @@ float Material::GetTextureScaleDist() const
 bool Material::HasTexture(const TextureType e) const
 {
 	return (mp_textures[e] != nullptr);
+}
+
+void Material::SetPointers(Buffer<hlsl::cbpMaterialBuffer>* cbMaterialBuffer)
+{
+	mp_matBuffer = cbMaterialBuffer;
 }

@@ -33,7 +33,6 @@ enum class eMaterialHeaders
 class Material
 {
 public:
-	void SetPointers(Buffer<hlsl::cbpMaterialBuffer>* cbMaterialBuffer);
 	void LoadTexture(std::string textureName, TextureType type);
 	void UpdateTextureScroll(const float& deltatime);
 	void SetDiffuseScrollSpeed(float x, float y);
@@ -61,6 +60,7 @@ public:
 	float GetTextureScaleDist() const;
 
 	bool HasTexture(const TextureType e) const;
+	void SetPointers(Buffer<hlsl::cbpMaterialBuffer>* cbMaterialBuffer);
 private:
 	void ReadRecursion(eMaterialHeaders& header, std::ifstream& reader);
 	void ClearMaterial();

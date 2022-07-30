@@ -233,8 +233,8 @@ bool DX11Addon::InitScene()
 	m_rLine.Init(device, dc);
 	m_sphere.Init(device, dc);
 
-	//ImportScene("Scenes\\DefaultScene.ptscene");
-	NewScene();
+	ImportScene("Scenes\\DefaultScene.ptscene");
+	//NewScene();
 
 	m_playermodel.Init("dirCapsule.obj");
 	m_playermodel.SetScale(.1f);
@@ -290,7 +290,7 @@ void DX11Addon::UpdateScene(const float& deltatime)
 
 	m_playermodel.SetRotation(0.f/*-mp_cam->GetRotation().x*/, mp_cam->GetRotation().y, 0.f);
 	m_playermodel.Rotate(0.f, d::XM_PI, 0.f);
-	m_playermodel.SetPosition(mp_cam->GetPosition() + sm::Vector3(0.f, -0.1f, 0.f));
+	m_playermodel.SetPosition(mp_cam->GetPositionNoOffset() + sm::Vector3(0.f, -0.1f, 0.f));
 	//m_model.Rotate(0.f, 2.f * deltatime, 0.f);
 }
 
@@ -317,7 +317,6 @@ void ExportToon(char* name, unsigned char* data, int offset, const int& grad1, c
 		// if index is in gradient
 		if (i < grad2 + (255 / 2) && i > grad1)
 		{
-
 
 		}
 	}
@@ -369,7 +368,7 @@ void LoadButton(Material* pMaterial, std::string name, TextureType e)
 	std::string buttonName = "Load##" + name;
 	if (ImGui::Button(buttonName.c_str()))
 	{
-		std::string newMtrlString = Dialogs::OpenFile("Texture (*.png)\0*.png;*.jpg\0", "Assets\\Textures\\", 2);
+		std::string newMtrlString = Dialogs::OpenFile("Images (*.png, *.jpg)\0*.png;*.jpg\0", "Assets\\Textures\\");
 		if (newMtrlString != "")
 		{
 			pMaterial->LoadTexture(newMtrlString, e);
@@ -404,7 +403,7 @@ void DX11Addon::ImguiDebug()
 	ImGui::Checkbox("Show selection", &im.showSelection);
 	ImGui::RadioButton("local", (int*)&im.transformMode, 0); ImGui::SameLine();
 	ImGui::RadioButton("world", (int*)&im.transformMode, 1);
-	
+
 
 	if (ImGui::SliderInt("FOV", &im.fov, 40.f, 110.f))
 		mp_cam->SetPerspective(im.fov, (float)m_width / (float)m_height, .1f, 100.f);
@@ -461,7 +460,7 @@ void DX11Addon::ImGuiRender()
 
 	if (im.showDemoWindow)
 		ImGui::ShowDemoWindow();
-	
+
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 }
@@ -523,6 +522,22 @@ void DX11Addon::ImGuiMenu()
 	}
 }
 
+int AddModelToVector(ID3D11DeviceContext*& dc, Buffer<hlsl::cbpWorldTransforms3D>& tbuffer, Buffer<hlsl::cbpMaterialBuffer>& mbuffer, std::vector<Model>& modelV)
+{
+	std::string path = Dialogs::OpenFile("Model (*.obj)\0*.obj;*.txt\0", "Assets\\models\\");
+	if (!path.empty())
+	{
+		Model newModel;
+		path = StringHelper::GetName(path);
+		newModel.Init(path);
+		newModel.SetDCandBuffer(dc, tbuffer);
+		newModel.SetMaterialBuffer(mbuffer);
+		modelV.emplace_back(newModel);
+		return (modelV.size() - 1);
+	}
+	return -1;
+}
+
 void DX11Addon::ImGuiEntList()
 {
 	ImGui::SetNextWindowSize(ImVec2(500, 400), ImGuiCond_FirstUseEver);
@@ -530,19 +545,14 @@ void DX11Addon::ImGuiEntList()
 	{
 		if (ImGui::IsWindowHovered())
 			m_isHoveringWindow = true;
-		if (ImGui::Button(" + ##AddModel"))
+		if (ImGui::Button(" + ##Button"))
+			ImGui::OpenPopup("popup##context");
+		if (ImGui::BeginPopup("popup##context"))
 		{
-			std::string path = Dialogs::OpenFile("Model (*.obj)\0*.obj;*.txt\0", "Assets\\models\\");
-			if (!path.empty())
-			{
-				Model newModel;
-				path = StringHelper::GetName(path);
-				newModel.Init(path);
-				newModel.SetDCandBuffer(dc, m_transformBuffer);
-				newModel.SetMaterialBuffer(m_materialBuffer);
-				m_models.emplace_back(newModel);
-				m_selected = m_models.size() - 1;
-			}
+			if (ImGui::Selectable("Model"))
+				m_selected = AddModelToVector(dc, m_transformBuffer, m_materialBuffer, m_models);
+
+			ImGui::EndPopup();
 		}
 
 		ImGui::BeginChild("Lefty", ImVec2(150, 350), true);
@@ -552,21 +562,11 @@ void DX11Addon::ImGuiEntList()
 		{
 			if (ImGui::Selectable(m_models[i].GetName().c_str(), m_selected == i))
 				m_selected = i;
-			//if(ImGui::GetMouseClickedCount(ImGuiMouseButton())
+		}
 
-		}
-		if (ImGui::BeginPopupContextWindow())
-		{
-			ImGui::Text("dun dun duun");
-			//m_selected = -1;
-			//ImGui::SetWindowFocus();
-			ImGui::EndPopup();
-		}
 		ImGui::EndChild();
 		ImGui::End();
 
-
-		/*ImGui::SameLine();*/
 		if (m_selected != -1)
 		{
 			ImGui::Begin("Model properties");
@@ -771,7 +771,7 @@ void DX11Addon::ImGuizmo()
 		else if (mp_kb->IsKeyDown(Key::R))
 			op = ImGuizmo::OPERATION::SCALE;
 	}
-	
+
 	if (m_selected != -1 && !m_canMove)
 	{
 		if (ImGuizmo::IsOver() || ImGuizmo::IsUsing())
@@ -787,29 +787,23 @@ void DX11Addon::ImGuizmo()
 		sm::Matrix camProj = mp_cam->GetProjM();
 		sm::Matrix world = m_models[m_selected].GetWorld();
 
-		auto* model = reinterpret_cast<float*>(&world);
-		const auto proj = reinterpret_cast<const float*>(&camProj);
-		const auto view = reinterpret_cast<const float*>(&camViewM);
+		float* model = reinterpret_cast<float*>(&world);
+		const float* proj = reinterpret_cast<const float*>(&camProj);
+		const float* view = reinterpret_cast<const float*>(&camViewM);
 
 		ImGuizmo::Manipulate(view, proj, op, im.transformMode, model);
 
 		if (ImGuizmo::IsUsing())
 		{
-			m_models[m_selected].SetWorldMatrix(world);
-
 			sm::Vector3 pos;
 			sm::Vector3 scale;
 			sm::Quaternion rot;
 			world.Decompose(scale, rot, pos);
 
+			m_models[m_selected].SetScale(scale);
 			m_models[m_selected].SetRotation(rot);
 			m_models[m_selected].SetPosition(pos);
-			m_models[m_selected].SetScale(scale);
 		}
-		
-
-
-		//d::xmquater
 
 		ImGui::End();
 	}
@@ -825,6 +819,7 @@ void DX11Addon::NewScene()
 	groundPlane.SetMaterialBuffer(m_materialBuffer);
 	groundPlane.Scale(10.f);
 	groundPlane.SetPosition(0.f, -.5f, 0.f);
+	groundPlane.LoadTexture("White8.png");
 	m_models.emplace_back(groundPlane);
 }
 
@@ -923,7 +918,7 @@ void DX11Addon::Click(const sm::Vector3& dir)
 	if (!m_isHoveringWindow)
 	{
 		sm::Ray ray;
-		ray.position = mp_cam->GetPosition() - mp_cam->GetRelativeOffset();
+		ray.position = mp_cam->GetPosition();
 		ray.direction = dir;
 #ifdef _DEBUG
 		sm::Vector3 endPos = ray.position + dir;
@@ -982,7 +977,7 @@ void DX11Addon::Render(const float& deltatime)
 		m_transformBuffer.UpdateBuffer();
 		m_sphere.Draw(dc);
 	}
-	
+
 	if (im.drawRayCast)
 	{
 		dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
