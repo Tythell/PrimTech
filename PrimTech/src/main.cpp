@@ -8,7 +8,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	srand((unsigned int)time(0));
 
 	pt::PrimTech app;
-	app.Init(L"PrimTech Editor", hInstance, L"windowClass", 1800, 1000);
+	app.Init(L"PrimTech Editor", hInstance, L"windowClass", 1800, 950);
 	app.Run();
 
 	return 0;

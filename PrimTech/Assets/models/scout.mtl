@@ -1,0 +1,35 @@
+newmtl mesh0SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 0.00
+newmtl mesh1SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd eyeball_l.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 0.00
+newmtl mesh2SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd eyeball_l.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 0.00
+newmtl mesh3SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd scout_red.png
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 98.00

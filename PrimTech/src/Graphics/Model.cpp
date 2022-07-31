@@ -43,7 +43,10 @@ void Model::Draw()
 {
 	UINT offset = 0;
 
+	m_material.GetBuffer()->Data().characterLight[0] = m_characterLight[0];
 	m_material.Set(dc);
+
+
 	mp_cbTransformBuffer->Data().world = GetWorldTransposed();
 	mp_cbTransformBuffer->UpdateBuffer();
 	dc->IASetVertexBuffers(0, 1, mp_mesh->GetVBuffer().GetReference(), mp_mesh->GetVBuffer().GetStrideP(), &offset);
@@ -62,9 +65,19 @@ void Model::LoadTexture(std::string path, TextureType type)
 	m_material.LoadTexture(path, type);
 }
 
+void Model::SetLight(const sm::Vector4& v, const UINT& index)
+{
+	m_characterLight[index] = v;
+}
+
 void Model::SetMaterialBuffer(Buffer<hlsl::cbpMaterialBuffer>& cbMaterialBuffer)
 {
 	m_material.SetPointers(&cbMaterialBuffer);
+}
+
+void Model::DecreaseMeshUsage()
+{
+	mp_mesh->DecreaseUses();
 }
 
 Material& Model::GetMaterial()
@@ -98,7 +111,12 @@ d::BoundingSphere Model::GetBSphere() const
 	return mp_mesh->GetBSphere();
 }
 
-bool LoadObjToBuffer(std::string path, std::vector<Vertex3D>& shape, bool makeLeftHanded)
+const sm::Vector4 Model::GetCharacterLight(int i) const
+{
+	return m_characterLight[i];
+}
+
+bool LoadObjToBuffer(std::string path, Shape& shape, bool makeLeftHanded)
 {
 	//makeLeftHanded = false;
 	std::string s;
@@ -240,6 +258,11 @@ std::string Mesh::GetName() const
 void Mesh::IncreaseUses()
 {
 	m_nrOfUses++;
+}
+
+void Mesh::DecreaseUses()
+{
+	if (m_nrOfUses > 0) m_nrOfUses--;
 }
 
 void Mesh::ResetUses()

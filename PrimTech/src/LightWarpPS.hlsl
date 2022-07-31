@@ -19,8 +19,6 @@ cbuffer LightBuffer : register(b0)
     float lightDistance;
 };
 
-
-
 cbuffer MaterialBuffer : register(b1)
 {
     int hasDistortion;
@@ -35,6 +33,7 @@ cbuffer MaterialBuffer : register(b1)
     int LH;
     int hasOpacityMap;
     float textureScaleDist;
+    float4 characterLight[2];
 }
 
 struct PSInput
@@ -80,7 +79,9 @@ float4 main(PSInput input) : SV_Target
     float4 diffuse = diffuseMap.Sample(samplerState, texCoord + distortion);
     if (hasOpacityMap)
         opacity = opacityMap.Sample(samplerState, texCoord + distortion);
-    //float dirLight = dot(normal, direction);
+    float charDirLight = (characterLight[0].w != 0.f) ? dot(normal, normalize(characterLight[0].xyz)) * characterLight[0].w :
+    0.f;
+    
     
     float3 lightVector = lightPos.xyz - input.worldPos;
 
@@ -110,8 +111,11 @@ float4 main(PSInput input) : SV_Target
     
     lightindex /= distance;
     lightindex += specular;
+    lightindex += charDirLight;
     lightindex = clamp(lightindex, 0.01f, 0.99f);
-    float3 cellLightStr = ZAToon.Sample(samplerState, float2(lightindex, .5f)).x;
+    float3 cellLightStr = ZAToon.Sample(samplerState, float2(lightindex, .5f)).xyz;
+    
+    cellLightStr += ambientColor * ambientStr;
     
     //cellLightStr /= distance;
     

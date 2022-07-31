@@ -1,6 +1,7 @@
 #pragma once
 
 #define BLACK_3F {0.f,0.f,0.f}
+#define BLACK_4F {0.f,0.f,0.f,0.f}
 
 #define RED_3F {1.f,0.f,0.f}
 #define RED_4F {1.f,0.f,1.f, 1.f}

@@ -36,7 +36,8 @@ struct ImGuiVars
 	int fov = 80;
 	float scale[3]{ 1.f,1.f,1.f };
 	bool enableHandModel = false;
-	bool showDemoWindow;
+	bool showDemoWindow = false;
+	bool showDebugWindow = true;
 	float gradient[2] = { 255.f / 2.f,1.f};
 	float gradientOffset = 0.f;
 	float specPow = 50.f;

@@ -42,6 +42,7 @@ namespace hlsl
 		float pointlightStre;
 		float3 camPos;
 		float pointLightDistance;
+		
 	};
 
 	struct cbpMaterialBuffer
@@ -58,5 +59,6 @@ namespace hlsl
 		int LH;
 		int hasOpacityMap;
 		float textureScaleDist;
+		float4 characterLight[2];
 	};
 }

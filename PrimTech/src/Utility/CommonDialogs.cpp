@@ -52,7 +52,9 @@ std::vector<std::string> Dialogs::OpenMultifile(const char* filter, const char* 
 {
 	std::string initdir = std::string(subDir);
 	OPENFILENAMEA ofn;
-	char szFile[260] = { 0 };
+	const int stringSize = 1000;
+	char szFile[stringSize] = {0};
+	//std::string szFile;
 	ZeroMemory(&ofn, sizeof(OPENFILENAMEA));
 	ofn.lStructSize = sizeof(OPENFILENAMEA);
 	ofn.hwndOwner = *m_ownerhandle;
@@ -64,7 +66,7 @@ std::vector<std::string> Dialogs::OpenMultifile(const char* filter, const char* 
 	ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR | OFN_DONTADDTORECENT
 		| OFN_ALLOWMULTISELECT  | OFN_EXPLORER  ;
 	if (GetOpenFileNameA(&ofn))
-		return CharsToStringsVector(szFile, 260);
+		return CharsToStringsVector(szFile, stringSize);
 	return std::vector<std::string>();
 }
 

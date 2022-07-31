@@ -214,3 +214,5 @@ private:
 	BufferUsage m_usage = eDEFAULT;
 	BufferType m_type = BufferType(0);
 };
+
+

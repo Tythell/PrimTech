@@ -29,6 +29,7 @@ void Material::ReadRecursion(eMaterialHeaders& header, std::ifstream& reader)
 		reader.read(charBuffer, FILENAME_MAXSIZE);
 		reader.read((char*)&m_distortionOffsetSpeed, sizeof(sm::Vector2));
 		reader.read((char*)&m_distDivider, 4);
+		reader.read((char*)&m_textureScaleDist, 4);
 		//if(std::string(charBuffer) != "")
 		LoadTexture(std::string(charBuffer), eDistortion);
 		break;
@@ -186,36 +187,37 @@ bool Material::ExportMaterial(std::string path)
 	if (HasTexture(eDiffuse))
 	{
 		header = eMaterialHeaders::eDIFFUSE;
-		writer.write((const char*)&header, 4);
+		writer.write((const char*)&header, sizeof(eMaterialHeaders));
 		writer.write((const char*)mp_textures[eDiffuse]->GetName().c_str(), FILENAME_MAXSIZE);
 		writer.write((const char*)&m_diffuseOffsetSpeed, sizeof(sm::Vector2));
-		writer.write((const char*)&m_transparency, 4);
+		writer.write((const char*)&m_transparency, sizeof(float));
 	}
 	if (HasTexture(eNormal))
 	{
 		header = eMaterialHeaders::eNORMAL;
-		writer.write((const char*)&header, 4);
+		writer.write((const char*)&header, sizeof(eMaterialHeaders));
 		writer.write((const char*)mp_textures[eNormal]->GetName().c_str(), FILENAME_MAXSIZE);
 	}
 	if (HasTexture(eDistortion))
 	{
 		header = eMaterialHeaders::eDISTORTION;
-		writer.write((const char*)&header, 4);
+		writer.write((const char*)&header, sizeof(eMaterialHeaders));
 		writer.write((const char*)mp_textures[eDistortion]->GetName().c_str(), FILENAME_MAXSIZE);
 		writer.write((const char*)&m_distortionOffsetSpeed, sizeof(sm::Vector2));
-		writer.write((const char*)&m_distDivider, 4);
+		writer.write((const char*)&m_distDivider, sizeof(float));
+		writer.write((const char*)&m_textureScaleDist, sizeof(float));
 	}
 	if (HasTexture(eOpacity))
 	{
 		header = eMaterialHeaders::eOPACITY;
-		writer.write((const char*)&header, 4);
+		writer.write((const char*)&header, sizeof(eMaterialHeaders));
 		writer.write((const char*)mp_textures[eOpacity]->GetName().c_str(), FILENAME_MAXSIZE);
 		//writer.write((const char*)&m_transparency, 4);
 	}
 	if (m_textureScale != 1.f)
 	{
 		header = eMaterialHeaders::eTILING;
-		writer.write((const char*)&header, 4);
+		writer.write((const char*)&header, sizeof(eMaterialHeaders));
 		writer.write((const char*)&m_textureScale, 4);
 	}
 	header = eMaterialHeaders::eNull;
@@ -274,6 +276,11 @@ float Material::GetTextureScale() const
 float Material::GetTextureScaleDist() const
 {
 	return m_textureScaleDist;
+}
+
+Buffer<hlsl::cbpMaterialBuffer>* Material::GetBuffer()
+{
+	return mp_matBuffer;
 }
 
 bool Material::HasTexture(const TextureType e) const

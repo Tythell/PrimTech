@@ -227,7 +227,7 @@ bool DX11Addon::InitScene()
 	dc->OMSetBlendState(m_blendState, NULL, 0xFFFFFFFF);
 
 	ResourceHandler::AddTexture("goalflag.png"); // setting missingtexture
-	ResourceHandler::AddTexture("ZAToon.png"); // Load LightWarp Texture
+	ResourceHandler::AddTexture("ZATf2esk.png"); // Load LightWarp Texture
 	dc->PSSetShaderResources(0, 1, ResourceHandler::GetTexture(1).GetSRVAdress());
 
 	m_rLine.Init(device, dc);
@@ -389,8 +389,7 @@ void LoadButton(Material* pMaterial, std::string name, TextureType e)
 
 void DX11Addon::ImguiDebug()
 {
-	ImGui::Begin("Debug");
-	ImGui::Checkbox("Demo window", &im.showDemoWindow);
+	ImGui::Begin("Debug", &im.showDebugWindow);
 	ImGui::Text("Press \"Q\" to lock/unlock mouse");
 
 	if (ImGui::IsWindowHovered())
@@ -451,7 +450,7 @@ void DX11Addon::ImGuiRender()
 	m_isHoveringWindow = false;
 	ImGuizmo();
 
-	ImguiDebug();
+	if(im.showDebugWindow) ImguiDebug();
 	ImGuiMenu();
 
 	//ImGuiGradientWindow();
@@ -459,7 +458,7 @@ void DX11Addon::ImGuiRender()
 
 
 	if (im.showDemoWindow)
-		ImGui::ShowDemoWindow();
+		ImGui::ShowDemoWindow(&im.showDemoWindow);
 
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
@@ -515,6 +514,33 @@ void DX11Addon::ImGuiMenu()
 					ExportScene(diapath);
 				}
 			}
+			ImGui::BeginDisabled(true);
+			if (ImGui::MenuItem("Update Materials..."))
+			{
+				std::vector<std::string> diapath = Dialogs::OpenMultifile("Pmaterial (*.pmtrl)\0*.pmtrl\0)", "Assets\\pmtrl");
+				if (!diapath.empty())
+				{
+					for (int i = 1; i < diapath.size(); i++)
+					{
+						Material mat;
+						mat.ImportMaterial(diapath[i]);
+						mat.ExportMaterial("Assets/pmtrl/newmats/" + diapath[i]);
+					}
+				}
+			}
+			ImGui::EndDisabled();
+			if (ImGui::MenuItem("Exit PrimTech"))
+			{
+				ShutDown();
+			}
+			ImGui::EndMenu();
+		}
+		if (ImGui::BeginMenu("Windows"))
+		{
+			if (ImGui::MenuItem("Debug", NULL, &im.showDebugWindow)){}
+
+			if (ImGui::MenuItem("ImGui Demo", NULL, &im.showDemoWindow)){}
+
 			ImGui::EndMenu();
 		}
 
@@ -702,9 +728,21 @@ void DX11Addon::ImGuiEntList()
 				}
 
 			}
+			if (ImGui::CollapsingHeader("Character Light", ImGuiTreeNodeFlags_DefaultOpen))
+			{
+				float light[]{ pSelectedModel->GetCharacterLight(0).x,
+					pSelectedModel->GetCharacterLight(0).y, 
+					pSelectedModel->GetCharacterLight(0).z,
+					pSelectedModel->GetCharacterLight(0).w };
+
+				ImGui::DragFloat4("DirLight", light, 0.01f);
+
+				pSelectedModel->SetLight(sm::Vector4(light[0], light[1], light[2], light[3]), 0);
+			}
 			ImGui::EndGroup();
 			if (mp_kb->IsKeyDown(Key::DELETEKEY))
 			{
+				m_models[m_selected].DecreaseMeshUsage();
 				m_models.erase(m_models.begin() + m_selected);
 				m_selected = -1;
 			}

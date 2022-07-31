@@ -40,6 +40,7 @@ namespace pt
 		if (m_kb.IsKeyDown(Key::S)) move += -m_cam3d.GetForwardVectorNoY();
 		if (m_kb.IsKeyDown(Key::SPACE)) move += {0.f, 1.f, 0.f};
 		if (m_kb.IsKeyDown(Key::SHIFT)) move += {0.f, -1.f, 0.f};
+		move.Normalize();
 		move *= m_playerSpeed * dt;
 		
 		static bool isclick = false;
