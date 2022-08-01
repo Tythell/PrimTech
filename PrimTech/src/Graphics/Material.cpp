@@ -230,10 +230,10 @@ void Material::ImportMaterial(std::string path)
 {
 	ClearMaterial();
 	m_name = path;
-	std::string err = "Failed to open: " + path;
+ 	std::string err = "Failed to open: " + path;
 	path = "Assets/pmtrl/" + path;
 	std::ifstream reader(path.c_str(), std::ios::binary | std::ios::in);
-	POPUP_ERROR(reader.is_open(), ("Failed to open" + m_name));
+	POPUP_MESSAGE(reader.is_open(), ("Failed to open " + m_name));
 
 	eMaterialHeaders header = eMaterialHeaders::eNull;
 	reader.read((char*)&header, 4);

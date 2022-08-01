@@ -3,8 +3,8 @@
 #include "StringHelper.h"
 
 #define COM_ERROR(hr, msg) if(FAILED(hr) )throw COMException(hr, msg, __FILE__, __FUNCTION__, __LINE__)
-#define POPUP_ERROR(b, msg) if(!b )throw COMException(msg, __FILE__, __FUNCTION__, __LINE__)
-
+#define THROW_POPUP_ERROR(b, msg) if(!b )throw COMException(msg, __FILE__, __FUNCTION__, __LINE__)
+#define POPUP_MESSAGE(b, msg) if(!b ) Popup::Error(msg)
 class COMException
 {
 public:

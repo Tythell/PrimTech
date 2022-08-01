@@ -16,17 +16,14 @@
 ////Buffer<hlsl::cbpWorldTransforms3D>* Model::mp_cbTransformBuffer;
 //std::vector<Model*> AllModels::m_models;
 
-Model::Model()
-{
-}
-
 Model::~Model()
 {
+	delete[] m_material;
 }
 
 void Model::Init(const std::string path, ModelType e, bool makeLeftHanded)
 {
-	m_material.SetLeftHanded(makeLeftHanded);
+	
 	m_type = e;
 	std::string fullpath = "Assets/models/" + path;
 	m_name = "";
@@ -38,11 +35,17 @@ void Model::Init(const std::string path, ModelType e, bool makeLeftHanded)
 	}
 	else
 		mp_mesh = ResourceHandler::AddMesh(fullpath, makeLeftHanded);
+
+	m_nOfMats = mp_mesh->GetNofMeshes();
+	m_material = new Material[m_nOfMats];
+	for (int i = 0; i < m_nOfMats; i++)
+		m_material[i].SetLeftHanded(makeLeftHanded);
+	
 	mp_mesh->IncreaseUses();
 	m_name += mp_mesh->GetName();
 
 	if (e == ModelType::eDEBUG)
-		m_material.SetRimColor(RED_3F);
+		m_material->SetRimColor(RED_3F);
 
 	//dc->VSSetConstantBuffers(0, 1, mp_cbTransformBuffer->GetReference());
 }
@@ -51,14 +54,12 @@ void Model::Draw()
 {
 	UINT offset = 0;
 
-	m_material.GetBuffer()->Data().characterLight[0] = m_characterLight[0];
-	m_material.Set(dc);
-
-
 	mp_cbTransformBuffer->Data().world = GetWorldTransposed();
 	mp_cbTransformBuffer->UpdateBuffer();
 	for (int i = 0; i < mp_mesh->GetNofMeshes(); i++)
 	{
+		m_material[i].GetBuffer()->Data().characterLight[0] = m_characterLight[0];
+		m_material[i].Set(dc);
 		dc->IASetVertexBuffers(0, 1, mp_mesh->GetVBuffer(i).GetReference(), mp_mesh->GetVBuffer().GetStrideP(), &offset);
 		dc->Draw(mp_mesh->GetVBuffer(i).GetBufferSize(), 0);
 	}
@@ -66,12 +67,13 @@ void Model::Draw()
 
 void Model::UpdateTextureScroll(const float& deltatime)
 {
-	m_material.UpdateTextureScroll(deltatime);
+	for (int i = 0; i < m_nOfMats; i++)
+		m_material[i].UpdateTextureScroll(deltatime);
 }
 
-void Model::LoadTexture(std::string path, TextureType type)
+void Model::LoadTexture(std::string path, UINT i, TextureType type)
 {
-	m_material.LoadTexture(path, type);
+	m_material[i].LoadTexture(path, type);
 }
 
 void Model::SetLight(const sm::Vector4& v, const UINT& index)
@@ -81,7 +83,8 @@ void Model::SetLight(const sm::Vector4& v, const UINT& index)
 
 void Model::SetMaterialBuffer(Buffer<hlsl::cbpMaterialBuffer>& cbMaterialBuffer)
 {
-	m_material.SetPointers(&cbMaterialBuffer);
+	for (int i = 0; i < m_nOfMats; i++)
+		m_material[i].SetPointers(&cbMaterialBuffer);
 }
 
 void Model::DecreaseMeshUsage()
@@ -89,9 +92,9 @@ void Model::DecreaseMeshUsage()
 	mp_mesh->DecreaseUses();
 }
 
-Material& Model::GetMaterial()
+Material& Model::GetMaterial(const UINT& i)
 {
-	return m_material;
+	return m_material[i];
 }
 
 Mesh* Model::GetMeshP()

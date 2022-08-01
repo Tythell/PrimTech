@@ -54,7 +54,7 @@ public:
 	// DeviceContext only needed if buffer is dynamic
 	HRESULT CreateVertexBuffer(ID3D11Device*& device, T* data, UINT bufferSize, ID3D11DeviceContext* dc = NULL)
 	{
-		POPUP_ERROR((m_buffer == nullptr), "Buffer created twice");
+		THROW_POPUP_ERROR((m_buffer == nullptr), "Buffer created twice");
 		m_type = eVERTEX;
 
 		m_usage = eIMMULATBLE;

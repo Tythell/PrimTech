@@ -89,6 +89,7 @@ private:
 	void ExportScene(std::string path);
 	void NewScene();
 	void ClearModelList();
+	void SetLightWarp(const std::string& path);
 
 	Window* m_pWin = nullptr;
 

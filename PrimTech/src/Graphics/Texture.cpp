@@ -25,7 +25,6 @@ bool TextureMap::CreateFromFile(const char* texturePath, ID3D11Device* device, c
 
 	stbi_set_flip_vertically_on_load(flipUV);
 
-	
 	m_name = StringHelper::GetName(std::string(texturePath));
 
 	std::string fullpath;

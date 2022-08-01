@@ -230,12 +230,13 @@ bool DX11Addon::InitScene()
 
 	ResourceHandler::AddTexture("goalflag.png"); // setting missingtexture
 	ResourceHandler::AddTexture("ZANormal.png"); // Load LightWarp Texture
+	//ResourceHandler::AddTexture("ZATf2esk.png"); // Load LightWarp Texture
 	dc->PSSetShaderResources(0, 1, ResourceHandler::GetTexture(1).GetSRVAdress());
 
 	m_rLine.Init(device, dc);
 	m_sphere.Init(device, dc);
 
-	ImportScene("Scenes\\multimesh.ptscene");
+	ImportScene("Scenes\\scout.ptscene");
 	//NewScene();
 
 	m_playermodel.Init("dirCapsule.obj");
@@ -362,12 +363,12 @@ void DX11Addon::ImGuiGradientWindow()
 	ImGui::End();
 }
 
-void LoadButton(Material* pMaterial, std::string name, TextureType e)
+void LoadButton(Material* pMaterial, std::string name, TextureType e, const UINT& i = 0)
 {
 	name += pMaterial->GetMapName(e);
 	ImGui::Text(name.c_str());
 	ImGui::SameLine();
-	std::string buttonName = "Load##" + name;
+	std::string buttonName = "Load##" + name + std::to_string(i);
 	if (ImGui::Button(buttonName.c_str()))
 	{
 		std::string newMtrlString = Dialogs::OpenFile("Images (*.png, *.jpg)\0*.png;*.jpg\0", "Assets\\Textures\\");
@@ -452,7 +453,7 @@ void DX11Addon::ImGuiRender()
 	m_isHoveringWindow = false;
 	ImGuizmo();
 
-	if(im.showDebugWindow) ImguiDebug();
+	if (im.showDebugWindow) ImguiDebug();
 	ImGuiMenu();
 
 	//ImGuiGradientWindow();
@@ -492,7 +493,7 @@ void DX11Addon::ImGuiMenu()
 			}
 			if (ImGui::MenuItem("Open Scene...", NULL, false, true))
 			{
-				std::string diapath = Dialogs::OpenFile("Scene (*.ptscene)\0*.ptscene\0)", "Scenes\\");
+				std::string diapath = Dialogs::OpenFile("Scene (*.ptscene)\0*.ptscene\0", "Scenes\\");
 				if (diapath != "")
 				{
 					m_models.clear();
@@ -507,7 +508,7 @@ void DX11Addon::ImGuiMenu()
 			}
 			if (ImGui::MenuItem("Save scene as..."))
 			{
-				std::string diapath = Dialogs::SaveFile("Scene (*.ptscene)\0*.ptscene\0)", "Scenes\\");
+				std::string diapath = Dialogs::SaveFile("Scene (*.ptscene)\0*.ptscene\0", "Scenes\\");
 				if (diapath != "")
 				{
 					if (StringHelper::GetExtension(diapath) != "ptscene")
@@ -518,7 +519,7 @@ void DX11Addon::ImGuiMenu()
 			ImGui::BeginDisabled(true);
 			if (ImGui::MenuItem("Update Materials..."))
 			{
-				std::vector<std::string> diapath = Dialogs::OpenMultifile("Pmaterial (*.pmtrl)\0*.pmtrl\0)", "Assets\\pmtrl");
+				std::vector<std::string> diapath = Dialogs::OpenMultifile("Pmaterial (*.pmtrl)\0*.pmtrl\0", "Assets\\pmtrl");
 				if (!diapath.empty())
 				{
 					for (int i = 1; i < diapath.size(); i++)
@@ -530,20 +531,32 @@ void DX11Addon::ImGuiMenu()
 				}
 			}
 			ImGui::EndDisabled();
+
 			if (ImGui::MenuItem("Exit PrimTech"))
 			{
 				ShutDown();
 			}
 			ImGui::EndMenu();
 		}
-		if (ImGui::BeginMenu("Windows"))
+		if (ImGui::BeginMenu("Lighting"))
 		{
-			if (ImGui::MenuItem("Debug", NULL, &im.showDebugWindow)){}
-
-			if (ImGui::MenuItem("ImGui Demo", NULL, &im.showDemoWindow)){}
+			if (ImGui::MenuItem("Load Lightwarp"))
+			{
+				std::string path = Dialogs::OpenFile("Images (*.png)\0*.png;*.jpg", "Assets\\Textures\\");
+				if (!path.empty()) SetLightWarp(path);
+			}
 
 			ImGui::EndMenu();
 		}
+		if (ImGui::BeginMenu("Windows"))
+		{
+			if (ImGui::MenuItem("Debug", NULL, &im.showDebugWindow)) {}
+
+			if (ImGui::MenuItem("ImGui Demo", NULL, &im.showDemoWindow)) {}
+
+			ImGui::EndMenu();
+		}
+
 
 		ImGui::EndMainMenuBar();
 	}
@@ -599,7 +612,7 @@ void DX11Addon::ImGuiEntList()
 		{
 			ImGui::Begin("Model properties");
 			Model* pSelectedModel = m_models[m_selected];
-			Material* pMaterial = &pSelectedModel->GetMaterial();
+
 			if (ImGui::IsWindowHovered())
 				m_isHoveringWindow = true;
 
@@ -646,95 +659,111 @@ void DX11Addon::ImGuiEntList()
 				}
 				pSelectedModel->SetScale(scalef[0], scalef[1], scalef[2]);
 			}
-			std::string matName = "Material - " + pMaterial->GetFileName();
-			if (ImGui::CollapsingHeader(matName.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
+			for (int matIndex = 0; matIndex < pSelectedModel->GetMeshP()->GetNofMeshes(); matIndex++)
 			{
-				LoadButton(pMaterial, "Diffuse: ", eDiffuse);
-				LoadButton(pMaterial, "NormalMap: ", eNormal);
-				LoadButton(pMaterial, "DistMap: ", eDistortion);
-				LoadButton(pMaterial, "OpacityMap: ", eOpacity);
-
-				sm::Vector2 diffuseSpeed(pMaterial->GetDiffuseScrollSpeed());
-				sm::Vector2 distortionSpeed(pMaterial->GetDistortionScrollSpeed());
-				bool hasDistMap = pMaterial->HasTexture(eDistortion);
-
-				float diffSpeed[2]{ diffuseSpeed.x, diffuseSpeed.y };
-				float distSpeed[2]{ distortionSpeed.x, distortionSpeed.y };
-
-				ImGui::PushItemWidth(m_width * 0.14f);
-
-				ImGui::SliderFloat2("Diffuse Scroll", diffSpeed, -.5f, .5f);
-				if (hasDistMap)
-					ImGui::SliderFloat2("Distortion Scroll", distSpeed, -.5f, .5f);
-				if (ImGui::Button("Reset Scrollspeed"))
+				Material* pMaterial = &pSelectedModel->GetMaterial(matIndex);
+				std::string matName = "Material - " + std::to_string(matIndex);
+				if (ImGui::CollapsingHeader(matName.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
 				{
-					for (int i = 0; i < 2; i++)
+					LoadButton(pMaterial, "Diffuse: ", eDiffuse, matIndex);
+					LoadButton(pMaterial, "NormalMap: ", eNormal, matIndex);
+					LoadButton(pMaterial, "DistMap: ", eDistortion, matIndex);
+					LoadButton(pMaterial, "OpacityMap: ", eOpacity, matIndex);
+
+					sm::Vector2 diffuseSpeed(pMaterial->GetDiffuseScrollSpeed());
+					sm::Vector2 distortionSpeed(pMaterial->GetDistortionScrollSpeed());
+					bool hasDistMap = pMaterial->HasTexture(eDistortion);
+
+					float diffSpeed[2]{ diffuseSpeed.x, diffuseSpeed.y };
+					float distSpeed[2]{ distortionSpeed.x, distortionSpeed.y };
+
+					ImGui::PushItemWidth(m_width * 0.14f);
+					std::string title = "Diffuse Scroll" + std::to_string(matIndex);
+					ImGui::SliderFloat2(title.c_str(), diffSpeed, -.5f, .5f);
+
+					title = "Distortion Scroll##" + std::to_string(matIndex);
+					if (hasDistMap)
+						ImGui::SliderFloat2(title.c_str(), distSpeed, -.5f, .5f);
+
+					title = "Reset Scrollspeed##" + std::to_string(matIndex);
+					if (ImGui::Button(title.c_str()))
 					{
-						diffSpeed[i] = 0.f;
-						distSpeed[i] = 0.f;
+						for (int i = 0; i < 2; i++)
+						{
+							diffSpeed[i] = 0.f;
+							distSpeed[i] = 0.f;
+						}
 					}
-				}
-				ImGui::SameLine();
-				if (ImGui::Button("Reset scrollvalues"))
-					pMaterial->ResetScrollValue();
+					ImGui::SameLine();
+					title = "Reset scrollvalues##" + std::to_string(matIndex);
+					if (ImGui::Button(title.c_str()))
+						pMaterial->ResetScrollValue();
 
-				pMaterial->SetDiffuseScrollSpeed(diffSpeed[0], diffSpeed[1]);
-				pMaterial->SetDistortionScrollSpeed(distSpeed[0], distSpeed[1]);
+					pMaterial->SetDiffuseScrollSpeed(diffSpeed[0], diffSpeed[1]);
+					pMaterial->SetDistortionScrollSpeed(distSpeed[0], distSpeed[1]);
 
-				if (hasDistMap)
-				{
-					int distDivider = pMaterial->GetDistortionDivider();
-					ImGui::SliderInt("Dist divider", &distDivider, 1, 20);
-					pMaterial->SetDistortionDivider(distDivider);
-				}
-
-				float transparancy = pMaterial->GetTransparancy();
-				ImGui::SliderFloat("Transparancy", &transparancy, 0.f, 1.f);
-				pMaterial->SetTransparency(transparancy);
-
-				float tiling = pMaterial->GetTextureScale();
-				ImGui::SliderFloat("Tiling", &tiling, 1.f, 10.f);
-				pMaterial->SetTextureScale(tiling);
-				if (hasDistMap)
-				{
-					float distScale = pMaterial->GetTextureScaleDist();
-					ImGui::SliderFloat("Distortion scale", &distScale, 1.f, 10.f);
-					pMaterial->SetTextureScaleDist(distScale);
-				}
-
-				if (ImGui::Button("Import Material"))
-				{
-					std::string savePath = "";
-					savePath = Dialogs::OpenFile("Material (*.pmtrl)\0*.pmtrl\0", "Assets\\pmtrl\\");
-
-					if (savePath != "")
+					if (hasDistMap)
 					{
-						std::string test = StringHelper::GetExtension(savePath);
-						if (test != "pmtrl")
-							savePath += ".pmtrl";
-						pMaterial->ImportMaterial(StringHelper::GetName(savePath));
+						int distDivider = pMaterial->GetDistortionDivider();
+						title = "Dist divider##" + std::to_string(matIndex);
+						ImGui::SliderInt(title.c_str(), &distDivider, 1, 20);
+						pMaterial->SetDistortionDivider(distDivider);
 					}
-				}
-				ImGui::SameLine();
-				if (ImGui::Button("Export Material"))
-				{
-					std::string savePath = "";
-					savePath = Dialogs::SaveFile("Material (*.pmtrl)\0*.pmtrl\0", "Assets\\pmtrl\\");
 
-					if (savePath != "")
+					float transparancy = pMaterial->GetTransparancy();
+					title = "Transparancy##" + std::to_string(matIndex);
+					ImGui::SliderFloat(title.c_str(), &transparancy, 0.f, 1.f);
+					pMaterial->SetTransparency(transparancy);
+
+					float tiling = pMaterial->GetTextureScale();
+					title = "Tiling##" + std::to_string(matIndex);
+					ImGui::SliderFloat(title.c_str(), &tiling, 1.f, 10.f);
+					pMaterial->SetTextureScale(tiling);
+					if (hasDistMap)
 					{
-						std::string test = StringHelper::GetExtension(savePath);
-						if (test != "pmtrl")
-							savePath += ".pmtrl";
-						pMaterial->ExportMaterial(savePath);
-					}
-				}
+						float distScale = pMaterial->GetTextureScaleDist();
 
+						title = "Dist Scale##" + std::to_string(matIndex);
+						ImGui::SliderFloat(title.c_str(), &distScale, 1.f, 10.f);
+						pMaterial->SetTextureScaleDist(distScale);
+					}
+
+					title = "Import##" + std::to_string(matIndex);
+					if (ImGui::Button(title.c_str()))
+					{
+						std::string savePath = "";
+						savePath = Dialogs::OpenFile("Material (*.pmtrl)\0*.pmtrl\0", "Assets\\pmtrl\\");
+
+						if (savePath != "")
+						{
+							std::string test = StringHelper::GetExtension(savePath);
+							if (test != "pmtrl")
+								savePath += ".pmtrl";
+							pMaterial->ImportMaterial(StringHelper::GetName(savePath));
+						}
+					}
+					ImGui::SameLine();
+					title = "Export##" + std::to_string(matIndex);
+					if (ImGui::Button(title.c_str()))
+					{
+						std::string savePath = "";
+						savePath = Dialogs::SaveFile("Material (*.pmtrl)\0*.pmtrl\0", "Assets\\pmtrl\\");
+
+						if (savePath != "")
+						{
+							std::string test = StringHelper::GetExtension(savePath);
+							if (test != "pmtrl")
+								savePath += ".pmtrl";
+							pMaterial->ExportMaterial(savePath);
+						}
+					}
+
+				}
 			}
 			if (ImGui::CollapsingHeader("Character Light", ImGuiTreeNodeFlags_DefaultOpen))
 			{
 				float light[]{ pSelectedModel->GetCharacterLight(0).x,
-					pSelectedModel->GetCharacterLight(0).y, 
+					pSelectedModel->GetCharacterLight(0).y,
 					pSelectedModel->GetCharacterLight(0).z,
 					pSelectedModel->GetCharacterLight(0).w };
 
@@ -754,11 +783,13 @@ void DX11Addon::ImGuiEntList()
 			ImGui::End();
 		}
 		for (int i = 0; i < m_models.size(); i++)
-		{
-			m_models[i]->GetMaterial().SetSelection(false);
-		}
+			for (int m = 0; m < m_models[i]->GetMeshP()->GetNofMeshes(); m++)
+			{
+				m_models[i]->GetMaterial(m).SetSelection(false);
+			}
 		if (m_selected != -1 && im.showSelection)
-			m_models[m_selected]->GetMaterial().SetSelection(true);
+			for (int m = 0; m < m_models[m_selected]->GetMeshP()->GetNofMeshes(); m++)
+				m_models[m_selected]->GetMaterial(m).SetSelection(true);
 	}
 
 }
@@ -792,9 +823,15 @@ void DX11Addon::ExportScene(std::string path)
 		ms.scale = m_models[i]->GetScale();
 		ms.rotation = m_models[i]->GetRotation();
 		ms.position = m_models[i]->GetPosition();
+		ms.noOfExtraMats = m_models[i]->GetMeshP()->GetNofMeshes() - 1;
 		strcpy_s(ms.mtrlname, m_models[i]->GetMaterial().GetFileName().c_str());
 		writer.write((const char*)&header, 4);
 		writer.write((const char*)&ms, sizeof(ModelStruct));
+		for (int eI = 0; eI < ms.noOfExtraMats; eI++)
+		{
+			strcpy_s(ms.mtrlname, m_models[i]->GetMaterial(eI+1).GetFileName().c_str());
+			writer.write(ms.mtrlname, 24);
+		}
 	}
 	header = Sceneheaders::enull;
 	writer.write((const char*)&header, 4);
@@ -873,6 +910,18 @@ void DX11Addon::ClearModelList()
 		delete m_models[i];
 	}
 	m_models.clear();
+}
+
+void DX11Addon::SetLightWarp(const std::string& path)
+{
+	int textureIndex = ResourceHandler::CheckTextureNameExists(StringHelper::GetName(path));
+	if (textureIndex != -1)
+		dc->PSSetShaderResources(0, 1, ResourceHandler::GetTexture(textureIndex).GetSRVAdress());
+	else
+	{
+		TextureMap* tex = ResourceHandler::AddTexture(path);
+		dc->PSSetShaderResources(0, 1, tex->GetSRVAdress());
+	}
 }
 
 void DX11Addon::CalculateFps(const float& deltatime)
@@ -957,7 +1006,7 @@ int ClickFoo(const sm::Ray& ray, ModelList& models)
 					}
 				}
 			}
-			
+
 			//if (t > maxDistance)
 			//{
 			//	maxDistance = t;
@@ -1114,6 +1163,13 @@ void RecursiveRead(Sceneheaders& header, ModelList& v, std::ifstream& reader)
 		v[v.size() - 1]->SetScale(ms.scale);
 		if (std::string(ms.mtrlname) != "")
 			v[v.size() - 1]->GetMaterial().ImportMaterial(std::string(ms.mtrlname));
+
+		for (int i = 1; i < ms.noOfExtraMats+1 && ms.noOfExtraMats < 100; i++)
+		{
+			reader.read((char*)&ms.mtrlname, 24);
+			if (ms.mtrlname != std::string(""))
+				v[v.size() - 1]->GetMaterial(i).ImportMaterial(std::string(ms.mtrlname));
+		}
 		RecursiveRead(header, v, reader);
 		break;
 	}
