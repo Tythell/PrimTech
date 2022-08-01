@@ -29,6 +29,8 @@ DX11Addon::~DX11Addon()
 
 	delete im.buffer;
 
+	ClearModelList();
+
 	ResourceHandler::Unload();
 
 	device->Release();
@@ -256,8 +258,8 @@ bool DX11Addon::InitScene()
 
 	for (int i = 0; i < m_models.size(); i++)
 	{
-		m_models[i].SetMaterialBuffer(m_materialBuffer);
-		m_models[i].SetDCandBuffer(dc, m_transformBuffer);
+		m_models[i]->SetMaterialBuffer(m_materialBuffer);
+		m_models[i]->SetDCandBuffer(dc, m_transformBuffer);
 	}
 
 	//m_renderbox.Init(device);
@@ -485,7 +487,6 @@ void DX11Addon::ImGuiMenu()
 				m_isHoveringWindow = true;
 			if (ImGui::MenuItem("New Scene", NULL, false, true))
 			{
-				m_models.clear();
 				ResourceHandler::ResetUses();
 				NewScene();
 			}
@@ -499,8 +500,8 @@ void DX11Addon::ImGuiMenu()
 					ImportScene(diapath);
 					for (int i = 0; i < m_models.size(); i++)
 					{
-						m_models[i].SetDCandBuffer(dc, m_transformBuffer);
-						m_models[i].SetMaterialBuffer(m_materialBuffer);
+						m_models[i]->SetDCandBuffer(dc, m_transformBuffer);
+						m_models[i]->SetMaterialBuffer(m_materialBuffer);
 					}
 				}
 			}
@@ -548,17 +549,18 @@ void DX11Addon::ImGuiMenu()
 	}
 }
 
-int AddModelToVector(ID3D11DeviceContext*& dc, Buffer<hlsl::cbpWorldTransforms3D>& tbuffer, Buffer<hlsl::cbpMaterialBuffer>& mbuffer, std::vector<Model>& modelV)
+int AddModelToVector(ID3D11DeviceContext*& dc, Buffer<hlsl::cbpWorldTransforms3D>& tbuffer, Buffer<hlsl::cbpMaterialBuffer>& mbuffer,
+	ModelList& modelV)
 {
 	std::string path = Dialogs::OpenFile("Model (*.obj)\0*.obj;*.txt\0", "Assets\\models\\");
 	if (!path.empty())
 	{
-		Model newModel;
 		path = StringHelper::GetName(path);
-		newModel.Init(path);
-		newModel.SetDCandBuffer(dc, tbuffer);
-		newModel.SetMaterialBuffer(mbuffer);
-		modelV.emplace_back(newModel);
+		modelV.emplace_back(new Model);
+		modelV[modelV.size() - 1]->Init(path);
+		modelV[modelV.size() - 1]->SetDCandBuffer(dc, tbuffer);
+		modelV[modelV.size() - 1]->SetMaterialBuffer(mbuffer);
+
 		return (modelV.size() - 1);
 	}
 	return -1;
@@ -586,7 +588,7 @@ void DX11Addon::ImGuiEntList()
 			m_isHoveringWindow = true;
 		for (int i = 0; i < m_models.size(); i++)
 		{
-			if (ImGui::Selectable(m_models[i].GetName().c_str(), m_selected == i))
+			if (ImGui::Selectable(m_models[i]->GetName().c_str(), m_selected == i))
 				m_selected = i;
 		}
 
@@ -596,13 +598,13 @@ void DX11Addon::ImGuiEntList()
 		if (m_selected != -1)
 		{
 			ImGui::Begin("Model properties");
-			Model* pSelectedModel = &m_models[m_selected];
+			Model* pSelectedModel = m_models[m_selected];
 			Material* pMaterial = &pSelectedModel->GetMaterial();
 			if (ImGui::IsWindowHovered())
 				m_isHoveringWindow = true;
 
 			ImGui::BeginGroup();
-			ImGui::Text(m_models[m_selected].GetName().c_str());
+			ImGui::Text(m_models[m_selected]->GetName().c_str());
 			ImGui::Separator();
 			if (ImGui::CollapsingHeader("Transformations", ImGuiTreeNodeFlags_DefaultOpen))
 			{
@@ -742,7 +744,7 @@ void DX11Addon::ImGuiEntList()
 			ImGui::EndGroup();
 			if (mp_kb->IsKeyDown(Key::DELETEKEY))
 			{
-				m_models[m_selected].DecreaseMeshUsage();
+				m_models[m_selected]->DecreaseMeshUsage();
 				m_models.erase(m_models.begin() + m_selected);
 				m_selected = -1;
 			}
@@ -751,10 +753,10 @@ void DX11Addon::ImGuiEntList()
 		}
 		for (int i = 0; i < m_models.size(); i++)
 		{
-			m_models[i].GetMaterial().SetSelection(false);
+			m_models[i]->GetMaterial().SetSelection(false);
 		}
 		if (m_selected != -1 && im.showSelection)
-			m_models[m_selected].GetMaterial().SetSelection(true);
+			m_models[m_selected]->GetMaterial().SetSelection(true);
 	}
 
 }
@@ -778,17 +780,17 @@ void DX11Addon::ExportScene(std::string path)
 	for (int i = 0; i < m_models.size(); i++)
 	{
 		ModelStruct ms;
-		strcpy_s(ms.modelname, m_models[i].GetName().c_str());
+		strcpy_s(ms.modelname, m_models[i]->GetName().c_str());
 		if (ms.modelname[0] == '(')
 		{
 			std::string strCopy(ms.modelname);
 			strCopy = strCopy.substr(3);
 			sprintf_s(ms.modelname, strCopy.c_str());
 		}
-		ms.scale = m_models[i].GetScale();
-		ms.rotation = m_models[i].GetRotation();
-		ms.position = m_models[i].GetPosition();
-		strcpy_s(ms.mtrlname, m_models[i].GetMaterial().GetFileName().c_str());
+		ms.scale = m_models[i]->GetScale();
+		ms.rotation = m_models[i]->GetRotation();
+		ms.position = m_models[i]->GetPosition();
+		strcpy_s(ms.mtrlname, m_models[i]->GetMaterial().GetFileName().c_str());
 		writer.write((const char*)&header, 4);
 		writer.write((const char*)&ms, sizeof(ModelStruct));
 	}
@@ -823,7 +825,7 @@ void DX11Addon::ImGuizmo()
 
 		sm::Matrix camViewM = mp_cam->GetViewM();
 		sm::Matrix camProj = mp_cam->GetProjM();
-		sm::Matrix world = m_models[m_selected].GetWorld();
+		sm::Matrix world = m_models[m_selected]->GetWorld();
 
 		float* model = reinterpret_cast<float*>(&world);
 		const float* proj = reinterpret_cast<const float*>(&camProj);
@@ -838,9 +840,9 @@ void DX11Addon::ImGuizmo()
 			sm::Quaternion rot;
 			world.Decompose(scale, rot, pos);
 
-			m_models[m_selected].SetScale(scale);
-			m_models[m_selected].SetRotation(rot);
-			m_models[m_selected].SetPosition(pos);
+			m_models[m_selected]->SetScale(scale);
+			m_models[m_selected]->SetRotation(rot);
+			m_models[m_selected]->SetPosition(pos);
 		}
 
 		ImGui::End();
@@ -850,15 +852,25 @@ void DX11Addon::ImGuizmo()
 
 void DX11Addon::NewScene()
 {
+	ClearModelList();
 	m_selected = -1;
-	Model groundPlane;
-	groundPlane.Init("scaledplane.obj");
-	groundPlane.SetDCandBuffer(dc, m_transformBuffer);
-	groundPlane.SetMaterialBuffer(m_materialBuffer);
-	groundPlane.Scale(10.f);
-	groundPlane.SetPosition(0.f, -.5f, 0.f);
-	groundPlane.LoadTexture("tfground.png");
-	m_models.emplace_back(groundPlane);
+	m_models.emplace_back(new Model);
+	UINT i = m_models.size() - 1;
+	m_models[i]->Init("scaledplane.obj");
+	m_models[i]->SetDCandBuffer(dc, m_transformBuffer);
+	m_models[i]->SetMaterialBuffer(m_materialBuffer);
+	m_models[i]->Scale(10.f);
+	m_models[i]->SetPosition(0.f, -.5f, 0.f);
+	m_models[i]->LoadTexture("tfground.png");
+}
+
+void DX11Addon::ClearModelList()
+{
+	for (int i = 0; i < m_models.size(); i++)
+	{
+		delete m_models[i];
+	}
+	m_models.clear();
 }
 
 void DX11Addon::CalculateFps(const float& deltatime)
@@ -893,7 +905,7 @@ float GetAvarageValue(const sm::Vector3& v)
 	return value;
 }
 
-int ClickFoo(const sm::Ray& ray, std::vector<Model>& models)
+int ClickFoo(const sm::Ray& ray, ModelList& models)
 {
 	float maxDistance = 100.f;
 	float t = 0.f;
@@ -902,14 +914,14 @@ int ClickFoo(const sm::Ray& ray, std::vector<Model>& models)
 	d::BoundingSphere transformedSphere;
 	for (int i = 0; i < models.size(); i++)
 	{
-		transformedSphere = models[i].GetBSphere();
+		transformedSphere = models[i]->GetBSphere();
 		sm::Vector3 center = transformedSphere.Center;
 
 		float radius = transformedSphere.Radius;
 
-		radius *= GetHighestValue(models[i].GetScale());
+		radius *= GetHighestValue(models[i]->GetScale());
 
-		sm::Vector3 transformedCenter = d::XMVector3TransformCoord(center, models[i].GetWorld());
+		sm::Vector3 transformedCenter = d::XMVector3TransformCoord(center, models[i]->GetWorld());
 
 		transformedSphere.Center = transformedCenter;
 		transformedSphere.Radius = radius;
@@ -918,13 +930,13 @@ int ClickFoo(const sm::Ray& ray, std::vector<Model>& models)
 		if (ray.Intersects(transformedSphere, dummy))
 		{
 			sm::Ray localSpaceRay;
-			sm::Matrix invWorld = models[i].GetWorldInversed();
+			sm::Matrix invWorld = models[i]->GetWorldInversed();
 			localSpaceRay.position = d::XMVector3TransformCoord(ray.position, invWorld);
 			localSpaceRay.direction = d::XMVector3TransformNormal(ray.direction, invWorld);
 			localSpaceRay.direction.Normalize();
-			for (int k = 0; k < models[i].GetMeshP()->GetNofMeshes(); k++)
+			for (int k = 0; k < models[i]->GetMeshP()->GetNofMeshes(); k++)
 			{
-				Buffer<Vertex3D>* pVbuffer = &models[i].GetMeshP()->GetVBuffer(k);
+				Buffer<Vertex3D>* pVbuffer = &models[i]->GetMeshP()->GetVBuffer(k);
 				UINT nOTriangles = pVbuffer->GetBufferSize() / 3;
 				for (int j = 0; j < nOTriangles; j++)
 				{
@@ -934,7 +946,7 @@ int ClickFoo(const sm::Ray& ray, std::vector<Model>& models)
 					if (localSpaceRay.Intersects(tri0, tri1, tri2, t))
 					{
 						// Multiply distnace to world space
-						t *= GetAvarageValue(models[i].GetScale());
+						t *= GetAvarageValue(models[i]->GetScale());
 						if (t < maxDistance)
 						{
 							maxDistance = t;
@@ -994,15 +1006,15 @@ void DX11Addon::Render(const float& deltatime)
 
 		//m_transformBuffer.Data().world = d::XMMatrixTranspose(d::XMMatrixTranslation(0.f, 1.f, 0.f));
 		d::BoundingSphere sphere;
-		sphere = m_models[m_selected].GetBSphere();
+		sphere = m_models[m_selected]->GetBSphere();
 		sm::Vector3 center = sphere.Center;
 		//center = d::XMVector3TransformCoord(center, d::XMMatrixRotationRollPitchYawFromVector(m_models[m_selected].GetRotation()));
 
 
 
 
-		sm::Matrix rotMat = d::XMMatrixRotationRollPitchYawFromVector(m_models[m_selected].GetRotation());
-		sm::Matrix scaleMat = d::XMMatrixScalingFromVector(m_models[m_selected].GetScale());
+		sm::Matrix rotMat = d::XMMatrixRotationRollPitchYawFromVector(m_models[m_selected]->GetRotation());
+		sm::Matrix scaleMat = d::XMMatrixScalingFromVector(m_models[m_selected]->GetScale());
 		sm::Vector3 transformedCenter = d::XMVector3TransformCoord(center, scaleMat * rotMat);
 
 
@@ -1010,10 +1022,10 @@ void DX11Addon::Render(const float& deltatime)
 		center = transformedCenter;
 		//center *= d::XMVector3TransformCoord(center, d::XMMatrixRotationRollPitchYawFromVector(m_models[m_selected].GetRotation()));
 		sphere.Center = center;
-		float radius = sphere.Radius * GetHighestValue(m_models[m_selected].GetScale());
+		float radius = sphere.Radius * GetHighestValue(m_models[m_selected]->GetScale());
 		radius *= 2.0f;
 		//if (extents.y == 0.f) extents.y = 0.01f;
-		sm::Vector3 position = m_models[m_selected].GetPosition() + sphere.Center;
+		sm::Vector3 position = m_models[m_selected]->GetPosition() + sphere.Center;
 		sm::Matrix boxMatrix = d::XMMatrixTranspose(d::XMMatrixScaling(radius, radius, radius) * d::XMMatrixTranslationFromVector(position));
 		m_transformBuffer.Data().world = boxMatrix;
 		m_transformBuffer.UpdateBuffer();
@@ -1039,8 +1051,8 @@ void DX11Addon::Render(const float& deltatime)
 
 	for (int i = 0; i < modelAmount; i++)
 	{
-		m_models[i].UpdateTextureScroll(deltatime);
-		m_models[i].Draw();
+		m_models[i]->UpdateTextureScroll(deltatime);
+		m_models[i]->Draw();
 	}
 	//m_water.Draw();
 	dc->PSSetShader(m_3dnoLightps.GetShader(), NULL, 0);
@@ -1077,7 +1089,7 @@ void DX11Addon::ShutDown()
 	DestroyWindow(*m_pHWND);
 }
 
-void RecursiveRead(Sceneheaders& header, std::vector<Model>& v, std::ifstream& reader)
+void RecursiveRead(Sceneheaders& header, ModelList& v, std::ifstream& reader)
 {
 	reader.read((char*)&header, 4);
 	switch (header)
@@ -1092,20 +1104,14 @@ void RecursiveRead(Sceneheaders& header, std::vector<Model>& v, std::ifstream& r
 			strCopy = strCopy.substr(3);
 			sprintf_s(ms.modelname, strCopy.c_str());
 		}
-		//Model model;
-		//model.Init(std::string(ms.modelname));
-		//model.SetPosition(ms.position);
-		//model.SetRotation(ms.rotation);
-		//model.SetScale(ms.scale);
-		//if (std::string(ms.mtrlname) != "")
-		//	model.GetMaterial().ImportMaterial(std::string(ms.mtrlname));
-		v.emplace_back(Model());
-		v[v.size() - 1].Init(std::string(ms.modelname));
-		v[v.size() - 1].SetPosition(ms.position);
-		v[v.size() - 1].SetRotation(ms.rotation);
-		v[v.size() - 1].SetScale(ms.scale);
+
+		v.emplace_back(new Model);
+		v[v.size() - 1]->Init(std::string(ms.modelname));
+		v[v.size() - 1]->SetPosition(ms.position);
+		v[v.size() - 1]->SetRotation(ms.rotation);
+		v[v.size() - 1]->SetScale(ms.scale);
 		if (std::string(ms.mtrlname) != "")
-			v[v.size() - 1].GetMaterial().ImportMaterial(std::string(ms.mtrlname));
+			v[v.size() - 1]->GetMaterial().ImportMaterial(std::string(ms.mtrlname));
 		RecursiveRead(header, v, reader);
 		break;
 	}

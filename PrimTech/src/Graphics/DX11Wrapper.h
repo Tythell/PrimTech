@@ -18,6 +18,7 @@
 
 namespace sm = DirectX::SimpleMath;
 using Vector2i = DirectX::XMINT2;
+using ModelList = std::vector<Model*>;
 
 class Window;
 
@@ -47,7 +48,7 @@ struct ImGuiVars
 	bool showSelection = true;
 };
 
-void RecursiveRead(Sceneheaders& header, std::vector<Model>& v, std::ifstream& reader);
+void RecursiveRead(Sceneheaders& header, ModelList& v, std::ifstream& reader);
 
 class DX11Addon
 {
@@ -87,6 +88,7 @@ private:
 	void ImportScene(std::string path);
 	void ExportScene(std::string path);
 	void NewScene();
+	void ClearModelList();
 
 	Window* m_pWin = nullptr;
 
@@ -127,7 +129,7 @@ private:
 	Model m_bulb;
 	ViewModel m_viewmdl;
 	Model m_playermodel;
-	std::vector<Model> m_models;
+	ModelList m_models;
 	RenderBox m_renderbox;
 	sm::Ray m_ray;
 	int m_fps = 0;
