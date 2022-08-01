@@ -227,13 +227,13 @@ bool DX11Addon::InitScene()
 	dc->OMSetBlendState(m_blendState, NULL, 0xFFFFFFFF);
 
 	ResourceHandler::AddTexture("goalflag.png"); // setting missingtexture
-	ResourceHandler::AddTexture("ZATf2esk.png"); // Load LightWarp Texture
+	ResourceHandler::AddTexture("ZANormal.png"); // Load LightWarp Texture
 	dc->PSSetShaderResources(0, 1, ResourceHandler::GetTexture(1).GetSRVAdress());
 
 	m_rLine.Init(device, dc);
 	m_sphere.Init(device, dc);
 
-	ImportScene("Scenes\\DefaultScene.ptscene");
+	ImportScene("Scenes\\multimesh.ptscene");
 	//NewScene();
 
 	m_playermodel.Init("dirCapsule.obj");
@@ -857,7 +857,7 @@ void DX11Addon::NewScene()
 	groundPlane.SetMaterialBuffer(m_materialBuffer);
 	groundPlane.Scale(10.f);
 	groundPlane.SetPosition(0.f, -.5f, 0.f);
-	groundPlane.LoadTexture("White8.png");
+	groundPlane.LoadTexture("tfground.png");
 	m_models.emplace_back(groundPlane);
 }
 
@@ -922,24 +922,28 @@ int ClickFoo(const sm::Ray& ray, std::vector<Model>& models)
 			localSpaceRay.position = d::XMVector3TransformCoord(ray.position, invWorld);
 			localSpaceRay.direction = d::XMVector3TransformNormal(ray.direction, invWorld);
 			localSpaceRay.direction.Normalize();
-			Buffer<Vertex3D>* pVbuffer = &models[i].GetMeshP()->GetVBuffer();
-			UINT nOTriangles = pVbuffer->GetBufferSize() / 3;
-			for (int j = 0; j < nOTriangles; j++)
+			for (int k = 0; k < models[i].GetMeshP()->GetNofMeshes(); k++)
 			{
-				sm::Vector3 tri0 = pVbuffer->Data((j * 3) + 0).position;
-				sm::Vector3 tri1 = pVbuffer->Data((j * 3) + 1).position;
-				sm::Vector3 tri2 = pVbuffer->Data((j * 3) + 2).position;
-				if (localSpaceRay.Intersects(tri0, tri1, tri2, t))
+				Buffer<Vertex3D>* pVbuffer = &models[i].GetMeshP()->GetVBuffer(k);
+				UINT nOTriangles = pVbuffer->GetBufferSize() / 3;
+				for (int j = 0; j < nOTriangles; j++)
 				{
-					// Multiply distnace to world space
-					t *= GetAvarageValue(models[i].GetScale());
-					if (t < maxDistance)
+					sm::Vector3 tri0 = pVbuffer->Data((j * 3) + 0).position;
+					sm::Vector3 tri1 = pVbuffer->Data((j * 3) + 1).position;
+					sm::Vector3 tri2 = pVbuffer->Data((j * 3) + 2).position;
+					if (localSpaceRay.Intersects(tri0, tri1, tri2, t))
 					{
-						maxDistance = t;
-						index = i;
+						// Multiply distnace to world space
+						t *= GetAvarageValue(models[i].GetScale());
+						if (t < maxDistance)
+						{
+							maxDistance = t;
+							index = i;
+						}
 					}
 				}
 			}
+			
 			//if (t > maxDistance)
 			//{
 			//	maxDistance = t;
@@ -1088,14 +1092,20 @@ void RecursiveRead(Sceneheaders& header, std::vector<Model>& v, std::ifstream& r
 			strCopy = strCopy.substr(3);
 			sprintf_s(ms.modelname, strCopy.c_str());
 		}
-		Model model;
-		model.Init(std::string(ms.modelname));
-		model.SetPosition(ms.position);
-		model.SetRotation(ms.rotation);
-		model.SetScale(ms.scale);
+		//Model model;
+		//model.Init(std::string(ms.modelname));
+		//model.SetPosition(ms.position);
+		//model.SetRotation(ms.rotation);
+		//model.SetScale(ms.scale);
+		//if (std::string(ms.mtrlname) != "")
+		//	model.GetMaterial().ImportMaterial(std::string(ms.mtrlname));
+		v.emplace_back(Model());
+		v[v.size() - 1].Init(std::string(ms.modelname));
+		v[v.size() - 1].SetPosition(ms.position);
+		v[v.size() - 1].SetRotation(ms.rotation);
+		v[v.size() - 1].SetScale(ms.scale);
 		if (std::string(ms.mtrlname) != "")
-			model.GetMaterial().ImportMaterial(std::string(ms.mtrlname));
-		v.emplace_back(model);
+			v[v.size() - 1].GetMaterial().ImportMaterial(std::string(ms.mtrlname));
 		RecursiveRead(header, v, reader);
 		break;
 	}

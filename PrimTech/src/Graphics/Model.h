@@ -13,18 +13,20 @@ class Mesh
 {
 public:
 	Mesh(std::string path, ID3D11Device*& device, bool makeLeftHanded = true);
-	Buffer<Vertex3D>& GetVBuffer();
+	Buffer<Vertex3D>& GetVBuffer(const UINT& index = 0);
 	std::string GetName() const;
 	void IncreaseUses();
 	void DecreaseUses();
 	void ResetUses();
 	int GetNrOfUses() const;
 	d::BoundingSphere GetBSphere() const;
+	const UINT GetNofMeshes() const;
 private:
-	Buffer<Vertex3D> m_vbuffer;
+	std::vector<Buffer<Vertex3D>> m_vbuffer;
 	std::string m_name = "unloaded";
 	int m_nrOfUses = 0;
 	d::BoundingSphere m_bsphere;
+	UINT m_nofMeshes = 0;
 };
 
 enum class Sceneheaders
@@ -55,6 +57,8 @@ public:
 	void SetLight(const sm::Vector4& v, const UINT& index);
 	void SetMaterialBuffer(Buffer<hlsl::cbpMaterialBuffer>& cbMaterialBuffer);
 	void DecreaseMeshUsage();
+	//void CreateMaterial();
+	//void AssignMaterial(Material& material);
 
 	Material& GetMaterial();
 	Mesh* GetMeshP();

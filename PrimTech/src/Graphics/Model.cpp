@@ -49,10 +49,11 @@ void Model::Draw()
 
 	mp_cbTransformBuffer->Data().world = GetWorldTransposed();
 	mp_cbTransformBuffer->UpdateBuffer();
-	dc->IASetVertexBuffers(0, 1, mp_mesh->GetVBuffer().GetReference(), mp_mesh->GetVBuffer().GetStrideP(), &offset);
-
-
-	dc->Draw(mp_mesh->GetVBuffer().GetBufferSize(), 0);
+	for (int i = 0; i < mp_mesh->GetNofMeshes(); i++)
+	{
+		dc->IASetVertexBuffers(0, 1, mp_mesh->GetVBuffer(i).GetReference(), mp_mesh->GetVBuffer().GetStrideP(), &offset);
+		dc->Draw(mp_mesh->GetVBuffer(i).GetBufferSize(), 0);
+	}
 }
 
 void Model::UpdateTextureScroll(const float& deltatime)
@@ -116,8 +117,12 @@ const sm::Vector4 Model::GetCharacterLight(int i) const
 	return m_characterLight[i];
 }
 
-bool LoadObjToBuffer(std::string path, Shape& shape, bool makeLeftHanded)
+bool LoadObjToBuffer(std::string path, std::vector<Shape>& shape, bool makeLeftHanded)
 {
+	//shape.resize(1);
+	Shape localShape;
+	//int nofG = 0;
+
 	//makeLeftHanded = false;
 	std::string s;
 	std::vector<sm::Vector3> v;
@@ -179,49 +184,79 @@ bool LoadObjToBuffer(std::string path, Shape& shape, bool makeLeftHanded)
 				triangle[i].texCoord = vt[vtIndexTemp];
 			}
 
-			if(makeLeftHanded)
+			if (makeLeftHanded)
 				for (int i = 2; i > -1; i--)
-					shape.emplace_back(triangle[i]);
+					localShape.emplace_back(triangle[i]);
 			else
 				for (int i = 0; i < 3; i++)
-					shape.emplace_back(triangle[i]);
+					localShape.emplace_back(triangle[i]);
 
 		}
-
-		for (int i = 0; i < shape.size(); i += 3)
+		else if (input == "g")
+		{
+			std::string sgname;
+			reader >> sgname;
+			if (!localShape.empty())
 			{
-				sm::Vector2 UVA = shape[i].texCoord;
-				sm::Vector2 UVB = shape[i + 1].texCoord;
-				sm::Vector2 UVC = shape[i + 2].texCoord;
-
-				sm::Vector3 POSA = shape[i].position;
-				sm::Vector3 POSB = shape[i + 1].position;
-				sm::Vector3 POSC = shape[i + 2].position;
-
-				sm::Vector2 dAB = UVB - UVA;
-				sm::Vector2 dAC = UVC - UVA;
-
-				sm::Vector3 edge1 = POSB - POSA;
-				sm::Vector3 edge2 = POSC - POSA;
-
-				float f = 1.0f / (dAB.x * dAC.y - dAC.x * dAB.y);
-
-				sm::Vector3 tangent;
-				tangent.x = f * (dAC.y * edge1.x - dAB.y * edge2.x);
-				tangent.y = f * (dAC.y * edge1.y - dAB.y * edge2.y);
-				tangent.z = f * (dAC.y * edge1.z - dAB.y * edge2.z);
-
-				shape[i].tangent = tangent;
-				shape[i + 1].tangent = tangent;
-				shape[i + 2].tangent = tangent;
+				shape.emplace_back(localShape);
+				localShape.clear();
 			}
+			//nofG++;
+		}
+		else if (input == "usemtl")
+		{
+			std::string sgname;
+			reader >> sgname;
+			if (!localShape.empty())
+			{
+				shape.emplace_back(localShape);
+				localShape.clear();
+			}
+			//nofG++;
+		}
+		
 	}
+	shape.emplace_back(localShape);
+	for (int si = 0; si < shape.size(); si++)
+	{
+		for (int i = 0; i < shape[si].size(); i += 3)
+		{
+			sm::Vector2 UVA = shape[si][i + 0].texCoord;
+			sm::Vector2 UVB = shape[si][i + 1].texCoord;
+			sm::Vector2 UVC = shape[si][i + 2].texCoord;
+
+			sm::Vector3 POSA = shape[si][i + 0].position;
+			sm::Vector3 POSB = shape[si][i + 1].position;
+			sm::Vector3 POSC = shape[si][i + 2].position;
+
+			sm::Vector2 dAB = UVB - UVA;
+			sm::Vector2 dAC = UVC - UVA;
+
+			sm::Vector3 edge1 = POSB - POSA;
+			sm::Vector3 edge2 = POSC - POSA;
+
+			float f = 1.0f / (dAB.x * dAC.y - dAC.x * dAB.y);
+
+			sm::Vector3 tangent;
+			tangent.x = f * (dAC.y * edge1.x - dAB.y * edge2.x);
+			tangent.y = f * (dAC.y * edge1.y - dAB.y * edge2.y);
+			tangent.z = f * (dAC.y * edge1.z - dAB.y * edge2.z);
+
+			shape[si][i].tangent = tangent;
+			shape[si][i + 1].tangent = tangent;
+			shape[si][i + 2].tangent = tangent;
+		}
+	}
+		
+	
+	//localShape.clear();
+	reader.close();
 	return true;
 }
 
 Mesh::Mesh(std::string path, ID3D11Device*& device, bool makeLeftHanded)
 {
-	std::vector<Vertex3D> vertexes;
+	std::vector<Shape> vertexes;
 
 	if (!LoadObjToBuffer(path, vertexes, makeLeftHanded))
 	{
@@ -229,25 +264,37 @@ Mesh::Mesh(std::string path, ID3D11Device*& device, bool makeLeftHanded)
 		throw;
 	}
 	m_name = StringHelper::GetName(path);
-
+	m_nofMeshes = vertexes.size();
 
 	std::vector<d::XMFLOAT3> positionArray;
-	positionArray.resize(vertexes.size());
-	for (int i = 0; i < vertexes.size(); i++)
-		positionArray[i] = vertexes[i].position;
+	UINT totalVertCount = 0;
+	for (int i = 0; i < m_nofMeshes; i++)
+	{
+		for (int j = 0; j < vertexes[i].size(); j++)
+		{
+			sm::Vector3 pos = vertexes[i][j].position;
+			positionArray.emplace_back(pos);
+		}
+	}
+	//positionArray.resize(vertexes[0].size());
+
+
 	d::BoundingBox box;
 	d::BoundingBox::CreateFromPoints(box, positionArray.size(), positionArray.data(), sizeof(sm::Vector3));
 	d::BoundingSphere::CreateFromBoundingBox(m_bsphere, box);
-	//d::BoundingSphere::CreateFromPoints(m_bsphere, vertexes.size(), positionArray.data(), sizeof(sm::Vector3));
 
-	HRESULT hr = m_vbuffer.CreateVertexBuffer(device, vertexes.data(), vertexes.size());
-	if (FAILED(hr))
+	m_vbuffer.resize(m_nofMeshes);
+	for (int i = 0; i < m_nofMeshes; i++)
+	{
+		HRESULT hr = m_vbuffer[i].CreateVertexBuffer(device, vertexes[i].data(), vertexes[i].size());
 		COM_ERROR(hr, "Failed to load vertex buffer");
+	}
+	
 }
 
-Buffer<Vertex3D>& Mesh::GetVBuffer()
+Buffer<Vertex3D>& Mesh::GetVBuffer(const UINT& index)
 {
-	return m_vbuffer;
+	return m_vbuffer[index];
 }
 
 std::string Mesh::GetName() const
@@ -280,61 +327,7 @@ d::BoundingSphere Mesh::GetBSphere() const
 	return m_bsphere;
 }
 
-//void AllModels::SetBuffers(ID3D11DeviceContext*& dc, Buffer<hlsl::cbpWorldTransforms3D>& buffer, Buffer<hlsl::cbpMaterialBuffer>& matBuffer)
-//{
-//	for (int i = 0; i < m_models.size(); i++)
-//	{
-//		m_models[i]->SetDCandBuffer(dc, buffer);
-//		m_models[i]->SetMaterialBuffer(matBuffer);
-//	}
-//}
-
-//void AllModels::AddModelAdress(Model* pm)
-//{
-//	m_models.emplace_back(pm);
-//}
-
-//void AllModels::SetNamesToVector(std::vector<std::string>& v)
-//{
-	//int hej = m_models.size();
-	//hej++;
-	//v.resize(m_models.size());
-	//for (int i = 0; i < v.size(); i++)
-	//{
-	//	if (m_models[i]->GetModelType() != ModelType::eUNSPECIFIED)
-	//		v[i] = "DEBUG| ";
-	//	v[i] += m_models[i]->GetName();
-	//}
-//}
-
-//int AllModels::GetNrOfModels()
-//{
-//	return (int)m_models.size();
-//}
-//
-//Model* AllModels::GetModel(int index)
-//{
-//	return m_models[index];
-//}
-//
-//bool AllModels::ExportScene(std::string path)
-//{
-//	Sceneheaders header = Sceneheaders::eMODEL;
-//
-//	std::ofstream writer(path, std::ios::binary | std::ios::out);
-//	for (int i = 0; i < m_models.size(); i++)
-//	{
-//		ModelStruct ms;
-//		strcpy_s(ms.modelname, m_models[i]->GetName().c_str());
-//		ms.scale = m_models[i]->GetScale();
-//		ms.rotation = m_models[i]->GetRotation();
-//		ms.position = m_models[i]->GetPosition();
-//		strcpy_s(ms.mtrlname, m_models[i]->GetMaterial().GetFileName().c_str());
-//		writer.write((const char*)&header, 4);
-//		writer.write((const char*)&ms, sizeof(ModelStruct));
-//	}
-//	header = Sceneheaders::enull;
-//	writer.write((const char*)&header, 4);
-//	writer.close();
-//	return true;
-//}
+const UINT Mesh::GetNofMeshes() const
+{
+	return m_nofMeshes;
+}
