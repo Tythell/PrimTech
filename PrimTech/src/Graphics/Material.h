@@ -52,6 +52,7 @@ public:
 	void ImportMaterial(std::string path);
 	void RemoveTexture(const TextureType e);
 
+	std::string GetMaterialName() const;
 	std::string GetMapName(const TextureType& e) const;
 	std::string GetFileName() const;
 	sm::Vector2 GetDiffuseScrollSpeed() const;

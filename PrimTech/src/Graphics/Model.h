@@ -50,6 +50,8 @@ struct ModelStruct
 class Model : public Transform
 {
 public:
+	Model();
+	~Model();
 	void Init(const std::string path, ModelType e = ModelType(0), bool makeLeftHanded = true);
 	void Draw();
 	void UpdateTextureScroll(const float& deltatime);

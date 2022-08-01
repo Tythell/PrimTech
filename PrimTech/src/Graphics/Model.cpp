@@ -16,6 +16,14 @@
 ////Buffer<hlsl::cbpWorldTransforms3D>* Model::mp_cbTransformBuffer;
 //std::vector<Model*> AllModels::m_models;
 
+Model::Model()
+{
+}
+
+Model::~Model()
+{
+}
+
 void Model::Init(const std::string path, ModelType e, bool makeLeftHanded)
 {
 	m_material.SetLeftHanded(makeLeftHanded);

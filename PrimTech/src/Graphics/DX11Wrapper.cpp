@@ -646,7 +646,8 @@ void DX11Addon::ImGuiEntList()
 				}
 				pSelectedModel->SetScale(scalef[0], scalef[1], scalef[2]);
 			}
-			if (ImGui::CollapsingHeader("Material", ImGuiTreeNodeFlags_DefaultOpen))
+			std::string matName = "Material - " + pMaterial->GetFileName();
+			if (ImGui::CollapsingHeader(matName.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
 			{
 				LoadButton(pMaterial, "Diffuse: ", eDiffuse);
 				LoadButton(pMaterial, "NormalMap: ", eNormal);
@@ -745,6 +746,7 @@ void DX11Addon::ImGuiEntList()
 			if (mp_kb->IsKeyDown(Key::DELETEKEY))
 			{
 				m_models[m_selected]->DecreaseMeshUsage();
+				delete m_models[m_selected];
 				m_models.erase(m_models.begin() + m_selected);
 				m_selected = -1;
 			}
