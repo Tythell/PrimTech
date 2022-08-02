@@ -110,10 +110,12 @@ float4 main(PSInput input) : SV_Target
     //diffuse *= att;
     
     lightindex /= distance;
-    lightindex += specular;
+    //lightindex += specular;
     lightindex += charDirLight;
     lightindex = clamp(lightindex, 0.01f, 0.99f);
     float3 cellLightStr = ZAToon.Sample(samplerState, float2(lightindex, .5f)).xyz;
+    float3 warpedSpecular = clamp(specular, 0.01f, 0.99f);
+    warpedSpecular = ZAToon.Sample(samplerState, float2(warpedSpecular.z, .5f)).xyz;
     
     cellLightStr += ambientColor * ambientStr;
     
@@ -128,7 +130,8 @@ float4 main(PSInput input) : SV_Target
     
     float rimIntesnity = smoothstep(rimamount - 0.001, rimamount + 0.001f, rimDot);
     
-    float3 final = diffuse.xyz * (cellLightStr) + (rimDot.xxx * rimColor);
+    //float3 final = warpedSpecular;
+    float3 final = diffuse.xyz * (cellLightStr) + (rimIntesnity.xxx * rimColor) + specular;
 
     
     
