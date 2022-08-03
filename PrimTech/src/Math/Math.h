@@ -1,4 +1,6 @@
 #pragma once
+#include<DirectXMath.h>
+#include <DirectXCollision.h>
 #include"../Math/Simplemath.h"
 #include <cmath>
 #include <string>

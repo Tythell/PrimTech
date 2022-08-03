@@ -1,4 +1,5 @@
 #include "PrimTech.h"
+#include "Graphics/DX11Wrapper.h"
 #include <string>
 
 namespace pt
@@ -11,7 +12,8 @@ namespace pt
 
 	PrimTech::~PrimTech()
 	{
-		if (mp_gApi) delete mp_gApi;
+		if (mp_gApi) 
+			delete mp_gApi;
 	}
 
 	void PrimTech::Init(LPCWSTR windowName, HINSTANCE hInstance, std::wstring windowClass, unsigned int width, unsigned int height)

@@ -4,9 +4,13 @@
 #include"Vertex.h"
 #include "Material.h"
 
-using Shape = std::vector<Vertex3D>;
+//bool LoadObjToBuffer(std::string path, Shape& shape, bool makeLeftHanded = true);
 
-bool LoadObjToBuffer(std::string path, Shape& shape, bool makeLeftHanded = true);
+struct Mtl
+{
+	std::string name;
+	std::string diffuseName; // map_Kd
+};
 
 // Contains Vertex data
 class Mesh
@@ -21,8 +25,10 @@ public:
 	int GetNrOfUses() const;
 	d::BoundingSphere GetBSphere() const;
 	const UINT GetNofMeshes() const;
+	std::vector<Mtl> GetMtl() const;
 private:
 	std::vector<Buffer<Vertex3D>> m_vbuffer;
+	std::vector<Mtl> m_mtls;
 	std::string m_name = "unloaded";
 	int m_nrOfUses = 0;
 	d::BoundingSphere m_bsphere;

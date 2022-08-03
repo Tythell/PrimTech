@@ -40,7 +40,6 @@ bool TextureMap::CreateFromFile(const char* texturePath, ID3D11Device* device, c
 
 	if (!imageData)
 		Popup::Error("Texture: " + std::string(fullpath) + " not found");
-	//imageData = stbi_load("missingTexture.png", &textureWidth, &textureHeight, nullptr, STBI_rgb_alpha);
 
 	ID3D11Texture2D* texture2D;
 

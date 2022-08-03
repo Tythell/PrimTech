@@ -236,8 +236,8 @@ bool DX11Addon::InitScene()
 	m_rLine.Init(device, dc);
 	m_sphere.Init(device, dc);
 
-	ImportScene("Scenes\\scout.ptscene");
-	//NewScene();
+	//ImportScene("Scenes\\objscene.ptscene");
+	NewScene();
 
 	m_playermodel.Init("dirCapsule.obj");
 	m_playermodel.SetScale(.1f);
@@ -440,7 +440,6 @@ void DX11Addon::ImguiDebug()
 	m_bulb.SetPosition(im.pointLightPos[0], im.pointLightPos[1], im.pointLightPos[2]);
 
 	ImGui::Text(GetVectorAsString(mp_cam->GetRotation()).c_str());
-
 	ImGui::End();
 }
 
@@ -453,8 +452,8 @@ void DX11Addon::ImGuiRender()
 	m_isHoveringWindow = false;
 	ImGuizmo();
 
-	if (im.showDebugWindow) ImguiDebug();
 	ImGuiMenu();
+	if (im.showDebugWindow) ImguiDebug();
 
 	//ImGuiGradientWindow();
 	ImGuiEntList();
@@ -496,7 +495,7 @@ void DX11Addon::ImGuiMenu()
 				std::string diapath = Dialogs::OpenFile("Scene (*.ptscene)\0*.ptscene\0", "Scenes\\");
 				if (diapath != "")
 				{
-					m_models.clear();
+					ClearModelList();
 					ResourceHandler::ResetUses();
 					ImportScene(diapath);
 					for (int i = 0; i < m_models.size(); i++)
@@ -562,21 +561,54 @@ void DX11Addon::ImGuiMenu()
 	}
 }
 
-int AddModelToVector(ID3D11DeviceContext*& dc, Buffer<hlsl::cbpWorldTransforms3D>& tbuffer, Buffer<hlsl::cbpMaterialBuffer>& mbuffer,
+int NewModelToV(std::string path, ID3D11DeviceContext*& dc, Buffer<hlsl::cbpWorldTransforms3D>& tbuffer, Buffer<hlsl::cbpMaterialBuffer>& mbuffer,
+	ModelList& modelV)
+{
+	path = StringHelper::GetName(path);
+	modelV.emplace_back(new Model);
+	modelV[modelV.size() - 1]->Init(path);
+	modelV[modelV.size() - 1]->SetDCandBuffer(dc, tbuffer);
+	modelV[modelV.size() - 1]->SetMaterialBuffer(mbuffer);
+
+	return (modelV.size() - 1);
+}
+
+int InterfaceAddModelToVector(ID3D11DeviceContext*& dc, Buffer<hlsl::cbpWorldTransforms3D>& tbuffer, Buffer<hlsl::cbpMaterialBuffer>& mbuffer,
 	ModelList& modelV)
 {
 	std::string path = Dialogs::OpenFile("Model (*.obj)\0*.obj;*.txt\0", "Assets\\models\\");
 	if (!path.empty())
 	{
-		path = StringHelper::GetName(path);
-		modelV.emplace_back(new Model);
-		modelV[modelV.size() - 1]->Init(path);
-		modelV[modelV.size() - 1]->SetDCandBuffer(dc, tbuffer);
-		modelV[modelV.size() - 1]->SetMaterialBuffer(mbuffer);
-
-		return (modelV.size() - 1);
+		path = StringHelper::GetName(path);	
+		return NewModelToV(path, dc, tbuffer, mbuffer, modelV);
 	}
 	return -1;
+}
+
+
+
+int CopyModel(ID3D11DeviceContext*& dc, Buffer<hlsl::cbpWorldTransforms3D>& tbuffer, Buffer<hlsl::cbpMaterialBuffer>& mbuffer,
+	ModelList& modelV, const UINT& i)
+{
+	std::string name = modelV[i]->GetName();
+	int brackedIndex = -1;
+	for (int i = 0; i < name.size() && brackedIndex == -1; i++)
+	{
+		if (name[i] == ')')
+			brackedIndex = i - 1;
+	}
+	if (brackedIndex != -1)
+		name = name.substr(brackedIndex + 2);
+	modelV.emplace_back(new Model);
+	UINT newIndex = modelV.size() - 1;
+	modelV[newIndex]->Init(name);
+	modelV[newIndex]->SetDCandBuffer(dc, tbuffer);
+	modelV[newIndex]->SetMaterialBuffer(mbuffer);
+	modelV[newIndex]->SetScale(modelV[i]->GetScale());
+	modelV[newIndex]->SetRotation(modelV[i]->GetRotation());
+	modelV[newIndex]->SetPosition(modelV[i]->GetPosition());
+
+	return (int)newIndex;
 }
 
 void DX11Addon::ImGuiEntList()
@@ -591,7 +623,7 @@ void DX11Addon::ImGuiEntList()
 		if (ImGui::BeginPopup("popup##context"))
 		{
 			if (ImGui::Selectable("Model"))
-				m_selected = AddModelToVector(dc, m_transformBuffer, m_materialBuffer, m_models);
+				m_selected = InterfaceAddModelToVector(dc, m_transformBuffer, m_materialBuffer, m_models);
 
 			ImGui::EndPopup();
 		}
@@ -779,6 +811,14 @@ void DX11Addon::ImGuiEntList()
 				m_models.erase(m_models.begin() + m_selected);
 				m_selected = -1;
 			}
+			static bool ispressed = false;
+			if (mp_kb->IsKeyDown(Key::CONTROL) && mp_kb->IsKeyDown(Key::D) && !ispressed)
+			{
+				CopyModel(dc, m_transformBuffer, m_materialBuffer, m_models, m_selected);
+				ispressed = true;
+			}
+			else if (!mp_kb->IsKeyDown(Key::CONTROL) && !mp_kb->IsKeyDown(Key::D))
+				ispressed = false;
 
 			ImGui::End();
 		}
@@ -800,9 +840,19 @@ void DX11Addon::ImportScene(std::string path)
 	if (!reader.is_open())
 		Popup::Error("Failed open scene");
 	Sceneheaders header = Sceneheaders::enull;
-
 	RecursiveRead(header, m_models, reader);
 	reader.close();
+}
+
+int countDigits(int n)
+{
+	int total = 0;
+
+	while (n > 0) {
+		n = n / 10;
+		total++;
+	}
+	return total;
 }
 
 void DX11Addon::ExportScene(std::string path)
@@ -816,8 +866,16 @@ void DX11Addon::ExportScene(std::string path)
 		strcpy_s(ms.modelname, m_models[i]->GetName().c_str());
 		if (ms.modelname[0] == '(')
 		{
+
 			std::string strCopy(ms.modelname);
-			strCopy = strCopy.substr(3);
+			int brackedIndex = -1;
+			for (int i = 0; i < strCopy.size() && brackedIndex == -1; i++)
+			{
+				if (strCopy[i] == ')')
+					brackedIndex = i - 1;
+			}
+			if (brackedIndex != -1)
+				strCopy = strCopy.substr(brackedIndex + 2);
 			sprintf_s(ms.modelname, strCopy.c_str());
 		}
 		ms.scale = m_models[i]->GetScale();
@@ -829,7 +887,7 @@ void DX11Addon::ExportScene(std::string path)
 		writer.write((const char*)&ms, sizeof(ModelStruct));
 		for (int eI = 0; eI < ms.noOfExtraMats; eI++)
 		{
-			strcpy_s(ms.mtrlname, m_models[i]->GetMaterial(eI+1).GetFileName().c_str());
+			strcpy_s(ms.mtrlname, m_models[i]->GetMaterial(eI + 1).GetFileName().c_str());
 			writer.write(ms.mtrlname, 24);
 		}
 	}
@@ -1025,10 +1083,13 @@ void DX11Addon::Click(const sm::Vector3& dir)
 		sm::Ray ray;
 		ray.position = mp_cam->GetPosition();
 		ray.direction = dir;
-#ifdef _DEBUG
-		sm::Vector3 endPos = ray.position + dir;
-		m_rLine.SetLine(ray.position, endPos);
-#endif // _DEBUG
+		//#ifdef _DEBUG
+		if (im.drawRayCast)
+		{
+			sm::Vector3 endPos = ray.position + dir;
+			m_rLine.SetLine(ray.position, endPos);
+		}
+		//#endif // _DEBUG
 		int n = ClickFoo(ray, m_models);
 		m_selected = n;
 	}
@@ -1164,7 +1225,7 @@ void RecursiveRead(Sceneheaders& header, ModelList& v, std::ifstream& reader)
 		if (std::string(ms.mtrlname) != "")
 			v[v.size() - 1]->GetMaterial().ImportMaterial(std::string(ms.mtrlname));
 
-		for (int i = 1; i < ms.noOfExtraMats+1 && ms.noOfExtraMats < 100; i++)
+		for (int i = 1; i < ms.noOfExtraMats + 1 && ms.noOfExtraMats < 100; i++)
 		{
 			reader.read((char*)&ms.mtrlname, 24);
 			if (ms.mtrlname != std::string(""))

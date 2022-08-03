@@ -24,7 +24,6 @@ public:
 	void ShutDown();
 	bool GetIsFocused() const;
 private:
-	DX11Addon* m_pDX11 = nullptr;
 	bool m_apiLoaded = false;
 	int m_windowWidth = 0, m_windowHeight = 0;
 	std::wstring m_windowName;

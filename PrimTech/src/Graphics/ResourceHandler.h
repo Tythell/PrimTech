@@ -6,6 +6,7 @@
 
 class Mesh;
 class TextureMap;
+class Mtl;
 
 class ResourceHandler
 {

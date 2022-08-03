@@ -258,7 +258,6 @@ Window::Window():
 
 Window::~Window()
 {
-	if (m_pDX11) delete m_pDX11;
 }
 
 bool Window::init(LPCWSTR windowName, HINSTANCE hInstance, std::wstring windowClass, unsigned int width, unsigned int height)

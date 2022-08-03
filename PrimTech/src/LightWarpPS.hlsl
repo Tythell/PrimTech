@@ -131,7 +131,7 @@ float4 main(PSInput input) : SV_Target
     float rimIntesnity = smoothstep(rimamount - 0.001, rimamount + 0.001f, rimDot);
     
     //float3 final = warpedSpecular;
-    float3 final = diffuse.xyz * (cellLightStr) + (rimIntesnity.xxx * rimColor) + specular;
+    float3 final = diffuse.xyz * (cellLightStr) + (rimDot.xxx * rimColor) + specular;
 
     
     
