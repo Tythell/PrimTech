@@ -7,15 +7,6 @@
 #include "ResourceHandler.h"
 #include "../Utility/CommonDialogs.h"
 
-//Model::Model()
-//{
-	//AllModels::AddModelAdress(this);
-//}
-//
-////ID3D11DeviceContext* Model::dc;
-////Buffer<hlsl::cbpWorldTransforms3D>* Model::mp_cbTransformBuffer;
-//std::vector<Model*> AllModels::m_models;
-
 Model::~Model()
 {
 	delete[] m_material;
@@ -43,10 +34,10 @@ void Model::Init(const std::string path, ModelType e, bool makeLeftHanded)
 	embeddedmatIndexes = mp_mesh->GetMtlIndex();
 	for (int i = 0; i < m_nOfMats; i++)
 	{
-		if (!embeddedmats[i].diffuseName.empty())
+		if (!embeddedmats[embeddedmatIndexes[i]].diffuseName.empty())
 		{
-			std::string texturePath = embeddedmats[i].diffuseName;
-			LoadTexture(embeddedmats[embeddedmatIndexes[i]].diffuseName, i);
+			std::string texturePath = embeddedmats[embeddedmatIndexes[i]].diffuseName;
+			LoadTexture(texturePath, i);
 		}
 
 	}
