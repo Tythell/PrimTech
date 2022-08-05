@@ -236,24 +236,24 @@ bool DX11Addon::InitScene()
 	m_rLine.Init(device, dc);
 	m_sphere.Init(device, dc);
 
-	//ImportScene("Scenes\\objscene.ptscene");
-	NewScene();
+	ImportScene("Scenes\\purescout.ptscene");
+	//NewScene();
 
-	m_playermodel.Init("dirCapsule.obj");
-	m_playermodel.SetScale(.1f);
+	//m_playermodel.Init("dirCapsule.obj");
+	//m_playermodel.SetScale(.1f);
 
 
-	m_bulb.Init("bulb.obj", ModelType::eDEBUG);
-	m_bulb.SetScale(1.2f);
-	m_viewmdl.Init("handmodel2.obj", mp_cam);
-	m_bulb.SetMaterialBuffer(m_materialBuffer);
-	m_playermodel.SetMaterialBuffer(m_materialBuffer);
-	m_playermodel.SetDCandBuffer(dc, m_transformBuffer);
+	//m_bulb.Init("bulb.obj", ModelType::eDEBUG);
+	//m_bulb.SetScale(1.2f);
+	//m_viewmdl.Init("handmodel2.obj", mp_cam);
+	//m_bulb.SetMaterialBuffer(m_materialBuffer);
+	//m_playermodel.SetMaterialBuffer(m_materialBuffer);
+	//m_playermodel.SetDCandBuffer(dc, m_transformBuffer);
 
-	m_viewmdl.m_model.SetDCandBuffer(dc, m_transformBuffer);
-	m_viewmdl.m_model.SetMaterialBuffer(m_materialBuffer);
-	m_bulb.SetDCandBuffer(dc, m_transformBuffer);
-	m_bulb.SetMaterialBuffer(m_materialBuffer);
+	//m_viewmdl.m_model.SetDCandBuffer(dc, m_transformBuffer);
+	//m_viewmdl.m_model.SetMaterialBuffer(m_materialBuffer);
+	//m_bulb.SetDCandBuffer(dc, m_transformBuffer);
+	//m_bulb.SetMaterialBuffer(m_materialBuffer);
 
 	dc->VSSetConstantBuffers(0, 1, m_transformBuffer.GetReference());
 
@@ -291,9 +291,10 @@ void DX11Addon::UpdateScene(const float& deltatime)
 	m_lightbuffer.Data().camPos = { mp_cam->GetPosition().x, mp_cam->GetPosition().y, mp_cam->GetPosition().z, 1.f };
 	m_lightbuffer.UpdateBuffer();
 
-	m_playermodel.SetRotation(0.f/*-mp_cam->GetRotation().x*/, mp_cam->GetRotation().y, 0.f);
-	m_playermodel.Rotate(0.f, d::XM_PI, 0.f);
-	m_playermodel.SetPosition(mp_cam->GetPositionNoOffset() + sm::Vector3(0.f, -0.1f, 0.f));
+	//m_playermodel.SetRotation(0.f/*-mp_cam->GetRotation().x*/, mp_cam->GetRotation().y, 0.f);
+	//m_playermodel.Rotate(0.f, d::XM_PI, 0.f);
+	//m_playermodel.SetPosition(mp_cam->GetPositionNoOffset() + sm::Vector3(0.f, -0.1f, 0.f));
+
 	//m_model.Rotate(0.f, 2.f * deltatime, 0.f);
 }
 
@@ -371,7 +372,7 @@ void LoadButton(Material* pMaterial, std::string name, TextureType e, const UINT
 	std::string buttonName = "Load##" + name + std::to_string(i);
 	if (ImGui::Button(buttonName.c_str()))
 	{
-		std::string newMtrlString = Dialogs::OpenFile("Images (*.png, *.jpg)\0*.png;*.jpg\0", "Assets\\Textures\\");
+		std::string newMtrlString = Dialogs::OpenFile("Images (*.png, *.jpg)\0*.png;*.jpg;*.dds;\0", "Assets\\Textures\\");
 		if (newMtrlString != "")
 		{
 			pMaterial->LoadTexture(newMtrlString, e);
@@ -437,7 +438,7 @@ void DX11Addon::ImguiDebug()
 	camoffsetString += std::to_string(mp_cam->GetOffset().z);
 	ImGui::Text(camoffsetString.c_str());
 
-	m_bulb.SetPosition(im.pointLightPos[0], im.pointLightPos[1], im.pointLightPos[2]);
+	//m_bulb.SetPosition(im.pointLightPos[0], im.pointLightPos[1], im.pointLightPos[2]);
 
 	ImGui::Text(GetVectorAsString(mp_cam->GetRotation()).c_str());
 	ImGui::End();
@@ -831,7 +832,6 @@ void DX11Addon::ImGuiEntList()
 			for (int m = 0; m < m_models[m_selected]->GetMeshP()->GetNofMeshes(); m++)
 				m_models[m_selected]->GetMaterial(m).SetSelection(true);
 	}
-
 }
 
 void DX11Addon::ImportScene(std::string path)
@@ -1158,8 +1158,8 @@ void DX11Addon::Render(const float& deltatime)
 	//dc->PSSetShader(m_3dps.GetShader(), NULL, 0);
 	dc->PSSetShader(m_toonPS.GetShader(), NULL, 0);
 
-	if (mp_cam->GetOffset().z != 0.f)
-		m_playermodel.Draw();
+	//if (mp_cam->GetOffset().z != 0.f)
+	//	m_playermodel.Draw();
 
 	for (int i = 0; i < modelAmount; i++)
 	{
@@ -1169,12 +1169,12 @@ void DX11Addon::Render(const float& deltatime)
 	//m_water.Draw();
 	dc->PSSetShader(m_3dnoLightps.GetShader(), NULL, 0);
 
-	if (mp_cam->GetOffset().z == 0.f && im.enableHandModel)
-	{
-		dc->ClearDepthStencilView(m_dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.f, 0);
-		m_viewmdl.Draw();
-	}
-	m_bulb.Draw();
+	//if (mp_cam->GetOffset().z == 0.f && im.enableHandModel)
+	//{
+	//	dc->ClearDepthStencilView(m_dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.f, 0);
+	//	m_viewmdl.Draw();
+	//}
+	//m_bulb.Draw();
 
 	//m_transformBuffer.Data().world = d::XMMatrixTranspose(d::XMMatrixTranslation(0.f, 0.f, 1.f));
 	//m_transformBuffer.UpdateCB();

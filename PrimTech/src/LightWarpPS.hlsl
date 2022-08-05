@@ -79,6 +79,8 @@ float4 main(PSInput input) : SV_Target
     float4 diffuse = diffuseMap.Sample(samplerState, texCoord + distortion);
     if (hasOpacityMap)
         opacity = opacityMap.Sample(samplerState, texCoord + distortion);
+    else
+        opacity = diffuse.w;
     float charDirLight = (characterLight[0].w != 0.f) ? dot(normal, normalize(characterLight[0].xyz)) * characterLight[0].w :
     0.f;
     

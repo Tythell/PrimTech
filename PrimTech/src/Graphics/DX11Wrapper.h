@@ -127,9 +127,9 @@ private:
 	KeyboardHandler* mp_kb;
 
 	int m_selected = -1;
-	Model m_bulb;
-	ViewModel m_viewmdl;
-	Model m_playermodel;
+	//Model m_bulb;
+	//ViewModel m_viewmdl;
+	//Model m_playermodel;
 	ModelList m_models;
 	RenderBox m_renderbox;
 	sm::Ray m_ray;

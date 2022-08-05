@@ -28,6 +28,8 @@ void Model::Init(const std::string path, ModelType e, bool makeLeftHanded)
 	m_name = "";
 	int meshIndex = ResourceHandler::CheckMeshNameExists(StringHelper::GetName(fullpath));
 	std::vector<Mtl> embeddedmats;
+	std::vector<int> embeddedmatIndexes;
+	
 	if (meshIndex != -1)
 	{
 		mp_mesh = ResourceHandler::GetMeshAdress(meshIndex);
@@ -35,16 +37,16 @@ void Model::Init(const std::string path, ModelType e, bool makeLeftHanded)
 	}
 	else
 		mp_mesh = ResourceHandler::AddMesh(fullpath, makeLeftHanded);
-
 	m_nOfMats = mp_mesh->GetNofMeshes();
 	m_material = new Material[m_nOfMats];
 	embeddedmats = mp_mesh->GetMtl();
-	for (int i = 0; i < embeddedmats.size(); i++)
+	embeddedmatIndexes = mp_mesh->GetMtlIndex();
+	for (int i = 0; i < m_nOfMats; i++)
 	{
 		if (!embeddedmats[i].diffuseName.empty())
 		{
 			std::string texturePath = embeddedmats[i].diffuseName;
-			LoadTexture(embeddedmats[i].diffuseName, i);
+			LoadTexture(embeddedmats[embeddedmatIndexes[i]].diffuseName, i);
 		}
 
 	}
@@ -142,10 +144,11 @@ const sm::Vector4 Model::GetCharacterLight(int i) const
 struct Shape
 {
 	std::vector<Vertex3D> verts;
-	Mtl material;
+	UINT mtlIndex = 0;
+	//Mtl material;
 };
 
-bool LoadObjToBuffer(std::string path, std::vector<Shape>& shape, bool makeLeftHanded)
+bool LoadObjToBuffer(std::string path, std::vector<Shape>& shape, std::vector<Mtl>& localMtls, std::vector<int>& matIndex, bool makeLeftHanded)
 {
 	//shape.resize(1);
 	Shape localShape;
@@ -163,7 +166,7 @@ bool LoadObjToBuffer(std::string path, std::vector<Shape>& shape, bool makeLeftH
 	std::vector<UINT> normalIndex;
 	std::vector<UINT> texcoordsIndex;
 
-	std::vector<Mtl> mtls;
+	//std::vector<Mtl> mtls;
 
 	std::ifstream reader(path);
 
@@ -237,18 +240,18 @@ bool LoadObjToBuffer(std::string path, std::vector<Shape>& shape, bool makeLeftH
 		{
 			std::string sgname;
 			reader >> sgname;
-			for (int i = 0; i < mtls.size(); i++)
+			for (int i = 0; i < localMtls.size(); i++)
 			{
-				if (mtls[i].name == sgname)
+				if (localMtls[i].name == sgname)
 				{
-					Mtl copy = mtls[i];
+					matIndex.emplace_back(i);
+					//Mtl copy = mtls[i];
 
-					mtls[i] = mtls[currentMat];
-					mtls[currentMat] = copy;
-					
+					//mtls[i] = mtls[currentMat];
+					//mtls[currentMat] = copy;
 				}
 			}
-			currentMat++;
+			//currentMat++;
 			
 
 			if (!localShape.verts.empty())
@@ -274,7 +277,9 @@ bool LoadObjToBuffer(std::string path, std::vector<Shape>& shape, bool makeLeftH
 						nofMats++;
 						input = sdummy.substr(7);
 						mtl.name = input;
-						mtls.emplace_back(mtl);
+						//mtls.emplace_back(mtl);
+						localMtls.resize(localMtls.size() + 1);
+						localMtls[localMtls.size() - 1] = mtl;
 					}
 					matreader >> input;
 					if (input == "newmtl")
@@ -283,12 +288,14 @@ bool LoadObjToBuffer(std::string path, std::vector<Shape>& shape, bool makeLeftH
 						nofMats++;
 						matreader >> input;
 						mtl.name = input;
-						mtls.emplace_back(mtl);
+						localMtls.resize(localMtls.size() + 1);
+						localMtls[localMtls.size() - 1] = mtl;
+						//mtls.emplace_back(mtl);
 					}
 					else if (input == "map_Kd")
 					{
 						matreader >> input;
-						mtls[nofMats - 1].diffuseName = input;
+						localMtls[nofMats - 1].diffuseName = input;
 					}
 					
 				}
@@ -328,8 +335,8 @@ bool LoadObjToBuffer(std::string path, std::vector<Shape>& shape, bool makeLeftH
 			shape[si].verts[i + 2].tangent = tangent;
 		}
 
-		if(!mtls.empty())
-			shape[si].material = mtls[si];
+		//if(!localMtls.empty())
+		//	shape[si].material = localMtls[si];
 	}
 	
 	//localShape.clear();
@@ -340,8 +347,10 @@ bool LoadObjToBuffer(std::string path, std::vector<Shape>& shape, bool makeLeftH
 Mesh::Mesh(std::string path, ID3D11Device*& device, bool makeLeftHanded)
 {
 	std::vector<Shape> mesh;
+	//std::vector<Mtl> localMtls;
+	//std::vector<int> matIndexes;
 
-	if (!LoadObjToBuffer(path, mesh, makeLeftHanded))
+	if (!LoadObjToBuffer(path, mesh, m_mtls, m_mtlIndexes, makeLeftHanded))
 	{
 		Popup::Error("loading " + path);
 		throw;
@@ -358,9 +367,7 @@ Mesh::Mesh(std::string path, ID3D11Device*& device, bool makeLeftHanded)
 			sm::Vector3 pos = mesh[i].verts[j].position;
 			positionArray.emplace_back(pos);
 		}
-		m_mtls.emplace_back(mesh[i].material);
 	}
-	//positionArray.resize(vertexes[0].size());
 
 
 	d::BoundingBox box;
@@ -418,4 +425,9 @@ const UINT Mesh::GetNofMeshes() const
 std::vector<Mtl> Mesh::GetMtl() const
 {
 	return m_mtls;
+}
+
+std::vector<int> Mesh::GetMtlIndex() const
+{
+	return m_mtlIndexes;
 }

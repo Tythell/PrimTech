@@ -26,9 +26,11 @@ public:
 	d::BoundingSphere GetBSphere() const;
 	const UINT GetNofMeshes() const;
 	std::vector<Mtl> GetMtl() const;
+	std::vector<int> GetMtlIndex() const;
 private:
 	std::vector<Buffer<Vertex3D>> m_vbuffer;
 	std::vector<Mtl> m_mtls;
+	std::vector<int> m_mtlIndexes;
 	std::string m_name = "unloaded";
 	int m_nrOfUses = 0;
 	d::BoundingSphere m_bsphere;
