@@ -32,7 +32,7 @@ void Model::Init(const std::string path, ModelType e, bool makeLeftHanded)
 	m_material = new Material[m_nOfMats];
 	embeddedmats = mp_mesh->GetMtl();
 	embeddedmatIndexes = mp_mesh->GetMtlIndex();
-	for (int i = 0; i < m_nOfMats; i++)
+	for (int i = 0; i < m_nOfMats && embeddedmatIndexes.size() > 0; i++)
 	{
 		if (!embeddedmats[embeddedmatIndexes[i]].diffuseName.empty())
 		{
