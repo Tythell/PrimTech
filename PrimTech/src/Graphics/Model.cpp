@@ -32,14 +32,11 @@ void Model::Init(const std::string path, ModelType e, bool makeLeftHanded)
 	m_material = new Material[m_nOfMats];
 	embeddedmats = mp_mesh->GetMtl();
 	embeddedmatIndexes = mp_mesh->GetMtlIndex();
-	for (int i = 0; i < m_nOfMats && embeddedmatIndexes.size() > 0; i++)
+	for (int i = 0; i < embeddedmatIndexes.size(); i++)
 	{
-		if (!embeddedmats[embeddedmatIndexes[i]].diffuseName.empty())
-		{
-			std::string texturePath = embeddedmats[embeddedmatIndexes[i]].diffuseName;
+		std::string texturePath = embeddedmats[embeddedmatIndexes[i]].diffuseName;
+		if (!texturePath.empty())
 			LoadTexture(texturePath, i);
-		}
-
 	}
 
 	for (int i = 0; i < m_nOfMats; i++)
@@ -64,8 +61,9 @@ void Model::Draw()
 	{
 		m_material[i].GetBuffer()->Data().characterLight[0] = m_characterLight[0];
 		m_material[i].Set(dc);
-		dc->IASetVertexBuffers(0, 1, mp_mesh->GetVBuffer(i).GetReference(), mp_mesh->GetVBuffer().GetStrideP(), &offset);
-		dc->Draw(mp_mesh->GetVBuffer(i).GetBufferSize(), 0);
+		dc->IASetVertexBuffers(0, 1, mp_mesh->GetVBuffer().GetReference(), mp_mesh->GetVBuffer().GetStrideP(), &offset);
+		int v1 = mp_mesh->GetMeshOffsfets()[i + 1], v2 = mp_mesh->GetMeshOffsfets()[i];
+		dc->Draw(v1, v2);
 	}
 }
 
@@ -225,32 +223,24 @@ bool LoadObjToBuffer(std::string path, std::vector<Shape>& shape, std::vector<Mt
 				shape.emplace_back(localShape);
 				localShape.verts.clear();
 			}
-			//nofG++;
 		}
 		else if (input == "usemtl")
 		{
 			std::string sgname;
 			reader >> sgname;
-			for (int i = 0; i < localMtls.size(); i++)
-			{
-				if (localMtls[i].name == sgname)
-				{
-					matIndex.emplace_back(i);
-					//Mtl copy = mtls[i];
-
-					//mtls[i] = mtls[currentMat];
-					//mtls[currentMat] = copy;
-				}
-			}
-			//currentMat++;
-			
 
 			if (!localShape.verts.empty())
 			{
 				shape.emplace_back(localShape);
 				localShape.verts.clear();
 			}
-			//nofG++;
+			
+			for (int i = 0; i < localMtls.size(); i++)
+			{
+				if (localMtls[i].name == sgname)
+					matIndex.emplace_back(i);
+			}
+
 		}
 		else if (input == "mtllib")
 		{
@@ -338,8 +328,6 @@ bool LoadObjToBuffer(std::string path, std::vector<Shape>& shape, std::vector<Mt
 Mesh::Mesh(std::string path, ID3D11Device*& device, bool makeLeftHanded)
 {
 	std::vector<Shape> mesh;
-	//std::vector<Mtl> localMtls;
-	//std::vector<int> matIndexes;
 
 	if (!LoadObjToBuffer(path, mesh, m_mtls, m_mtlIndexes, makeLeftHanded))
 	{
@@ -348,8 +336,16 @@ Mesh::Mesh(std::string path, ID3D11Device*& device, bool makeLeftHanded)
 	}
 	m_name = StringHelper::GetName(path);
 	m_nofMeshes = mesh.size();
+	m_offsets.emplace_back(0);
+	int lastSize = 0;
+	for (int i = 0; i < m_nofMeshes; i++)
+	{
+		lastSize += mesh[i].verts.size();
+		m_offsets.emplace_back(lastSize);
+	}
 
 	std::vector<d::XMFLOAT3> positionArray;
+	Shape fullshape;
 	UINT totalVertCount = 0;
 	for (int i = 0; i < m_nofMeshes; i++)
 	{
@@ -357,6 +353,7 @@ Mesh::Mesh(std::string path, ID3D11Device*& device, bool makeLeftHanded)
 		{
 			sm::Vector3 pos = mesh[i].verts[j].position;
 			positionArray.emplace_back(pos);
+			fullshape.verts.emplace_back(mesh[i].verts[j]);
 		}
 	}
 
@@ -365,17 +362,15 @@ Mesh::Mesh(std::string path, ID3D11Device*& device, bool makeLeftHanded)
 	d::BoundingBox::CreateFromPoints(box, positionArray.size(), positionArray.data(), sizeof(sm::Vector3));
 	d::BoundingSphere::CreateFromBoundingBox(m_bsphere, box);
 
-	m_vbuffer.resize(m_nofMeshes);
-	for (int i = 0; i < m_nofMeshes; i++)
-	{
-		HRESULT hr = m_vbuffer[i].CreateVertexBuffer(device, mesh[i].verts.data(), mesh[i].verts.size());
-		COM_ERROR(hr, "Failed to load vertex buffer");
-	}
+
+	HRESULT hr = m_vbuffer.CreateVertexBuffer(device, fullshape.verts.data(), fullshape.verts.size());
+	COM_ERROR(hr, "Failed to load vertex buffer");
+
 }
 
-Buffer<Vertex3D>& Mesh::GetVBuffer(const UINT& index)
+Buffer<Vertex3D>& Mesh::GetVBuffer()
 {
-	return m_vbuffer[index];
+	return m_vbuffer;
 }
 
 std::string Mesh::GetName() const
@@ -421,4 +416,9 @@ std::vector<Mtl> Mesh::GetMtl() const
 std::vector<int> Mesh::GetMtlIndex() const
 {
 	return m_mtlIndexes;
+}
+
+std::vector<int> Mesh::GetMeshOffsfets() const
+{
+	return m_offsets;
 }

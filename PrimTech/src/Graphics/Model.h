@@ -17,7 +17,7 @@ class Mesh
 {
 public:
 	Mesh(std::string path, ID3D11Device*& device, bool makeLeftHanded = true);
-	Buffer<Vertex3D>& GetVBuffer(const UINT& index = 0);
+	Buffer<Vertex3D>& GetVBuffer();
 	std::string GetName() const;
 	void IncreaseUses();
 	void DecreaseUses();
@@ -27,10 +27,12 @@ public:
 	const UINT GetNofMeshes() const;
 	std::vector<Mtl> GetMtl() const;
 	std::vector<int> GetMtlIndex() const;
+	std::vector<int> GetMeshOffsfets() const;
 private:
-	std::vector<Buffer<Vertex3D>> m_vbuffer;
+	Buffer<Vertex3D> m_vbuffer;
 	std::vector<Mtl> m_mtls;
 	std::vector<int> m_mtlIndexes;
+	std::vector<int> m_offsets;
 	std::string m_name = "unloaded";
 	int m_nrOfUses = 0;
 	d::BoundingSphere m_bsphere;

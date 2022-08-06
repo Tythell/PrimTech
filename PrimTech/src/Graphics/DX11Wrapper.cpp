@@ -236,12 +236,11 @@ bool DX11Addon::InitScene()
 	m_rLine.Init(device, dc);
 	m_sphere.Init(device, dc);
 
-	ImportScene("Scenes\\purescout.ptscene");
+	ImportScene("Scenes\\multsc.ptscene");
 	//NewScene();
 
 	m_playermodel.Init("dirCapsule.obj");
 	m_playermodel.SetScale(.1f);
-
 
 	m_bulb.Init("bulb.obj", ModelType::eDEBUG);
 	m_bulb.SetScale(1.2f);
@@ -371,7 +370,7 @@ void LoadButton(Material* pMaterial, std::string name, TextureType e, const UINT
 	std::string buttonName = "Load##" + name + std::to_string(i);
 	if (ImGui::Button(buttonName.c_str()))
 	{
-		std::string newMtrlString = Dialogs::OpenFile("Images (*.png, *.jpg)\0*.png;*.jpg;*.dds;\0", "Assets\\Textures\\");
+		std::string newMtrlString = Dialogs::OpenFile("Images (*.png, *.jpg)\0*.png;*.jpg;\0", "Assets\\Textures\\");
 		if (newMtrlString != "")
 		{
 			pMaterial->LoadTexture(newMtrlString, e);
@@ -1044,7 +1043,7 @@ int ClickFoo(const sm::Ray& ray, ModelList& models)
 			localSpaceRay.direction.Normalize();
 			for (int k = 0; k < models[i]->GetMeshP()->GetNofMeshes(); k++)
 			{
-				Buffer<Vertex3D>* pVbuffer = &models[i]->GetMeshP()->GetVBuffer(k);
+				Buffer<Vertex3D>* pVbuffer = &models[i]->GetMeshP()->GetVBuffer();
 				UINT nOTriangles = pVbuffer->GetBufferSize() / 3;
 				for (int j = 0; j < nOTriangles; j++)
 				{
