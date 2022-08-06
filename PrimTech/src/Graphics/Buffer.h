@@ -12,7 +12,9 @@ enum BufferType : int
 };
 enum BufferUsage
 {
-	eDEFAULT = D3D11_USAGE_DEFAULT, eIMMULATBLE = D3D11_USAGE_IMMUTABLE, eDYNAMIC = D3D11_USAGE_DYNAMIC
+	eDEFAULT = D3D11_USAGE_DEFAULT,
+	eIMMULATBLE = D3D11_USAGE_IMMUTABLE,
+	eDYNAMIC = D3D11_USAGE_DYNAMIC
 };
 
 template<class T>
@@ -23,7 +25,7 @@ public:
 	~Buffer()
 	{
 		m_buffer->Release();
-		if(m_data != nullptr) 
+		if(m_data && m_type != eVERTEX) 
 			delete m_data;
 	}
 
@@ -59,11 +61,12 @@ public:
 
 		m_usage = eIMMULATBLE;
 		UINT cpuFlags = 0;
-		m_data = new T[bufferSize];
-		for (int i = 0; i < bufferSize; i++)
-		{
-			m_data[i] = data[i];
-		}
+		//m_data = new T[bufferSize];
+		//for (int i = 0; i < bufferSize; i++)
+		//{
+		//	m_data[i] = data[i];
+		//}
+		m_data = data;
 		if (dc)
 		{
 			m_usage = eDYNAMIC;
@@ -151,49 +154,49 @@ public:
 		return HRESULT(device->CreateBuffer(&bufferDesc, &bufferData, &m_buffer));
 	}
 
-	HRESULT CreateBuffer(BufferType type, ID3D11Device*& device, T* data, UINT size, ID3D11DeviceContext* dc = NULL)
-	{
-		m_type = type;
-		m_bufferSize = size;
-		mp_dc = dc;
-		m_usage = eIMMULATBLE;
-		if (m_buffer)
-		{
-			throw;
-			Popup::Error("Buffer created twice");
-		}
-		UINT cpuFlags = 0;
-		m_data = new T[size];
-		for (int i = 0; i < size; i++)
-		{
-			m_data[i] = data[i];
-		}
-		if (dc)
-		{
-			m_usage = eDYNAMIC;
-			mp_dc = dc;
-			cpuFlags = D3D11_CPU_ACCESS_WRITE;
-		}
+	//HRESULT CreateBuffer(BufferType type, ID3D11Device*& device, T* data, UINT size, ID3D11DeviceContext* dc = NULL)
+	//{
+	//	m_type = type;
+	//	m_bufferSize = size;
+	//	mp_dc = dc;
+	//	m_usage = eIMMULATBLE;
+	//	if (m_buffer)
+	//	{
+	//		throw;
+	//		Popup::Error("Buffer created twice");
+	//	}
+	//	UINT cpuFlags = 0;
+	//	//m_data = new T[size];
+	//	for (int i = 0; i < size; i++)
+	//	{
+	//		m_data[i] = data[i];
+	//	}
+	//	if (dc)
+	//	{
+	//		m_usage = eDYNAMIC;
+	//		mp_dc = dc;
+	//		cpuFlags = D3D11_CPU_ACCESS_WRITE;
+	//	}
 
-		//m_data = data;
-		mp_dc = dc;
-		D3D11_BUFFER_DESC bufferDesc;
-		ZeroMemory(&bufferDesc, sizeof(D3D11_BUFFER_DESC));
-		bufferDesc.Usage = (D3D11_USAGE)m_usage;
-		bufferDesc.ByteWidth = m_stride * m_bufferSize;
-		bufferDesc.BindFlags = (UINT)type;
-		bufferDesc.CPUAccessFlags = cpuFlags;
-		bufferDesc.MiscFlags = 0;
-		bufferDesc.Usage = (UINT)m_usage;
+	//	//m_data = data;
+	//	mp_dc = dc;
+	//	D3D11_BUFFER_DESC bufferDesc;
+	//	ZeroMemory(&bufferDesc, sizeof(D3D11_BUFFER_DESC));
+	//	bufferDesc.Usage = (D3D11_USAGE)m_usage;
+	//	bufferDesc.ByteWidth = m_stride * m_bufferSize;
+	//	bufferDesc.BindFlags = (UINT)type;
+	//	bufferDesc.CPUAccessFlags = cpuFlags;
+	//	bufferDesc.MiscFlags = 0;
+	//	bufferDesc.Usage = (UINT)m_usage;
 
-		D3D11_SUBRESOURCE_DATA bufferData;
-		ZeroMemory(&bufferData, sizeof(D3D11_SUBRESOURCE_DATA));
-		bufferData.pSysMem = data;
+	//	D3D11_SUBRESOURCE_DATA bufferData;
+	//	ZeroMemory(&bufferData, sizeof(D3D11_SUBRESOURCE_DATA));
+	//	bufferData.pSysMem = data;
 
-		return HRESULT(device->CreateBuffer(&bufferDesc, &bufferData, &m_buffer));
-	}
+	//	return HRESULT(device->CreateBuffer(&bufferDesc, &bufferData, &m_buffer));
+	//}
 
-	void UpdateBuffer()
+	void MapBuffer()
 	{
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
 		HRESULT hr = mp_dc->Map(m_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);

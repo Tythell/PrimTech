@@ -194,15 +194,15 @@ bool DX11Addon::InitShaders()
 	D3D11_INPUT_ELEMENT_DESC layout3D[] =
 	{
 		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,	 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"NORMAL",	 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"TANGENT",	 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 	};
 
 	D3D11_INPUT_ELEMENT_DESC lineLayout[] =
 	{
 		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA},
-		{"COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA},
+		{"COLOR",	 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA},
 	};
 
 	m_3dvs.Init(device, "vertexshader.cso");
@@ -288,7 +288,7 @@ void DX11Addon::UpdateScene(const float& deltatime)
 	m_lightbuffer.Data().pointLightPosition = sm::Vector3(im.pointLightPos[0], im.pointLightPos[1], im.pointLightPos[2]);
 	//m_lightbuffer.Data().forwardDir = mp_cam->GetForwardVector();
 	m_lightbuffer.Data().camPos = { mp_cam->GetPosition().x, mp_cam->GetPosition().y, mp_cam->GetPosition().z, 1.f };
-	m_lightbuffer.UpdateBuffer();
+	m_lightbuffer.MapBuffer();
 
 	m_playermodel.SetRotation(0.f/*-mp_cam->GetRotation().x*/, mp_cam->GetRotation().y, 0.f);
 	m_playermodel.Rotate(0.f, d::XM_PI, 0.f);
@@ -1138,7 +1138,7 @@ void DX11Addon::Render(const float& deltatime)
 		sm::Vector3 position = m_models[m_selected]->GetPosition() + sphere.Center;
 		sm::Matrix boxMatrix = d::XMMatrixTranspose(d::XMMatrixScaling(radius, radius, radius) * d::XMMatrixTranslationFromVector(position));
 		m_transformBuffer.Data().world = boxMatrix;
-		m_transformBuffer.UpdateBuffer();
+		m_transformBuffer.MapBuffer();
 		m_sphere.Draw(dc);
 	}
 
@@ -1146,7 +1146,7 @@ void DX11Addon::Render(const float& deltatime)
 	{
 		dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
 		m_transformBuffer.Data().world = d::XMMatrixIdentity();
-		m_transformBuffer.UpdateBuffer();
+		m_transformBuffer.MapBuffer();
 		m_rLine.Draw(dc);
 	}
 

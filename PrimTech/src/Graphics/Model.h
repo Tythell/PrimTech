@@ -12,6 +12,13 @@ struct Mtl
 	std::string diffuseName; // map_Kd
 };
 
+struct Shape
+{
+	std::vector<Vertex3D> verts;
+	UINT mtlIndex = 0;
+	//Mtl material;
+};
+
 // Contains Vertex data
 class Mesh
 {
@@ -37,6 +44,7 @@ private:
 	int m_nrOfUses = 0;
 	d::BoundingSphere m_bsphere;
 	UINT m_nofMeshes = 0;
+	Shape m_shape;
 };
 
 enum class Sceneheaders

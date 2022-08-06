@@ -44,7 +44,7 @@ void RenderLine::SetLine(sm::Vector3 start, sm::Vector3 end)
 {
 	m_vbuffer.Data(0).m_position = start;
 	m_vbuffer.Data(1).m_position = end;
-	m_vbuffer.UpdateBuffer();
+	m_vbuffer.MapBuffer();
 }
 
 void RenderShape::Draw(ID3D11DeviceContext*& dc)

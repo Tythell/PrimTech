@@ -56,13 +56,14 @@ void Model::Draw()
 	UINT offset = 0;
 
 	mp_cbTransformBuffer->Data().world = GetWorldTransposed();
-	mp_cbTransformBuffer->UpdateBuffer();
+	mp_cbTransformBuffer->MapBuffer();
+	dc->IASetVertexBuffers(0, 1, mp_mesh->GetVBuffer().GetReference(), mp_mesh->GetVBuffer().GetStrideP(), &offset);
 	for (int i = 0; i < mp_mesh->GetNofMeshes(); i++)
 	{
 		m_material[i].GetBuffer()->Data().characterLight[0] = m_characterLight[0];
 		m_material[i].Set(dc);
-		dc->IASetVertexBuffers(0, 1, mp_mesh->GetVBuffer().GetReference(), mp_mesh->GetVBuffer().GetStrideP(), &offset);
 		int v1 = mp_mesh->GetMeshOffsfets()[i + 1], v2 = mp_mesh->GetMeshOffsfets()[i];
+		v1 -= v2;
 		dc->Draw(v1, v2);
 	}
 }
@@ -129,13 +130,6 @@ const sm::Vector4 Model::GetCharacterLight(int i) const
 {
 	return m_characterLight[i];
 }
-
-struct Shape
-{
-	std::vector<Vertex3D> verts;
-	UINT mtlIndex = 0;
-	//Mtl material;
-};
 
 bool LoadObjToBuffer(std::string path, std::vector<Shape>& shape, std::vector<Mtl>& localMtls, std::vector<int>& matIndex, bool makeLeftHanded)
 {
@@ -345,7 +339,7 @@ Mesh::Mesh(std::string path, ID3D11Device*& device, bool makeLeftHanded)
 	}
 
 	std::vector<d::XMFLOAT3> positionArray;
-	Shape fullshape;
+	//Shape fullshape;
 	UINT totalVertCount = 0;
 	for (int i = 0; i < m_nofMeshes; i++)
 	{
@@ -353,19 +347,16 @@ Mesh::Mesh(std::string path, ID3D11Device*& device, bool makeLeftHanded)
 		{
 			sm::Vector3 pos = mesh[i].verts[j].position;
 			positionArray.emplace_back(pos);
-			fullshape.verts.emplace_back(mesh[i].verts[j]);
+			m_shape.verts.emplace_back(mesh[i].verts[j]);
 		}
 	}
-
-
+	UINT bsize = m_shape.verts.size();
 	d::BoundingBox box;
 	d::BoundingBox::CreateFromPoints(box, positionArray.size(), positionArray.data(), sizeof(sm::Vector3));
 	d::BoundingSphere::CreateFromBoundingBox(m_bsphere, box);
 
-
-	HRESULT hr = m_vbuffer.CreateVertexBuffer(device, fullshape.verts.data(), fullshape.verts.size());
+	HRESULT hr = m_vbuffer.CreateVertexBuffer(device, m_shape.verts.data(), bsize);
 	COM_ERROR(hr, "Failed to load vertex buffer");
-
 }
 
 Buffer<Vertex3D>& Mesh::GetVBuffer()
