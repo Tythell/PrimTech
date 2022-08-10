@@ -156,12 +156,12 @@ void Material::ResetScrollValue()
 	m_distortionValue = sm::Vector2();
 }
 
-void Material::SetDistortionDivider(const int n)
+void Material::SetDistortionDivider(const float& f)
 {
-	m_distDivider = n;
+	m_distDivider = f;
 }
 
-int Material::GetDistortionDivider() const
+float Material::GetDistortionDivider() const
 {
 	return m_distDivider;
 }

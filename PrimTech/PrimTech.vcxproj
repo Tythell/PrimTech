@@ -151,6 +151,7 @@
     <ClCompile Include="src\Graphics\3rdParty\ImGuizmo\ImGuizmo.cpp" />
     <ClCompile Include="src\Graphics\3rdParty\ImGuizmo\ImSequencer.cpp" />
     <ClCompile Include="src\Graphics\RenderShapes.cpp" />
+    <ClCompile Include="src\Graphics\ShadowMap.cpp" />
     <ClCompile Include="src\PrimTech\Scene.cpp" />
     <ClCompile Include="src\Utility\CommonDialogs.cpp" />
     <ClCompile Include="src\Defines.cpp" />
@@ -163,11 +164,9 @@
     <ClCompile Include="src\Graphics\3rdParty\imgui\imgui_widgets.cpp" />
     <ClCompile Include="src\Graphics\Camera.cpp" />
     <ClCompile Include="src\Graphics\DX11Wrapper.cpp" />
-    <ClCompile Include="src\Graphics\Noise\PerlinNoise.cpp" />
     <ClCompile Include="src\Graphics\Shader.cpp" />
     <ClCompile Include="src\Graphics\Texture.cpp" />
     <ClCompile Include="src\Graphics\Transform.cpp" />
-    <ClCompile Include="src\Graphics\Noise\ImprovedPNoise.cpp" />
     <ClCompile Include="src\Input\Keyboard.cpp" />
     <ClCompile Include="src\Input\Mouse.cpp" />
     <ClCompile Include="src\Graphics\Model.cpp" />
@@ -189,6 +188,7 @@
     <ClInclude Include="src\Graphics\3rdParty\ImGuizmo\ImSequencer.h" />
     <ClInclude Include="src\Graphics\3rdParty\ImGuizmo\ImZoomSlider.h" />
     <ClInclude Include="src\Graphics\RenderShapes.h" />
+    <ClInclude Include="src\Graphics\ShadowMap.h" />
     <ClInclude Include="src\PrimTech\Scene.h" />
     <ClInclude Include="src\Utility\CommonDialogs.h" />
     <ClInclude Include="src\Graphics\Buffer.h" />
@@ -205,13 +205,11 @@
     <ClInclude Include="src\Graphics\CbufferTypes.h" />
     <ClInclude Include="src\Graphics\ConstantBuffer.h" />
     <ClInclude Include="src\Graphics\IndexBuffer.h" />
-    <ClInclude Include="src\Graphics\Noise\PerlinNoise.h" />
     <ClInclude Include="src\Graphics\Texture.h" />
     <ClInclude Include="src\Graphics\VertexBuffer.h" />
     <ClInclude Include="src\Graphics\Vertex.h" />
     <ClInclude Include="src\Graphics\Shader.h" />
     <ClInclude Include="src\Graphics\Transform.h" />
-    <ClInclude Include="src\Graphics\Noise\ImprovedPNoise.h" />
     <ClInclude Include="src\Input\Keyboard.h" />
     <ClInclude Include="src\Graphics\Material.h" />
     <ClInclude Include="src\Math\Math.h" />

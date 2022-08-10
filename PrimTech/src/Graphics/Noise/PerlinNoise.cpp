@@ -151,7 +151,7 @@
 void PerlinNoise2DIndian::Init(int seed)
 {
 	//srand(seed);
-	const int fullWrap = pow(WRAP_SIZE, 2);
+	const int fullWrap = (int)pow(WRAP_SIZE, 2);
 	sm::Vector2 grad[4] = {
 		{1.f, 0.f},
 		{0,1},

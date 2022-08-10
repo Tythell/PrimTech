@@ -5,6 +5,7 @@
 #include"Utility/CommonDialogs.h"
 #include <string>
 
+
 class Window
 {
 public:
@@ -18,7 +19,7 @@ public:
 	void SetInputP(KeyboardHandler& pkb);
 
 	bool CreateDX11();
-	
+
 	uint16_t getWinWidth() const;
 	uint16_t getWinHeight() const;
 	void ShutDown();
@@ -33,4 +34,6 @@ private:
 	KeyboardHandler* mp_kb = nullptr;
 	bool m_isFocused = true;
 };
+
+
 

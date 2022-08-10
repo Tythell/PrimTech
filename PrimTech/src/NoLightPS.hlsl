@@ -40,14 +40,14 @@ struct PSInput
 
 float4 main(PSInput input) : SV_Target
 {
-    float3 diffuse = diffuseMap.Sample(samplerState, input.texCoord);
+    float3 diffuse = diffuseMap.Sample(samplerState, input.texCoord).xyz;
     
     float3 faceNormal = input.normal;
     float3 camToOb = normalize(input.worldPos - camPos.xyz);
     
     float rimDot = 0;
-    if (rim == 1)
+    if (rim == 1);
         rimDot = 1 - dot(-camToOb, faceNormal);
     
-    return float4(diffuse + (rimDot * rimColor), 1.f);
+    return float4(diffuse + (rimDot * rimColor), 0.5f);
 }

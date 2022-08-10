@@ -3,7 +3,7 @@
 #include<omp.h>
 
 LRESULT CALLBACK MessageDirect(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-{	
+{
 	switch (uMsg)
 	{
 	case WM_CLOSE:
@@ -85,7 +85,7 @@ LRESULT Window::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	if (ImGui_ImplWin32_WndProcHandler(hwnd, uMsg, wParam, lParam)) return true;
 	switch (uMsg)
 	{
-	case WM_ACTIVATE: 
+	case WM_ACTIVATE:
 	{
 		m_isFocused = (LOWORD(wParam));
 		return 0;
@@ -136,7 +136,7 @@ LRESULT Window::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		int y = HIWORD(lParam);
 		//m_mouseHandler.SetMouseButton(eLEFTCLICK, false);
 		MouseHandler::SetMouseButton(eRIGHTCLICK, false);
-		
+
 		return 0;
 	}
 	case WM_MBUTTONUP:
@@ -162,7 +162,7 @@ LRESULT Window::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		mp_kb->AddKeyboardEvent(KeyboardEvent(KeyboardEvent::EventType::eRELEASE, key));
 		mp_kb->SetKeyState(key, false);
 		return 0;
-		
+
 	}
 	case WM_INPUT:
 	{
@@ -192,7 +192,7 @@ LRESULT Window::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		return DefWindowProc(hwnd, uMsg, wParam, lParam);
 	}
 
-	
+
 }
 
 std::wstring Window::getWinName() const
@@ -238,7 +238,7 @@ bool Window::GetIsFocused() const
 	return m_isFocused;
 }
 
-Window::Window():
+Window::Window() :
 	m_windowWidth(0), m_windowHeight(0)
 {
 	static bool rawInputInitialized = false;
@@ -307,3 +307,6 @@ bool Window::init(LPCWSTR windowName, HINSTANCE hInstance, std::wstring windowCl
 	SetFocus(m_hwnd);
 	return true;
 }
+
+
+

@@ -3,7 +3,11 @@ Texture2D diffuseMap : DIFFUSEMAP : register(t1);
 Texture2D distortionMap : DISTORTIONMAP : register(t2);
 Texture2D normalMap : NORMALMAP : register(t3);
 Texture2D opacityMap : NORMALMAP : register(t4);
-SamplerState samplerState : SAMPLER : register(s0);
+Texture2D shadowMap : SHADOWMAP : register(t10);
+
+SamplerState wrapSampler : SAMPLER : register(s0);
+SamplerState clampSampler : CLAMPSAMPLER : register(s1);
+SamplerComparisonState shadowSampler : SHADOWSAMPLER : register(s2);
 
 cbuffer LightBuffer : register(b0)
 {
@@ -17,6 +21,8 @@ cbuffer LightBuffer : register(b0)
     float pointlightStre;
     float3 camPos;
     float lightDistance;
+    float3 shadowDir;
+    float pad;
 };
 
 cbuffer MaterialBuffer : register(b1)
@@ -43,6 +49,7 @@ struct PSInput
     float2 texCoord : TEXCOORD;
     float3 worldPos : WORLD_POS;
     float3 tangent : TANGENT;
+    float4 clipSpace : CLIPSPACE;
 };
 
 float4 main(PSInput input) : SV_Target
@@ -60,25 +67,48 @@ float4 main(PSInput input) : SV_Target
     //texCoord -= tileOffset;
     //texCoord += tileOffset;
     
+    // Shadow
+    float2 ndc = ((input.clipSpace.xy/* / input.clipSpace.w*/) * .5f + .5f);
+    float2 projTexCoord = float2(ndc.x, 1.f - ndc.y);
+    
+    //float shadowBias = max(.04f * (1.f - dot(normalize())))
+    
+    float3 normal = input.normal;
+    int2 offsetss = 0;
+    //float depth = shadowMap.SampleCmpLevelZero(shadowSampler, projTexCoord, .5f, offsetss);
+    float depth = shadowMap.Sample(wrapSampler, projTexCoord);
+    float shadowBias = max(.01f * (1.f - dot(normalize(shadowDir), normal)), .005f);
+    
+    float4 shadow = (depth > input.clipSpace.z - shadowBias) ? 1 : 0;
+    
+    //if (dot(shadowDir, normal) < 0)
+    //{
+    //    shadow += 1;
+    //}
+    
+    
+    
     if (hasDistortion)
-        distortion = (distortionMap.Sample(samplerState, distTexCoord + texCoordoffsetDist).xy - 0.5f) / distDiv;
+        distortion = (distortionMap.Sample(wrapSampler, distTexCoord + texCoordoffsetDist).xy - 0.5f) / distDiv;
 
     distortion += texCoordOffset;
     
-    float3 normal = input.normal;
+    
     float3x3 tbnMatr = 0;
     if (hasNormal)
     {
-        float3 mappedNormal = normalMap.Sample(samplerState, texCoord + distortion) * 2.f - 1.f;
+        float3 mappedNormal = normalMap.Sample(wrapSampler, texCoord + distortion).xyz * 2.f - 1.f;
         float3 normTan = normalize(input.tangent);
         float3 biNormal = (LH == 1) ? normalize(cross(normTan, normal)) : normalize(cross(normal, normTan));
         tbnMatr = float3x3(normTan, biNormal, normal);
         normal = normalize(float3(mul(mappedNormal, tbnMatr)));
     }
     
-    float4 diffuse = diffuseMap.Sample(samplerState, texCoord + distortion);
+    float4 diffuse = diffuseMap.Sample(wrapSampler, texCoord + distortion);
+    diffuse.w = 1.f;
+    //float4 diffuse = diffuseMap.Sample(samplerState, texCoord + distortion);
     if (hasOpacityMap)
-        opacity = opacityMap.Sample(samplerState, texCoord + distortion);
+        opacity = opacityMap.Sample(wrapSampler, texCoord + distortion).x;
     else
         opacity = diffuse.w;
     float charDirLight = (characterLight[0].w != 0.f) ? dot(normal, normalize(characterLight[0].xyz)) * characterLight[0].w :
@@ -94,10 +124,9 @@ float4 main(PSInput input) : SV_Target
     
     float attenuation = 1.f;
     
-    // clamped to remove sampling artifacts
     // Uses to calculated value as index on a lookup-table stored in a texture
     //float lightindex = (false) ? saturate(dot(lightVector, normal)) * pointlightStre : 0.f;
-    float lightindex = (distance <= lightDistance) ? saturate(dot(lightVector, normal)) * pointlightStre : 0.f;
+    float lightindex = (distance <= lightDistance) ? shadow * saturate(dot(lightVector, normal)) * pointlightStre : 0.f;
     float3 camToOb = normalize(input.worldPos - camPos.xyz);
    
     float3 specular = 0.f;
@@ -114,10 +143,8 @@ float4 main(PSInput input) : SV_Target
     lightindex /= distance;
     //lightindex += specular;
     lightindex += charDirLight;
-    lightindex = clamp(lightindex, 0.01f, 0.99f);
-    float3 cellLightStr = ZAToon.Sample(samplerState, float2(lightindex, .5f)).xyz;
-    float3 warpedSpecular = clamp(specular, 0.01f, 0.99f);
-    warpedSpecular = ZAToon.Sample(samplerState, float2(warpedSpecular.z, .5f)).xyz;
+    float3 cellLightStr = ZAToon.Sample(clampSampler, float2(lightindex, .5f)).xyz;
+    specular = ZAToon.Sample(clampSampler, float2(specular.z, .5f)).xyz;
     
     cellLightStr += ambientColor * ambientStr;
     
@@ -130,14 +157,10 @@ float4 main(PSInput input) : SV_Target
     
     float rimamount = 0.85f;
     
-    float rimIntesnity = smoothstep(rimamount - 0.001, rimamount + 0.001f, rimDot);
+    float rimIntesnity = smoothstep(rimamount - 0.06, rimamount + 0.06f, rimDot);
     
     //float3 final = warpedSpecular;
     float3 final = diffuse.xyz * (cellLightStr) + (rimDot.xxx * rimColor) + specular;
 
-    
-    
-    
-    
     return float4(final, opacity * transparency);
 }

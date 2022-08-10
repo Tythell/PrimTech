@@ -43,7 +43,7 @@ public:
 	}
 	T& Data(UINT index = 0)
 	{
-		return m_data[index];
+  		return m_data[index];
 	}
 	ID3D11Buffer* Get()const
 	{

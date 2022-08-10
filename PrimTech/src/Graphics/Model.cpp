@@ -63,9 +63,8 @@ void Model::Draw()
 		m_material[i].GetBuffer()->Data().characterLight[0] = m_characterLight[0];
 		m_material[i].Set(dc);
 		int v1 = mp_mesh->GetMeshOffsfets()[i + 1], v2 = mp_mesh->GetMeshOffsfets()[i];
-		v1 -= v2;
-		dc->Draw(v1, v2);
-	}
+		dc->Draw(v1 - v2, v2);
+ 	}
 }
 
 void Model::UpdateTextureScroll(const float& deltatime)
@@ -154,9 +153,7 @@ bool LoadObjToBuffer(std::string path, std::vector<Shape>& shape, std::vector<Mt
 	std::ifstream reader(path);
 
 	if (!reader.is_open())
-	{
 		return false;
-	}
 	while (std::getline(reader, dummy))
 	{
 		std::string input;

@@ -78,7 +78,7 @@ namespace pt
 			MouseEvent me = MouseHandler::ReadEvent();
 			if (me.GetType() == MouseEvent::EventType::RAW_MOVE && canMove)
 			{
-				m_cam3d.Rotate(me.GetPosition().y, me.GetPosition().x, 0.f);
+				m_cam3d.Rotate((float)me.GetPosition().y, (float)me.GetPosition().x, 0.f);
 			}
 			else if (me.GetType() == MouseEvent::EventType::eSCROLLUP && canMove)
 				m_cam3d.Offset(0.f, 0.f, -0.5f);
@@ -86,8 +86,8 @@ namespace pt
 				m_cam3d.Offset(0.f, 0.f, 0.5f);
 			else if (me.GetType() == MouseEvent::EventType::eLEFTCLICK)
 			{
-				float mouseX = me.GetPosition().x;
-				float mouseY = me.GetPosition().y;
+				float mouseX = (float)me.GetPosition().x;
+				float mouseY = (float)me.GetPosition().y;
 
 				float winWidth = m_window.getWinWidth();
 				float winHeight = m_window.getWinHeight();
@@ -132,10 +132,10 @@ namespace pt
 		while (running)
 		{
 			start = omp_get_wtime();
-			Update(deltatime);
-			mp_gApi->CalculateFps(deltatime);
-			mp_gApi->UpdateScene(deltatime);
-			mp_gApi->Render(deltatime);
+			Update((float)deltatime);
+			mp_gApi->CalculateFps((float)deltatime);
+			mp_gApi->UpdateScene((float)deltatime);
+			mp_gApi->Render((float)deltatime);
 			deltatime = omp_get_wtime() - start;
 
 			running = m_window.processMsg();

@@ -28,6 +28,7 @@ namespace hlsl
 	{
 		float4x4 world;
 		float4x4 viewProj;
+		float4x4 lightViewProj;
 	};
 
 	struct cbpLightBuffer
@@ -42,7 +43,8 @@ namespace hlsl
 		float pointlightStre;
 		float3 camPos;
 		float pointLightDistance;
-		
+		float3 shadowDir;
+		float pad;
 	};
 
 	struct cbpMaterialBuffer

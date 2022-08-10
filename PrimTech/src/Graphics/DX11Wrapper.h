@@ -1,5 +1,7 @@
 #pragma once
+#include<d3d11.h>
 #include "Shader.h"
+#include"ShadowMap.h"
 #include <Windows.h>
 #include "../Utility/Popup.h"
 #include"Texture.h"
@@ -7,10 +9,12 @@
 #include"../Input/Keyboard.h"
 #include"ViewModel.h"
 #include<fstream>
-
+#pragma warning(push)
+#pragma warning(disable : 26812)
 #include "imgui.h"
 #include "imgui_impl_win32.h"
 #include "imgui_impl_dx11.h"
+
 
 #include "ImGuizmo.h"
 
@@ -46,6 +50,10 @@ struct ImGuiVars
 	bool drawBCircle = false;
 	ImGuizmo::MODE transformMode = ImGuizmo::MODE::LOCAL;
 	bool showSelection = true;
+	bool shadowMap = true;
+	bool viewshadowcam = false;
+	float shadowcamPos[3] = {0.f,5.f,0.f};
+	float shadowcamrotation[3] = { d::XM_PIDIV2,0.f,0.f};
 };
 
 void RecursiveRead(Sceneheaders& header, ModelList& v, std::ifstream& reader);
@@ -107,8 +115,12 @@ private:
 	ID3D11DepthStencilState* m_dsState;
 
 	ID3D11RasterizerState* m_rasterizerState = nullptr;
-	ID3D11SamplerState* m_sampState = nullptr;
+	ID3D11SamplerState* m_wrapSampler = nullptr;
+	ID3D11SamplerState* m_clampSampler = nullptr;
+	ID3D11SamplerState* m_shadowSampler = nullptr;
 	ID3D11BlendState* m_blendState = nullptr;
+
+	CD3D11_VIEWPORT m_viewport;
 
 	VertexShader m_3dvs;
 	PixelShader m_3dnoLightps;
@@ -142,5 +154,6 @@ private:
 	//unsigned char m_ZAToonExport[255] = {};
 	bool m_isHoveringWindow = false;
 	bool m_canMove = true;
+	ShadowMap m_shadowmap;
 };
 

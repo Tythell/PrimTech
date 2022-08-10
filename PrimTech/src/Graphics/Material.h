@@ -29,7 +29,9 @@ enum class eMaterialHeaders
 //	int distDivider;
 //	int tiling;
 //};
+
 #define FILENAME_MAXSIZE 32
+
 class Material
 {
 public:
@@ -44,15 +46,15 @@ public:
 	void SetSelection(bool b);
 	void SetRimColor(sm::Vector3 rgb);
 	void ResetScrollValue();
-	void SetDistortionDivider(const int n);
-	int GetDistortionDivider() const;
+	void SetDistortionDivider(const float& f);
+	float GetDistortionDivider() const;
 	float GetTransparancy() const;
 	void SetLeftHanded(bool b);
 	bool ExportMaterial(std::string path);
 	void ImportMaterial(std::string path);
 	void RemoveTexture(const TextureType e);
 
-	std::string GetMaterialName() const;
+	//std::string GetMaterialName() const;
 	std::string GetMapName(const TextureType& e) const;
 	std::string GetFileName() const;
 	sm::Vector2 GetDiffuseScrollSpeed() const;

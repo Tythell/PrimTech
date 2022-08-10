@@ -63,7 +63,7 @@ float4 main(PSInput input) : SV_Target
     float nDotLight = saturate(dot(normalize(obToLight), faceNormal)) * pointlightStre;
     //lightindex /= distance;
 
-    float lighjtIntensity = smoothstep(0.f, 0.01f, nDotLight);
+    float3 lighjtIntensity = smoothstep(0.f, 0.01f, nDotLight);
     lighjtIntensity += (ambientColor * ambientStr);
     
     float3 camToOb = normalize(input.worldPos - camPos.xyz);

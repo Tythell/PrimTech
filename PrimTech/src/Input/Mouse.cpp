@@ -63,7 +63,7 @@ void MouseHandler::AddMouseEvent(const MouseEvent me)
 
 MouseEvent MouseHandler::ReadEvent()
 {
-	if (m_mouseBuffer.empty()) return MouseEvent(MouseEvent::EventType::eINVALID, 0.f, 0.f);
+	if (m_mouseBuffer.empty()) return MouseEvent(MouseEvent::EventType::eINVALID, 0, 0);
 	MouseEvent e = m_mouseBuffer.front();
 	m_mouseBuffer.pop();
 	return e;

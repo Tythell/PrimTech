@@ -8,5 +8,5 @@ public:
 	void Draw();
 	Model m_model;
 private:
-	Camera* mp_cam;
+	Camera* mp_cam = nullptr;
 };
