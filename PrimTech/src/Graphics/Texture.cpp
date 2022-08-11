@@ -4,6 +4,7 @@
 #include "3rdParty/stb_image_write.h"
 #include "Texture.h"
 #include"../Utility/Popup.h"
+#include "ResourceHandler.h"
 
 TextureMap::TextureMap()
 {}
@@ -39,7 +40,10 @@ bool TextureMap::CreateFromFile(const char* texturePath, ID3D11Device* device, c
 	unsigned char* imageData = stbi_load(fullpath.c_str(), &textureWidth, &textureHeight, nullptr, STBI_rgb_alpha);
 
 	if (!imageData)
+	{
 		Popup::Error("Texture: " + std::string(fullpath) + " not found");
+		return false;
+	}
 
 	ID3D11Texture2D* texture2D;
 

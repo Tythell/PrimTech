@@ -62,5 +62,7 @@ namespace hlsl
 		int hasOpacityMap;
 		float textureScaleDist;
 		float4 characterLight[2];
+		float3 diffuseColor;
+		int hasDiffuse;
 	};
 }

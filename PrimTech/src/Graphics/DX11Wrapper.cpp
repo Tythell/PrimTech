@@ -261,8 +261,7 @@ bool DX11Addon::InitScene()
 
 	m_bulb.Init("bulb.obj", ModelType::eDEBUG);
 	m_bulb.SetScale(1.2f);
-
-
+	m_bulb.GetMaterial().SetTransparency(1.f);
 
 	m_viewmdl.Init("handmodel2.obj", mp_cam);
 	m_bulb.SetMaterialBuffer(m_materialBuffer);
@@ -387,8 +386,18 @@ void DX11Addon::ImGuiGradientWindow()
 
 void LoadButton(Material* pMaterial, std::string name, TextureType e, const UINT& i = 0)
 {
-	name += pMaterial->GetMapName(e);
+	bool diffExpept = (e == 0 && !pMaterial->HasTexture(eDiffuse));
+	if (!diffExpept)
+		name += pMaterial->GetMapName(e);
+
 	ImGui::Text(name.c_str());
+	if (diffExpept)
+	{
+		float diff[3]{ pMaterial->GetDiffuseClr().x, pMaterial->GetDiffuseClr().y, pMaterial->GetDiffuseClr().z};
+		ImGui::SameLine();
+		ImGui::DragFloat3("##diffusefloat3", diff, 0.01f, 0.f, 1.f);
+		pMaterial->SetDiffuseClr(diff[0], diff[1], diff[2]);
+	}
 	ImGui::SameLine();
 	std::string buttonName = "Load##" + name + std::to_string(i);
 	if (ImGui::Button(buttonName.c_str()))
@@ -441,6 +450,10 @@ void DX11Addon::ImguiDebug()
 			im.shadowcamPos[0] = mp_cam->GetPosition().x;
 			im.shadowcamPos[1] = mp_cam->GetPosition().y;
 			im.shadowcamPos[2] = mp_cam->GetPosition().z;
+		}
+		if (ImGui::Button("winname"))
+		{
+			::SetWindowTextA(*m_pHWND, "balls");
 		}
 	}
 	if (ImGui::CollapsingHeader("General"))

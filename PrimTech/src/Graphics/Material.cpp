@@ -41,11 +41,19 @@ void Material::ReadRecursion(eMaterialHeaders& header, std::ifstream& reader)
 	case eMaterialHeaders::eTILING:
 		reader.read((char*)&m_textureScale, 4);
 		break;
+	case eMaterialHeaders::eDIFFCLR:
+		reader.read((char*)&m_diffuseClr, sizeof(sm::Vector3));
+		break;
 	default:
 		return;
 	}
 	reader.read((char*)&header, 4);
 	ReadRecursion(header, reader);
+}
+
+sm::Vector3 Material::GetDiffuseClr() const
+{
+	return m_diffuseClr;
 }
 
 void Material::ClearMaterial()
@@ -110,7 +118,10 @@ void Material::Set(ID3D11DeviceContext*& dc)
 	mp_matBuffer->Data().textureScaleDist = m_textureScaleDist;
 	mp_matBuffer->Data().hasDistortion = int(HasTexture(eDistortion));
 	mp_matBuffer->Data().hasNormal = int(HasTexture(eNormal));
+	mp_matBuffer->Data().hasDiffuse = int(HasTexture(eDiffuse));
 	mp_matBuffer->Data().hasOpacityMap = int(HasTexture(eOpacity));
+
+	mp_matBuffer->Data().diffuseColor = m_diffuseClr;
 
 	//dc->PSSetConstantBuffers(1, 1, mp_matBuffer->GetReference());
 	mp_matBuffer->Data().texCoordOffset = m_diffuseOffsetValue;
@@ -190,8 +201,14 @@ bool Material::ExportMaterial(std::string path)
 		writer.write((const char*)&header, sizeof(eMaterialHeaders));
 		writer.write((const char*)mp_textures[eDiffuse]->GetName().c_str(), FILENAME_MAXSIZE);
 		writer.write((const char*)&m_diffuseOffsetSpeed, sizeof(sm::Vector2));
-		writer.write((const char*)&m_transparency, sizeof(float));
 	}
+	else
+	{
+		header = eMaterialHeaders::eDIFFCLR;
+		writer.write((const char*)&header, sizeof(eMaterialHeaders));
+		writer.write((const char*)&m_diffuseClr, sizeof(sm::Vector3));
+	}
+	writer.write((const char*)&m_transparency, sizeof(float));
 	if (HasTexture(eNormal))
 	{
 		header = eMaterialHeaders::eNORMAL;
@@ -253,9 +270,19 @@ std::string Material::GetMapName(const TextureType& e) const
 	return mp_textures[e]->GetName();
 }
 
+void Material::SetDiffuseClr(const sm::Vector3& v)
+{
+	m_diffuseClr = v;
+}
+
 std::string Material::GetFileName() const
 {
 	return m_name;
+}
+
+void Material::SetDiffuseClr(float r, float g, float b)
+{
+	SetDiffuseClr(sm::Vector3(r,g,b));
 }
 
 sm::Vector2 Material::GetDiffuseScrollSpeed() const

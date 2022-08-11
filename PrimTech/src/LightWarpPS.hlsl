@@ -40,6 +40,8 @@ cbuffer MaterialBuffer : register(b1)
     int hasOpacityMap;
     float textureScaleDist;
     float4 characterLight[2];
+    float3 diffuseColor;
+    int hasDiffuse;
 }
 
 struct PSInput
@@ -104,7 +106,12 @@ float4 main(PSInput input) : SV_Target
         normal = normalize(float3(mul(mappedNormal, tbnMatr)));
     }
     
-    float4 diffuse = diffuseMap.Sample(wrapSampler, texCoord + distortion);
+    float4 diffuse;
+    if(hasDiffuse)
+        diffuse = diffuseMap.Sample(wrapSampler, texCoord + distortion);
+    else
+        diffuse = float4(diffuseColor,1.f);
+    
     diffuse.w = 1.f;
     //float4 diffuse = diffuseMap.Sample(samplerState, texCoord + distortion);
     if (hasOpacityMap)

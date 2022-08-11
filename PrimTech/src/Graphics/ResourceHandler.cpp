@@ -29,7 +29,12 @@ Mesh* ResourceHandler::GetMeshAdress(unsigned int index)
 
 TextureMap* ResourceHandler::AddTexture(std::string path, bool flipUV)
 {
-	TextureMap* pTexture = new TextureMap(path.c_str(), pDevice, flipUV);
+	TextureMap* pTexture = new TextureMap(/*path.c_str(), pDevice, flipUV*/);
+	if (!pTexture->CreateFromFile(path.c_str(), pDevice, flipUV))
+	{
+		delete pTexture;
+		return m_textures[0];
+	}
 	m_textures.emplace_back(pTexture);
 	return pTexture;
 }

@@ -26,3 +26,7 @@
 #define DARKORANGE_3F {1.f, 0.549.f ,0.f}
 
 #define ORANGE_3F {1.f, 0.672f, 0.f}
+
+#define CYAN_3F {0.f, 1.f, 1.f}
+
+#define LIME_3F {0.5f, 1.f, 0.f}

@@ -14,7 +14,8 @@ enum TextureType
 enum class eMaterialHeaders
 {
 	eNull,
-	eDIFFUSE, eNORMAL, eDISTORTION, eOPACITY, eTILING, eDIRLIGHT, ePOINTLIGHT
+	eDIFFUSE, eNORMAL, eDISTORTION, eOPACITY, eTILING, eDIRLIGHT, ePOINTLIGHT,
+	eDIFFCLR,
 };
 
 //struct MaterialHeader
@@ -53,6 +54,8 @@ public:
 	bool ExportMaterial(std::string path);
 	void ImportMaterial(std::string path);
 	void RemoveTexture(const TextureType e);
+	void SetDiffuseClr(const sm::Vector3& v);
+	void SetDiffuseClr(float r, float g, float b);
 
 	//std::string GetMaterialName() const;
 	std::string GetMapName(const TextureType& e) const;
@@ -61,6 +64,7 @@ public:
 	sm::Vector2 GetDistortionScrollSpeed() const;
 	float GetTextureScale() const;
 	float GetTextureScaleDist() const;
+	sm::Vector3 GetDiffuseClr() const;
 
 	Buffer<hlsl::cbpMaterialBuffer>* GetBuffer();
 	bool HasTexture(const TextureType e) const;
@@ -76,6 +80,7 @@ private:
 	sm::Vector3 m_rimColor = GOLD_3F;
 	float m_distDivider = 1.f;
 	bool m_lefthanded = true;
+	sm::Vector3 m_diffuseClr = WHITE_3F;
 
 	sm::Vector2 m_diffuseOffsetValue, m_distortionValue;
 	sm::Vector2 m_diffuseOffsetSpeed, m_distortionOffsetSpeed;

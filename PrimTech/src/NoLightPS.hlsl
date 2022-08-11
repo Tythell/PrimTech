@@ -13,6 +13,8 @@ cbuffer LightBuffer : register(b0)
     float pointlightStre;
     float3 camPos;
     float lightDistance;
+    float3 shadowDir;
+    float pad;
 };
 
 cbuffer MaterialBuffer : register(b1)
@@ -27,7 +29,9 @@ cbuffer MaterialBuffer : register(b1)
     int rim;
     int hasNormal;
     int LH;
-    int2 pad;
+    int hasOpacityMap;
+    float textureScaleDist;
+    float4 characterLight[2];
 }
 
 struct PSInput
@@ -49,5 +53,5 @@ float4 main(PSInput input) : SV_Target
     if (rim == 1);
         rimDot = 1 - dot(-camToOb, faceNormal);
     
-    return float4(diffuse + (rimDot * rimColor), 0.5f);
+    return float4(diffuse + (rimDot * rimColor), transparency);
 }

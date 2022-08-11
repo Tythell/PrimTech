@@ -67,6 +67,7 @@ void ShadowMap::InitModel(ID3D11DeviceContext*& dc, Buffer<hlsl::cbpWorldTransfo
 	m_shadowCamModel.SetMaterialBuffer(matbuffer);
 	m_shadowCamModel.SetDCandBuffer(dc, transformbuffer);
 	m_shadowCamModel.GetMaterial().SetRimColor(MAGENTA_3F);
+	m_shadowCamModel.GetMaterial().SetTransparency(.5f);
 }
 void ShadowMap::DrawModel()
 {
