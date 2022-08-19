@@ -43,7 +43,9 @@ void RenderLine::Init(ID3D11Device*& device, ID3D11DeviceContext*& dc)
 void RenderLine::SetLine(sm::Vector3 start, sm::Vector3 end)
 {
 	m_vbuffer.Data(0).m_position = start;
+	m_vbuffer.Data(0).m_color = WHITE_3F;
 	m_vbuffer.Data(1).m_position = end;
+	m_vbuffer.Data(1).m_color = BLUE_3F;
 	m_vbuffer.MapBuffer();
 }
 

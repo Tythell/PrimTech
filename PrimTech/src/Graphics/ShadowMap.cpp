@@ -5,6 +5,7 @@ ShadowMap::ShadowMap(const UINT& width, const UINT& height):
 	m_viewPort(0.f,0.f, width, height), m_width(width), m_height(height)
 {
 	m_shadowCam.SetOrtographic(20.f, 20.f, .1f, 10);
+	//m_shadowCam.SetPerspective(80.f, (1800.f / 950.f), 0.1f, 100.f);
 	m_shadowCam.SetPosition(0.f, 5.f, 0.f);
 	m_shadowCam.SetRotation(d::XM_PIDIV2, 0.f, 0.f);
 }
@@ -75,4 +76,9 @@ void ShadowMap::DrawModel()
 	m_shadowCamModel.SetRotation(m_shadowCam.GetRotation());
 	m_shadowCamModel.Rotate(d::XM_PIDIV2, 0.f, 0.f);
 	m_shadowCamModel.Draw();
+}
+
+ID3D11ShaderResourceView* ShadowMap::GetSRV()
+{
+	return m_depthmapSRV;
 }

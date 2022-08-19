@@ -26,6 +26,12 @@ using ModelList = std::vector<Model*>;
 
 class Window;
 
+struct SpotLight
+{
+	float position[3]{ 0.f, 0.f, 0.f };
+	float rotation[3] {0.f, -1.f, 0.f};
+};
+
 struct ImGuiVars
 {
 	bool useVsync = true;
@@ -42,6 +48,7 @@ struct ImGuiVars
 	float scale[3]{ 1.f,1.f,1.f };
 	bool enableHandModel = false;
 	bool showDemoWindow = false;
+	bool showShadowMapDepth = false;
 	bool showDebugWindow = true;
 	float gradient[2] = { 255.f / 2.f,1.f};
 	float gradientOffset = 0.f;
@@ -54,6 +61,7 @@ struct ImGuiVars
 	bool viewshadowcam = false;
 	float shadowcamPos[3] = {0.f,5.f,0.f};
 	float shadowcamrotation[3] = { d::XM_PIDIV2,0.f,0.f};
+	SpotLight sl;
 };
 
 void RecursiveRead(Sceneheaders& header, ModelList& v, std::ifstream& reader);
@@ -92,6 +100,7 @@ private:
 	void ImGuiMenu();
 	void ImGuiEntList();
 	void ImGuizmo();
+	void ImGuTextureDisplay();
 
 	void ImportScene(std::string path);
 	void ExportScene(std::string path);
@@ -140,6 +149,7 @@ private:
 
 	int m_selected = -1;
 	Model m_bulb;
+	Model m_spotlight;
 	ViewModel m_viewmdl;
 	Model m_playermodel;
 	ModelList m_models;

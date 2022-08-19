@@ -22,7 +22,8 @@ TextureMap::~TextureMap()
 
 bool TextureMap::CreateFromFile(const char* texturePath, ID3D11Device* device, const bool& flipUV)
 {
-	if (m_isLoaded) return false;
+	if (m_textureSRV)
+		m_textureSRV->Release();
 
 	stbi_set_flip_vertically_on_load(flipUV);
 
@@ -74,7 +75,6 @@ bool TextureMap::CreateFromFile(const char* texturePath, ID3D11Device* device, c
 
 	HRESULT hr = device->CreateShaderResourceView(texture2D, nullptr, &m_textureSRV);
 	texture2D->Release();
-	m_isLoaded = true;
 
 	stbi_image_free(imageData);
 	return SUCCEEDED(hr);
@@ -82,6 +82,9 @@ bool TextureMap::CreateFromFile(const char* texturePath, ID3D11Device* device, c
 
 bool TextureMap::CreateFromData(unsigned char* imageData, ID3D11Device*& m_device, d::XMINT2 dimensions, unsigned channels)
 {
+	if (m_textureSRV)
+		m_textureSRV->Release();
+
 	ID3D11Texture2D* texture;
 	D3D11_TEXTURE2D_DESC desc;
 
@@ -145,7 +148,6 @@ void TextureMap::ExportCharToImage(const char* path, unsigned char* imageData, i
 
 bool TextureMap::CreatePerlinNoise(ID3D11Device*& device)
 {
-	m_isLoaded = true;
 	return true;
 }
 

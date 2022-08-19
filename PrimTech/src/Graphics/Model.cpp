@@ -46,7 +46,7 @@ void Model::Init(const std::string path, ModelType e, bool makeLeftHanded)
 	m_name += mp_mesh->GetName();
 
 	if (e == ModelType::eDEBUG)
-		m_material->SetRimColor(RED_3F);
+		m_material->SetRimColor(WHITE_3F);
 
 	//dc->VSSetConstantBuffers(0, 1, mp_cbTransformBuffer->GetReference());
 }

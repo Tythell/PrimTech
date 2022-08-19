@@ -1,4 +1,5 @@
 #include "Material.h"
+#include "Model.h"
 #include <fstream>
 
 void Material::LoadTexture(std::string textureName, TextureType type)
@@ -246,9 +247,70 @@ bool Material::ExportMaterial(std::string path)
 void Material::ImportMaterial(std::string path)
 {
 	ClearMaterial();
+	if (StringHelper::GetExtension(path) == "pmtrl")
+	{
+		path = "Assets/pmtrl/" + path;
+	}
+	else if (StringHelper::GetExtension(path) == "mtl")
+	{
+		path = "Assets/models/" + path;
+
+		std::ifstream matreader(path);
+		if (matreader.is_open())
+		{
+			int nofMats = 0;
+			std::string sdummy;
+			std::vector<Mtl> localMtls;
+			while (std::getline(matreader, sdummy))
+			{
+				std::string input;
+				if (sdummy[0] == 'n' && sdummy[1] == 'e')
+				{
+					Mtl mtl;
+					input = input = sdummy.substr(7);
+					nofMats++;
+					mtl.name = input;
+					//mtls.emplace_back(mtl);
+					localMtls.resize(localMtls.size() + 1);
+					localMtls[localMtls.size() - 1] = mtl;
+				}
+				matreader >> input;
+				if (input == "newmtl")
+				{
+					Mtl mtl;
+					nofMats++;
+					matreader >> input;
+					mtl.name = input;
+					localMtls.resize(localMtls.size() + 1);
+					localMtls[localMtls.size() - 1] = mtl;
+					//mtls.emplace_back(mtl);
+				}
+				else if (input == "map_Kd")
+				{
+					matreader >> input;
+					localMtls[nofMats - 1].diffuseName = input;
+				}
+
+			}
+			matreader.close();
+			for (int i = 0; i < localMtls.size(); i++)
+			{
+				if (!localMtls[i].diffuseName.empty())
+				{
+					LoadTexture(localMtls[i].diffuseName, eDiffuse);
+
+				}
+			}
+		}
+	}
+	else
+		return;
+
+	
 	m_name = path;
+
  	std::string err = "Failed to open: " + path;
-	path = "Assets/pmtrl/" + path;
+	
 	std::ifstream reader(path.c_str(), std::ios::binary | std::ios::in);
 	POPUP_MESSAGE(reader.is_open(), ("Failed to open " + m_name));
 

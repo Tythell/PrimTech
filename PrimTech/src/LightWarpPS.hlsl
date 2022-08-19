@@ -23,6 +23,10 @@ cbuffer LightBuffer : register(b0)
     float lightDistance;
     float3 shadowDir;
     float pad;
+    float3 spotLightPos;
+    float pad1;
+    float3 spotLightAngle;
+    float pad2;
 };
 
 cbuffer MaterialBuffer : register(b1)
@@ -89,7 +93,6 @@ float4 main(PSInput input) : SV_Target
     //}
     
     
-    
     if (hasDistortion)
         distortion = (distortionMap.Sample(wrapSampler, distTexCoord + texCoordoffsetDist).xy - 0.5f) / distDiv;
 
@@ -121,15 +124,26 @@ float4 main(PSInput input) : SV_Target
     float charDirLight = (characterLight[0].w != 0.f) ? dot(normal, normalize(characterLight[0].xyz)) * characterLight[0].w :
     0.f;
     
+    float attenuation = 1.f;
+
     
     float3 lightVector = lightPos.xyz - input.worldPos;
-
     float distance = length(lightVector);
+    attenuation = max(0, 1.f - (distance / lightDistance.x));
+    
+    // spotlight
+    float3 spotLightVector = spotLightPos - input.worldPos;
+    float sldistance = length(spotLightVector);
+    spotLightVector /= sldistance;
+    
+    float3 L2 = spotLightAngle;
+    float rho = dot(-spotLightVector, L2); 
+    attenuation *= saturate((rho - spotLightAngle.y) / (spotLightAngle.x - spotLightAngle.y));
     
     // Normalized
     lightVector /= distance;
     
-    float attenuation = 1.f;
+    
     
     // Uses to calculated value as index on a lookup-table stored in a texture
     //float lightindex = (false) ? saturate(dot(lightVector, normal)) * pointlightStre : 0.f;

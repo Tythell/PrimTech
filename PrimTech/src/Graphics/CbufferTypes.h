@@ -45,6 +45,10 @@ namespace hlsl
 		float pointLightDistance;
 		float3 shadowDir;
 		float pad;
+		float3 spotLightPos;
+		float pad1;
+		float3 spotLightAngle;
+		float pad2;
 	};
 
 	struct cbpMaterialBuffer

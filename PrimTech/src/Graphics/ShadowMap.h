@@ -17,7 +17,7 @@ public:
 	void InitModel(ID3D11DeviceContext*& dc, Buffer<hlsl::cbpWorldTransforms3D>& transformbuffer, Buffer<hlsl::cbpMaterialBuffer>& matbuffer);
 	void DrawModel();
 
-	//ID3D11ShaderResourceView** GetSRV();
+	ID3D11ShaderResourceView* GetSRV();
 private:
 	UINT m_width = 0, m_height = 0;
 

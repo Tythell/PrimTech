@@ -142,6 +142,7 @@ bool DX11Addon::SetupDSAndVP()
 
 bool DX11Addon::InitRastNSampState()
 {
+
 	D3D11_RASTERIZER_DESC rastDesc;
 	ZeroMemory(&rastDesc, sizeof(D3D11_RASTERIZER_DESC));
 	rastDesc.FillMode = D3D11_FILL_MODE::D3D11_FILL_SOLID;
@@ -245,7 +246,7 @@ bool DX11Addon::InitScene()
 
 	dc->OMSetBlendState(m_blendState, NULL, 0xFFFFFFFF);
 
-	ResourceHandler::AddTexture("goalflag.png"); // setting missingtexture
+	ResourceHandler::AddTexture("missingtexture.png"); // setting missingtexture
 	ResourceHandler::AddTexture("ZANormal.png"); // Load LightWarp Texture
 	//ResourceHandler::AddTexture("ZATf2esk.png"); // Load LightWarp Texture
 	dc->PSSetShaderResources(0, 1, ResourceHandler::GetTexture(1).GetSRVAdress());
@@ -260,6 +261,7 @@ bool DX11Addon::InitScene()
 	m_playermodel.SetScale(.1f);
 
 	m_bulb.Init("bulb.obj", ModelType::eDEBUG);
+	m_spotlight.Init("bulb.obj", ModelType::eDEBUG);
 	m_bulb.SetScale(1.2f);
 	m_bulb.GetMaterial().SetTransparency(1.f);
 
@@ -267,11 +269,12 @@ bool DX11Addon::InitScene()
 	m_bulb.SetMaterialBuffer(m_materialBuffer);
 	m_playermodel.SetMaterialBuffer(m_materialBuffer);
 	m_playermodel.SetDCandBuffer(dc, m_transformBuffer);
-
 	m_viewmdl.m_model.SetDCandBuffer(dc, m_transformBuffer);
 	m_viewmdl.m_model.SetMaterialBuffer(m_materialBuffer);
 	m_bulb.SetDCandBuffer(dc, m_transformBuffer);
 	m_bulb.SetMaterialBuffer(m_materialBuffer);
+	m_spotlight.SetDCandBuffer(dc, m_transformBuffer);
+	m_spotlight.SetMaterialBuffer(m_materialBuffer);
 
 	dc->VSSetConstantBuffers(0, 1, m_transformBuffer.GetReference());
 
@@ -318,6 +321,151 @@ void DX11Addon::UpdateScene(const float& deltatime)
 	//m_model.Rotate(0.f, 2.f * deltatime, 0.f);
 }
 
+void embraceTheDarkness()
+{
+	ImVec4* colors = ImGui::GetStyle().Colors;
+	colors[ImGuiCol_Text]                   = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
+	colors[ImGuiCol_TextDisabled]           = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
+	colors[ImGuiCol_WindowBg]               = ImVec4(0.10f, 0.10f, 0.10f, 1.00f);
+	colors[ImGuiCol_ChildBg]                = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+	colors[ImGuiCol_PopupBg]                = ImVec4(0.19f, 0.19f, 0.19f, 0.92f);
+	colors[ImGuiCol_Border]                 = ImVec4(0.19f, 0.19f, 0.19f, 0.29f);
+	colors[ImGuiCol_BorderShadow]           = ImVec4(0.00f, 0.00f, 0.00f, 0.24f);
+	colors[ImGuiCol_FrameBg]                = ImVec4(0.05f, 0.05f, 0.05f, 0.54f);
+	colors[ImGuiCol_FrameBgHovered]         = ImVec4(0.19f, 0.19f, 0.19f, 0.54f);
+	colors[ImGuiCol_FrameBgActive]          = ImVec4(0.20f, 0.22f, 0.23f, 1.00f);
+	colors[ImGuiCol_TitleBg]                = ImVec4(0.00f, 0.00f, 0.00f, 1.00f);
+	colors[ImGuiCol_TitleBgActive]          = ImVec4(0.06f, 0.06f, 0.06f, 1.00f);
+	colors[ImGuiCol_TitleBgCollapsed]       = ImVec4(0.00f, 0.00f, 0.00f, 1.00f);
+	colors[ImGuiCol_MenuBarBg]              = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
+	colors[ImGuiCol_ScrollbarBg]            = ImVec4(0.05f, 0.05f, 0.05f, 0.54f);
+	colors[ImGuiCol_ScrollbarGrab]          = ImVec4(0.34f, 0.34f, 0.34f, 0.54f);
+	colors[ImGuiCol_ScrollbarGrabHovered]   = ImVec4(0.40f, 0.40f, 0.40f, 0.54f);
+	colors[ImGuiCol_ScrollbarGrabActive]    = ImVec4(0.56f, 0.56f, 0.56f, 0.54f);
+	colors[ImGuiCol_CheckMark]              = ImVec4(0.33f, 0.67f, 0.86f, 1.00f);
+	colors[ImGuiCol_SliderGrab]             = ImVec4(0.34f, 0.34f, 0.34f, 0.54f);
+	colors[ImGuiCol_SliderGrabActive]       = ImVec4(0.56f, 0.56f, 0.56f, 0.54f);
+	colors[ImGuiCol_Button]                 = ImVec4(0.05f, 0.05f, 0.05f, 0.54f);
+	colors[ImGuiCol_ButtonHovered]          = ImVec4(0.19f, 0.19f, 0.19f, 0.54f);
+	colors[ImGuiCol_ButtonActive]           = ImVec4(0.20f, 0.22f, 0.23f, 1.00f);
+	colors[ImGuiCol_Header]                 = ImVec4(0.00f, 0.00f, 0.00f, 0.52f);
+	colors[ImGuiCol_HeaderHovered]          = ImVec4(0.00f, 0.00f, 0.00f, 0.36f);
+	colors[ImGuiCol_HeaderActive]           = ImVec4(0.20f, 0.22f, 0.23f, 0.33f);
+	colors[ImGuiCol_Separator]              = ImVec4(0.28f, 0.28f, 0.28f, 0.29f);
+	colors[ImGuiCol_SeparatorHovered]       = ImVec4(0.44f, 0.44f, 0.44f, 0.29f);
+	colors[ImGuiCol_SeparatorActive]        = ImVec4(0.40f, 0.44f, 0.47f, 1.00f);
+	colors[ImGuiCol_ResizeGrip]             = ImVec4(0.28f, 0.28f, 0.28f, 0.29f);
+	colors[ImGuiCol_ResizeGripHovered]      = ImVec4(0.44f, 0.44f, 0.44f, 0.29f);
+	colors[ImGuiCol_ResizeGripActive]       = ImVec4(0.40f, 0.44f, 0.47f, 1.00f);
+	colors[ImGuiCol_Tab]                    = ImVec4(0.00f, 0.00f, 0.00f, 0.52f);
+	colors[ImGuiCol_TabHovered]             = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
+	colors[ImGuiCol_TabActive]              = ImVec4(0.20f, 0.20f, 0.20f, 0.36f);
+	colors[ImGuiCol_TabUnfocused]           = ImVec4(0.00f, 0.00f, 0.00f, 0.52f);
+	colors[ImGuiCol_TabUnfocusedActive]     = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
+	//colors[ImGuiCol_DockingPreview]         = ImVec4(0.33f, 0.67f, 0.86f, 1.00f);
+	//colors[ImGuiCol_DockingEmptyBg]         = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
+	colors[ImGuiCol_PlotLines]              = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
+	colors[ImGuiCol_PlotLinesHovered]       = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
+	colors[ImGuiCol_PlotHistogram]          = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
+	colors[ImGuiCol_PlotHistogramHovered]   = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
+	colors[ImGuiCol_TableHeaderBg]          = ImVec4(0.00f, 0.00f, 0.00f, 0.52f);
+	colors[ImGuiCol_TableBorderStrong]      = ImVec4(0.00f, 0.00f, 0.00f, 0.52f);
+	colors[ImGuiCol_TableBorderLight]       = ImVec4(0.28f, 0.28f, 0.28f, 0.29f);
+	colors[ImGuiCol_TableRowBg]             = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+	colors[ImGuiCol_TableRowBgAlt]          = ImVec4(1.00f, 1.00f, 1.00f, 0.06f);
+	colors[ImGuiCol_TextSelectedBg]         = ImVec4(0.20f, 0.22f, 0.23f, 1.00f);
+	colors[ImGuiCol_DragDropTarget]         = ImVec4(0.33f, 0.67f, 0.86f, 1.00f);
+	colors[ImGuiCol_NavHighlight]           = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
+	colors[ImGuiCol_NavWindowingHighlight]  = ImVec4(1.00f, 0.00f, 0.00f, 0.70f);
+	colors[ImGuiCol_NavWindowingDimBg]      = ImVec4(1.00f, 0.00f, 0.00f, 0.20f);
+	colors[ImGuiCol_ModalWindowDimBg]       = ImVec4(1.00f, 0.00f, 0.00f, 0.35f);
+
+	ImGuiStyle& style = ImGui::GetStyle();
+	style.WindowPadding                     = ImVec2(8.00f, 8.00f);
+	style.FramePadding                      = ImVec2(5.00f, 2.00f);
+	style.CellPadding                       = ImVec2(6.00f, 6.00f);
+	style.ItemSpacing                       = ImVec2(6.00f, 6.00f);
+	style.ItemInnerSpacing                  = ImVec2(6.00f, 6.00f);
+	style.TouchExtraPadding                 = ImVec2(0.00f, 0.00f);
+	style.IndentSpacing                     = 25;
+	style.ScrollbarSize                     = 15;
+	style.GrabMinSize                       = 10;
+	style.WindowBorderSize                  = 1;
+	style.ChildBorderSize                   = 1;
+	style.PopupBorderSize                   = 1;
+	style.FrameBorderSize                   = 1;
+	style.TabBorderSize                     = 1;
+	style.WindowRounding                    = 7;
+	style.ChildRounding                     = 4;
+	style.FrameRounding                     = 3;
+	style.PopupRounding                     = 4;
+	style.ScrollbarRounding                 = 9;
+	style.GrabRounding                      = 3;
+	style.LogSliderDeadzone                 = 4;
+	style.TabRounding                       = 4;
+}
+
+void SetImGuiTheme()
+{
+	ImGui::StyleColorsDark();
+	//embraceTheDarkness();
+
+	/*ImVec4* colors = ImGui::GetStyle().Colors;
+	colors[ImGuiCol_Text]                   = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
+	colors[ImGuiCol_TextDisabled]           = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
+	colors[ImGuiCol_WindowBg]               = ImVec4(0.06f, 0.06f, 0.06f, 0.94f);
+	colors[ImGuiCol_ChildBg]                = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+	colors[ImGuiCol_PopupBg]                = ImVec4(0.08f, 0.08f, 0.08f, 0.94f);
+	colors[ImGuiCol_Border]                 = ImVec4(0.43f, 0.43f, 0.50f, 0.50f);
+	colors[ImGuiCol_BorderShadow]           = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+	colors[ImGuiCol_FrameBg]                = ImVec4(0.16f, 0.48f, 0.16f, 0.54f);
+	colors[ImGuiCol_FrameBgHovered]         = ImVec4(0.34f, 0.98f, 0.26f, 0.40f);
+	colors[ImGuiCol_FrameBgActive]          = ImVec4(0.48f, 0.98f, 0.26f, 0.67f);
+	colors[ImGuiCol_TitleBg]                = ImVec4(0.17f, 0.52f, 0.10f, 1.00f);
+	colors[ImGuiCol_TitleBgActive]          = ImVec4(0.23f, 0.48f, 0.16f, 1.00f);
+	colors[ImGuiCol_TitleBgCollapsed]       = ImVec4(0.00f, 0.00f, 0.00f, 0.51f);
+	colors[ImGuiCol_MenuBarBg]              = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
+	colors[ImGuiCol_ScrollbarBg]            = ImVec4(0.02f, 0.02f, 0.02f, 0.53f);
+	colors[ImGuiCol_ScrollbarGrab]          = ImVec4(0.31f, 0.31f, 0.31f, 1.00f);
+	colors[ImGuiCol_ScrollbarGrabHovered]   = ImVec4(0.41f, 0.41f, 0.41f, 1.00f);
+	colors[ImGuiCol_ScrollbarGrabActive]    = ImVec4(0.51f, 0.51f, 0.51f, 1.00f);
+	colors[ImGuiCol_CheckMark]              = ImVec4(0.39f, 0.98f, 0.26f, 1.00f);
+	colors[ImGuiCol_SliderGrab]             = ImVec4(0.24f, 0.88f, 0.25f, 1.00f);
+	colors[ImGuiCol_SliderGrabActive]       = ImVec4(0.34f, 0.98f, 0.26f, 1.00f);
+	colors[ImGuiCol_Button]                 = ImVec4(0.36f, 0.98f, 0.26f, 0.40f);
+	colors[ImGuiCol_ButtonHovered]          = ImVec4(0.39f, 0.98f, 0.26f, 1.00f);
+	colors[ImGuiCol_ButtonActive]           = ImVec4(0.06f, 0.98f, 0.23f, 1.00f);
+	colors[ImGuiCol_Header]                 = ImVec4(0.26f, 0.98f, 0.28f, 0.31f);
+	colors[ImGuiCol_HeaderHovered]          = ImVec4(0.26f, 0.98f, 0.30f, 0.80f);
+	colors[ImGuiCol_HeaderActive]           = ImVec4(0.26f, 0.98f, 0.35f, 1.00f);
+	colors[ImGuiCol_Separator]              = ImVec4(0.43f, 0.43f, 0.50f, 0.50f);
+	colors[ImGuiCol_SeparatorHovered]       = ImVec4(0.13f, 0.75f, 0.10f, 0.78f);
+	colors[ImGuiCol_SeparatorActive]        = ImVec4(0.17f, 0.75f, 0.10f, 1.00f);
+	colors[ImGuiCol_ResizeGrip]             = ImVec4(0.26f, 0.98f, 0.44f, 0.20f);
+	colors[ImGuiCol_ResizeGripHovered]      = ImVec4(0.26f, 0.98f, 0.35f, 0.67f);
+	colors[ImGuiCol_ResizeGripActive]       = ImVec4(0.26f, 0.98f, 0.32f, 0.95f);
+	colors[ImGuiCol_Tab]                    = ImVec4(0.20f, 0.58f, 0.18f, 0.86f);
+	colors[ImGuiCol_TabHovered]             = ImVec4(0.26f, 0.98f, 0.30f, 0.80f);
+	colors[ImGuiCol_TabActive]              = ImVec4(0.21f, 0.68f, 0.20f, 1.00f);
+	colors[ImGuiCol_TabUnfocused]           = ImVec4(0.09f, 0.15f, 0.07f, 0.97f);
+	colors[ImGuiCol_TabUnfocusedActive]     = ImVec4(0.17f, 0.42f, 0.14f, 1.00f);
+	colors[ImGuiCol_PlotLines]              = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
+	colors[ImGuiCol_PlotLinesHovered]       = ImVec4(1.00f, 0.43f, 0.35f, 1.00f);
+	colors[ImGuiCol_PlotHistogram]          = ImVec4(0.90f, 0.70f, 0.00f, 1.00f);
+	colors[ImGuiCol_PlotHistogramHovered]   = ImVec4(1.00f, 0.60f, 0.00f, 1.00f);
+	colors[ImGuiCol_TableHeaderBg]          = ImVec4(0.19f, 0.19f, 0.20f, 1.00f);
+	colors[ImGuiCol_TableBorderStrong]      = ImVec4(0.31f, 0.31f, 0.35f, 1.00f);
+	colors[ImGuiCol_TableBorderLight]       = ImVec4(0.23f, 0.23f, 0.25f, 1.00f);
+	colors[ImGuiCol_TableRowBg]             = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+	colors[ImGuiCol_TableRowBgAlt]          = ImVec4(1.00f, 1.00f, 1.00f, 0.06f);
+	colors[ImGuiCol_TextSelectedBg]         = ImVec4(0.29f, 0.98f, 0.26f, 0.35f);
+	colors[ImGuiCol_DragDropTarget]         = ImVec4(1.00f, 1.00f, 0.00f, 0.90f);
+	colors[ImGuiCol_NavHighlight]           = ImVec4(0.34f, 0.98f, 0.26f, 1.00f);
+	colors[ImGuiCol_NavWindowingHighlight]  = ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
+	colors[ImGuiCol_NavWindowingDimBg]      = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
+	colors[ImGuiCol_ModalWindowDimBg]       = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);*/
+}
+
 void DX11Addon::ImGuiInit(HWND& hwnd)
 {
 	IMGUI_CHECKVERSION();
@@ -325,7 +473,7 @@ void DX11Addon::ImGuiInit(HWND& hwnd)
 	ImGuiIO& io = ImGui::GetIO();
 	ImGui_ImplDX11_Init(device, dc);
 	ImGui_ImplWin32_Init(hwnd);
-	ImGui::StyleColorsDark();
+	SetImGuiTheme();
 }
 
 void ExportToon(char* name, unsigned char* data, int offset, const int& grad1, const int& grad2)
@@ -395,7 +543,8 @@ void LoadButton(Material* pMaterial, std::string name, TextureType e, const UINT
 	{
 		float diff[3]{ pMaterial->GetDiffuseClr().x, pMaterial->GetDiffuseClr().y, pMaterial->GetDiffuseClr().z};
 		ImGui::SameLine();
-		ImGui::DragFloat3("##diffusefloat3", diff, 0.01f, 0.f, 1.f);
+		std::string nem = "##diffusefloat3" + std::to_string(i);
+		ImGui::DragFloat3(nem.c_str(), diff, 0.01f, 0.f, 1.f);
 		pMaterial->SetDiffuseClr(diff[0], diff[1], diff[2]);
 	}
 	ImGui::SameLine();
@@ -474,9 +623,38 @@ void DX11Addon::ImguiDebug()
 		ImGui::DragFloat4("Ambient", im.ambient, 0.002f, 0.f, 1.f);
 		ImGui::DragFloat3("Pointlight Position", im.pointLightPos, 0.01f);
 		ImGui::DragFloat3("PointLightColor", im.pointLightColor, 0.01f, 0.f, 1.f);
+		m_bulb.GetMaterial().SetRimColor({ im.pointLightColor[0], im.pointLightColor[1], im.pointLightColor[2] });
 		ImGui::SliderFloat("PointLight Strength", &im.pointLightStr, 0.f, 3.f);
 		ImGui::SliderFloat("Specular power", &im.specPow, 1.f, 1000.f);
 		ImGui::SliderFloat("Distance", &im.pointLightDistance, 0.f, 100.f);
+
+		std::string shadowCamString = "Shadow cam dir: " + GetVectorAsString(m_shadowmap.GetShadowCam().GetForwardVector());
+		ImGui::Text(shadowCamString.c_str());
+
+		ImGui::SliderFloat("Attenuation", &im.atten, 0.f, 10.f);
+	}
+
+	if (ImGui::CollapsingHeader("SpotLight"/*, ImGuiTreeNodeFlags_DefaultOpen */))
+	{
+		ImGui::DragFloat3("Position##sl", im.sl.position, 0.01f);
+		if (ImGui::Button("Move to cam##sl"))
+		{
+			//m_spotlight.SetPosition(mp_cam->GetPosition());
+			//m_spotlight.SetRotation(mp_cam->GetForwardVector());
+			im.sl.position[0] = mp_cam->GetPosition().x;
+			im.sl.position[1] = mp_cam->GetPosition().y;
+			im.sl.position[2] = mp_cam->GetPosition().z;
+
+			im.sl.rotation[0] = mp_cam->GetRotation().x * d::XM_PIDIV2;
+			im.sl.rotation[1] = mp_cam->GetRotation().y * d::XM_PIDIV2;
+			im.sl.rotation[2] = mp_cam->GetRotation().z * d::XM_PIDIV2;
+		}
+		//ImGui::DragFloat3("Angle##sl", im.sl.rotation, 0.01f);
+		//ImGui::DragFloat3("Color##sl", im.pointLightColor, 0.01f, 0.f, 1.f);
+		//m_bulb.GetMaterial().SetRimColor({ im.pointLightColor[0], im.pointLightColor[1], im.pointLightColor[2] });
+		ImGui::SliderFloat("Strength##sl", &im.pointLightStr, 0.f, 3.f);
+		ImGui::SliderFloat("Specular power##sl", &im.specPow, 1.f, 1000.f);
+		//ImGui::SliderFloat("Distance", &im.pointLightDistance, 0.f, 100.f);
 
 		std::string shadowCamString = "Shadow cam dir: " + GetVectorAsString(m_shadowmap.GetShadowCam().GetForwardVector());
 		ImGui::Text(shadowCamString.c_str());
@@ -510,6 +688,7 @@ void DX11Addon::ImGuiRender()
 
 	ImGuiMenu();
 	if (im.showDebugWindow) ImguiDebug();
+	if (im.showShadowMapDepth) ImGuTextureDisplay();
 
 	//ImGuiGradientWindow();
 	ImGuiEntList();
@@ -600,6 +779,9 @@ void DX11Addon::ImGuiMenu()
 				std::string path = Dialogs::OpenFile("Images (*.png)\0*.png;*.jpg", "Assets\\Textures\\");
 				if (!path.empty()) SetLightWarp(path);
 			}
+			ImTextureID lightwarptex = ResourceHandler::GetTextureAdress(1)->GetSRV();
+			ImGui::Separator();
+			ImGui::Image(lightwarptex, { 255.f, 10.f });
 
 			ImGui::EndMenu();
 		}
@@ -608,6 +790,15 @@ void DX11Addon::ImGuiMenu()
 			ImGui::MenuItem("Debug", NULL, &im.showDebugWindow);
 
 			ImGui::MenuItem("ImGui Demo", NULL, &im.showDemoWindow);
+			ImGui::Separator();
+			ImGui::MenuItem("ShadowMapDepth", NULL, &im.showShadowMapDepth);
+
+			ImGui::EndMenu();
+		}
+		if (ImGui::BeginMenu("Utility"))
+		{
+			if (ImGui::MenuItem("TP to spawn", NULL))
+				mp_cam->SetPosition(0.f, 1.f, 0.f);
 
 			ImGui::EndMenu();
 		}
@@ -761,13 +952,18 @@ void DX11Addon::ImGuiEntList()
 					sm::Vector2 diffuseSpeed(pMaterial->GetDiffuseScrollSpeed());
 					sm::Vector2 distortionSpeed(pMaterial->GetDistortionScrollSpeed());
 					bool hasDistMap = pMaterial->HasTexture(eDistortion);
+					bool hasDiffuse = pMaterial->HasTexture(eDiffuse) || pMaterial->HasTexture(eNormal) || pMaterial->HasTexture(eOpacity);
 
 					float diffSpeed[2]{ diffuseSpeed.x, diffuseSpeed.y };
 					float distSpeed[2]{ distortionSpeed.x, distortionSpeed.y };
 
-					ImGui::PushItemWidth(m_width * 0.14f);
 					std::string title = "Diffuse Scroll" + std::to_string(matIndex);
-					ImGui::SliderFloat2(title.c_str(), diffSpeed, -.5f, .5f);
+					ImGui::PushItemWidth(m_width * 0.14f);
+					if (hasDiffuse)
+					{
+						ImGui::SliderFloat2(title.c_str(), diffSpeed, -.5f, .5f);
+					}
+					
 
 					title = "Distortion Scroll##" + std::to_string(matIndex);
 					if (hasDistMap)
@@ -820,12 +1016,12 @@ void DX11Addon::ImGuiEntList()
 					if (ImGui::Button(title.c_str()))
 					{
 						std::string savePath = "";
-						savePath = Dialogs::OpenFile("Material (*.pmtrl)\0*.pmtrl\0", "Assets\\pmtrl\\");
+						savePath = Dialogs::OpenFile("Material (*.pmtrl)\0*.pmtrl;\0", "Assets\\pmtrl\\");
 
 						if (savePath != "")
 						{
 							std::string test = StringHelper::GetExtension(savePath);
-							if (test != "pmtrl")
+							if (!(test != "pmtrl" || test != "mtl"))
 								savePath += ".pmtrl";
 							pMaterial->ImportMaterial(StringHelper::GetName(savePath));
 						}
@@ -979,6 +1175,7 @@ void DX11Addon::ImGuizmo()
 		sm::Matrix camProj = mp_cam->GetProjM();
 		sm::Matrix world = m_models[m_selected]->GetWorld();
 
+
 		float* model = reinterpret_cast<float*>(&world);
 		const float* proj = reinterpret_cast<const float*>(&camProj);
 		const float* view = reinterpret_cast<const float*>(&camViewM);
@@ -1000,6 +1197,23 @@ void DX11Addon::ImGuizmo()
 		ImGui::End();
 	}
 
+}
+
+void DX11Addon::ImGuTextureDisplay()
+{
+	float winvar = 400;
+	float offset = 35;
+	ImVec2 winSize(winvar, winvar + offset);
+	ImGui::SetNextWindowSize(winSize);
+
+	ImGui::Begin("Texture Display", &im.showShadowMapDepth, ImGuiWindowFlags_NoResize);
+
+	ImTextureID tex = m_shadowmap.GetSRV();
+	ImGui::Image(tex, { winSize.x, winSize.x });
+	if (ImGui::IsWindowHovered())
+		m_isHoveringWindow = true;
+
+	ImGui::End();
 }
 
 void DX11Addon::NewScene()
@@ -1028,14 +1242,16 @@ void DX11Addon::ClearModelList()
 
 void DX11Addon::SetLightWarp(const std::string& path)
 {
-	int textureIndex = ResourceHandler::CheckTextureNameExists(StringHelper::GetName(path));
-	if (textureIndex != -1)
-		dc->PSSetShaderResources(0, 1, ResourceHandler::GetTexture(textureIndex).GetSRVAdress());
-	else
-	{
-		TextureMap* tex = ResourceHandler::AddTexture(path);
-		dc->PSSetShaderResources(0, 1, tex->GetSRVAdress());
-	}
+	//int textureIndex = ResourceHandler::CheckTextureNameExists(StringHelper::GetName(path));
+	//if (textureIndex != -1)
+	//	dc->PSSetShaderResources(0, 1, ResourceHandler::GetTexture(textureIndex).GetSRVAdress());
+	//else
+	//{
+	//	TextureMap* tex = ResourceHandler::AddTexture(path);
+	//	dc->PSSetShaderResources(0, 1, tex->GetSRVAdress());
+	//}
+	ResourceHandler::GetTextureAdress(1)->CreateFromFile(path.c_str(), device);
+	dc->PSSetShaderResources(0, 1, ResourceHandler::GetTexture(1).GetSRVAdress());
 }
 
 void DX11Addon::CalculateFps(const float& deltatime)
@@ -1193,6 +1409,8 @@ void DX11Addon::Render(const float& deltatime)
 
 	if (im.drawBCircle && m_selected != -1)
 	{
+		dc->VSSetShader(m_lineVS.GetShader(), NULL, 0);
+		dc->PSSetShader(m_linePS.GetShader(), NULL, 0);
 		dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
 		d::BoundingSphere sphere;
 		sphere = m_models[m_selected]->GetBSphere();
@@ -1246,6 +1464,9 @@ void DX11Addon::Render(const float& deltatime)
 		m_viewmdl.Draw();
 	}
 	m_bulb.Draw();
+	m_spotlight.Draw();
+	m_spotlight.SetPosition(im.sl.position[0], im.sl.position[1], im.sl.position[2]);
+	m_spotlight.SetRotation(im.sl.rotation[0], im.sl.rotation[1], im.sl.rotation[2]);
 	m_shadowmap.DrawModel();
 	//m_transformBuffer.Data().world = d::XMMatrixTranspose(d::XMMatrixTranslation(0.f, 0.f, 1.f));
 	//m_transformBuffer.UpdateCB();

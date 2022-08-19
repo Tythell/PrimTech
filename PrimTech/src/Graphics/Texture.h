@@ -5,7 +5,6 @@ class TextureMap
 {
 private:
 	ID3D11ShaderResourceView* m_textureSRV = nullptr;
-	bool m_isLoaded = false;
 	std::string m_name = "";
 public:
 	TextureMap();

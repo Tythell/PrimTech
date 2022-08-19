@@ -32,6 +32,8 @@ cbuffer MaterialBuffer : register(b1)
     int hasOpacityMap;
     float textureScaleDist;
     float4 characterLight[2];
+    float3 diffuseColor;
+    int hasDiffuse;
 }
 
 struct PSInput
@@ -44,7 +46,9 @@ struct PSInput
 
 float4 main(PSInput input) : SV_Target
 {
-    float3 diffuse = diffuseMap.Sample(samplerState, input.texCoord).xyz;
+    float3 diffuse = diffuseColor;
+    if (hasDiffuse)
+        diffuse = diffuseMap.Sample(samplerState, input.texCoord).xyz;
     
     float3 faceNormal = input.normal;
     float3 camToOb = normalize(input.worldPos - camPos.xyz);
@@ -53,5 +57,7 @@ float4 main(PSInput input) : SV_Target
     if (rim == 1);
         rimDot = 1 - dot(-camToOb, faceNormal);
     
-    return float4(diffuse + (rimDot * rimColor), transparency);
+    float3 final = diffuse + (rimDot * rimColor);
+    
+    return float4(normalize(final), 1.f);
 }
