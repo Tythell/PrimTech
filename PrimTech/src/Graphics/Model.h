@@ -90,7 +90,7 @@ private:
 	std::string m_name = "";
 	Mesh* mp_mesh = nullptr;
 	Material* m_material;
-	sm::Vector4 m_characterLight[2]{ {0.f, 0.9f, 0.1f, 0.51f} };
+	sm::Vector4 m_characterLight[2]{ {0.f, 0.9f, 0.1f, 0.0f} };
 	ModelType m_type = ModelType::eUNSPECIFIED;
 	ID3D11DeviceContext* dc = nullptr;
 	Buffer<hlsl::cbpWorldTransforms3D>* mp_cbTransformBuffer = nullptr;

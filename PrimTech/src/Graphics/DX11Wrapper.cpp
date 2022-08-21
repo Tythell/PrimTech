@@ -215,6 +215,7 @@ bool DX11Addon::InitShaders()
 		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,	 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"NORMAL",	 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"TANGENT",	 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"COLOR",	 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 	};
 
 	D3D11_INPUT_ELEMENT_DESC lineLayout[] =
@@ -246,7 +247,8 @@ bool DX11Addon::InitScene()
 
 	dc->OMSetBlendState(m_blendState, NULL, 0xFFFFFFFF);
 
-	ResourceHandler::AddTexture("missingtexture.png"); // setting missingtexture
+	//ResourceHandler::AddTexture("missingTexture.png"); // setting missingtexture
+	ResourceHandler::AddTexture(".NoTexture.png"); // setting missingtexture
 	ResourceHandler::AddTexture("ZANormal.png"); // Load LightWarp Texture
 	//ResourceHandler::AddTexture("ZATf2esk.png"); // Load LightWarp Texture
 	dc->PSSetShaderResources(0, 1, ResourceHandler::GetTexture(1).GetSRVAdress());

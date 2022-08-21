@@ -344,6 +344,9 @@ Mesh::Mesh(std::string path, ID3D11Device*& device, bool makeLeftHanded)
 		{
 			sm::Vector3 pos = mesh[i].verts[j].position;
 			positionArray.emplace_back(pos);
+			mesh[i].verts[j].color = sm::Vector3(1.f, 1.f, 1.f);
+			//if(rand() % 2 == 0)
+				mesh[i].verts[j].color = sm::Vector3(float(rand() % 10 +1) / 10, float(rand() % 10 + 1) / 10, float(rand() % 10+1) / 10);
 			m_shape.verts.emplace_back(mesh[i].verts[j]);
 		}
 	}

@@ -56,6 +56,7 @@ struct PSInput
     float3 worldPos : WORLD_POS;
     float3 tangent : TANGENT;
     float4 clipSpace : CLIPSPACE;
+    float3 vcolor : COLOR;
 };
 
 float4 main(PSInput input) : SV_Target
@@ -85,7 +86,7 @@ float4 main(PSInput input) : SV_Target
     float depth = shadowMap.Sample(wrapSampler, projTexCoord);
     float shadowBias = max(.01f * (1.f - dot(normalize(shadowDir), normal)), .005f);
     
-    float4 shadow = (depth > input.clipSpace.z - shadowBias) ? 1 : 0;
+    float4 shadow = ((depth > input.clipSpace.z - shadowBias) /*&& dot(shadowDir, normal) <= 0.11f*/) ? 1 : 0;
     
     //if (dot(shadowDir, normal) < 0)
     //{
@@ -111,7 +112,7 @@ float4 main(PSInput input) : SV_Target
     
     float4 diffuse;
     if(hasDiffuse)
-        diffuse = diffuseMap.Sample(wrapSampler, texCoord + distortion);
+        diffuse = diffuseMap.Sample(wrapSampler, texCoord + distortion) * float4(input.vcolor, 1.f);
     else
         diffuse = float4(diffuseColor,1.f);
     
@@ -147,7 +148,7 @@ float4 main(PSInput input) : SV_Target
     
     // Uses to calculated value as index on a lookup-table stored in a texture
     //float lightindex = (false) ? saturate(dot(lightVector, normal)) * pointlightStre : 0.f;
-    float lightindex = (distance <= lightDistance) ? shadow * saturate(dot(lightVector, normal)) * pointlightStre : 0.f;
+    float lightindex = (distance <= lightDistance) ? saturate(dot(lightVector, normal)) * pointlightStre : 0.f;
     float3 camToOb = normalize(input.worldPos - camPos.xyz);
    
     float3 specular = 0.f;
@@ -166,6 +167,8 @@ float4 main(PSInput input) : SV_Target
     lightindex += charDirLight;
     float3 cellLightStr = ZAToon.Sample(clampSampler, float2(lightindex, .5f)).xyz;
     specular = ZAToon.Sample(clampSampler, float2(specular.z, .5f)).xyz;
+    
+    cellLightStr *= shadow;
     
     cellLightStr += ambientColor * ambientStr;
     

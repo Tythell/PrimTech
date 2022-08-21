@@ -41,7 +41,7 @@ struct ImGuiVars
 	float pointLightStr = 1.f;
 	float pointLightDistance = 10.f;
 	float offset = 0.f;
-	float ambient[4] = {1.f,1.f,1.f,.2f};
+	float ambient[4] = {1.f,1.f,1.f,.6f};
 	float direction[3] = { 0.f, 1.f, 0.f };
 	float atten = .5f;
 	int fov = 80;

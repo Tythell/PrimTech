@@ -30,7 +30,11 @@ bool TextureMap::CreateFromFile(const char* texturePath, ID3D11Device* device, c
 	m_name = StringHelper::GetName(std::string(texturePath));
 
 	std::string fullpath;
-	if (texturePath[1] != ':')
+	if (texturePath[0] == '.')
+	{
+		fullpath = std::string(texturePath).substr(1);
+	}
+	else if (texturePath[1] != ':')
 		fullpath = "Assets/Textures/" + std::string(texturePath);
 	else
 		fullpath = "Assets\\Textures\\" + m_name;
