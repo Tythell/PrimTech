@@ -1198,7 +1198,6 @@ void DX11Addon::ImGuizmo()
 
 		ImGui::End();
 	}
-
 }
 
 void DX11Addon::ImGuTextureDisplay()

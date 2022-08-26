@@ -1,3 +1,5 @@
+//#pragma pack_matrix(row_major)
+
 Texture2D ZAToon : ZATOON : register(t0);
 Texture2D diffuseMap : DIFFUSEMAP : register(t1);
 Texture2D distortionMap : DISTORTIONMAP : register(t2);
@@ -112,7 +114,9 @@ float4 main(PSInput input) : SV_Target
     
     float4 diffuse;
     if(hasDiffuse)
-        diffuse = diffuseMap.Sample(wrapSampler, texCoord + distortion) * float4(input.vcolor, 1.f);
+    {
+        diffuse = saturate(diffuseMap.Sample(wrapSampler, texCoord + distortion) * float4(input.vcolor, 1.f));
+    }
     else
         diffuse = float4(diffuseColor,1.f);
     
@@ -168,7 +172,7 @@ float4 main(PSInput input) : SV_Target
     float3 cellLightStr = ZAToon.Sample(clampSampler, float2(lightindex, .5f)).xyz;
     specular = ZAToon.Sample(clampSampler, float2(specular.z, .5f)).xyz;
     
-    cellLightStr *= shadow;
+    //cellLightStr *= shadow;
     
     cellLightStr += ambientColor * ambientStr;
     
@@ -186,5 +190,6 @@ float4 main(PSInput input) : SV_Target
     //float3 final = warpedSpecular;
     float3 final = diffuse.xyz * (cellLightStr) + (rimDot.xxx * rimColor) + specular;
 
+    //return float4(cellLightStr, 1.f);
     return float4(final, opacity * transparency);
 }

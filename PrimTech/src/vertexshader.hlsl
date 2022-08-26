@@ -30,7 +30,7 @@ VSOutput main(VSInput input)
     VSOutput output;
     output.position = mul(float4(input.localPosition.xyz, 1.f), mul(world, viewProj));
     output.texCoord = input.texCoord;
-    output.normal = normalize(mul(input.localNormal, (float3x3) world));
+    output.normal = normalize(mul(float4(input.localNormal, 0.f), world));
     output.worldpos = mul(float4(input.localPosition.xyz, 1.f), world).xyz;
     output.tangent = mul(float4(input.tangent, 0.f), world).xyz;
     output.clipSpace = mul(float4(input.localPosition, 1.f), mul(world, lightviewProj));
