@@ -15,8 +15,10 @@
 
 # Build results
 [Dd]ebug/
+!3rdparty/libs/[Dd]ebug/
 [Dd]ebugPublic/
 [Rr]elease/
+!3rdparty/libs/[Rr]elease/
 [Rr]eleases/
 x64/
 x86/
@@ -90,9 +92,6 @@ StyleCopReport.xml
 
 #Don't want to ignore .objs in Asset folder
 !PrimTech/Assets/models/*.obj
-
-#!x64/Debug/*.dll
-#!x64/Release/*.dll
 
 # Chutzpah Test files
 _Chutzpah*
