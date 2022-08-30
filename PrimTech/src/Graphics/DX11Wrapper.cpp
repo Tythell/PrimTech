@@ -774,6 +774,15 @@ void DX11Addon::ImGuiMenu()
 			}
 			ImGui::EndMenu();
 		}
+		if (ImGui::BeginMenu("Edit"))
+		{
+			if (ImGui::MenuItem("Z axis up"))
+			{
+				Popup::Error("stfu and die");
+				DestroyWindow(*m_pHWND);
+			}
+			ImGui::EndMenu();
+		}
 		if (ImGui::BeginMenu("Lighting"))
 		{
 			if (ImGui::MenuItem("Load Lightwarp"))

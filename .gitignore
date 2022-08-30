@@ -91,6 +91,9 @@ StyleCopReport.xml
 #Don't want to ignore .objs in Asset folder
 !PrimTech/Assets/models/*.obj
 
+#!x64/Debug/*.dll
+#!x64/Release/*.dll
+
 # Chutzpah Test files
 _Chutzpah*
 

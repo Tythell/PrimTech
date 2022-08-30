@@ -115,7 +115,7 @@ float4 main(PSInput input) : SV_Target
     float4 diffuse;
     if(hasDiffuse)
     {
-        diffuse = saturate(diffuseMap.Sample(wrapSampler, texCoord + distortion) * float4(input.vcolor, 1.f));
+        diffuse = saturate(diffuseMap.Sample(wrapSampler, texCoord + distortion) /** float4(input.vcolor, 1.f))*/);
     }
     else
         diffuse = float4(diffuseColor,1.f);
@@ -172,7 +172,7 @@ float4 main(PSInput input) : SV_Target
     float3 cellLightStr = ZAToon.Sample(clampSampler, float2(lightindex, .5f)).xyz;
     specular = ZAToon.Sample(clampSampler, float2(specular.z, .5f)).xyz;
     
-    //cellLightStr *= shadow;
+    cellLightStr *= shadow;
     
     cellLightStr += ambientColor * ambientStr;
     
