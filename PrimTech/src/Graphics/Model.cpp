@@ -42,6 +42,13 @@ void Model::Init(const std::string path, ModelType e, bool makeLeftHanded)
 		if (!texturePath.empty())
 			LoadTexture(texturePath, i);
 	}
+	if(embeddedmatIndexes.size() == 0)
+		for (int i = 0; i < embeddedmats.size(); i++)
+		{
+			std::string texturePath = embeddedmats[i].diffuseName;
+			if (!texturePath.empty())
+				LoadTexture(texturePath, i);
+		}
 
 	for (int i = 0; i < m_nOfMats; i++)
 		m_material[i].SetLeftHanded(makeLeftHanded);
@@ -345,7 +352,7 @@ bool LoadObjToBuffer(std::string path, std::vector<Shape>& shape, std::vector<Mt
 	return true;
 }
 
-Shape ProcessMesh(aiMesh* mesh, const aiScene* scene)
+Shape ProcessMesh(aiMesh* mesh, const aiScene* scene, Mtl& mtl)
 {
 	Shape shape;
 	UINT numVerts = mesh->mNumVertices;
@@ -357,7 +364,11 @@ Shape ProcessMesh(aiMesh* mesh, const aiScene* scene)
 		shape.verts[i].tangent = aiVecToSm(mesh->mTangents[i]);
 		shape.verts[i].texCoord = sm::Vector2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
 	}
-
+	UINT matIndex = mesh->mMaterialIndex;
+	aiMaterial* material = scene->mMaterials[matIndex];
+	aiString diffuseName;
+	material->Get(AI_MATKEY_TEXTURE(aiTextureType_DIFFUSE, 0), diffuseName);
+	mtl.diffuseName = diffuseName.C_Str();
 	// making vertexes clockwise because assimp is retarded
 	for (int i = 0; i < numVerts / 3; i++)
 	{
@@ -372,18 +383,20 @@ Shape ProcessMesh(aiMesh* mesh, const aiScene* scene)
 	return shape;
 }
 
-void ProcessNode(aiNode* node, const aiScene* scene, std::vector<Shape>& fullShape)
+void ProcessNode(aiNode* node, const aiScene* scene, std::vector<Shape>& fullShape, std::vector<Mtl>& allMtls)
 {
 	for (int i = 0; i < node->mNumMeshes; i++)
 	{
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-		fullShape.emplace_back(ProcessMesh(mesh, scene));
+		Mtl mtl;
+		fullShape.emplace_back(ProcessMesh(mesh, scene, mtl));
+		allMtls.emplace_back(mtl);
 	}
 	for (int i = 0; i < node->mNumChildren; i++)
-		ProcessNode(node->mChildren[i], scene, fullShape);
+		ProcessNode(node->mChildren[i], scene, fullShape, allMtls);
 }
 
-bool AssimpLoad(const std::string path, std::vector<Shape>& shape)
+bool AssimpLoad(const std::string path, std::vector<Shape>& shape, std::vector<Mtl>& allMtls)
 {
 	Assimp::Importer importer;
 	const aiScene* pScene = importer.ReadFile(path.c_str(), aiProcess_MakeLeftHanded| aiProcess_CalcTangentSpace);
@@ -391,7 +404,7 @@ bool AssimpLoad(const std::string path, std::vector<Shape>& shape)
 
 	THROW_POPUP_ERROR(pScene != NULL, errString);
 
-	ProcessNode(pScene->mRootNode, pScene, shape);
+	ProcessNode(pScene->mRootNode, pScene, shape, allMtls);
 	return true;
 }
 
@@ -406,7 +419,7 @@ Mesh::Mesh(std::string path, ID3D11Device*& device, bool makeLeftHanded)
 		check = LoadObjToBuffer(path, mesh, m_mtls, m_mtlIndexes, makeLeftHanded);
 		break;
 	case 1:
-		check = AssimpLoad(path, mesh);
+		check = AssimpLoad(path, mesh, m_mtls);
 		break;
 	}
 	if (!check)
@@ -414,13 +427,6 @@ Mesh::Mesh(std::string path, ID3D11Device*& device, bool makeLeftHanded)
 		Popup::Error("loading " + path);
 		throw;
 	}
-
-
-	//if (!AssimpLoad(path, mesh))
-	//{
-	//	Popup::Error("loading " + path);
-	//	throw;
-	//}
 	m_name = StringHelper::GetName(path);
 	m_nofMeshes = mesh.size();
 	m_offsets.emplace_back(0);

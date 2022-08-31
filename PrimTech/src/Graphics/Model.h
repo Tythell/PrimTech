@@ -15,7 +15,7 @@ struct Mtl
 struct Shape
 {
 	std::vector<Vertex3D> verts;
-	UINT mtlIndex = 0;
+	//UINT mtlIndex = 0;
 	//Mtl material;
 };
 
