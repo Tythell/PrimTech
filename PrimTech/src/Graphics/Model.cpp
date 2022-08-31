@@ -6,6 +6,10 @@
 #include <fstream>
 #include "ResourceHandler.h"
 #include "../Utility/CommonDialogs.h"
+#undef min
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
 
 Model::~Model()
 {
@@ -130,6 +134,15 @@ const sm::Vector4 Model::GetCharacterLight(int i) const
 	return m_characterLight[i];
 }
 
+sm::Vector3 aiVecToSm(const aiVector3D aivec)
+{
+	return sm::Vector3(aivec.x, aivec.y, aivec.z);
+}
+sm::Vector2 aiVecToSm(const aiVector2D aivec)
+{
+	return sm::Vector2(aivec.x, aivec.y);
+}
+
 bool LoadObjToBuffer(std::string path, std::vector<Shape>& shape, std::vector<Mtl>& localMtls, std::vector<int>& matIndex, bool makeLeftHanded)
 {
 	//shape.resize(1);
@@ -137,7 +150,7 @@ bool LoadObjToBuffer(std::string path, std::vector<Shape>& shape, std::vector<Mt
 	UINT nofMats = 0;
 	UINT currentMat = 0;
 
-	//makeLeftHanded = false;
+	makeLeftHanded = false;
 
 	std::string dummy;
 	std::vector<sm::Vector3> v;
@@ -316,15 +329,70 @@ bool LoadObjToBuffer(std::string path, std::vector<Shape>& shape, std::vector<Mt
 	return true;
 }
 
+Shape ProcessMesh(aiMesh* mesh, const aiScene* scene)
+{
+	Shape shape;
+	UINT numVerts = mesh->mNumVertices;
+	shape.verts.resize(numVerts);
+	for (int i = 0; i < numVerts; i++)
+	{
+		shape.verts[i].position = aiVecToSm(mesh->mVertices[i]);
+		shape.verts[i].normal = aiVecToSm(mesh->mNormals[i]);
+		//shape.verts[i].tangent = aiVecToSm(mesh->mTangents[i]);
+		shape.verts[i].texCoord = sm::Vector2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
+	}
+	return shape;
+}
+
+void ProcessNode(aiNode* node, const aiScene* scene, std::vector<Shape>& fullShape)
+{
+	for (int i = 0; i < node->mNumMeshes; i++)
+	{
+		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+		fullShape.emplace_back(ProcessMesh(mesh, scene));
+	}
+	for (int i = 0; i < node->mNumChildren; i++)
+		ProcessNode(node->mChildren[i], scene, fullShape);
+}
+
+bool AssimpLoad(const std::string path, std::vector<Shape>& shape)
+{
+	Assimp::Importer importer;
+	const aiScene* pScene = importer.ReadFile(path.c_str(), aiProcess_FlipWindingOrder);
+	std::string errString = path + " file does not exist";
+
+	THROW_POPUP_ERROR(pScene != NULL, errString);
+
+	ProcessNode(pScene->mRootNode, pScene, shape);
+	return true;
+}
+
 Mesh::Mesh(std::string path, ID3D11Device*& device, bool makeLeftHanded)
 {
 	std::vector<Shape> mesh;
-
-	if (!LoadObjToBuffer(path, mesh, m_mtls, m_mtlIndexes, makeLeftHanded))
+	int type = 1;
+	bool check = false;
+	switch (type)
+	{
+	case 0:
+		check = LoadObjToBuffer(path, mesh, m_mtls, m_mtlIndexes, makeLeftHanded);
+		break;
+	case 1:
+		check = AssimpLoad(path, mesh);
+		break;
+	}
+	if (!check)
 	{
 		Popup::Error("loading " + path);
 		throw;
 	}
+
+
+	//if (!AssimpLoad(path, mesh))
+	//{
+	//	Popup::Error("loading " + path);
+	//	throw;
+	//}
 	m_name = StringHelper::GetName(path);
 	m_nofMeshes = mesh.size();
 	m_offsets.emplace_back(0);
