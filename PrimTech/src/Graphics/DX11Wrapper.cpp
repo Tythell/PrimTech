@@ -146,7 +146,7 @@ bool DX11Addon::InitRastNSampState()
 	ZeroMemory(&rastDesc, sizeof(D3D11_RASTERIZER_DESC));
 	rastDesc.FillMode = D3D11_FILL_MODE::D3D11_FILL_SOLID;
 	rastDesc.CullMode = D3D11_CULL_MODE::D3D11_CULL_BACK;
-	//rastDesc.FrontCounterClockwise = true;
+	rastDesc.FrontCounterClockwise = false;
 
 	HRESULT hr = device->CreateRasterizerState(&rastDesc, &m_rasterizerState);
 	COM_ERROR(hr, "Rasterizer State setup failed");
@@ -258,7 +258,7 @@ bool DX11Addon::InitScene()
 	//ImportScene("Scenes\\multsc.ptscene");
 	NewScene();
 
-	m_playermodel.Init("dirCapsule.obj");
+	m_playermodel.Init("dirCapsule.obj", ModelType::eUNSPECIFIED, false);
 	m_playermodel.SetScale(.1f);
 
 	m_bulb.Init("bulb.obj", ModelType::eDEBUG);
@@ -833,7 +833,7 @@ int NewModelToV(std::string path, ID3D11DeviceContext*& dc, Buffer<hlsl::cbpWorl
 int InterfaceAddModelToVector(ID3D11DeviceContext*& dc, Buffer<hlsl::cbpWorldTransforms3D>& tbuffer, Buffer<hlsl::cbpMaterialBuffer>& mbuffer,
 	ModelList& modelV)
 {
-	std::string path = Dialogs::OpenFile("Model (*.obj)\0*.obj;*.txt;*.fbx;\0", "Assets\\models\\");
+	std::string path = Dialogs::OpenFile("Model (*.obj, *.fbx)\0*.obj;*.txt;*.fbx;\0", "Assets\\models\\");
 	if (!path.empty())
 	{
 		path = StringHelper::GetName(path);

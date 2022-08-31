@@ -143,6 +143,14 @@ sm::Vector2 aiVecToSm(const aiVector2D aivec)
 	return sm::Vector2(aivec.x, aivec.y);
 }
 
+template <class T>
+void Swap(T &e1, T &e2)
+{
+	T temp = e1;
+	e1 = e2;
+	e2 = temp;
+}
+
 bool LoadObjToBuffer(std::string path, std::vector<Shape>& shape, std::vector<Mtl>& localMtls, std::vector<int>& matIndex, bool makeLeftHanded)
 {
 	//shape.resize(1);
@@ -150,7 +158,7 @@ bool LoadObjToBuffer(std::string path, std::vector<Shape>& shape, std::vector<Mt
 	UINT nofMats = 0;
 	UINT currentMat = 0;
 
-	makeLeftHanded = false;
+	//makeLeftHanded = false;
 
 	std::string dummy;
 	std::vector<sm::Vector3> v;
@@ -210,12 +218,20 @@ bool LoadObjToBuffer(std::string path, std::vector<Shape>& shape, std::vector<Mt
 				triangle[i].texCoord = vt[vtIndexTemp];
 			}
 
+			//if (makeLeftHanded)
+			//	for (int i = 2; i > -1; i--)
+			//		localShape.verts.emplace_back(triangle[i]);
+			//else
+			//	for (int i = 0; i < 3; i++)
+			//		localShape.verts.emplace_back(triangle[i]);
 			if (makeLeftHanded)
-				for (int i = 2; i > -1; i--)
-					localShape.verts.emplace_back(triangle[i]);
-			else
-				for (int i = 0; i < 3; i++)
-					localShape.verts.emplace_back(triangle[i]);
+			{
+				Vertex3D temp = triangle[0];
+ 				triangle[0] = triangle[2];
+				triangle[2] = temp;
+			}
+			for (int i = 0; i < 3; i++)
+				localShape.verts.emplace_back(triangle[i]);
 
 		}
 		else if (input == "g")
@@ -338,8 +354,20 @@ Shape ProcessMesh(aiMesh* mesh, const aiScene* scene)
 	{
 		shape.verts[i].position = aiVecToSm(mesh->mVertices[i]);
 		shape.verts[i].normal = aiVecToSm(mesh->mNormals[i]);
-		//shape.verts[i].tangent = aiVecToSm(mesh->mTangents[i]);
+		shape.verts[i].tangent = aiVecToSm(mesh->mTangents[i]);
 		shape.verts[i].texCoord = sm::Vector2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
+	}
+
+	// making vertexes clockwise because assimp is retarded
+	for (int i = 0; i < numVerts / 3; i++)
+	{
+		Vertex3D triangle[3];
+		for (int j = 0; j < 3; j++)
+			triangle[j] = shape.verts[i*3+j];
+		Swap(triangle[0], triangle[2]);
+
+		for (int j = 0; j < 3; j++)
+			shape.verts[i*3+j] = triangle[j];
 	}
 	return shape;
 }
@@ -358,7 +386,7 @@ void ProcessNode(aiNode* node, const aiScene* scene, std::vector<Shape>& fullSha
 bool AssimpLoad(const std::string path, std::vector<Shape>& shape)
 {
 	Assimp::Importer importer;
-	const aiScene* pScene = importer.ReadFile(path.c_str(), aiProcess_FlipWindingOrder);
+	const aiScene* pScene = importer.ReadFile(path.c_str(), aiProcess_MakeLeftHanded| aiProcess_CalcTangentSpace);
 	std::string errString = path + " file does not exist";
 
 	THROW_POPUP_ERROR(pScene != NULL, errString);
@@ -413,8 +441,7 @@ Mesh::Mesh(std::string path, ID3D11Device*& device, bool makeLeftHanded)
 			sm::Vector3 pos = mesh[i].verts[j].position;
 			positionArray.emplace_back(pos);
 			mesh[i].verts[j].color = sm::Vector3(1.f, 1.f, 1.f);
-			//if(rand() % 2 == 0)
-				mesh[i].verts[j].color = sm::Vector3(float(rand() % 10 +1) / 10, float(rand() % 10 + 1) / 10, float(rand() % 10+1) / 10);
+			mesh[i].verts[j].color = sm::Vector3(float(rand() % 10 +1) / 10, float(rand() % 10 + 1) / 10, float(rand() % 10+1) / 10);
 			m_shape.verts.emplace_back(mesh[i].verts[j]);
 		}
 	}
