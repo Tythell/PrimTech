@@ -881,6 +881,10 @@ void DX11Addon::ImGuiEntList()
 		{
 			if (ImGui::Selectable("Model"))
 				m_selected = InterfaceAddModelToVector(dc, m_transformBuffer, m_materialBuffer, m_models);
+			ImGui::BeginDisabled();
+			if (ImGui::Selectable("Particle"))
+				m_selected = InterfaceAddModelToVector(dc, m_transformBuffer, m_materialBuffer, m_models);
+			ImGui::EndDisabled();
 
 			ImGui::EndPopup();
 		}

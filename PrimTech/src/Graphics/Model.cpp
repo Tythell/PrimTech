@@ -399,7 +399,7 @@ void ProcessNode(aiNode* node, const aiScene* scene, std::vector<Shape>& fullSha
 bool AssimpLoad(const std::string path, std::vector<Shape>& shape, std::vector<Mtl>& allMtls)
 {
 	Assimp::Importer importer;
-	const aiScene* pScene = importer.ReadFile(path.c_str(), aiProcess_MakeLeftHanded| aiProcess_CalcTangentSpace);
+	const aiScene* pScene = importer.ReadFile(path.c_str(), aiProcess_FlipWindingOrder | aiProcess_MakeLeftHanded | aiProcess_CalcTangentSpace);
 	std::string errString = path + " file does not exist";
 
 	THROW_POPUP_ERROR(pScene != NULL, errString);
@@ -411,9 +411,8 @@ bool AssimpLoad(const std::string path, std::vector<Shape>& shape, std::vector<M
 Mesh::Mesh(std::string path, ID3D11Device*& device, bool makeLeftHanded)
 {
 	std::vector<Shape> mesh;
-	int type = 1;
 	bool check = false;
-	switch (type)
+	switch (1) // if a custom fileformat is created int he future, simply chnage this number
 	{
 	case 0:
 		check = LoadObjToBuffer(path, mesh, m_mtls, m_mtlIndexes, makeLeftHanded);
@@ -422,11 +421,7 @@ Mesh::Mesh(std::string path, ID3D11Device*& device, bool makeLeftHanded)
 		check = AssimpLoad(path, mesh, m_mtls);
 		break;
 	}
-	if (!check)
-	{
-		Popup::Error("loading " + path);
-		throw;
-	}
+	THROW_POPUP_ERROR(check, " loading" + path);
 	m_name = StringHelper::GetName(path);
 	m_nofMeshes = mesh.size();
 	m_offsets.emplace_back(0);
