@@ -31,23 +31,28 @@ cbuffer LightBuffer : register(b0)
     float pad2;
 };
 
+// Material flags
+#define Flag_eNull                      (0     )
+#define MaterialFlag_eHasDiffuse        (1 << 0)
+#define MaterialFlag_eHasDistortion	    (1 << 1)
+#define MaterialFlag_eHasNormal         (1 << 2)
+#define MaterialFlag_eHasOpacity		(1 << 3)
 cbuffer MaterialBuffer : register(b1)
 {
-    int hasDistortion;
+    float3 diffuseColor;
+    uint flags;
+    
     float2 texCoordOffset;
     float transparency;
-    float2 texCoordoffsetDist;
     int distDiv;
+    
+    float2 texCoordoffsetDist;
     float textureScale;
-    float3 rimColor;
-    int rim;
-    int hasNormal;
-    int LH;
-    int hasOpacityMap;
-    float textureScaleDist;
+    int rim; // bool
+    
     float4 characterLight[2];
-    float3 diffuseColor;
-    int hasDiffuse;
+    float3 rimColor;
+    float textureScaleDist;
 }
 
 struct PSInput
@@ -65,6 +70,8 @@ float4 main(PSInput input) : SV_Target
 {
     float2 distortion = 0.f;
     float opacity = 1.f;
+    
+    
     
     float2 texCoord = input.texCoord * textureScale;
     float2 distTexCoord = input.texCoord * textureScaleDist;
@@ -96,33 +103,33 @@ float4 main(PSInput input) : SV_Target
     //}
     
     
-    if (hasDistortion)
+    if (flags & MaterialFlag_eHasDistortion)
         distortion = (distortionMap.Sample(wrapSampler, distTexCoord + texCoordoffsetDist).xy - 0.5f) / distDiv;
 
     distortion += texCoordOffset;
     
     
     float3x3 tbnMatr = 0;
-    if (hasNormal)
+    if (flags & MaterialFlag_eHasNormal)
     {
         float3 mappedNormal = normalMap.Sample(wrapSampler, texCoord + distortion).xyz * 2.f - 1.f;
         float3 normTan = normalize(input.tangent);
-        float3 biNormal = (LH == 1) ? normalize(cross(normTan, normal)) : normalize(cross(normal, normTan));
+        float3 biNormal = /*(LH == 1) ? normalize(cross(normTan, normal)) :*/normalize(cross(normal, normTan));
         tbnMatr = float3x3(normTan, biNormal, normal);
         normal = normalize(float3(mul(mappedNormal, tbnMatr)));
     }
     
     float4 diffuse;
-    if(hasDiffuse)
+    if (flags & MaterialFlag_eHasDiffuse)
     {
         diffuse = saturate(diffuseMap.Sample(wrapSampler, texCoord + distortion) /** float4(input.vcolor, 1.f))*/);
     }
     else
-        diffuse = float4(diffuseColor,1.f);
+        diffuse = float4(diffuseColor, 1.f);
     
     diffuse.w = 1.f;
     //float4 diffuse = diffuseMap.Sample(samplerState, texCoord + distortion);
-    if (hasOpacityMap)
+    if (flags & MaterialFlag_eHasOpacity)
         opacity = opacityMap.Sample(wrapSampler, texCoord + distortion).x;
     else
         opacity = diffuse.w;
@@ -142,7 +149,7 @@ float4 main(PSInput input) : SV_Target
     spotLightVector /= sldistance;
     
     float3 L2 = spotLightAngle;
-    float rho = dot(-spotLightVector, L2); 
+    float rho = dot(-spotLightVector, L2);
     attenuation *= saturate((rho - spotLightAngle.y) / (spotLightAngle.x - spotLightAngle.y));
     
     // Normalized

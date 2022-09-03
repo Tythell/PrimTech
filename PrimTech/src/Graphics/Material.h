@@ -67,7 +67,8 @@ public:
 	sm::Vector3 GetDiffuseClr() const;
 
 	Buffer<hlsl::cbpMaterialBuffer>* GetBuffer();
-	bool HasTexture(const TextureType e) const;
+	bool HasTexture(const TextureType& e) const;
+	bool HasTexture(const UINT& e) const;
 	void SetPointers(Buffer<hlsl::cbpMaterialBuffer>* cbMaterialBuffer);
 private:
 	void ReadRecursion(eMaterialHeaders& header, std::ifstream& reader);

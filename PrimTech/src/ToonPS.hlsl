@@ -26,14 +26,28 @@ struct PSInput
     float3 worldPos : WORLD_POS;
 };
 
+// Material flags
+#define Flag_eNull                      (0     )
+#define MaterialFlag_eHasDiffuse        (1 << 0)
+#define MaterialFlag_eHasDistortion	    (1 << 1)
+#define MaterialFlag_eHasNormal         (1 << 2)
+#define MaterialFlag_eHasOpacity		(1 << 3)
 cbuffer MaterialBuffer : register(b1)
 {
-    int hasDistortion;
+    float3 diffuseColor;
+    uint flags;
+    
     float2 texCoordOffset;
     float transparency;
-    float2 texCoordoffsetDist;
     int distDiv;
+    
+    float2 texCoordoffsetDist;
     float textureScale;
+    int rim; // bool
+    
+    float4 characterLight[2];
+    float3 rimColor;
+    float textureScaleDist;
 }
 
 float4 main(PSInput input) : SV_Target
@@ -43,7 +57,7 @@ float4 main(PSInput input) : SV_Target
     float2 texCoord = input.texCoord * textureScale;
     float3 lightPos = pointLightPosition;
     
-    if (hasDistortion)
+    if (flags & MaterialFlag_eHasDistortion)
     {
         distortion = (distortionMap.Sample(samplerState, texCoord + texCoordoffsetDist).xy - 0.5f) / distDiv;
         //distortion /= 2;

@@ -17,23 +17,28 @@ cbuffer LightBuffer : register(b0)
     float pad;
 };
 
+// Material flags
+#define Flag_eNull                      (0     )
+#define MaterialFlag_eHasDiffuse        (1 << 0)
+#define MaterialFlag_eHasDistortion	    (1 << 1)
+#define MaterialFlag_eHasNormal         (1 << 2)
+#define MaterialFlag_eHasOpacity		(1 << 3)
 cbuffer MaterialBuffer : register(b1)
 {
-    int hasDistortion;
+    float3 diffuseColor;
+    uint flags;
+    
     float2 texCoordOffset;
     float transparency;
-    float2 texCoordoffsetDist;
     int distDiv;
+    
+    float2 texCoordoffsetDist;
     float textureScale;
-    float3 rimColor;
-    int rim;
-    int hasNormal;
-    int LH;
-    int hasOpacityMap;
-    float textureScaleDist;
+    int rim; // bool
+    
     float4 characterLight[2];
-    float3 diffuseColor;
-    int hasDiffuse;
+    float3 rimColor;
+    float textureScaleDist;
 }
 
 struct PSInput
@@ -47,7 +52,7 @@ struct PSInput
 float4 main(PSInput input) : SV_Target
 {
     float3 diffuse = diffuseColor;
-    if (hasDiffuse)
+    if (flags & MaterialFlag_eHasDiffuse)
         diffuse = diffuseMap.Sample(samplerState, input.texCoord).xyz;
     
     float3 faceNormal = input.normal;
