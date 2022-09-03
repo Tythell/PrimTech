@@ -362,6 +362,7 @@ Shape ProcessMesh(aiMesh* mesh, const aiScene* scene, Mtl& mtl)
 		shape.verts[i].position = aiVecToSm(mesh->mVertices[i]);
 		shape.verts[i].normal = aiVecToSm(mesh->mNormals[i]);
 		shape.verts[i].tangent = aiVecToSm(mesh->mTangents[i]);
+		shape.verts[i].bitangent = aiVecToSm(mesh->mBitangents[i]);
 		shape.verts[i].texCoord = sm::Vector2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
 	}
 	UINT matIndex = mesh->mMaterialIndex;

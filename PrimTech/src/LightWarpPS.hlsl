@@ -41,15 +41,12 @@ cbuffer MaterialBuffer : register(b1)
 {
     float3 diffuseColor;
     uint flags;
-    
     float2 texCoordOffset;
     float transparency;
     int distDiv;
-    
     float2 texCoordoffsetDist;
     float textureScale;
     int rim; // bool
-    
     float4 characterLight[2];
     float3 rimColor;
     float textureScaleDist;
@@ -62,6 +59,7 @@ struct PSInput
     float2 texCoord : TEXCOORD;
     float3 worldPos : WORLD_POS;
     float3 tangent : TANGENT;
+    float3 bitangent : BITANGENT;
     float4 clipSpace : CLIPSPACE;
     float3 vcolor : COLOR;
 };
@@ -114,7 +112,7 @@ float4 main(PSInput input) : SV_Target
     {
         float3 mappedNormal = normalMap.Sample(wrapSampler, texCoord + distortion).xyz * 2.f - 1.f;
         float3 normTan = normalize(input.tangent);
-        float3 biNormal = /*(LH == 1) ? normalize(cross(normTan, normal)) :*/normalize(cross(normal, normTan));
+        float3 biNormal = normalize(input.bitangent);
         tbnMatr = float3x3(normTan, biNormal, normal);
         normal = normalize(float3(mul(mappedNormal, tbnMatr)));
     }
@@ -197,6 +195,6 @@ float4 main(PSInput input) : SV_Target
     //float3 final = warpedSpecular;
     float3 final = diffuse.xyz * (cellLightStr) + (rimDot.xxx * rimColor) + specular;
 
-    //return float4(cellLightStr, 1.f);
+    return float4(normal, 1.f);
     return float4(final, opacity * transparency);
 }
