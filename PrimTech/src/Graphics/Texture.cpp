@@ -152,7 +152,7 @@ void TextureMap::ExportCharToImage(const char* path, unsigned char* imageData, i
 
 bool TextureMap::CreatePerlinNoise(ID3D11Device*& device)
 {
-	return true;
+	return false;
 }
 
 ID3D11ShaderResourceView* TextureMap::GetSRV()

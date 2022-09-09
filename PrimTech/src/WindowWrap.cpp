@@ -210,14 +210,6 @@ void Window::SetInputP(KeyboardHandler& pkb)
 	mp_kb = &pkb;
 }
 
-bool Window::CreateDX11()
-{
-	//if (m_apiLoaded) return false;
-	//m_pDX11 = new DX11Addon(*this);
-	//m_apiLoaded = true;
-	return true;
-}
-
 uint16_t Window::getWinWidth() const
 {
 	return m_windowWidth;
@@ -307,6 +299,3 @@ bool Window::init(LPCWSTR windowName, HINSTANCE hInstance, std::wstring windowCl
 	SetFocus(m_hwnd);
 	return true;
 }
-
-
-

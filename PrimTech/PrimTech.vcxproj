@@ -269,7 +269,6 @@
     <ClInclude Include="src\Graphics\3rdParty\ImGuizmo\ImZoomSlider.h" />
     <ClInclude Include="src\Graphics\RenderShapes.h" />
     <ClInclude Include="src\Graphics\ShadowMap.h" />
-    <ClInclude Include="src\PrimTech\Scene.h" />
     <ClInclude Include="src\Utility\CommonDialogs.h" />
     <ClInclude Include="src\Graphics\Buffer.h" />
     <ClInclude Include="src\Colors.h" />

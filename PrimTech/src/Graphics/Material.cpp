@@ -124,22 +124,20 @@ void Material::Set(ID3D11DeviceContext*& dc)
 	mp_matBuffer->Data().texCoordOffset = m_diffuseOffsetValue;
 	
 	mp_matBuffer->Data().texCoordoffsetDist = m_distortionValue;
-
 	mp_matBuffer->Data().distDiv = m_distDivider;
 	mp_matBuffer->Data().transparency = m_transparency;
 	mp_matBuffer->Data().textureScale = m_textureScale;
 	mp_matBuffer->Data().rimColor = m_rimColor;
 	mp_matBuffer->Data().rim = (int)m_selection;
 
-
 	// settings flags
-	for (int i = 0; i < eTextureTypeAMOUNT; i++)
+	for (UINT i = 0; i < eTextureTypeAMOUNT; i++)
 	{
-		int bitMask = (1 << i);
+		UINT bitFlag = (1 << i);
 		if (HasTexture(i))
-			mp_matBuffer->Data().flags |= bitMask;
-		else
-			mp_matBuffer->Data().flags &= ~bitMask;
+			mp_matBuffer->Data().flags |= bitFlag;
+		else 
+			mp_matBuffer->Data().flags &= ~bitFlag;
 	}
 	mp_matBuffer->MapBuffer();
 }

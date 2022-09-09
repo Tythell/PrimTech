@@ -9,7 +9,7 @@ Texture2D shadowMap : SHADOWMAP : register(t10);
 
 SamplerState wrapSampler : SAMPLER : register(s0);
 SamplerState clampSampler : CLAMPSAMPLER : register(s1);
-SamplerComparisonState shadowSampler : SHADOWSAMPLER : register(s2);
+SamplerState shadowSampler : SHADOWSAMPLER : register(s2);
 
 cbuffer LightBuffer : register(b0)
 {
@@ -24,7 +24,7 @@ cbuffer LightBuffer : register(b0)
     float3 camPos;
     float lightDistance;
     float3 shadowDir;
-    float pad;
+    float cbShadowBias;
     float3 spotLightPos;
     float pad1;
     float3 spotLightAngle;
@@ -64,42 +64,58 @@ struct PSInput
     float3 vcolor : COLOR;
 };
 
+float3 calcNormal(in float2 texCoord, in float3 normal, in float3 tan, in float3 biTan)
+{
+    if (flags & MaterialFlag_eHasNormal)
+    {
+        float3 mappedNormal = normalMap.Sample(wrapSampler, texCoord).xyz * 2.f - 1.f;
+ 
+        float3x3 tbnMatr = float3x3(normalize(tan), normalize(biTan), normalize(normal));
+    
+        return normalize(float3(mul(mappedNormal, tbnMatr)));
+    }
+    else
+        return normal;
+}
+
+float calcShadow(in float4 clipspace, in float3 normal)
+{
+    float2 ndc = ((clipspace.xy) * .5f + .5f);
+    float2 projTexCoord = float2(ndc.x, 1.f - ndc.y);
+    
+    
+    //float depth = shadowMap.Sample(shadowSampler, projTexCoord).r;
+    
+    float bias = cbShadowBias;
+    //float4 shadow = ((depth > input.clipSpace.z - shadowBias) /*&& dot(shadowDir, normal) <= 0.11f*/) ? 1 : 0;
+    //float shadowBias = max(.01f * (1.f - dot(normalize(shadowDir), normal)), .005f);
+    float shadowBias = max(bias * (1.f - dot(normalize(shadowDir), direction)), .005f);
+    
+    // pcf
+    float shadow = 0.f;
+    uint shadowmapsize;
+    shadowMap.GetDimensions(shadowmapsize, shadowmapsize);
+    float2 texelSize = 1.f / shadowmapsize;
+    
+    for (int x = -1; x <= 1; x++)
+        for (int y = -1; y <= 1; y++)
+        {
+            float depth = shadowMap.Sample(shadowSampler, projTexCoord + int2(x,y) * texelSize).r;
+            shadow += (depth + bias < clipspace.z ? 0.0f : 1.0f);
+
+        }
+    
+    return shadow / 18.f;
+}
+
 float4 main(PSInput input) : SV_Target
 {
     float2 distortion = 0.f;
     float opacity = 1.f;
     
-    
-    
     float2 texCoord = input.texCoord * textureScale;
     float2 distTexCoord = input.texCoord * textureScaleDist;
     float3 lightPos = pointLightPosition;
-    //float2 texCoord = input.texCoord;
-    //float2 tileOffset = float2(1.0f, 1.f) / textureScale;
-    //texCoord += tileOffset;
-    //texCoord *= textureScale;
-    //texCoord -= tileOffset;
-    //texCoord += tileOffset;
-    
-    // Shadow
-    float2 ndc = ((input.clipSpace.xy/* / input.clipSpace.w*/) * .5f + .5f);
-    float2 projTexCoord = float2(ndc.x, 1.f - ndc.y);
-    
-    //float shadowBias = max(.04f * (1.f - dot(normalize())))
-    
-    float3 normal = input.normal;
-    int2 offsetss = 0;
-    //float depth = shadowMap.SampleCmpLevelZero(shadowSampler, projTexCoord, .5f, offsetss);
-    float depth = shadowMap.Sample(wrapSampler, projTexCoord);
-    float shadowBias = max(.01f * (1.f - dot(normalize(shadowDir), normal)), .005f);
-    
-    float4 shadow = ((depth > input.clipSpace.z - shadowBias) /*&& dot(shadowDir, normal) <= 0.11f*/) ? 1 : 0;
-    
-    //if (dot(shadowDir, normal) < 0)
-    //{
-    //    shadow += 1;
-    //}
-    
     
     if (flags & MaterialFlag_eHasDistortion)
         distortion = (distortionMap.Sample(wrapSampler, distTexCoord + texCoordoffsetDist).xy - 0.5f) / distDiv;
@@ -108,34 +124,25 @@ float4 main(PSInput input) : SV_Target
     
     
     float3x3 tbnMatr = 0;
-    if (flags & MaterialFlag_eHasNormal)
-    {
-        float3 mappedNormal = normalMap.Sample(wrapSampler, texCoord + distortion).xyz * 2.f - 1.f;
-        float3 normTan = normalize(input.tangent);
-        float3 biNormal = normalize(input.bitangent);
-        tbnMatr = float3x3(normTan, biNormal, normal);
-        normal = normalize(float3(mul(mappedNormal, tbnMatr)));
-    }
+    float3 normal = calcNormal(texCoord + distortion, input.normal, input.tangent, input.bitangent);
+    float4 shadow = calcShadow(input.clipSpace, normal);
     
     float4 diffuse;
     if (flags & MaterialFlag_eHasDiffuse)
-    {
         diffuse = saturate(diffuseMap.Sample(wrapSampler, texCoord + distortion) /** float4(input.vcolor, 1.f))*/);
-    }
     else
         diffuse = float4(diffuseColor, 1.f);
     
     diffuse.w = 1.f;
     //float4 diffuse = diffuseMap.Sample(samplerState, texCoord + distortion);
+    
     if (flags & MaterialFlag_eHasOpacity)
         opacity = opacityMap.Sample(wrapSampler, texCoord + distortion).x;
     else
         opacity = diffuse.w;
-    float charDirLight = (characterLight[0].w != 0.f) ? dot(normal, normalize(characterLight[0].xyz)) * characterLight[0].w :
-    0.f;
+    float charDirLight = (characterLight[0].w != 0.f) ? dot(normal, normalize(characterLight[0].xyz)) * characterLight[0].w : 0.f;
     
     float attenuation = 1.f;
-
     
     float3 lightVector = lightPos.xyz - input.worldPos;
     float distance = length(lightVector);
@@ -195,6 +202,6 @@ float4 main(PSInput input) : SV_Target
     //float3 final = warpedSpecular;
     float3 final = diffuse.xyz * (cellLightStr) + (rimDot.xxx * rimColor) + specular;
 
-    return float4(normal, 1.f);
+    //return float4(normal, 1.f);
     return float4(final, opacity * transparency);
 }

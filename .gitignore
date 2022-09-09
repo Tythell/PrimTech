@@ -16,9 +16,11 @@
 # Build results
 [Dd]ebug/
 !3rdparty/libs/[Dd]ebug/
+!3rdparty/dlls/[Dd]ebug/
 [Dd]ebugPublic/
 [Rr]elease/
 !3rdparty/libs/[Rr]elease/
+!3rdparty/dlls/[Rr]elease/
 [Rr]eleases/
 x64/
 x86/

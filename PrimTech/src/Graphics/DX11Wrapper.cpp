@@ -159,7 +159,7 @@ bool DX11Addon::InitRastNSampState()
 	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 	sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 	sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-	
+
 	sampDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
 	sampDesc.MinLOD = 0;
 	sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
@@ -174,7 +174,17 @@ bool DX11Addon::InitRastNSampState()
 	hr = device->CreateSamplerState(&sampDesc, &m_clampSampler);
 	COM_ERROR(hr, "Sampler State setup failed");
 
+
+
+	for (int i = 0; i < 4; i++)
+		sampDesc.BorderColor[i] = 1.f;
+
 	sampDesc.ComparisonFunc = D3D11_COMPARISON_LESS;
+
+	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
+	sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
+	sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
+	sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
 
 	hr = device->CreateSamplerState(&sampDesc, &m_shadowSampler);
 	COM_ERROR(hr, "Sampler State setup failed");
@@ -212,10 +222,10 @@ bool DX11Addon::InitShaders()
 	{
 		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,	 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"NORMAL",	 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"TANGENT",	 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"BITANGENT",	 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"COLOR",	 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"NORMAL",	0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"TANGENT",	0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"BITANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 	};
 
 	D3D11_INPUT_ELEMENT_DESC lineLayout[] =
@@ -248,7 +258,7 @@ bool DX11Addon::InitScene()
 	dc->OMSetBlendState(m_blendState, NULL, 0xFFFFFFFF);
 
 	//ResourceHandler::AddTexture("missingTexture.png"); // setting missingtexture
-	ResourceHandler::AddTexture(".NoTexture.png"); // setting missingtexture
+	ResourceHandler::AddTexture(".NoTexture.pngg"); // setting missingtexture
 	ResourceHandler::AddTexture("ZANormal.png"); // Load LightWarp Texture
 	//ResourceHandler::AddTexture("ZATf2esk.png"); // Load LightWarp Texture
 	dc->PSSetShaderResources(0, 1, ResourceHandler::GetTexture(1).GetSRVAdress());
@@ -308,6 +318,7 @@ void DX11Addon::UpdateScene(const float& deltatime)
 	m_lightbuffer.Data().ambientStr = im.ambient[3];
 	m_lightbuffer.Data().pointLightColor = { im.pointLightColor[0], im.pointLightColor[1], im.pointLightColor[2] };
 	m_lightbuffer.Data().pointlightStre = im.pointLightStr;
+	m_lightbuffer.Data().cbShadowBias = im.shadowBias;
 
 
 	m_lightbuffer.Data().direction = sm::Vector3(0.f, 1.f, 0.f);
@@ -591,6 +602,7 @@ void DX11Addon::ImguiDebug()
 		ImGui::Checkbox("View Shadowcam", &im.viewshadowcam);
 		ImGui::DragFloat3("Pos", im.shadowcamPos, 0.1f);
 		ImGui::DragFloat3("Rotate", im.shadowcamrotation, 0.1f);
+		ImGui::DragFloat("ShadowBias", &im.shadowBias, 0.001f, 0.0f, 0.5f);
 		m_shadowmap.GetShadowCam().SetRotation(im.shadowcamrotation[0], im.shadowcamrotation[1], im.shadowcamrotation[2]);
 		m_shadowmap.GetShadowCam().SetPosition(im.shadowcamPos[0], im.shadowcamPos[1], im.shadowcamPos[2]);
 		if (ImGui::Button("TP cam"))

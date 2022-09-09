@@ -58,7 +58,7 @@ namespace hlsl
 		float3 camPos;
 		float pointLightDistance;
 		float3 shadowDir;
-		float pad;
+		float cbShadowBias;
 		float3 spotLightPos;
 		float pad1;
 		float3 spotLightAngle;

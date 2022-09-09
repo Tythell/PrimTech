@@ -89,7 +89,7 @@ public:
 private:
 	std::string m_name = "";
 	Mesh* mp_mesh = nullptr;
-	Material* m_material;
+	Material* m_material = nullptr;
 	sm::Vector4 m_characterLight[2]{ {0.f, 0.9f, 0.1f, 0.0f} };
 	ModelType m_type = ModelType::eUNSPECIFIED;
 	ID3D11DeviceContext* dc = nullptr;

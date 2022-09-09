@@ -18,8 +18,6 @@ public:
 	HWND& getHWND();
 	void SetInputP(KeyboardHandler& pkb);
 
-	bool CreateDX11();
-
 	uint16_t getWinWidth() const;
 	uint16_t getWinHeight() const;
 	void ShutDown();

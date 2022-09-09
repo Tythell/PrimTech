@@ -4,8 +4,8 @@
 ShadowMap::ShadowMap(const UINT& width, const UINT& height):
 	m_viewPort(0.f,0.f, width, height), m_width(width), m_height(height)
 {
-	m_shadowCam.SetOrtographic(20.f, 20.f, .1f, 10);
-	//m_shadowCam.SetPerspective(80.f, (1800.f / 950.f), 0.1f, 100.f);
+	m_shadowCam.SetOrtographic(10.f, 10.f, .1f, 25.f);
+	//m_shadowCam.SetPerspective(80.f, 1.f, 1.f, 1000.f);
 	m_shadowCam.SetPosition(0.f, 5.f, 0.f);
 	m_shadowCam.SetRotation(d::XM_PIDIV2, 0.f, 0.f);
 }
@@ -37,7 +37,6 @@ void ShadowMap::Init(ID3D11Device*& device)
 	srvDesc.Texture2D.MostDetailedMip = 0;
 	COM_ERROR(device->CreateShaderResourceView(depthMap, &srvDesc, &m_depthmapSRV), "Failed to create shadow srv");
 	depthMap->Release();
-
 }
 
 void ShadowMap::Bind(ID3D11DeviceContext*& dc, const UINT& slot)
