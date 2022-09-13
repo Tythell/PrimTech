@@ -13,6 +13,7 @@ public:
 	void SetRotation(float x, float y, float z);
 	void SetRotation(const sm::Vector3 v);
 	void SetOffset(float x, float y, float z);
+	void SetOffset(const sm::Vector3& v);
 
 	void Move(float x, float y, float z);
 	void Move(const sm::Vector3 v);

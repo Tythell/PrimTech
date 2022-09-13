@@ -54,6 +54,11 @@ void Camera::SetOffset(float x, float y, float z)
 	m_offset = sm::Vector3(x, y, z);
 }
 
+void Camera::SetOffset(const sm::Vector3& v)
+{
+	m_offset = v;
+}
+
 void Camera::Move(float x, float y, float z)
 {
 	m_position += sm::Vector3(x, y, z);

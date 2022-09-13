@@ -5,7 +5,7 @@
 
 DX11Addon::DX11Addon(Window& window, Camera& camera) :
 	m_width(window.getWinWidth()), m_height(window.getWinHeight()), m_pHWND(&window.getHWND()),
-	m_shadowmap(1024 * shadowQuality, 1024 * shadowQuality), m_viewport(0.f, 0.f, (float)m_width, (float)m_height)
+	m_shadowmap(1024 * shadowQuality, 1024 * shadowQuality, &camera), m_viewport(0.f, 0.f, (float)m_width, (float)m_height)
 {
 	m_pWin = &window;
 	mp_cam = &camera;
@@ -331,6 +331,7 @@ void DX11Addon::UpdateScene(const float& deltatime)
 	m_playermodel.SetRotation(0.f/*-mp_cam->GetRotation().x*/, mp_cam->GetRotation().y, 0.f);
 	m_playermodel.Rotate(0.f, d::XM_PI, 0.f);
 	m_playermodel.SetPosition(mp_cam->GetPositionNoOffset() + sm::Vector3(0.f, -0.1f, 0.f));
+	//m_shadowmap.SetPos(mp_cam->GetPositionNoOffset());
 	//m_model.Rotate(0.f, 2.f * deltatime, 0.f);
 }
 
@@ -601,6 +602,14 @@ void DX11Addon::ImguiDebug()
 		ImGui::Checkbox("Shadows", &im.shadowMap); ImGui::SameLine();
 		ImGui::Checkbox("View Shadowcam", &im.viewshadowcam);
 		ImGui::DragFloat3("Pos", im.shadowcamPos, 0.1f);
+
+		im.shadowcamrotation[0] = m_shadowmap.GetShadowCam().GetRotation().x;
+		im.shadowcamrotation[1] = m_shadowmap.GetShadowCam().GetRotation().y;
+		im.shadowcamrotation[2] = m_shadowmap.GetShadowCam().GetRotation().z;
+		im.shadowcamPos[0] = m_shadowmap.GetShadowCam().GetPosition().x;
+		im.shadowcamPos[1] = m_shadowmap.GetShadowCam().GetPosition().y;
+		im.shadowcamPos[2] = m_shadowmap.GetShadowCam().GetPosition().z;
+
 		ImGui::DragFloat3("Rotate", im.shadowcamrotation, 0.1f);
 		ImGui::DragFloat("ShadowBias", &im.shadowBias, 0.001f, 0.0f, 0.5f);
 		m_shadowmap.GetShadowCam().SetRotation(im.shadowcamrotation[0], im.shadowcamrotation[1], im.shadowcamrotation[2]);
