@@ -7,6 +7,7 @@ namespace pt
 	PrimTech::PrimTech() :
 		m_playerSpeed(5.f)
 	{
+		m_cam3d.resize(1);
 		//HideCursor();
 	}
 
@@ -22,17 +23,16 @@ namespace pt
 		m_window.SetInputP(m_kb);
 
 		//m_cellCam.SetPosition(0.f, 0.f, -1.f);
-		m_cam3d.SetPerspective(80, (float)width / (float)height, 0.1f, 100.f);
-		m_cam3d.SetPosition(2.f, 0, -3.f);
+		m_cam3d[0].SetPerspective(80, (float)width / (float)height, 0.1f, 100.f);
+		m_cam3d[0].SetPosition(2.f, 0, -3.f);
 		//m_camera.SetOrtographic(width, height, 0, 1);
 
-		mp_gApi = new DX11Addon(m_window, m_cam3d);
+		mp_gApi = new DX11Addon(m_window, m_cam3d[0]);
 		mp_gApi->SetInputP(m_kb);
 	}
 
 	void PrimTech::Update(const float& dt)
 	{
-		
 		if (m_kb.IsKeyDown(m_shutDownKey))
 			m_window.ShutDown();
 	}
