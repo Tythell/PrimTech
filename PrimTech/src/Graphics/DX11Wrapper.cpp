@@ -114,6 +114,11 @@ void DX11Addon::SetCanMove(bool b)
 	m_canMove = b;
 }
 
+ModelList DX11Addon::GetModelList()
+{
+	return m_models;
+}
+
 bool DX11Addon::SetupDSAndVP()
 {
 	CD3D11_TEXTURE2D_DESC depthStencilTextureDesc(DXGI_FORMAT_D24_UNORM_S8_UINT, m_width, m_height);

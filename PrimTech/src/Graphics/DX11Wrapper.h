@@ -84,6 +84,8 @@ public:
 
 	void Click(const sm::Vector3& dir);
 	void SetCanMove(bool b);
+
+	ModelList GetModelList();
 private:
 	bool initSwapChain();
 	bool initRTV();
