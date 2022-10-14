@@ -58,6 +58,12 @@
     <Filter Include="Header Files\assimp">
       <UniqueIdentifier>{09ada969-beab-4b0e-8604-c6d9b1635eff}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Cumlib">
+      <UniqueIdentifier>{a8b33c97-666f-420b-a958-e0b81c686997}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Cumlib">
+      <UniqueIdentifier>{f23c0753-cb34-4c25-b8bc-a319c4d8803f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -161,6 +167,15 @@
     </ClCompile>
     <ClCompile Include="src\Graphics\ShadowMap.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Comlib\Comlib.cpp">
+      <Filter>Source Files\Cumlib</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Comlib\Memory.cpp">
+      <Filter>Source Files\Cumlib</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Comlib\Mutex.cpp">
+      <Filter>Source Files\Cumlib</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -552,6 +567,18 @@
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\StreamWriter.h">
       <Filter>Header Files\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Comlib\Comlib.h">
+      <Filter>Header Files\Cumlib</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Comlib\Memory.h">
+      <Filter>Header Files\Cumlib</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Comlib\Mutex.h">
+      <Filter>Header Files\Cumlib</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Comlib\SectionHeader.h">
+      <Filter>Header Files\Cumlib</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

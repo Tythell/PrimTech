@@ -166,6 +166,9 @@ IF EXIST 3rdparty\*.dll ( copy 3rdparty\*.dll x64\Release\ )</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Comlib\Comlib.cpp" />
+    <ClCompile Include="src\Comlib\Memory.cpp" />
+    <ClCompile Include="src\Comlib\Mutex.cpp" />
     <ClCompile Include="src\Graphics\3rdParty\ImGuizmo\GraphEditor.cpp" />
     <ClCompile Include="src\Graphics\3rdParty\ImGuizmo\ImCurveEdit.cpp" />
     <ClCompile Include="src\Graphics\3rdParty\ImGuizmo\ImGradient.cpp" />
@@ -202,6 +205,10 @@ IF EXIST 3rdparty\*.dll ( copy 3rdparty\*.dll x64\Release\ )</Command>
     <ClCompile Include="src\Graphics\ViewModel.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Comlib\Comlib.h" />
+    <ClInclude Include="src\Comlib\Memory.h" />
+    <ClInclude Include="src\Comlib\Mutex.h" />
+    <ClInclude Include="src\Comlib\SectionHeader.h" />
     <ClInclude Include="src\Graphics\3rdParty\assimp\aabb.h" />
     <ClInclude Include="src\Graphics\3rdParty\assimp\ai_assert.h" />
     <ClInclude Include="src\Graphics\3rdParty\assimp\anim.h" />

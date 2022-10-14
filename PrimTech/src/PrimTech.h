@@ -2,6 +2,8 @@
 #include "WindowWrap.h"
 #include <omp.h>
 #include <thread>
+#include "Comlib/Comlib.h"
+
 
 namespace pt
 {
@@ -16,6 +18,12 @@ namespace pt
 		void Update(const float& dt);
 		void HideCursor();
 		void ShowCursor();
+
+		//Testing Comlib
+		Comlib* consumerBuffer;
+		char* msg;
+		SectionHeader* mainHeader;
+
 		Window m_window;
 		DX11Addon* mp_gApi = nullptr;
 		//Camera m_cellCam;
