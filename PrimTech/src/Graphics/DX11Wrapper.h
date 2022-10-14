@@ -34,6 +34,7 @@ struct SpotLight
 
 struct ImGuiVars
 {
+	bool mayaOn = true;
 	bool useVsync = true;
 	char* buffer = new char[16]{"toon.png"};
 	float pointLightPos[3] = { 0.f,1.f,0.f };
