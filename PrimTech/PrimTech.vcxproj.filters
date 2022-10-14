@@ -49,9 +49,6 @@
     <Filter Include="Source Files\Input">
       <UniqueIdentifier>{da403211-6c81-4690-81f0-0ab3a18a06e8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\ImGui\ImGuizmo">
-      <UniqueIdentifier>{44df7968-43f1-4480-8d3d-b358dd0d483b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\ImGui\imguizmo">
       <UniqueIdentifier>{a7bc2e06-1e97-41b9-9164-2b1215daed7d}</UniqueIdentifier>
     </Filter>
@@ -144,21 +141,6 @@
     <ClCompile Include="src\Graphics\RenderShapes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Graphics\3rdParty\ImGuizmo\GraphEditor.cpp">
-      <Filter>Source Files\ImGui\imguizmo</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Graphics\3rdParty\ImGuizmo\ImCurveEdit.cpp">
-      <Filter>Source Files\ImGui\imguizmo</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Graphics\3rdParty\ImGuizmo\ImGradient.cpp">
-      <Filter>Source Files\ImGui\imguizmo</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Graphics\3rdParty\ImGuizmo\ImGuizmo.cpp">
-      <Filter>Source Files\ImGui\imguizmo</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Graphics\3rdParty\ImGuizmo\ImSequencer.cpp">
-      <Filter>Source Files\ImGui\imguizmo</Filter>
-    </ClCompile>
     <ClCompile Include="src\Graphics\ShadowMap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -167,30 +149,6 @@
     <None Include="cpp.hint" />
     <None Include="src\Graphics\3rdParty\assimp\.editorconfig" />
     <None Include="src\Graphics\3rdParty\assimp\config.h.in" />
-    <None Include="src\Graphics\3rdParty\assimp\color4.inl">
-      <Filter>Header Files\assimp</Filter>
-    </None>
-    <None Include="src\Graphics\3rdParty\assimp\material.inl">
-      <Filter>Header Files\assimp</Filter>
-    </None>
-    <None Include="src\Graphics\3rdParty\assimp\matrix3x3.inl">
-      <Filter>Header Files\assimp</Filter>
-    </None>
-    <None Include="src\Graphics\3rdParty\assimp\matrix4x4.inl">
-      <Filter>Header Files\assimp</Filter>
-    </None>
-    <None Include="src\Graphics\3rdParty\assimp\vector3.inl">
-      <Filter>Header Files\assimp</Filter>
-    </None>
-    <None Include="src\Graphics\3rdParty\assimp\vector2.inl">
-      <Filter>Header Files\assimp</Filter>
-    </None>
-    <None Include="src\Graphics\3rdParty\assimp\SmoothingGroups.inl">
-      <Filter>Header Files\assimp</Filter>
-    </None>
-    <None Include="src\Graphics\3rdParty\assimp\quaternion.inl">
-      <Filter>Header Files\assimp</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\WindowWrap.h">
@@ -295,24 +253,6 @@
     <ClInclude Include="src\Graphics\RenderShapes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\ImGuizmo\GraphEditor.h">
-      <Filter>Header Files\ImGui\ImGuizmo</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\ImGuizmo\ImCurveEdit.h">
-      <Filter>Header Files\ImGui\ImGuizmo</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\ImGuizmo\ImGradient.h">
-      <Filter>Header Files\ImGui\ImGuizmo</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\ImGuizmo\ImGuizmo.h">
-      <Filter>Header Files\ImGui\ImGuizmo</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\ImGuizmo\ImSequencer.h">
-      <Filter>Header Files\ImGui\ImGuizmo</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\ImGuizmo\ImZoomSlider.h">
-      <Filter>Header Files\ImGui\ImGuizmo</Filter>
-    </ClInclude>
     <ClInclude Include="src\Graphics\ShadowMap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -321,237 +261,6 @@
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\Vertex.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\aabb.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\ai_assert.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\anim.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\Base64.hpp">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\BaseImporter.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\Bitmap.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\BlobIOSystem.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\ByteSwapper.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\camera.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\cexport.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\cfileio.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\cimport.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\ColladaMetaData.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\color4.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\commonMetaData.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\config.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\CreateAnimMesh.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\DefaultIOStream.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\DefaultIOSystem.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\DefaultLogger.hpp">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\defs.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\Exceptional.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\Exporter.hpp">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\fast_atof.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\GenericProperty.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\GltfMaterial.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\Hash.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\Importer.hpp">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\importerdesc.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\IOStream.hpp">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\IOStreamBuffer.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\IOSystem.hpp">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\light.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\LineSplitter.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\LogAux.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\Logger.hpp">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\LogStream.hpp">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\material.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Math\Math.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\MathFunctions.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\matrix3x3.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\matrix4x4.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\MemoryIOWrapper.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\mesh.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\metadata.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\NullLogger.hpp">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\ObjMaterial.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\ParsingUtils.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\pbrmaterial.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\postprocess.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\scene.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\Profiler.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\ZipArchiveIOSystem.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\XMLTools.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\XmlParser.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\version.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\vector3.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\vector2.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\types.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\TinyFormatter.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\texture.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\Subdivision.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\StringUtils.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\StreamReader.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\StandardShapes.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\SpatialSort.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\SmoothingGroups.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\SkeletonMeshBuilder.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\SmallVector.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\SGSpatialSort.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\SceneCombiner.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\StringComparison.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\ProgressHandler.hpp">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\qnan.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\quaternion.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\RemoveComments.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\StreamWriter.h">
-      <Filter>Header Files\assimp</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
