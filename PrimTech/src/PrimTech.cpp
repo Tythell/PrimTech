@@ -20,6 +20,9 @@ namespace pt
 	void PrimTech::Init(LPCWSTR windowName, HINSTANCE hInstance, std::wstring windowClass, unsigned int width, unsigned int height)
 	{
 		m_window.init(windowName, hInstance, windowClass, width, height);
+
+		consumerBuffer = new Comlib(L"Filemap", 150, Consumer);
+
 		m_window.SetInputP(m_kb);
 
 		//m_cellCam.SetPosition(0.f, 0.f, -1.f);
@@ -35,6 +38,14 @@ namespace pt
 	{
 		if (m_kb.IsKeyDown(m_shutDownKey))
 			m_window.ShutDown();
+
+		while (consumerBuffer->Recieve(msg, mainHeader))
+		{
+			if (mainHeader->header == MESSAGE)
+			{
+				OutputDebugStringW(L"We got a MESSAGE message.");
+			}
+		}
 	}
 
 	void PrimTech::HideCursor()
