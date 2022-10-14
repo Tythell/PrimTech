@@ -105,7 +105,7 @@ float calcShadow(in float4 clipspace, in float3 normal)
 
         }
     
-    return shadow / 18.f;
+    return shadow / 9.f;
 }
 
 float4 main(PSInput input) : SV_Target
@@ -129,7 +129,7 @@ float4 main(PSInput input) : SV_Target
     
     float4 diffuse;
     if (flags & MaterialFlag_eHasDiffuse)
-        diffuse = saturate(diffuseMap.Sample(wrapSampler, texCoord + distortion) /** float4(input.vcolor, 1.f))*/);
+        diffuse = saturate(diffuseMap.Sample(wrapSampler, texCoord + distortion) /** float4(input.vcolor, 1.f)*/);
     else
         diffuse = float4(diffuseColor, 1.f);
     

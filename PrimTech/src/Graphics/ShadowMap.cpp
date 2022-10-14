@@ -3,7 +3,7 @@
 
 ShadowMap::ShadowMap(const UINT& width, const UINT& height, Camera* pcam):
 	m_viewPort(0.f,0.f, width, height), m_width(width), m_height(height),
-	mp_playerCam(pcam), resoulution(30.f)
+	mp_playerCam(pcam), resoulution(20.f)
 {
 	m_shadowCam.SetOrtographic(resoulution, resoulution, .1f, 25.f);
 	//m_shadowCam.SetPerspective(80.f, 1.f, 1.f, 1000.f);
@@ -52,13 +52,13 @@ void ShadowMap::Bind(ID3D11DeviceContext*& dc, const UINT& slot)
 
 	if (mp_playerCam) 
 	{
-		float yRotation = mp_playerCam->GetRotation().y;
-		m_shadowCam.SetRotation(d::XM_PIDIV2, -yRotation, 0.f);
-		m_shadowCam.SetPosition(mp_playerCam->GetPosition());
-		m_shadowCam.SetOffset(0.f, 0.f, -resoulution / 2);
-		sm::Vector3 upVec = mp_playerCam->GetForwardVectorNoY() * resoulution / 2;
-		m_shadowCam.Move(0.f, resoulution / 2, 0.f);
-		m_shadowCam.Move(upVec);
+		m_shadowCam.SetRotation(d::XM_PIDIV2, mp_playerCam->GetRotation().y + d::XM_PIDIV4, 0.f);
+		m_shadowCam.SetPosition(mp_playerCam->GetPositionXZ());
+		m_shadowCam.SetOffset(8.f, -8.f, 0.f);
+		//m_shadowCam.SetOffset(0.f, 0.f, -resoulution / 2);
+		sm::Vector3 upVec = mp_playerCam->GetForwardVectorNoY() * ((resoulution / 2) - .6f);
+		m_shadowCam.Move(0.f, 10.f, 0.f);
+		//m_shadowCam.Move(-(resoulution / 4),0.f, (resoulution / 4));
 	}
 }
 

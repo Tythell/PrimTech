@@ -167,6 +167,13 @@ sm::Vector3 Camera::GetPosition() const
 	return m_position - GetRelativeOffset();
 }
 
+sm::Vector3 Camera::GetPositionXZ() const
+{
+	sm::Vector3 v = m_position - GetRelativeOffset();
+	v.y = 0;
+	return v;
+}
+
 sm::Vector3 Camera::GetRotation() const
 {
 	return m_rotation;

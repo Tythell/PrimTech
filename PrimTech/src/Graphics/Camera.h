@@ -33,6 +33,7 @@ public:
 	sm::Vector3 GetRelativeOffset() const;
 	sm::Vector3 GetPositionNoOffset() const;
 	sm::Vector3 GetPosition() const;
+	sm::Vector3 GetPositionXZ() const;
 	sm::Vector3 GetRotation() const;;
 
 	void SetRotationSpeed(float f);

@@ -48,7 +48,7 @@ struct ImGuiVars
 	float scale[3]{ 1.f,1.f,1.f };
 	bool enableHandModel = false;
 	bool showDemoWindow = false;
-	bool showShadowMapDepth = true;
+	bool showShadowMapDepth = false;
 	bool showDebugWindow = true;
 	float gradient[2] = { 255.f / 2.f,1.f};
 	float gradientOffset = 0.f;

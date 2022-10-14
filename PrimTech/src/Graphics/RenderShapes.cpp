@@ -90,7 +90,7 @@ void RenderSphere::Init(ID3D11Device*& device, ID3D11DeviceContext*& dc)
 		0, 1, 2, 3, 4, 5, 6, 7, 0,
 		8, 10, 12, 4, 13, 11,
 		14, 6, 15, 10, 16, 2, 17, 11,
-		 9, 0,
+		9, 0,
 	};
 	m_ibuffer.CreateIndexBuffer(device, circleIndexes, ARRAYSIZE(circleIndexes));
 }

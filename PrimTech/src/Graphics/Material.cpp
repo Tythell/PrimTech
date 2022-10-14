@@ -130,7 +130,7 @@ void Material::Set(ID3D11DeviceContext*& dc)
 	mp_matBuffer->Data().rimColor = m_rimColor;
 	mp_matBuffer->Data().rim = (int)m_selection;
 
-	// settings flags
+	
 	for (UINT i = 0; i < eTextureTypeAMOUNT; i++)
 	{
 		UINT bitFlag = (1 << i);
