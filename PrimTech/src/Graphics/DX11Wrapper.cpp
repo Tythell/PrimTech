@@ -634,8 +634,6 @@ void DX11Addon::ImguiDebug()
 	}
 	if (ImGui::CollapsingHeader("General"))
 	{
-		ImGui::RadioButton("local", (int*)&im.transformMode, 0); ImGui::SameLine();
-		ImGui::RadioButton("world", (int*)&im.transformMode, 1);
 		if (ImGui::SliderInt("FOV", &im.fov, 40, 110))
 			mp_cam->SetPerspective((float)im.fov, (float)m_width / (float)m_height, .1f, 100.f);
 		ImGui::Checkbox("Vsync", &im.useVsync); ImGui::SameLine();
@@ -709,9 +707,7 @@ void DX11Addon::ImGuiRender()
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
-	ImGuizmo::BeginFrame();
 	m_isHoveringWindow = false;
-	ImGuizmo();
 
 	ImGuiMenu();
 	if (im.showDebugWindow) ImguiDebug();
@@ -1185,57 +1181,6 @@ void DX11Addon::ExportScene(std::string path)
 	header = Sceneheaders::enull;
 	writer.write((const char*)&header, 4);
 	writer.close();
-}
-
-void DX11Addon::ImGuizmo()
-{
-	static ImGuizmo::OPERATION op = ImGuizmo::OPERATION::TRANSLATE;
-	if (!m_canMove)
-	{
-		if (mp_kb->IsKeyDown(Key::W))
-			op = ImGuizmo::OPERATION::TRANSLATE;
-		else if (mp_kb->IsKeyDown(Key::E))
-			op = ImGuizmo::OPERATION::ROTATE;
-		else if (mp_kb->IsKeyDown(Key::R))
-			op = ImGuizmo::OPERATION::SCALE;
-	}
-
-	if (m_selected != -1 && !m_canMove)
-	{
-		if (ImGuizmo::IsOver() || ImGuizmo::IsUsing())
-			m_isHoveringWindow = true;
-		ImGui::SetNextWindowSize(ImVec2((float)m_width, (float)m_height));
-		ImGui::SetNextWindowPos(ImVec2(0, 0));
-		ImGuiWindowFlags flags = ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoInputs;
-		ImGui::Begin("##GizmoWin", 0, flags);
-		ImGuizmo::SetDrawlist();
-		ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, (float)m_width, (float)m_height);
-
-		sm::Matrix camViewM = mp_cam->GetViewM();
-		sm::Matrix camProj = mp_cam->GetProjM();
-		sm::Matrix world = m_models[m_selected]->GetWorld();
-
-
-		float* model = reinterpret_cast<float*>(&world);
-		const float* proj = reinterpret_cast<const float*>(&camProj);
-		const float* view = reinterpret_cast<const float*>(&camViewM);
-
-		ImGuizmo::Manipulate(view, proj, op, im.transformMode, model);
-
-		if (ImGuizmo::IsUsing())
-		{
-			sm::Vector3 pos;
-			sm::Vector3 scale;
-			sm::Quaternion rot;
-			world.Decompose(scale, rot, pos);
-
-			m_models[m_selected]->SetScale(scale);
-			m_models[m_selected]->SetRotation(rot);
-			m_models[m_selected]->SetPosition(pos);
-		}
-
-		ImGui::End();
-	}
 }
 
 void DX11Addon::ImGuTextureDisplay()

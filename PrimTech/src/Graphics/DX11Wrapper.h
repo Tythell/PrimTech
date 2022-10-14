@@ -15,11 +15,6 @@
 #include "imgui_impl_win32.h"
 #include "imgui_impl_dx11.h"
 
-
-#include "ImGuizmo.h"
-
-#define IMGUI_DEFINE_MATH_OPERATORS
-
 namespace sm = DirectX::SimpleMath;
 using Vector2i = DirectX::XMINT2;
 using ModelList = std::vector<Model*>;
@@ -56,7 +51,6 @@ struct ImGuiVars
 	float specPow = 50.f;
 	bool drawRayCast = false;
 	bool drawBCircle = false;
-	ImGuizmo::MODE transformMode = ImGuizmo::MODE::LOCAL;
 	bool showSelection = true;
 	bool shadowMap = true;
 	bool viewshadowcam = false;
@@ -103,7 +97,6 @@ private:
 	void ImguiDebug();
 	void ImGuiMenu();
 	void ImGuiEntList();
-	void ImGuizmo();
 	void ImGuTextureDisplay();
 
 	void ImportScene(std::string path);
