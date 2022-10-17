@@ -15,6 +15,7 @@ struct Mtl
 struct Shape
 {
 	std::vector<Vertex3D> verts;
+	std::vector<uint> index;
 	//UINT mtlIndex = 0;
 	//Mtl material;
 };
@@ -23,14 +24,17 @@ struct Shape
 class Mesh
 {
 public:
-	Mesh(std::string path, ID3D11Device*& device, bool makeLeftHanded = true);
+	Mesh(std::string path, ID3D11Device*& device, char makeLeftHanded = 1);
 	// ignores error checking
 	Mesh(std::vector<Vertex3D> vArray, ID3D11Device*& device, ID3D11DeviceContext*& dc);
 	Buffer<Vertex3D>& GetVBuffer();
+	Buffer<uint>& GetIBuffer();
 	std::string GetName() const;
 	void IncreaseUses();
 	void DecreaseUses();
 	void ResetUses();
+	void UpdateVertex(const uint& id, const Vertex3D& v);
+
 	int GetNrOfUses() const;
 	d::BoundingSphere GetBSphere() const;
 	const UINT GetNofMeshes() const;
@@ -39,6 +43,7 @@ public:
 	std::vector<int> GetMeshOffsfets() const;
 private:
 	Buffer<Vertex3D> m_vbuffer;
+	Buffer<uint> m_ibuffer;
 	std::vector<Mtl> m_mtls;
 	std::vector<int> m_mtlIndexes;
 	std::vector<int> m_offsets;
@@ -71,7 +76,7 @@ class Model : public Transform
 {
 public:
 	~Model();
-	void Init(const std::string path, ModelType e = ModelType(0), bool makeLeftHanded = true);
+	void Init(const std::string path, ModelType e = ModelType(0), unsigned char makeLeftHanded = true);
 	void CreateFromArray(std::vector<Vertex3D> vArray, ID3D11Device*& device, ID3D11DeviceContext*& dc);
 	void Draw();
 	void UpdateTextureScroll(const float& deltatime);
@@ -79,6 +84,7 @@ public:
 	void SetLight(const sm::Vector4& v, const UINT& index);
 	void SetMaterialBuffer(Buffer<hlsl::cbpMaterialBuffer>& cbMaterialBuffer);
 	void DecreaseMeshUsage();
+	void SetName(const std::string& n);
 	//void CreateMaterial();
 	//void AssignMaterial(Material& material);
 
@@ -92,7 +98,7 @@ public:
 private:
 	std::string m_name = "";
 	Mesh* mp_mesh = nullptr;
-	Material* m_material = nullptr;
+	Material* mp_material = nullptr;
 	sm::Vector4 m_characterLight[2]{ {0.f, 0.9f, 0.1f, 0.0f} };
 	ModelType m_type = ModelType::eUNSPECIFIED;
 	ID3D11DeviceContext* dc = nullptr;

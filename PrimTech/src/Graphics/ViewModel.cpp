@@ -3,7 +3,7 @@
 void ViewModel::Init(std::string path, Camera* cam)
 {
 	mp_cam = cam;
-	m_model.Init(path);
+	m_model.Init(path, ModelType::eUNSPECIFIED, 3);
 }
 
 void ViewModel::Draw()

@@ -31,7 +31,6 @@ DX11Addon::~DX11Addon()
 	ImGuiShutDown();
 
 	delete im.buffer;
-
 	ClearModelList();
 
 	ResourceHandler::Unload();
@@ -273,15 +272,15 @@ bool DX11Addon::InitScene()
 	//ImportScene("Scenes\\multsc.ptscene");
 	NewScene();
 
-	m_playermodel.Init("dirCapsule.obj", ModelType::eUNSPECIFIED, false);
+	m_playermodel.Init("plane.txt", ModelType::eUNSPECIFIED, 3);
 	m_playermodel.SetScale(.1f);
 
-	m_bulb.Init("bulb.obj", ModelType::eDEBUG);
-	m_spotlight.Init("bulb.obj", ModelType::eDEBUG);
+	m_bulb.Init("plane.txt", ModelType::eDEBUG, 3);
+	m_spotlight.Init("plane.txt", ModelType::eDEBUG, 3);
 	m_bulb.SetScale(1.2f);
 	m_bulb.GetMaterial().SetTransparency(1.f);
 
-	m_viewmdl.Init("handmodel2.obj", mp_cam);
+	m_viewmdl.Init("plane.txt", mp_cam);
 	m_bulb.SetMaterialBuffer(m_materialBuffer);
 	m_playermodel.SetMaterialBuffer(m_materialBuffer);
 	m_playermodel.SetDCandBuffer(dc, m_transformBuffer);
@@ -588,14 +587,107 @@ void LoadButton(Material* pMaterial, std::string name, TextureType e, const UINT
 
 }
 
+int nameFindModel(const std::string name, std::vector<Model*> v)
+{
+	for (uint i = 0; i < v.size(); i++)
+	{
+		if (name == v[i]->GetName())
+			return i;
+	}
+	return -1;
+}
+
+void DX11Addon::AddNewModel(const std::string name, std::vector<Vertex3D>& vertexArray, std::vector<Model*>& v)
+{
+	int modelIndex = nameFindModel(name, v);
+
+	//calculate tangent and bitangent
+	for (uint i = 0; i < vertexArray.size(); i += 3)
+	{
+		sm::Vector2 UVA = vertexArray[i + 0].texCoord;
+		sm::Vector2 UVB = vertexArray[i + 1].texCoord;
+		sm::Vector2 UVC = vertexArray[i + 2].texCoord;
+
+		sm::Vector3 POSA = vertexArray[i + 0].position;
+		sm::Vector3 POSB = vertexArray[i + 1].position;
+		sm::Vector3 POSC = vertexArray[i + 2].position;
+
+		sm::Vector2 dAB = UVB - UVA;
+		sm::Vector2 dAC = UVC - UVA;
+
+		sm::Vector3 edge1 = POSB - POSA;
+		sm::Vector3 edge2 = POSC - POSA;
+
+		float f = 1.0f / (dAB.x * dAC.y - dAC.x * dAB.y);
+
+		sm::Vector3 tangent;
+		tangent.x = f * (dAC.y * edge1.x - dAB.y * edge2.x);
+		tangent.y = f * (dAC.y * edge1.y - dAB.y * edge2.y);
+		tangent.z = f * (dAC.y * edge1.z - dAB.y * edge2.z);
+
+		vertexArray[i].tangent = tangent;
+		vertexArray[i + 1].tangent = tangent;
+		vertexArray[i + 2].tangent = tangent;
+
+		vertexArray[i].bitangent = tangent;
+		vertexArray[i + 1].bitangent = tangent;
+		vertexArray[i + 2].bitangent = tangent;
+	}
+
+	Model* pModel = nullptr;
+	if (modelIndex == -1)
+	{
+		pModel = new Model;
+
+		pModel->CreateFromArray(vertexArray, device, dc);
+		pModel->SetDCandBuffer(dc, m_transformBuffer);
+		pModel->SetMaterialBuffer(m_materialBuffer);
+		pModel->SetName(name);
+		m_models.emplace_back(pModel);
+	}
+	else
+	{
+		pModel = m_models[modelIndex];
+		pModel->CreateFromArray(vertexArray, device, dc);
+	}
+}
+
+void DX11Addon::MoveVertex(const std::string name, const uint& id, std::vector<Model*> v)
+{
+	int index = nameFindModel(name, v);
+	Model* pModel = v[index];
+
+}
+
 void DX11Addon::ImguiDebug()
 {
 	ImGui::Begin("Debug", &im.showDebugWindow);
-	ImGui::Text("Press \"Q\" to lock/unlock mouse");
-	if (ImGui::Button("init cube"))
+	if (ImGui::CollapsingHeader("Maya"))
 	{
+		if (ImGui::Button("init cube"))
+		{
+			uint nOfVerts = 3;
+			std::vector<Vertex3D> vertexArray;
+			vertexArray.resize(nOfVerts);
 
+			vertexArray[0].position = { -.5f, -.5f, 0.f };
+			vertexArray[1].position = { 0.0f, .5f, 0.f };
+			vertexArray[2].position = { 0.5f, -.5f, 0.f };
+
+			vertexArray[0].texCoord = { 0.f, 0.f };
+			vertexArray[1].texCoord = { .5f, 1.f };
+
+			for (int i = 0; i < vertexArray.size(); i++)
+				vertexArray[i].normal = { 0.f, 0.f, -1.f };
+
+			AddNewModel("debugMaya", vertexArray, m_models);
+		}
+		if (ImGui::Button("VertexMove"))
+		{
+
+		}
 	}
+	
 	if (ImGui::IsWindowHovered())
 		m_isHoveringWindow = true;
 
@@ -1208,13 +1300,14 @@ void DX11Addon::NewScene()
 	m_selected = -1;
 	ClearModelList();
 	m_selected = -1;
-	m_models.emplace_back(new Model);
-	UINT i = (UINT)m_models.size() - 1;
-	m_models[i]->Init("scaledplane.obj");
-	m_models[i]->SetDCandBuffer(dc, m_transformBuffer);
-	m_models[i]->SetMaterialBuffer(m_materialBuffer);
-	m_models[i]->Scale(10.f);
-	m_models[i]->SetPosition(0.f, -.5f, 0.f);
+
+	//m_models.emplace_back(new Model);
+	//UINT i = (UINT)m_models.size() - 1;
+	//m_models[i]->Init("scaledplane.obj");
+	//m_models[i]->SetDCandBuffer(dc, m_transformBuffer);
+	//m_models[i]->SetMaterialBuffer(m_materialBuffer);
+	//m_models[i]->Scale(10.f);
+	//m_models[i]->SetPosition(0.f, -.5f, 0.f);
 	//m_models[i]->LoadTexture("tfground.png");
 }
 

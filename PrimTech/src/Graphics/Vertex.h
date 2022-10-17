@@ -18,6 +18,20 @@ struct Vertex3D
 	sm::Vector3 tangent;
 	sm::Vector3 bitangent;
 	sm::Vector3 color = {1.f,1.f,1.f};
+	bool operator==(const Vertex3D& obj)
+	{
+		if (position == obj.position && texCoord == obj.texCoord && normal == obj.normal)
+			return true;
+		return false;
+	}
+	void Ghost()
+	{
+		texCoord = { -1,-1 }; // texCoord  will normally never be -1
+	}
+	bool IsGhost() const
+	{
+		if (texCoord.x == -1);
+	}
 };
 
 struct BBVertex

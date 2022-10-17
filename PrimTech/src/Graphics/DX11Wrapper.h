@@ -79,10 +79,10 @@ public:
 	void Click(const sm::Vector3& dir);
 	void SetCanMove(bool b);
 
+	void AddNewModel(const std::string name, std::vector<Vertex3D>& vertexArray, std::vector<Model*>& v);
+	void MoveVertex(const std::string name, const uint& id, std::vector<Model*> v);
 	ModelList GetModelList();
 private:
-	Mesh* mp_testMesh = nullptr;
-
 	bool initSwapChain();
 	bool initRTV();
 	bool SetupDSAndVP();

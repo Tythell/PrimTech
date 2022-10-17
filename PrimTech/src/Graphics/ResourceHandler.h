@@ -12,7 +12,7 @@ class ResourceHandler
 public:
 	static void SetDevice(ID3D11Device*& device);
 	//static Mesh* AddMesh(std::string path, bool makeLeftHanded = true);
-	static Mesh* AddMesh(std::string path, bool makeLeftHanded = true);
+	static Mesh* AddMesh(std::string path, unsigned char makeLeftHanded = 1);
 	static Mesh& GetMesh(unsigned int index);
 	static Mesh* GetMeshAdress(unsigned int index);
 	static TextureMap* AddTexture(std::string path, bool flipUV = true);

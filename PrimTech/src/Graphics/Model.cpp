@@ -9,13 +9,13 @@
 
 Model::~Model()
 {
-	delete[] m_material;
+	delete[] mp_material;
 	// if it's a maya mesh, it's not apart of the resource handler
 	if (m_type == ModelType::eMAYA)
 		delete mp_mesh;
 }
 
-void Model::Init(const std::string path, ModelType e, bool makeLeftHanded)
+void Model::Init(const std::string path, ModelType e, unsigned char flags)
 {
 	m_type = e;
 	std::string fullpath = "Assets/models/" + path;
@@ -30,9 +30,9 @@ void Model::Init(const std::string path, ModelType e, bool makeLeftHanded)
 		m_name += "(" + std::to_string(mp_mesh->GetNrOfUses()) + ")";
 	}
 	else
-		mp_mesh = ResourceHandler::AddMesh(fullpath, makeLeftHanded);
+		mp_mesh = ResourceHandler::AddMesh(fullpath, flags);
 	m_nOfMats = mp_mesh->GetNofMeshes();
-	m_material = new Material[m_nOfMats];
+	mp_material = new Material[m_nOfMats];
 	embeddedmats = mp_mesh->GetMtl();
 	embeddedmatIndexes = mp_mesh->GetMtlIndex();
 	for (int i = 0; i < embeddedmatIndexes.size(); i++)
@@ -50,26 +50,36 @@ void Model::Init(const std::string path, ModelType e, bool makeLeftHanded)
 		}
 
 	for (int i = 0; i < m_nOfMats; i++)
-		m_material[i].SetLeftHanded(makeLeftHanded);
+		mp_material[i].SetLeftHanded(flags & 1);
 	
 	mp_mesh->IncreaseUses();
 	m_name += mp_mesh->GetName();
 
 	if (e == ModelType::eDEBUG)
-		m_material->SetRimColor(WHITE_3F);
+		mp_material->SetRimColor(WHITE_3F);
 
 	//dc->VSSetConstantBuffers(0, 1, mp_cbTransformBuffer->GetReference());
 }
 
 void Model::CreateFromArray(std::vector<Vertex3D> vArray, ID3D11Device*& device, ID3D11DeviceContext*& dc)
 {
-	if (mp_mesh)
+	m_nOfMats = 1;
+	bool isUpdate = mp_mesh != nullptr;
+	if (isUpdate)
 	{
 		delete mp_mesh;
 		mp_mesh = nullptr;
 	}
+	else
+		mp_material = new Material[m_nOfMats];
+
 	m_type = ModelType::eMAYA;
 	mp_mesh = new Mesh(vArray, device, dc);
+
+	
+	
+	mp_material->SetLeftHanded(true);
+	mp_material->SetRimColor(WHITE_3F);
 }
 
 void Model::Draw()
@@ -79,24 +89,27 @@ void Model::Draw()
 	mp_cbTransformBuffer->Data().world = GetWorldTransposed();
 	mp_cbTransformBuffer->MapBuffer();
 	dc->IASetVertexBuffers(0, 1, mp_mesh->GetVBuffer().GetReference(), mp_mesh->GetVBuffer().GetStrideP(), &offset);
+	dc->IASetIndexBuffer(mp_mesh->GetIBuffer().Get(), DXGI_FORMAT_R32_UINT, 0);
 	for (int i = 0; i < mp_mesh->GetNofMeshes(); i++)
 	{
-		m_material[i].GetBuffer()->Data().characterLight[0] = m_characterLight[0];
-		m_material[i].Set(dc);
+		mp_material[i].GetBuffer()->Data().characterLight[0] = m_characterLight[0];
+		mp_material[i].Set(dc);
+		//int v1 = mp_mesh->GetMeshOffsfets()[i + 1], v2 = mp_mesh->GetMeshOffsfets()[i];
+		//dc->Draw(v1 - v2, v2);
 		int v1 = mp_mesh->GetMeshOffsfets()[i + 1], v2 = mp_mesh->GetMeshOffsfets()[i];
-		dc->Draw(v1 - v2, v2);
+		dc->DrawIndexed(v1 - v2, v2, 0);
  	}
 }
 
 void Model::UpdateTextureScroll(const float& deltatime)
 {
 	for (int i = 0; i < m_nOfMats; i++)
-		m_material[i].UpdateTextureScroll(deltatime);
+		mp_material[i].UpdateTextureScroll(deltatime);
 }
 
 void Model::LoadTexture(std::string path, UINT i, TextureType type)
 {
-	m_material[i].LoadTexture(path, type);
+	mp_material[i].LoadTexture(path, type);
 }
 
 void Model::SetLight(const sm::Vector4& v, const UINT& index)
@@ -107,7 +120,7 @@ void Model::SetLight(const sm::Vector4& v, const UINT& index)
 void Model::SetMaterialBuffer(Buffer<hlsl::cbpMaterialBuffer>& cbMaterialBuffer)
 {
 	for (int i = 0; i < m_nOfMats; i++)
-		m_material[i].SetPointers(&cbMaterialBuffer);
+		mp_material[i].SetPointers(&cbMaterialBuffer);
 }
 
 void Model::DecreaseMeshUsage()
@@ -117,7 +130,7 @@ void Model::DecreaseMeshUsage()
 
 Material& Model::GetMaterial(const UINT& i)
 {
-	return m_material[i];
+	return mp_material[i];
 }
 
 Mesh* Model::GetMeshP()
@@ -151,6 +164,11 @@ const sm::Vector4 Model::GetCharacterLight(int i) const
 	return m_characterLight[i];
 }
 
+void Model::SetName(const std::string& n)
+{
+	m_name = n;
+}
+
 template <class T>
 void Swap(T &e1, T &e2)
 {
@@ -159,8 +177,11 @@ void Swap(T &e1, T &e2)
 	e2 = temp;
 }
 
-bool LoadObjToBuffer(std::string path, std::vector<Shape>& shape, std::vector<Mtl>& localMtls, std::vector<int>& matIndex, bool makeLeftHanded)
+bool LoadObjToBuffer(std::string path, std::vector<Shape>& shape, std::vector<Mtl>& localMtls, std::vector<int>& matIndex, unsigned char flags)
 {
+	bool makeLeftHanded = flags & 0b01;
+	makeLeftHanded = false;
+	bool useIndexBuffer = flags & 0b10;
 	//shape.resize(1);
 	Shape localShape;
 	UINT nofMats = 0;
@@ -210,6 +231,7 @@ bool LoadObjToBuffer(std::string path, std::vector<Shape>& shape, std::vector<Mt
 		}
 		else if (input == "f")
 		{
+			bool exists = false;
 			int vIndexTemp = -1;
 			int vtIndexTemp = -1;
 			int vnIndexTemp = -1;
@@ -223,24 +245,18 @@ bool LoadObjToBuffer(std::string path, std::vector<Shape>& shape, std::vector<Mt
 				vtIndexTemp--;
 				triangle[i].position = v[vIndexTemp];
 				triangle[i].normal = vn[vnIndexTemp];
-				triangle[i].texCoord = vt[vtIndexTemp];
+				triangle[i].texCoord = vt[vtIndexTemp];	
 			}
 
 			//if (makeLeftHanded)
-			//	for (int i = 2; i > -1; i--)
-			//		localShape.verts.emplace_back(triangle[i]);
-			//else
-			//	for (int i = 0; i < 3; i++)
-			//		localShape.verts.emplace_back(triangle[i]);
-			if (makeLeftHanded)
-			{
-				Vertex3D temp = triangle[0];
- 				triangle[0] = triangle[2];
-				triangle[2] = temp;
-			}
+			//{
+			//	Vertex3D temp = triangle[0];
+ 			//	triangle[0] = triangle[2];
+			//	triangle[2] = temp;
+			//}
+
 			for (int i = 0; i < 3; i++)
 				localShape.verts.emplace_back(triangle[i]);
-
 		}
 		else if (input == "g")
 		{
@@ -313,6 +329,25 @@ bool LoadObjToBuffer(std::string path, std::vector<Shape>& shape, std::vector<Mt
 		}
 		
 	}
+	if (useIndexBuffer)
+	{
+		bool exists = false;
+		localShape.index.resize(localShape.verts.size());
+		for (uint i = 0; i < localShape.index.size(); i++)
+		{
+			Vertex3D vert = localShape.verts[i];
+			for (uint j = 0; j < localShape.verts.size(); j++)
+			{
+				if (localShape.verts[j] == vert)
+				{
+					exists = true;
+					localShape.index[i] = j;
+				}
+			}
+			if (!exists)
+				localShape.index[i] = i;
+		}
+	}
 	shape.emplace_back(localShape);
 	for (int si = 0; si < shape.size(); si++)
 	{
@@ -353,14 +388,16 @@ bool LoadObjToBuffer(std::string path, std::vector<Shape>& shape, std::vector<Mt
 	return true;
 }
 
-Mesh::Mesh(std::string path, ID3D11Device*& device, bool makeLeftHanded)
+//flags 01 = makelefthanded, 10 = useIndexbuffer
+Mesh::Mesh(std::string path, ID3D11Device*& device, char flags)
 {
 	std::vector<Shape> mesh;
+
 	bool check = false;
 	switch (0) // if a custom fileformat is created int he future, simply chnage this number
 	{
 	case 0:
-		check = LoadObjToBuffer(path, mesh, m_mtls, m_mtlIndexes, makeLeftHanded);
+		check = LoadObjToBuffer(path, mesh, m_mtls, m_mtlIndexes, flags);
 		break;
 	}
 	THROW_POPUP_ERROR(check, " loading" + path);
@@ -388,6 +425,7 @@ Mesh::Mesh(std::string path, ID3D11Device*& device, bool makeLeftHanded)
 			m_shape.verts.emplace_back(mesh[i].verts[j]);
 		}
 	}
+	//m_shape.index = mesh
 	UINT bsize = m_shape.verts.size();
 	d::BoundingBox box;
 	d::BoundingBox::CreateFromPoints(box, positionArray.size(), positionArray.data(), sizeof(sm::Vector3));
@@ -395,17 +433,33 @@ Mesh::Mesh(std::string path, ID3D11Device*& device, bool makeLeftHanded)
 
 	HRESULT hr = m_vbuffer.CreateVertexBuffer(device, m_shape.verts.data(), bsize);
 	COM_ERROR(hr, "Failed to load vertex buffer");
+
+	bsize = m_shape.index.size();
+	//hr = m_ibuffer.CreateIndexBuffer(device, m_shape.index.data(), bsize);
+	//COM_ERROR(hr, "Failed to load index buffer");
 }
 
 Mesh::Mesh(std::vector<Vertex3D> vArray, ID3D11Device*& device, ID3D11DeviceContext*& dc)
 {
 	m_vbuffer.CreateVertexBuffer(device, vArray.data(), vArray.size(), dc);
 	m_nofMeshes = 1;
+	m_offsets.emplace_back(0);
+	int lastSize = 0;
+	for (int i = 0; i < m_nofMeshes; i++)
+	{
+		lastSize += vArray.size();
+		m_offsets.emplace_back(lastSize);
+	}
 }
 
 Buffer<Vertex3D>& Mesh::GetVBuffer()
 {
 	return m_vbuffer;
+}
+
+Buffer<uint>& Mesh::GetIBuffer()
+{
+	return m_ibuffer;
 }
 
 std::string Mesh::GetName() const
@@ -426,6 +480,13 @@ void Mesh::DecreaseUses()
 void Mesh::ResetUses()
 {
 	m_nrOfUses = 0;
+}
+
+void Mesh::UpdateVertex(const uint& id, const Vertex3D& v)
+{
+	m_shape.verts[id] = v;
+
+
 }
 
 int Mesh::GetNrOfUses() const
