@@ -6,6 +6,7 @@
 
 enum BufferType : int
 {
+	eNULL = 0,
 	eVERTEX = D3D11_BIND_VERTEX_BUFFER, 
 	eCONSTANT = D3D11_BIND_INDEX_BUFFER, 
 	eINDEX = D3D11_BIND_CONSTANT_BUFFER
@@ -60,6 +61,11 @@ public:
 		m_type = eVERTEX;
 
 		m_usage = eIMMULATBLE;
+		
+		return RefreshVertexBuffer(device, data, bufferSize, dc);
+	}
+	HRESULT RefreshVertexBuffer(ID3D11Device*& device, T* data, UINT bufferSize, ID3D11DeviceContext* dc = NULL)
+	{
 		UINT cpuFlags = 0;
 		//m_data = new T[bufferSize];
 		//for (int i = 0; i < bufferSize; i++)
@@ -90,6 +96,9 @@ public:
 		D3D11_SUBRESOURCE_DATA bufferData;
 		ZeroMemory(&bufferData, sizeof(D3D11_SUBRESOURCE_DATA));
 		bufferData.pSysMem = data;
+
+		if (m_buffer == nullptr)
+			m_buffer->Release();
 
 		return HRESULT(device->CreateBuffer(&bufferDesc, &bufferData, &m_buffer));
 	}

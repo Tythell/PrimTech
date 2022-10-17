@@ -78,7 +78,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <LibraryPath>$(SolutionDir)3rdparty;$(SolutionDir)3rdparty\Debug;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)3rdparty;$(SolutionDir)PrimTech\Math;$(SolutionDir)3rdparty\Debug;$(LibraryPath)</LibraryPath>
     <IncludePath>$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -167,6 +167,7 @@
     <ClCompile Include="src\Comlib\Comlib.cpp" />
     <ClCompile Include="src\Comlib\Memory.cpp" />
     <ClCompile Include="src\Comlib\Mutex.cpp" />
+    <ClCompile Include="src\Graphics\mayagraphics\MayaMesh.cpp" />
     <ClCompile Include="src\Graphics\RenderShapes.cpp" />
     <ClCompile Include="src\Graphics\ShadowMap.cpp" />
     <ClCompile Include="src\PrimTech\Scene.cpp" />
@@ -198,6 +199,7 @@
     <ClCompile Include="src\Graphics\ViewModel.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Graphics\mayagraphics\MayaMesh.h" />
     <ClInclude Include="src\Comlib\Comlib.h" />
     <ClInclude Include="src\Comlib\Memory.h" />
     <ClInclude Include="src\Comlib\Mutex.h" />
@@ -205,6 +207,7 @@
     <ClInclude Include="src\Graphics\3rdParty\assimp\Vertex.h" />
     <ClInclude Include="src\Graphics\RenderShapes.h" />
     <ClInclude Include="src\Graphics\ShadowMap.h" />
+    <ClInclude Include="src\Math\Math.h" />
     <ClInclude Include="src\Utility\CommonDialogs.h" />
     <ClInclude Include="src\Graphics\Buffer.h" />
     <ClInclude Include="src\Colors.h" />
@@ -218,10 +221,7 @@
     <ClInclude Include="src\Graphics\3rdParty\imgui\imstb_truetype.h" />
     <ClInclude Include="src\Graphics\Camera.h" />
     <ClInclude Include="src\Graphics\CbufferTypes.h" />
-    <ClInclude Include="src\Graphics\ConstantBuffer.h" />
-    <ClInclude Include="src\Graphics\IndexBuffer.h" />
     <ClInclude Include="src\Graphics\Texture.h" />
-    <ClInclude Include="src\Graphics\VertexBuffer.h" />
     <ClInclude Include="src\Graphics\Vertex.h" />
     <ClInclude Include="src\Graphics\Shader.h" />
     <ClInclude Include="src\Graphics\Transform.h" />

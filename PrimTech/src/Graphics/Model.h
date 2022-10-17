@@ -53,7 +53,7 @@ enum class Sceneheaders
 	eMODEL, 
 };
 
-enum class ModelType {eUNSPECIFIED, eDEBUG};
+enum class ModelType {eUNSPECIFIED, eDEBUG, eMAYA};
 
 struct ModelStruct
 {

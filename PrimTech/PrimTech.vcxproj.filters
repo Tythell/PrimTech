@@ -153,6 +153,9 @@
     <ClCompile Include="src\Comlib\Mutex.cpp">
       <Filter>Source Files\Cumlib</Filter>
     </ClCompile>
+    <ClCompile Include="src\Graphics\mayagraphics\MayaMesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
@@ -184,16 +187,7 @@
     <ClInclude Include="src\Graphics\Vertex.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="src\Graphics\VertexBuffer.h">
-      <Filter>Header Files\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\IndexBuffer.h">
-      <Filter>Header Files\Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="src\Graphics\DX11Wrapper.h">
-      <Filter>Header Files\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\ConstantBuffer.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\CbufferTypes.h">
@@ -282,6 +276,12 @@
     </ClInclude>
     <ClInclude Include="src\Comlib\SectionHeader.h">
       <Filter>Header Files\Cumlib</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Math\Math.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\mayagraphics\MayaMesh.h">
+      <Filter>Header Files\Graphics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

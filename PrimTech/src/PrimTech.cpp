@@ -7,6 +7,7 @@ namespace pt
 	PrimTech::PrimTech() :
 		m_playerSpeed(5.f)
 	{
+		consumerBuffer = new Comlib(L"Filemap", 150, Consumer);
 		m_cam3d.resize(1);
 		//HideCursor();
 	}
@@ -15,13 +16,12 @@ namespace pt
 	{
 		if (mp_gApi) 
 			delete mp_gApi;
+		delete consumerBuffer;
 	}
 
 	void PrimTech::Init(LPCWSTR windowName, HINSTANCE hInstance, std::wstring windowClass, unsigned int width, unsigned int height)
 	{
 		m_window.init(windowName, hInstance, windowClass, width, height);
-
-		consumerBuffer = new Comlib(L"Filemap", 150, Consumer);
 
 		m_window.SetInputP(m_kb);
 
