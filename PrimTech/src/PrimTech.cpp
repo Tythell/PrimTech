@@ -16,6 +16,7 @@ namespace pt
 	{
 		if (mp_gApi) 
 			delete mp_gApi;
+
 		delete consumerBuffer;
 	}
 
@@ -39,7 +40,7 @@ namespace pt
 		if (m_kb.IsKeyDown(m_shutDownKey))
 			m_window.ShutDown();
 
-		while (consumerBuffer->Recieve(msg, mainHeader))
+		/*while (consumerBuffer->Recieve(msg, mainHeader))
 		{
 			if (mainHeader->header == MESSAGE)
 			{
@@ -63,7 +64,7 @@ namespace pt
 				delete message;
 				message = nullptr;
 			}
-		}
+		}*/
 	}
 
 	void PrimTech::HideCursor()

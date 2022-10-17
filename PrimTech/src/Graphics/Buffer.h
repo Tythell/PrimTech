@@ -97,7 +97,7 @@ public:
 		ZeroMemory(&bufferData, sizeof(D3D11_SUBRESOURCE_DATA));
 		bufferData.pSysMem = data;
 
-		if (m_buffer == nullptr)
+		if (m_buffer)
 			m_buffer->Release();
 
 		return HRESULT(device->CreateBuffer(&bufferDesc, &bufferData, &m_buffer));

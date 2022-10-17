@@ -10,6 +10,8 @@
 Model::~Model()
 {
 	delete[] m_material;
+	//if (m_type == ModelType::eMAYA)
+		//delete mp_mesh;
 }
 
 void Model::Init(const std::string path, ModelType e, bool makeLeftHanded)
@@ -56,6 +58,12 @@ void Model::Init(const std::string path, ModelType e, bool makeLeftHanded)
 		m_material->SetRimColor(WHITE_3F);
 
 	//dc->VSSetConstantBuffers(0, 1, mp_cbTransformBuffer->GetReference());
+}
+
+void Model::CreateFromArray(std::vector<Vertex3D> vArray, ID3D11Device*& device, ID3D11DeviceContext*& dc)
+{
+	m_type = ModelType::eMAYA;
+	//mp_mesh = new Mesh(vArray, device, dc);
 }
 
 void Model::Draw()
@@ -381,6 +389,12 @@ Mesh::Mesh(std::string path, ID3D11Device*& device, bool makeLeftHanded)
 
 	HRESULT hr = m_vbuffer.CreateVertexBuffer(device, m_shape.verts.data(), bsize);
 	COM_ERROR(hr, "Failed to load vertex buffer");
+}
+
+Mesh::Mesh(std::vector<Vertex3D> vArray, ID3D11Device*& device, ID3D11DeviceContext*& dc)
+{
+	m_vbuffer.CreateVertexBuffer(device, vArray.data(), vArray.size(), dc);
+	m_nofMeshes = 1;
 }
 
 Buffer<Vertex3D>& Mesh::GetVBuffer()
