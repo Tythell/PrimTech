@@ -81,6 +81,8 @@ public:
 
 	ModelList GetModelList();
 private:
+	Mesh* mp_testMesh = nullptr;
+
 	bool initSwapChain();
 	bool initRTV();
 	bool SetupDSAndVP();

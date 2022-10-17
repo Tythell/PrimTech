@@ -49,10 +49,10 @@
     <Filter Include="Source Files\Input">
       <UniqueIdentifier>{da403211-6c81-4690-81f0-0ab3a18a06e8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Cumlib">
+    <Filter Include="Header Files\Comlib">
       <UniqueIdentifier>{a8b33c97-666f-420b-a958-e0b81c686997}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Cumlib">
+    <Filter Include="Source Files\Comlib">
       <UniqueIdentifier>{f23c0753-cb34-4c25-b8bc-a319c4d8803f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -145,13 +145,7 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Comlib\Comlib.cpp">
-      <Filter>Source Files\Cumlib</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Comlib\Memory.cpp">
-      <Filter>Source Files\Cumlib</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Comlib\Mutex.cpp">
-      <Filter>Source Files\Cumlib</Filter>
+      <Filter>Source Files\Comlib</Filter>
     </ClCompile>
     <ClCompile Include="src\Graphics\mayagraphics\MayaMesh.cpp">
       <Filter>Source Files</Filter>
@@ -266,16 +260,7 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Comlib\Comlib.h">
-      <Filter>Header Files\Cumlib</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Comlib\Memory.h">
-      <Filter>Header Files\Cumlib</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Comlib\Mutex.h">
-      <Filter>Header Files\Cumlib</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Comlib\SectionHeader.h">
-      <Filter>Header Files\Cumlib</Filter>
+      <Filter>Header Files\Comlib</Filter>
     </ClInclude>
     <ClInclude Include="src\Math\Math.h">
       <Filter>Header Files</Filter>

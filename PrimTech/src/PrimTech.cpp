@@ -36,32 +36,6 @@ namespace pt
 	{
 		if (m_kb.IsKeyDown(m_shutDownKey))
 			m_window.ShutDown();
-
-		/*while (consumerBuffer->Recieve(msg, mainHeader))
-		{
-			if (mainHeader->header == MESSAGE)
-			{
-				OutputDebugStringW(L"We got a MESSAGE message.");
-
-				MessageHeader* message = new MessageHeader;
-				memcpy(message, msg, sizeof(MessageHeader));
-
-				const size_t size = strlen(message->message);
-				wchar_t* recievedMsg = new wchar_t[size];
-				mbstowcs(recievedMsg, message->message, size);
-				
-				sm::Vector3 p(message->position[0], message->position[1],message->position[3]);
-				std::wstring pos = L"\nPosition " + std::to_wstring((int)message->position[0]) + L" " 
-					+ std::to_wstring((int)message->position[1]) + L" " 
-					+ std::to_wstring((int)message->position[2]);
-				
-				OutputDebugStringW(L"\n\n");
-				OutputDebugStringW(recievedMsg);
-				OutputDebugStringW(pos.c_str());
-				delete message;
-				message = nullptr;
-			}
-		}*/
 	}
 
 	void PrimTech::HideCursor()

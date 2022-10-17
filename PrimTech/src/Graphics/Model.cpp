@@ -10,8 +10,9 @@
 Model::~Model()
 {
 	delete[] m_material;
-	//if (m_type == ModelType::eMAYA)
-		//delete mp_mesh;
+	// if it's a maya mesh, it's not apart of the resource handler
+	if (m_type == ModelType::eMAYA)
+		delete mp_mesh;
 }
 
 void Model::Init(const std::string path, ModelType e, bool makeLeftHanded)
@@ -62,8 +63,13 @@ void Model::Init(const std::string path, ModelType e, bool makeLeftHanded)
 
 void Model::CreateFromArray(std::vector<Vertex3D> vArray, ID3D11Device*& device, ID3D11DeviceContext*& dc)
 {
+	if (mp_mesh)
+	{
+		delete mp_mesh;
+		mp_mesh = nullptr;
+	}
 	m_type = ModelType::eMAYA;
-	//mp_mesh = new Mesh(vArray, device, dc);
+	mp_mesh = new Mesh(vArray, device, dc);
 }
 
 void Model::Draw()

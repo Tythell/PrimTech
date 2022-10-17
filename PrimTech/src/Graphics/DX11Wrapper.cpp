@@ -592,7 +592,10 @@ void DX11Addon::ImguiDebug()
 {
 	ImGui::Begin("Debug", &im.showDebugWindow);
 	ImGui::Text("Press \"Q\" to lock/unlock mouse");
+	if (ImGui::Button("init cube"))
+	{
 
+	}
 	if (ImGui::IsWindowHovered())
 		m_isHoveringWindow = true;
 
