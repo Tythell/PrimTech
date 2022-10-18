@@ -184,6 +184,21 @@ void Camera::SetRotationSpeed(float f)
 	m_rotationSpeed = f;
 }
 
+void Camera::OverrideView(const sm::Matrix& m)
+{
+	m_viewM = m;
+}
+
+void Camera::OverrideProjection(const sm::Matrix& m)
+{
+	m_projM = m;
+}
+
+void Camera::OverrideViewProj(const sm::Matrix& m)
+{
+	THROW_POPUP_ERRORF(false, "OverrideViewProj är inte supported än, fråga Christian");
+}
+
 void Camera::UpdateView()
 {
 	d::XMMATRIX camRot = d::XMMatrixRotationRollPitchYawFromVector(m_rotation);

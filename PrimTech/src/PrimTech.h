@@ -24,7 +24,6 @@ namespace pt
 
 		Window m_window;
 		DX11Addon* mp_gApi = nullptr;
-		//Camera m_cellCam;
 		std::vector<Camera> m_cam3d;
 		KeyboardHandler m_kb;
 		float m_playerSpeed;

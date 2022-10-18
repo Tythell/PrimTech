@@ -1,5 +1,6 @@
 #pragma once
 #include"Transform.h"
+#include"Utility/COMException.h"
 #include<string>
 class Camera
 {
@@ -7,6 +8,7 @@ public:
 	Camera();
 	void SetPerspective(float fovDeg, float aspectRatio, float nearZ, float farZ);
 	void SetOrtographic(float width, float height, float nearZ, float farZ);
+	void OverrideProjection(const sm::Matrix& m);
 
 	void SetPosition(float x, float y, float z);
 	void SetPosition(const sm::Vector3 v);
@@ -37,6 +39,9 @@ public:
 	sm::Vector3 GetRotation() const;;
 
 	void SetRotationSpeed(float f);
+
+	void OverrideView(const sm::Matrix& m);
+	void OverrideViewProj(const sm::Matrix& m);
 private:
 	void UpdateView();
 	sm::Vector3 m_position, m_rotation, m_offset;
