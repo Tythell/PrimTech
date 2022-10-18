@@ -185,11 +185,24 @@ void Swap(T &e1, T &e2)
 	e2 = temp;
 }
 
+int checkIfVertexExists(std::vector<Vertex3D>& input, Vertex3D check)
+{
+	int found = -1;
+	for (uint i = 0; i < input.size(); i++)
+	{
+		if (input[i] == check)
+			found = i;
+	}
+	if (found == -1)
+		input.push_back(check);
+	return found;
+}
+
 bool LoadObjToBuffer(std::string path, std::vector<Shape>& shape, std::vector<Mtl>& localMtls, std::vector<int>& matIndex, unsigned char flags)
 {
 	bool makeLeftHanded = flags & 0b01;
-	makeLeftHanded = false;
-	bool useIndexBuffer = flags & 0b10;
+	makeLeftHanded = true;
+	bool useIndexBuffer = true;
 
 	uint indexCounter = 0;
 
@@ -266,11 +279,49 @@ bool LoadObjToBuffer(std::string path, std::vector<Shape>& shape, std::vector<Mt
 				triangle[2] = temp;
 			}
 
-			//if()
-			//{
-			//	for (int i = 0; i < 3; i++)
-			//		localShape.verts.emplace_back(triangle[i]);
-			//}
+			
+			if (useIndexBuffer)
+			{
+				//localShape.index.resize(localShape.verts.size(), 420);
+				//for (int i = localShape.verts.size(); i < localShape.verts.size() + 3; i++)
+				//{
+				//	int index = -1;
+				//	Vertex3D vert = localShape.verts[i];
+				//	for (int j = 0; j < localShape.verts.size(); j++)
+				//	{
+				//		
+				//		if (vert == localShape.verts[j] && i != j)
+				//		{
+				//			index = j;
+				//		}
+				//	}
+				//	if (index != -1)
+				//	{
+				//		localShape.index.emplace_back(index);
+				//	}
+				//	else
+				//	{
+				//		localShape.index.emplace_back(indexCounter);
+				//		indexCounter++;
+				//		
+				//		localShape.verts.emplace_back(triangle[i]);
+				//	}
+				//}
+				for (int i = 0; i < 3; i++)
+				{
+					int getNr = checkIfVertexExists(localShape.verts, triangle[i]);
+					if (getNr != -1)
+					{
+						localShape.index.emplace_back(getNr);
+					}
+					else
+					{
+						localShape.index.emplace_back(indexCounter);
+						//localShape.verts.emplace_back(triangle[i]);
+						indexCounter++;
+					}
+				}
+			}
 			
 		}
 		else if (input == "g")
@@ -438,7 +489,7 @@ Mesh::Mesh(std::string path, ID3D11Device*& device, char flags)
 	int lastSize = 0;
 	for (int i = 0; i < m_nofMeshes; i++)
 	{
-		lastSize += mesh[i].verts.size();
+		lastSize += mesh[i].index.size();
 		m_offsets.emplace_back(lastSize);
 	}
 
@@ -447,6 +498,10 @@ Mesh::Mesh(std::string path, ID3D11Device*& device, char flags)
 	UINT totalVertCount = 0;
 	for (int i = 0; i < m_nofMeshes; i++)
 	{
+		for (int j = 0; j < mesh[i].index.size(); j++)
+		{
+			m_shape.index.emplace_back(mesh[i].index[j]);
+		}
 		for (int j = 0; j < mesh[i].verts.size(); j++)
 		{
 			sm::Vector3 pos = mesh[i].verts[j].position;
@@ -455,6 +510,7 @@ Mesh::Mesh(std::string path, ID3D11Device*& device, char flags)
 			mesh[i].verts[j].color = sm::Vector3(float(rand() % 10 +1) / 10, float(rand() % 10 + 1) / 10, float(rand() % 10+1) / 10);
 			m_shape.verts.emplace_back(mesh[i].verts[j]);
 		}
+
 	}
 	//m_shape.index = mesh
 	UINT bsize = m_shape.verts.size();

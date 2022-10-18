@@ -79,7 +79,7 @@ Camera& ShadowMap::GetShadowCam()
 
 void ShadowMap::InitModel(ID3D11DeviceContext*& dc, Buffer<hlsl::cbpWorldTransforms3D>& transformbuffer, Buffer<hlsl::cbpMaterialBuffer>& matbuffer)
 {
-	m_shadowCamModel.Init("bulb.obj", ModelType::eDEBUG);
+	m_shadowCamModel.Init("bulb.obj", ModelType::eDEBUG, 3);
 	m_shadowCamModel.SetScale(1.2f);
 	m_shadowCamModel.SetMaterialBuffer(matbuffer);
 	m_shadowCamModel.SetDCandBuffer(dc, transformbuffer);
