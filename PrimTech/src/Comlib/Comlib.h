@@ -26,7 +26,13 @@ private:
 enum Headers
 {
 	MESSAGE = 0,
-
+	eNEWMESH,
+	eOBJECTDRAG,
+	eCAMERAMOVE, eCAMERACREATE,
+	eVERTEXDRAG,
+	eNEWTOPOLOGY,
+	eLOADTEXTURE,
+	eNAMECHANGE,
 };
 
 struct messageHeader

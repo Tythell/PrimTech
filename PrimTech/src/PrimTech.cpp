@@ -36,6 +36,61 @@ namespace pt
 	{
 		if (m_kb.IsKeyDown(m_shutDownKey))
 			m_window.ShutDown();
+		char* message = nullptr;
+		SectionHeader* header;
+		bool recievedSuccess = m_consumerBuffer.Recieve(message, header);
+		if (recievedSuccess)
+		{
+			switch (header->header)
+			{
+			case Headers::MESSAGE:
+			{
+				OutputDebugStringA(message);
+				break;
+			}
+			case Headers::eCAMERACREATE:
+			{
+				sm::Matrix viewMatrix;
+
+				break;
+			}
+			case Headers::eCAMERAMOVE:
+			{
+
+				break;
+			}
+			case Headers::eLOADTEXTURE:
+			{
+
+				break;
+			}
+			case Headers::eNAMECHANGE:
+				break;
+			case Headers::eNEWMESH:
+			{
+
+				break;
+			}
+			case Headers::eNEWTOPOLOGY:
+			{
+
+				break;
+			}
+			case Headers::eOBJECTDRAG:
+			{
+
+				break;
+			}
+			case Headers::eVERTEXDRAG:
+			{
+
+				break;
+			}
+			default:
+				break;
+			}
+		}
+		
 	}
 
 	void PrimTech::HideCursor()
