@@ -78,6 +78,7 @@ public:
 	~Model();
 	void Init(const std::string path, ModelType e = ModelType(0), unsigned char makeLeftHanded = true);
 	void CreateFromArray(std::vector<Vertex3D> vArray, std::vector<uint> iArray, ID3D11Device*& device, ID3D11DeviceContext*& dc);
+	void ChangeVertex(const uint& id, const Vertex3D& v);
 	void Draw();
 	void UpdateTextureScroll(const float& deltatime);
 	void LoadTexture(std::string path, UINT i = 0, TextureType type = eDiffuse);

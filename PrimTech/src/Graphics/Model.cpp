@@ -80,6 +80,12 @@ void Model::CreateFromArray(std::vector<Vertex3D> vArray, std::vector<uint> iArr
 	mp_material->SetRimColor(WHITE_3F);
 }
 
+void Model::ChangeVertex(const uint& id, const Vertex3D& v)
+{
+	THROW_POPUP_ERRORF((m_type == ModelType::eMAYA), "is not maya model");
+	mp_mesh->UpdateVertex(id, v);
+}
+
 void Model::Draw()
 {
 	UINT offset = 0;
@@ -482,7 +488,7 @@ Mesh::Mesh(std::string path, ID3D11Device*& device, char flags)
 		check = LoadObjToBuffer(path, mesh, m_mtls, m_mtlIndexes, flags);
 		break;
 	}
-	THROW_POPUP_ERROR(check, " loading" + path);
+	THROW_POPUP_ERRORF(check, " loading" + path);
 	m_name = StringHelper::GetName(path);
 	m_nofMeshes = mesh.size();
 	m_offsets.emplace_back(0);
@@ -528,10 +534,13 @@ Mesh::Mesh(std::string path, ID3D11Device*& device, char flags)
 
 Mesh::Mesh(std::vector<Vertex3D> vArray, std::vector<uint> iArray, ID3D11Device*& device, ID3D11DeviceContext*& dc)
 {
-	m_ibuffer.CreateIndexBuffer(device, iArray.data(), iArray.size(), dc);
-	m_vbuffer.CreateVertexBuffer(device, vArray.data(), vArray.size(), dc);
+	m_shape.index = iArray;
+	m_shape.verts = vArray;
+	m_ibuffer.CreateIndexBuffer(device, m_shape.index.data(), iArray.size(), dc);
+	m_vbuffer.CreateVertexBuffer(device, m_shape.verts.data(), vArray.size(), dc);
 	m_nofMeshes = 1;
 	m_offsets.emplace_back(0);
+	
 	int lastSize = 0;
 	for (int i = 0; i < m_nofMeshes; i++)
 	{
@@ -572,9 +581,9 @@ void Mesh::ResetUses()
 
 void Mesh::UpdateVertex(const uint& id, const Vertex3D& v)
 {
-	m_shape.verts[id] = v;
+	m_vbuffer.Data(id) = v;
 
-
+	m_vbuffer.MapBuffer();
 }
 
 int Mesh::GetNrOfUses() const

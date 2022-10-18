@@ -144,9 +144,6 @@
     <ClCompile Include="src\Comlib\Comlib.cpp">
       <Filter>Source Files\Comlib</Filter>
     </ClCompile>
-    <ClCompile Include="src\Graphics\mayagraphics\MayaMesh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
@@ -258,9 +255,6 @@
     </ClInclude>
     <ClInclude Include="src\Math\Math.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\mayagraphics\MayaMesh.h">
-      <Filter>Header Files\Graphics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

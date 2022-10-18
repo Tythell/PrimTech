@@ -165,7 +165,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Comlib\Comlib.cpp" />
-    <ClCompile Include="src\Graphics\mayagraphics\MayaMesh.cpp" />
     <ClCompile Include="src\Graphics\RenderShapes.cpp" />
     <ClCompile Include="src\Graphics\ShadowMap.cpp" />
     <ClCompile Include="src\PrimTech\Scene.cpp" />
@@ -196,7 +195,6 @@
     <ClCompile Include="src\WindowWrap.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Graphics\mayagraphics\MayaMesh.h" />
     <ClInclude Include="src\Comlib\Comlib.h" />
     <ClInclude Include="src\Graphics\3rdParty\assimp\Vertex.h" />
     <ClInclude Include="src\Graphics\RenderShapes.h" />

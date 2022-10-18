@@ -647,7 +647,7 @@ void DX11Addon::MoveVertex(const std::string name, const uint& id, std::vector<M
 void DX11Addon::ImguiDebug()
 {
 	ImGui::Begin("Debug", &im.showDebugWindow);
-	if (ImGui::CollapsingHeader("Maya"))
+	if (ImGui::CollapsingHeader("Maya", ImGuiTreeNodeFlags_DefaultOpen))
 	{
 		if (ImGui::Button("init cube"))
 		{
@@ -674,9 +674,17 @@ void DX11Addon::ImguiDebug()
 
 			AddNewModel("debugMaya", vertexArray, iArray, m_models);
 		}
+		ImGui::SameLine();
 		if (ImGui::Button("VertexMove"))
 		{
+			Model* pmodel = m_models[nameFindModel("debugMaya", m_models)];
+			Vertex3D v;
+			v.position = { 0.0f, 1.5f, 0.f };
+			v.texCoord = { .5f, 1.f };
+			v.normal = { 0.f, 0.f, -1.f };
 
+
+			pmodel->ChangeVertex(1, v);
 		}
 	}
 	
