@@ -75,8 +75,6 @@ void Model::CreateFromArray(std::vector<Vertex3D> vArray, ID3D11Device*& device,
 
 	m_type = ModelType::eMAYA;
 	mp_mesh = new Mesh(vArray, device, dc);
-
-	
 	
 	mp_material->SetLeftHanded(true);
 	mp_material->SetRimColor(WHITE_3F);
@@ -90,14 +88,24 @@ void Model::Draw()
 	mp_cbTransformBuffer->MapBuffer();
 	dc->IASetVertexBuffers(0, 1, mp_mesh->GetVBuffer().GetReference(), mp_mesh->GetVBuffer().GetStrideP(), &offset);
 	dc->IASetIndexBuffer(mp_mesh->GetIBuffer().Get(), DXGI_FORMAT_R32_UINT, 0);
+	std::string vertexString;
+	std::string indexString;
 	for (int i = 0; i < mp_mesh->GetNofMeshes(); i++)
 	{
 		mp_material[i].GetBuffer()->Data().characterLight[0] = m_characterLight[0];
 		mp_material[i].Set(dc);
-		//int v1 = mp_mesh->GetMeshOffsfets()[i + 1], v2 = mp_mesh->GetMeshOffsfets()[i];
-		//dc->Draw(v1 - v2, v2);
-		int v1 = mp_mesh->GetMeshOffsfets()[i + 1], v2 = mp_mesh->GetMeshOffsfets()[i];
-		dc->DrawIndexed(v1 - v2, v2, 0);
+	
+
+		if (m_type == ModelType::eMAYA);
+		{
+			int v1 = mp_mesh->GetMeshOffsfets()[i + 1], v2 = mp_mesh->GetMeshOffsfets()[i];
+			dc->DrawIndexed(v1 - v2, v2, 0);
+		}
+		//else
+		//{
+		//	int v1 = mp_mesh->GetMeshOffsfets()[i + 1], v2 = mp_mesh->GetMeshOffsfets()[i];
+		//	dc->Draw(v1 - v2, v2);
+		//}
  	}
 }
 
@@ -182,6 +190,9 @@ bool LoadObjToBuffer(std::string path, std::vector<Shape>& shape, std::vector<Mt
 	bool makeLeftHanded = flags & 0b01;
 	makeLeftHanded = false;
 	bool useIndexBuffer = flags & 0b10;
+
+	uint indexCounter = 0;
+
 	//shape.resize(1);
 	Shape localShape;
 	UINT nofMats = 0;
@@ -248,15 +259,19 @@ bool LoadObjToBuffer(std::string path, std::vector<Shape>& shape, std::vector<Mt
 				triangle[i].texCoord = vt[vtIndexTemp];	
 			}
 
-			//if (makeLeftHanded)
-			//{
-			//	Vertex3D temp = triangle[0];
- 			//	triangle[0] = triangle[2];
-			//	triangle[2] = temp;
-			//}
+			if (makeLeftHanded)
+			{
+				Vertex3D temp = triangle[0];
+ 				triangle[0] = triangle[2];
+				triangle[2] = temp;
+			}
 
-			for (int i = 0; i < 3; i++)
-				localShape.verts.emplace_back(triangle[i]);
+			//if()
+			//{
+			//	for (int i = 0; i < 3; i++)
+			//		localShape.verts.emplace_back(triangle[i]);
+			//}
+			
 		}
 		else if (input == "g")
 		{
@@ -329,37 +344,53 @@ bool LoadObjToBuffer(std::string path, std::vector<Shape>& shape, std::vector<Mt
 		}
 		
 	}
-	if (useIndexBuffer)
-	{
-		bool exists = false;
-		localShape.index.resize(localShape.verts.size());
-		for (uint i = 0; i < localShape.index.size(); i++)
-		{
-			Vertex3D vert = localShape.verts[i];
-			for (uint j = 0; j < localShape.verts.size(); j++)
-			{
-				if (localShape.verts[j] == vert)
-				{
-					exists = true;
-					localShape.index[i] = j;
-				}
-			}
-			if (!exists)
-				localShape.index[i] = i;
-		}
-	}
+	//if (useIndexBuffer)
+	//{
+		//bool exists = false;
+		//localShape.index.resize(localShape.verts.size(), 69);
+		//for (int i = 0; i < localShape.index.size(); i++)
+		//	localShape.index[i] = i;
+		//for (uint i = 0; i < localShape.index.size(); i++)
+		//{
+		//	Vertex3D currentVertex = localShape.verts[i];
+		//	for (uint j = i + 1; j < localShape.index.size(); j++)
+		//	{
+		//		if (currentVertex == localShape.verts[j])
+		//		{
+		//			exists = true;
+		//			localShape.index[j] = i;
+		//			localShape.verts[j].MarkDuplicate();
+		//		}
+		//	}
+		//	if (!exists)
+		//		localShape.index[i] = i;
+		//}
+
+		//for (int i = 0; i < localShape.verts.size(); i++)
+		//{
+		//	
+		//}
+	//}
+	//for (int i = localShape.index.size() -1; i > 0; i--)
+	//{
+	//	if (localShape.verts[i].IsDuplicate())
+	//		localShape.verts.erase(localShape.verts.begin() + i);
+	//}
 	shape.emplace_back(localShape);
 	for (int si = 0; si < shape.size(); si++)
 	{
-		for (int i = 0; i < shape[si].verts.size(); i += 3)
+		for (int i = 0; i < shape[si].index.size(); i += 3)
 		{
-			sm::Vector2 UVA = shape[si].verts[i + 0].texCoord;
-			sm::Vector2 UVB = shape[si].verts[i + 1].texCoord;
-			sm::Vector2 UVC = shape[si].verts[i + 2].texCoord;
+			uint correctIndex0 = localShape.index[i];
+			uint correctIndex1 = localShape.index[i+1];
+			uint correctIndex2 = localShape.index[i+2];
+			sm::Vector2 UVA = shape[si].verts[correctIndex0].texCoord;
+			sm::Vector2 UVB = shape[si].verts[correctIndex1].texCoord;
+			sm::Vector2 UVC = shape[si].verts[correctIndex2].texCoord;
 
-			sm::Vector3 POSA = shape[si].verts[i + 0].position;
-			sm::Vector3 POSB = shape[si].verts[i + 1].position;
-			sm::Vector3 POSC = shape[si].verts[i + 2].position;
+			sm::Vector3 POSA = shape[si].verts[correctIndex0].position;
+			sm::Vector3 POSB = shape[si].verts[correctIndex1].position;
+			sm::Vector3 POSC = shape[si].verts[correctIndex2].position;
 
 			sm::Vector2 dAB = UVB - UVA;
 			sm::Vector2 dAC = UVC - UVA;
@@ -374,9 +405,9 @@ bool LoadObjToBuffer(std::string path, std::vector<Shape>& shape, std::vector<Mt
 			tangent.y = f * (dAC.y * edge1.y - dAB.y * edge2.y);
 			tangent.z = f * (dAC.y * edge1.z - dAB.y * edge2.z);
 
-			shape[si].verts[i].tangent = tangent;
-			shape[si].verts[i + 1].tangent = tangent;
-			shape[si].verts[i + 2].tangent = tangent;
+			shape[si].verts[correctIndex0].tangent = tangent;
+			shape[si].verts[correctIndex1].tangent = tangent;
+			shape[si].verts[correctIndex2].tangent = tangent;
 		}
 
 		//if(!localMtls.empty())
@@ -435,8 +466,8 @@ Mesh::Mesh(std::string path, ID3D11Device*& device, char flags)
 	COM_ERROR(hr, "Failed to load vertex buffer");
 
 	bsize = m_shape.index.size();
-	//hr = m_ibuffer.CreateIndexBuffer(device, m_shape.index.data(), bsize);
-	//COM_ERROR(hr, "Failed to load index buffer");
+	hr = m_ibuffer.CreateIndexBuffer(device, m_shape.index.data(), bsize);
+	COM_ERROR(hr, "Failed to load index buffer");
 }
 
 Mesh::Mesh(std::vector<Vertex3D> vArray, ID3D11Device*& device, ID3D11DeviceContext*& dc)

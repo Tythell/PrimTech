@@ -24,13 +24,16 @@ struct Vertex3D
 			return true;
 		return false;
 	}
-	void Ghost()
+	void MarkDuplicate()
 	{
 		texCoord = { -1,-1 }; // texCoord  will normally never be -1
 	}
-	bool IsGhost() const
+	bool IsDuplicate() const
 	{
-		if (texCoord.x == -1);
+		if (texCoord.x == -1)
+			return true;
+		else
+			return false;
 	}
 };
 
