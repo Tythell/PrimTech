@@ -194,7 +194,6 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Graphics\Vertex.cpp" />
     <ClCompile Include="src\WindowWrap.cpp" />
-    <ClCompile Include="src\Graphics\ViewModel.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Graphics\mayagraphics\MayaMesh.h" />
@@ -233,7 +232,6 @@
     <ClInclude Include="src\Graphics\DX11Wrapper.h" />
     <ClInclude Include="src\Utility\Popup.h" />
     <ClInclude Include="src\WindowWrap.h" />
-    <ClInclude Include="src\Graphics\ViewModel.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />

@@ -61,7 +61,7 @@ void Model::Init(const std::string path, ModelType e, unsigned char flags)
 	//dc->VSSetConstantBuffers(0, 1, mp_cbTransformBuffer->GetReference());
 }
 
-void Model::CreateFromArray(std::vector<Vertex3D> vArray, ID3D11Device*& device, ID3D11DeviceContext*& dc)
+void Model::CreateFromArray(std::vector<Vertex3D> vArray, std::vector<uint> iArray, ID3D11Device*& device, ID3D11DeviceContext*& dc)
 {
 	m_nOfMats = 1;
 	bool isUpdate = mp_mesh != nullptr;
@@ -74,7 +74,7 @@ void Model::CreateFromArray(std::vector<Vertex3D> vArray, ID3D11Device*& device,
 		mp_material = new Material[m_nOfMats];
 
 	m_type = ModelType::eMAYA;
-	mp_mesh = new Mesh(vArray, device, dc);
+	mp_mesh = new Mesh(vArray, iArray, device, dc);
 	
 	mp_material->SetLeftHanded(true);
 	mp_material->SetRimColor(WHITE_3F);
@@ -526,8 +526,9 @@ Mesh::Mesh(std::string path, ID3D11Device*& device, char flags)
 	COM_ERROR(hr, "Failed to load index buffer");
 }
 
-Mesh::Mesh(std::vector<Vertex3D> vArray, ID3D11Device*& device, ID3D11DeviceContext*& dc)
+Mesh::Mesh(std::vector<Vertex3D> vArray, std::vector<uint> iArray, ID3D11Device*& device, ID3D11DeviceContext*& dc)
 {
+	m_ibuffer.CreateIndexBuffer(device, iArray.data(), iArray.size(), dc);
 	m_vbuffer.CreateVertexBuffer(device, vArray.data(), vArray.size(), dc);
 	m_nofMeshes = 1;
 	m_offsets.emplace_back(0);

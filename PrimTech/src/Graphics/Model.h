@@ -26,7 +26,7 @@ class Mesh
 public:
 	Mesh(std::string path, ID3D11Device*& device, char makeLeftHanded = 1);
 	// ignores error checking
-	Mesh(std::vector<Vertex3D> vArray, ID3D11Device*& device, ID3D11DeviceContext*& dc);
+	Mesh(std::vector<Vertex3D> vArray, std::vector<uint> iArray, ID3D11Device*& device, ID3D11DeviceContext*& dc);
 	Buffer<Vertex3D>& GetVBuffer();
 	Buffer<uint>& GetIBuffer();
 	std::string GetName() const;
@@ -77,7 +77,7 @@ class Model : public Transform
 public:
 	~Model();
 	void Init(const std::string path, ModelType e = ModelType(0), unsigned char makeLeftHanded = true);
-	void CreateFromArray(std::vector<Vertex3D> vArray, ID3D11Device*& device, ID3D11DeviceContext*& dc);
+	void CreateFromArray(std::vector<Vertex3D> vArray, std::vector<uint> iArray, ID3D11Device*& device, ID3D11DeviceContext*& dc);
 	void Draw();
 	void UpdateTextureScroll(const float& deltatime);
 	void LoadTexture(std::string path, UINT i = 0, TextureType type = eDiffuse);

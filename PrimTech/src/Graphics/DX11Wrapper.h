@@ -7,8 +7,8 @@
 #include"Texture.h"
 #include"../Input/Mouse.h"
 #include"../Input/Keyboard.h"
-#include"ViewModel.h"
 #include<fstream>
+#include "RenderShapes.h"
 #pragma warning(push)
 #pragma warning(disable : 26812)
 #include "imgui.h"
@@ -79,7 +79,7 @@ public:
 	void Click(const sm::Vector3& dir);
 	void SetCanMove(bool b);
 
-	void AddNewModel(const std::string name, std::vector<Vertex3D>& vertexArray, std::vector<Model*>& v);
+	void AddNewModel(const std::string name, std::vector<Vertex3D>& vertexArray, std::vector<uint> iArray, std::vector<Model*>& v);
 	void MoveVertex(const std::string name, const uint& id, std::vector<Model*> v);
 	ModelList GetModelList();
 private:
@@ -149,8 +149,6 @@ private:
 	int m_selected = -1;
 	Model m_bulb;
 	Model m_spotlight;
-	ViewModel m_viewmdl;
-	Model m_playermodel;
 	ModelList m_models;
 	RenderBox m_renderbox;
 	sm::Ray m_ray;

@@ -272,20 +272,12 @@ bool DX11Addon::InitScene()
 	//ImportScene("Scenes\\multsc.ptscene");
 	NewScene();
 
-	m_playermodel.Init("plane.txt", ModelType::eUNSPECIFIED, 3);
-	m_playermodel.SetScale(.1f);
-
 	m_bulb.Init("plane.txt", ModelType::eDEBUG, 3);
 	m_spotlight.Init("plane.txt", ModelType::eDEBUG, 3);
 	m_bulb.SetScale(1.2f);
 	m_bulb.GetMaterial().SetTransparency(1.f);
 
-	m_viewmdl.Init("plane.txt", mp_cam);
 	m_bulb.SetMaterialBuffer(m_materialBuffer);
-	m_playermodel.SetMaterialBuffer(m_materialBuffer);
-	m_playermodel.SetDCandBuffer(dc, m_transformBuffer);
-	m_viewmdl.m_model.SetDCandBuffer(dc, m_transformBuffer);
-	m_viewmdl.m_model.SetMaterialBuffer(m_materialBuffer);
 	m_bulb.SetDCandBuffer(dc, m_transformBuffer);
 	m_bulb.SetMaterialBuffer(m_materialBuffer);
 	m_spotlight.SetDCandBuffer(dc, m_transformBuffer);
@@ -329,13 +321,6 @@ void DX11Addon::UpdateScene(const float& deltatime)
 	//m_lightbuffer.Data().forwardDir = mp_cam->GetForwardVector();
 	m_lightbuffer.Data().camPos = { mp_cam->GetPosition().x, mp_cam->GetPosition().y, mp_cam->GetPosition().z, 1.f };
 	m_lightbuffer.MapBuffer();
-
-
-	m_playermodel.SetRotation(0.f/*-mp_cam->GetRotation().x*/, mp_cam->GetRotation().y, 0.f);
-	m_playermodel.Rotate(0.f, d::XM_PI, 0.f);
-	m_playermodel.SetPosition(mp_cam->GetPositionNoOffset() + sm::Vector3(0.f, -0.1f, 0.f));
-	//m_shadowmap.SetPos(mp_cam->GetPositionNoOffset());
-	//m_model.Rotate(0.f, 2.f * deltatime, 0.f);
 }
 
 void embraceTheDarkness()
@@ -597,7 +582,7 @@ int nameFindModel(const std::string name, std::vector<Model*> v)
 	return -1;
 }
 
-void DX11Addon::AddNewModel(const std::string name, std::vector<Vertex3D>& vertexArray, std::vector<Model*>& v)
+void DX11Addon::AddNewModel(const std::string name, std::vector<Vertex3D>& vertexArray, std::vector<uint> iArray, std::vector<Model*>& v)
 {
 	int modelIndex = nameFindModel(name, v);
 
@@ -639,7 +624,7 @@ void DX11Addon::AddNewModel(const std::string name, std::vector<Vertex3D>& verte
 	{
 		pModel = new Model;
 
-		pModel->CreateFromArray(vertexArray, device, dc);
+		pModel->CreateFromArray(vertexArray, iArray, device, dc);
 		pModel->SetDCandBuffer(dc, m_transformBuffer);
 		pModel->SetMaterialBuffer(m_materialBuffer);
 		pModel->SetName(name);
@@ -648,7 +633,7 @@ void DX11Addon::AddNewModel(const std::string name, std::vector<Vertex3D>& verte
 	else
 	{
 		pModel = m_models[modelIndex];
-		pModel->CreateFromArray(vertexArray, device, dc);
+		pModel->CreateFromArray(vertexArray, iArray, device, dc);
 	}
 }
 
@@ -668,6 +653,7 @@ void DX11Addon::ImguiDebug()
 		{
 			uint nOfVerts = 3;
 			std::vector<Vertex3D> vertexArray;
+			std::vector<uint> iArray;
 			vertexArray.resize(nOfVerts);
 
 			vertexArray[0].position = { -.5f, -.5f, 0.f };
@@ -676,11 +662,17 @@ void DX11Addon::ImguiDebug()
 
 			vertexArray[0].texCoord = { 0.f, 0.f };
 			vertexArray[1].texCoord = { .5f, 1.f };
+			vertexArray[2].texCoord = { 1.f, 0.f };
+
+			for (int i = 0; i < 3; i++)
+			{
+				iArray.emplace_back(i);
+			}
 
 			for (int i = 0; i < vertexArray.size(); i++)
 				vertexArray[i].normal = { 0.f, 0.f, -1.f };
 
-			AddNewModel("debugMaya", vertexArray, m_models);
+			AddNewModel("debugMaya", vertexArray, iArray, m_models);
 		}
 		if (ImGui::Button("VertexMove"))
 		{
@@ -992,19 +984,19 @@ void DX11Addon::ImGuiEntList()
 	{
 		if (ImGui::IsWindowHovered())
 			m_isHoveringWindow = true;
-		if (ImGui::Button(" + ##Button"))
-			ImGui::OpenPopup("popup##context");
-		if (ImGui::BeginPopup("popup##context"))
-		{
-			if (ImGui::Selectable("Model"))
-				m_selected = InterfaceAddModelToVector(dc, m_transformBuffer, m_materialBuffer, m_models);
-			ImGui::BeginDisabled();
-			if (ImGui::Selectable("Particle"))
-				m_selected = InterfaceAddModelToVector(dc, m_transformBuffer, m_materialBuffer, m_models);
-			ImGui::EndDisabled();
+		//if (ImGui::Button(" + ##Button"))
+		//	ImGui::OpenPopup("popup##context");
+		//if (ImGui::BeginPopup("popup##context"))
+		//{
+		//	if (ImGui::Selectable("Model"))
+		//		m_selected = InterfaceAddModelToVector(dc, m_transformBuffer, m_materialBuffer, m_models);
+		//	ImGui::BeginDisabled();
+		//	if (ImGui::Selectable("Particle"))
+		//		m_selected = InterfaceAddModelToVector(dc, m_transformBuffer, m_materialBuffer, m_models);
+		//	ImGui::EndDisabled();
 
-			ImGui::EndPopup();
-		}
+		//	ImGui::EndPopup();
+		//}
 
 		ImGui::BeginChild("Lefty", ImVec2(150, 350), true);
 		if (ImGui::IsWindowHovered())
@@ -1471,7 +1463,6 @@ void DX11Addon::Render(const float& deltatime)
 		m_transformBuffer.Data().lightViewProj = d::XMMatrixTranspose(m_shadowmap.GetShadowCam().GetViewM() * m_shadowmap.GetShadowCam().GetProjM());
 		m_shadowmap.Bind(dc, 10);
 
-		m_playermodel.Draw();
 		for (int i = 0; i < modelAmount; i++)
 			m_models[i]->Draw();
 		//dc->OMSetRenderTargets(1, NULL, NULL);
@@ -1528,8 +1519,6 @@ void DX11Addon::Render(const float& deltatime)
 	//dc->PSSetShader(m_3dps.GetShader(), NULL, 0);
 	dc->PSSetShader(m_toonPS.GetShader(), NULL, 0);
 	m_shadowmap.BindSRV(dc, 10);
-	if (mp_cam->GetOffset().z != 0.f)
-		m_playermodel.Draw();
 
 	for (int i = 0; i < modelAmount; i++)
 	{
@@ -1538,11 +1527,6 @@ void DX11Addon::Render(const float& deltatime)
 	}
 	dc->PSSetShader(m_3dnoLightps.GetShader(), NULL, 0);
 
-	if (mp_cam->GetOffset().z == 0.f && im.enableHandModel)
-	{
-		dc->ClearDepthStencilView(m_dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.f, 0);
-		m_viewmdl.Draw();
-	}
 	m_bulb.Draw();
 	m_spotlight.Draw();
 	m_spotlight.SetPosition(im.sl.position[0], im.sl.position[1], im.sl.position[2]);
