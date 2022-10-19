@@ -65,7 +65,7 @@ void RecursiveRead(Sceneheaders& header, ModelList& v, std::ifstream& reader);
 class DX11Addon
 {
 public:
-	DX11Addon(Window& window, Camera& camera);
+	DX11Addon(Window& window, CameraHandler& camera);
 	~DX11Addon();
 
 	void SetInputP(KeyboardHandler& kb);
@@ -142,6 +142,7 @@ private:
 	Buffer<hlsl::cbpMaterialBuffer> m_materialBuffer;
 
 	Camera* mp_cam;
+	CameraHandler* mp_camHandler;
 
 	ImGuiVars im;
 	KeyboardHandler* mp_kb;

@@ -1,7 +1,7 @@
 #include "Camera.h"
 
-Camera::Camera():
-	m_position(0,0,0), m_rotation(0,0,0), m_offset(0,0,0)
+Camera::Camera(std::string name):
+	m_position(0,0,0), m_rotation(0,0,0), m_offset(0,0,0), m_name(name)
 {
 	UpdateView();
 }
@@ -199,6 +199,16 @@ void Camera::OverrideViewProj(const sm::Matrix& m)
 	THROW_POPUP_ERRORF(false, "OverrideViewProj är inte supported än, fråga Christian");
 }
 
+std::string Camera::GetName() const
+{
+	return m_name;
+}
+
+void Camera::SetName(const std::string& name)
+{
+	m_name = name;
+}
+
 void Camera::UpdateView()
 {
 	d::XMMATRIX camRot = d::XMMatrixRotationRollPitchYawFromVector(m_rotation);
@@ -221,4 +231,110 @@ void Camera::UpdateView()
 	m_leftV = d::XMVector3TransformCoord({ -1,0,0 }, camRot);
 	m_upV = d::XMVector3TransformCoord({ 0.f,1.f,0.f }, camRot);
 }
- 
+CameraHandler::CameraHandler()
+{}
+
+void CameraHandler::Init(const d::XMINT2& resolutions, unsigned char flags)
+{
+	if (!(flags & eNO_DEFAULT_CAM))
+	{
+		Camera* pCam = CreatePerspectiveCamera("DefaultCamera", 80, (float)resolutions.x / (float)resolutions.y, 0.1f, 100.f);
+		pCam->SetPosition(2.f, 0, -3.f);
+		m_currentCamIndex = 0;
+	}
+}
+
+Camera* CameraHandler::CreatePerspectiveCamera(std::string name, float fovDeg, float aspectRatio, float nearZ, float farZ)
+{
+	bool nameExists = false;
+	for (int i = 0; i < m_cams.size(); i++)
+	{
+		if (m_cams[i].GetName() == name)
+		{
+			name.append("1");
+			break;
+		}
+	}
+	if (!nameExists)
+	{
+		Camera cam(name);
+		cam.SetPerspective(fovDeg, aspectRatio, nearZ, farZ);
+		m_cams.emplace_back(cam);
+		mp_curentCam = &m_cams[m_currentCamIndex];
+		return &m_cams[m_cams.size() - 1];
+	}
+	else
+		CreatePerspectiveCamera(name, fovDeg, aspectRatio, nearZ, farZ);
+	return nullptr;
+}
+
+Camera* CameraHandler::GetCameraAdress(std::string name)
+{
+	for (int i = 0; i < m_cams.size(); i++)
+	{
+		if (m_cams[i].GetName() == name);
+		return &m_cams[i];
+	}
+	return nullptr;
+}
+
+Camera* CameraHandler::GetCameraAdress(uint i)
+{
+	return &m_cams[i];
+}
+
+Camera* CameraHandler::SetCurrentCamera(uint i)
+{
+	m_currentCamIndex = i;
+	mp_curentCam = &m_cams[i];
+	return &m_cams[i];
+}
+
+Camera* CameraHandler::SetCurrentCamera(std::string name)
+{
+	int index = GetCameraIndex(name);
+	return SetCurrentCamera(index);
+}
+
+void CameraHandler::ChangeCameraName(std::string oldName, std::string newName)
+{
+	for (int i = 0; i < m_cams.size(); i++)
+	{
+		if (m_cams[i].GetName() == oldName)
+		{
+			m_cams[i].SetName(newName);
+			break;
+		}
+	}
+}
+
+uint CameraHandler::GetNoOfCams() const
+{
+	return m_cams.size();
+}
+
+Camera* CameraHandler::GetCurrentCamera() const
+{
+	return mp_curentCam;
+}
+
+uint CameraHandler::GetCurrentCamIndex() const
+{
+	return m_currentCamIndex;
+}
+
+int CameraHandler::GetCameraIndex(std::string name) const
+{
+	for (int i = 0; i < m_cams.size(); i++)
+	{
+		std::string cameraName = m_cams[i].GetName();
+		if (cameraName == name)
+			return i;
+	}
+	return -1;
+}
+
+std::string CameraHandler::GetCameraName(uint i) const
+{
+	return m_cams[i].GetName();
+}

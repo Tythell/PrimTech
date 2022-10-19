@@ -3,12 +3,13 @@
 
 #define shadowQuality 2
 
-DX11Addon::DX11Addon(Window& window, Camera& camera) :
+DX11Addon::DX11Addon(Window& window, CameraHandler& camera) :
 	m_width(window.getWinWidth()), m_height(window.getWinHeight()), m_pHWND(&window.getHWND()),
-	m_shadowmap(1024 * shadowQuality, 1024 * shadowQuality, &camera), m_viewport(0.f, 0.f, (float)m_width, (float)m_height)
+	m_shadowmap(1024 * shadowQuality, 1024 * shadowQuality, camera.GetCurrentCamera()), m_viewport(0.f, 0.f, (float)m_width, (float)m_height)
 {
 	m_pWin = &window;
-	mp_cam = &camera;
+	mp_cam = camera.GetCurrentCamera();
+	mp_camHandler = &camera;
 
 	initSwapChain();
 	initRTV();
@@ -683,7 +684,6 @@ void DX11Addon::ImguiDebug()
 			v.texCoord = { .5f, 1.f };
 			v.normal = { 0.f, 0.f, -1.f };
 
-
 			pmodel->ChangeVertex(1, v);
 		}
 	}
@@ -1006,7 +1006,7 @@ void DX11Addon::ImGuiEntList()
 		//	ImGui::EndPopup();
 		//}
 
-		ImGui::BeginChild("Lefty", ImVec2(150, 350), true);
+		ImGui::BeginChild("Lefty##models", ImVec2(150, 250), true);
 		if (ImGui::IsWindowHovered())
 			m_isHoveringWindow = true;
 		for (int i = 0; i < m_models.size(); i++)
@@ -1014,8 +1014,20 @@ void DX11Addon::ImGuiEntList()
 			if (ImGui::Selectable(m_models[i]->GetName().c_str(), m_selected == i))
 				m_selected = i;
 		}
-
 		ImGui::EndChild();
+		ImGui::BeginChild("Lefty##cameras", ImVec2(150, 100), true);
+		if (ImGui::IsWindowHovered())
+			m_isHoveringWindow = true;
+		for (int i = 0; i < mp_camHandler->GetNoOfCams(); i++)
+		{
+			if (ImGui::Selectable(mp_camHandler->GetCameraName(i).c_str(), mp_camHandler->GetCurrentCamIndex() == i))
+			{
+				mp_camHandler->SetCurrentCamera(i);
+				mp_cam = mp_camHandler->GetCurrentCamera();
+			}
+		}
+		ImGui::EndChild();
+
 		ImGui::End();
 
 		if (m_selected != -1)

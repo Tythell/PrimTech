@@ -3,6 +3,7 @@
 #include <Windows.h>
 #include <iostream>
 #include <ctime>
+#include "Comlib/MahaHeaders.h"
 
 #define DEFAULT_BUFFERSIZE (1 << 11)
 #define DEFAULT_MESSAGESIZE 1024 * 1024
@@ -23,18 +24,6 @@ private:
 	HANDLE m_mutexHandle;
 };
 
-enum Headers
-{
-	MESSAGE = 0,
-	eNEWMESH,
-	eOBJECTDRAG,
-	eCAMERAMOVE, eCAMERACREATE,
-	eVERTEXDRAG,
-	eNEWTOPOLOGY,
-	eLOADTEXTURE,
-	eNAMECHANGE,
-};
-
 struct messageHeader
 {
 	char message[1024];
@@ -44,7 +33,6 @@ struct SectionHeader
 {
 	Headers header;
 	UINT msgLen;
-	UINT msgID;
 };
 
 class RingBuffer

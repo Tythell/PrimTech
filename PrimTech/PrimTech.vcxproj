@@ -195,6 +195,7 @@
     <ClCompile Include="src\WindowWrap.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Comlib\MahaHeaders.h" />
     <ClInclude Include="src\Comlib\Comlib.h" />
     <ClInclude Include="src\Graphics\3rdParty\assimp\Vertex.h" />
     <ClInclude Include="src\Graphics\RenderShapes.h" />

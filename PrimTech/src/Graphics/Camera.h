@@ -5,7 +5,7 @@
 class Camera
 {
 public:
-	Camera();
+	Camera(std::string name = "default");
 	void SetPerspective(float fovDeg, float aspectRatio, float nearZ, float farZ);
 	void SetOrtographic(float width, float height, float nearZ, float farZ);
 	void OverrideProjection(const sm::Matrix& m);
@@ -42,7 +42,10 @@ public:
 
 	void OverrideView(const sm::Matrix& m);
 	void OverrideViewProj(const sm::Matrix& m);
+	std::string GetName() const;
+	void SetName(const std::string& name);
 private:
+	std::string m_name;
 	void UpdateView();
 	sm::Vector3 m_position, m_rotation, m_offset;
 	sm::Matrix m_viewM, m_projM;
@@ -50,5 +53,36 @@ private:
 	sm::Vector3 m_forwardV, m_leftV, m_upV;
 	const float OFFSETMAX = 4.f;
 	float m_rotationSpeed;
+};
+
+enum CamFlags
+{
+	eNONE = 0,
+	eNO_DEFAULT_CAM,
+};
+
+class CameraHandler
+{
+public:
+	CameraHandler();
+	void Init(const d::XMINT2& resolutions, unsigned char flags = 0);
+	Camera* CreatePerspectiveCamera(std::string name, float fovDeg, float aspectRatio, float nearZ, float farZ);
+	Camera* GetCameraAdress(std::string name);
+	Camera* GetCameraAdress(uint i);
+
+	Camera* SetCurrentCamera(uint i);
+	Camera* SetCurrentCamera(std::string name);
+
+	void ChangeCameraName(std::string oldName, std::string newName);
+
+	uint GetNoOfCams() const;
+	Camera* GetCurrentCamera() const;
+	uint GetCurrentCamIndex() const;
+	int GetCameraIndex(std::string name) const;
+	std::string GetCameraName(uint i) const;
+private:
+	std::vector<Camera> m_cams;
+	uint m_currentCamIndex = 0;
+	Camera* mp_curentCam = nullptr;
 };
 
