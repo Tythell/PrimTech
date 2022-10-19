@@ -819,7 +819,7 @@ void DX11Addon::ImGuiRender()
 	if (im.showShadowMapDepth) ImGuTextureDisplay();
 
 	//ImGuiGradientWindow();
-	ImGuiEntList();
+	if(im.showObjectListWindow) ImGuiEntList();
 
 
 	if (im.showDemoWindow)
@@ -927,6 +927,8 @@ void DX11Addon::ImGuiMenu()
 			ImGui::MenuItem("Debug", NULL, &im.showDebugWindow);
 
 			ImGui::MenuItem("ImGui Demo", NULL, &im.showDemoWindow);
+			ImGui::MenuItem("Object List", NULL, &im.showObjectListWindow);
+			ImGui::MenuItem("Add button", NULL, &im.showAddButton);
 			ImGui::Separator();
 			ImGui::MenuItem("ShadowMapDepth", NULL, &im.showShadowMapDepth);
 
@@ -997,24 +999,29 @@ int CopyModel(ID3D11DeviceContext*& dc, Buffer<hlsl::cbpWorldTransforms3D>& tbuf
 
 void DX11Addon::ImGuiEntList()
 {
-	ImGui::SetNextWindowSize(ImVec2(500, 400), ImGuiCond_FirstUseEver);
-	if (ImGui::Begin("Model List##2", (bool*)false/*, /*ImGuiWindowFlags_MenuBar*/))
+	ImGui::SetNextWindowSize(ImVec2(200, 400)/*, ImGuiCond_FirstUseEver*/);
+	ImGui::SetNextWindowPos(ImVec2(m_width - (m_width / 8), 100), ImGuiCond_Once);
+	if (ImGui::Begin("Object List##2", &im.showObjectListWindow/*, /*ImGuiWindowFlags_MenuBar*/))
 	{
 		if (ImGui::IsWindowHovered())
 			m_isHoveringWindow = true;
-		//if (ImGui::Button(" + ##Button"))
-		//	ImGui::OpenPopup("popup##context");
-		//if (ImGui::BeginPopup("popup##context"))
-		//{
-		//	if (ImGui::Selectable("Model"))
-		//		m_selected = InterfaceAddModelToVector(dc, m_transformBuffer, m_materialBuffer, m_models);
-		//	ImGui::BeginDisabled();
-		//	if (ImGui::Selectable("Particle"))
-		//		m_selected = InterfaceAddModelToVector(dc, m_transformBuffer, m_materialBuffer, m_models);
-		//	ImGui::EndDisabled();
+		if (im.showAddButton)
+		{
+			if (ImGui::Button(" + ##Button"))
+				ImGui::OpenPopup("popup##context");
+			if (ImGui::BeginPopup("popup##context"))
+			{
+				if (ImGui::Selectable("Model"))
+					m_selected = InterfaceAddModelToVector(dc, m_transformBuffer, m_materialBuffer, m_models);
+				ImGui::BeginDisabled();
+				if (ImGui::Selectable("Particle"))
+					m_selected = InterfaceAddModelToVector(dc, m_transformBuffer, m_materialBuffer, m_models);
+				ImGui::EndDisabled();
 
-		//	ImGui::EndPopup();
-		//}
+				ImGui::EndPopup();
+			}
+		}
+		
 
 		ImGui::BeginChild("Lefty##models", ImVec2(150, 250), true);
 		if (ImGui::IsWindowHovered())
