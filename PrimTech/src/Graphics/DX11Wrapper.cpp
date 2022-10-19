@@ -273,8 +273,8 @@ bool DX11Addon::InitScene()
 	//ImportScene("Scenes\\multsc.ptscene");
 	NewScene();
 
-	m_bulb.Init("plane.txt", ModelType::eDEBUG, 3);
-	m_spotlight.Init("plane.txt", ModelType::eDEBUG, 3);
+	m_bulb.Init("bulb.obj", ModelType::eDEBUG, 3);
+	m_spotlight.Init("bulb.obj", ModelType::eDEBUG, 3);
 	m_bulb.SetScale(1.2f);
 	m_bulb.GetMaterial().SetTransparency(1.f);
 
