@@ -34,6 +34,42 @@ namespace pt
 		mp_gApi->SetInputP(m_kb);
 	}
 
+	void newMeshMessage(char* message, SectionHeader* header, NewMeshMessageStruct& m, std::vector<Vertex3D>& verts, std::vector<uint>& iBuffer)
+	{
+		memcpy((char*)&m, message, sizeof(NewMeshMessageStruct));
+		uint sizeOfVertexMessage = sizeof(MayaVertex) * m.numVertices;
+		uint sizeOfIndexMessage = sizeof(uint) * m.numIndexes;
+		std::vector<Vertex3D> vertexes;
+		std::vector<uint> indexes;
+		for (int i = 0; i < m.numVertices; i++)
+		{
+			Vertex3D vertex;
+			memcpy((char*)&vertex,
+				(message + sizeof(NewMeshMessageStruct)) + (i * sizeof(MayaVertex)),
+				sizeof(MayaVertex));
+			vertexes.emplace_back(vertex);
+		}
+		if (SENDiNDEXBUFFERWITHMAYA)
+		{
+			for (int i = 0; i < m.numVertices; i++)
+			{
+				uint index = 0;
+				uint offset = sizeof(NewMeshMessageStruct);
+				offset += sizeOfVertexMessage;
+				offset += (i * sizeof(uint));
+				memcpy((char*)&index, (message + offset), sizeof(uint));
+				indexes.emplace_back(index);
+			}
+		}
+		else
+		{
+			for (int i = 0; i < m.numVertices; i++)
+			{
+				indexes.emplace_back(i);
+			}
+		}
+	}
+
 	void PrimTech::Update(const float& dt)
 	{
 		if (m_kb.IsKeyDown(m_shutDownKey))
@@ -99,82 +135,22 @@ namespace pt
 			}
 			case Headers::eNEWMESH:
 			{
-				NewMeshMessageStruct m;
-				memcpy((char*)&m, message, sizeof(NewMeshMessageStruct));
-				uint sizeOfVertexMessage = sizeof(MayaVertex) * m.numVertices;
-				uint sizeOfVertexMessage = sizeof(uint) * m.numIndexes;
-				std::vector<Vertex3D> vertexes;
+				std::vector<Vertex3D> verts;
 				std::vector<uint> indexes;
-				for (int i = 0; i < m.numVertices; i++)
-				{
-					MayaVertex vertex;
-					memcpy((char*)&vertex, 
-						(message + sizeof(NewMeshMessageStruct)) + (i * sizeof(MayaVertex)),
-							sizeof(MayaVertex) );
-					vertexes.emplace_back(vertex);
-				}
-				if (SENDiNDEXBUFFERWITHMAYA)
-				{
-					for (int i = 0; i < m.numVertices; i++)
-					{
-						uint index = 0;
-						uint offset = sizeof(NewMeshMessageStruct);
-						offset += (m.numVertices * sizeof(MayaVertex));
-						offset += (i * sizeof(uint));
-						memcpy((char*)&indexes, (message + offset), sizeof(uint));
-						vertexes.emplace_back(index);
-					}
-				}
-				else
-				{
-					for (int i = 0; i < m.numVertices; i++)
-					{
-						indexes.emplace_back(i);
-					}
-				}
+				NewMeshMessageStruct m;
+				newMeshMessage(message, header, m, verts, indexes);
 
-
-				mp_gApi->AddNewModel(m.meshName, vertexes, indexes);
+				mp_gApi->AddNewModel(m.meshName, verts, indexes);
 				break;
 			}
 			case Headers::eNEWTOPOLOGY:
 			{
-				NewMeshMessageStruct m;
-				memcpy((char*)&m, message, sizeof(NewMeshMessageStruct));
-				uint sizeOfVertexMessage = sizeof(MayaVertex) * m.numVertices;
-				uint sizeOfVertexMessage = sizeof(uint) * m.numIndexes;
-				std::vector<Vertex3D> vertexes;
+				std::vector<Vertex3D> verts;
 				std::vector<uint> indexes;
-				for (int i = 0; i < m.numVertices; i++)
-				{
-					MayaVertex vertex;
-					memcpy((char*)&vertex,
-						(message + sizeof(NewMeshMessageStruct)) + (i * sizeof(MayaVertex)),
-						sizeof(MayaVertex));
-					vertexes.emplace_back(vertex);
-				}
-				if (SENDiNDEXBUFFERWITHMAYA)
-				{
-					for (int i = 0; i < m.numVertices; i++)
-					{
-						uint index = 0;
-						uint offset = sizeof(NewMeshMessageStruct);
-						offset += (m.numVertices * sizeof(MayaVertex));
-						offset += (i * sizeof(uint));
-						memcpy((char*)&indexes, (message + offset), sizeof(uint));
-						vertexes.emplace_back(index);
-					}
-				}
-				else
-				{
-					for (int i = 0; i < m.numVertices; i++)
-					{
-						indexes.emplace_back(i);
-					}
-				}
+				NewMeshMessageStruct m;
+				newMeshMessage(message, header, m, verts, indexes);
 
-
-				mp_gApi->AddNewModel(m.meshName, vertexes, indexes);
+				mp_gApi->AddNewModel(m.meshName, verts, indexes);
 				break;
 			}
 			case Headers::eOBJECTDRAG:
