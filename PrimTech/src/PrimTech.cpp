@@ -1,7 +1,7 @@
 #include "PrimTech.h"
 #include "Graphics/DX11Wrapper.h"
 #include <string>
-
+#define SENDiNDEXBUFFERWITHMAYA true
 namespace pt
 {
 	PrimTech::PrimTech() :
@@ -73,32 +73,143 @@ namespace pt
 			}
 			case Headers::eLOADTEXTURE:
 			{
+				NewTexture m;
+				memcpy((char*)&m, message, header->msgLen);
+				int index = mp_gApi->NameFindModel(m.meshName);
+				THROW_POPUP_ERRORF(index != -1, "Namechanging: mesh not found");
+				Model* pModel = mp_gApi->GetModelList()[index];
+				std::string texturePath = ".";
+				texturePath.append(m.texturePath);
+				if (m.textureType == 1)
+					m.textureType = 2; // NormalMap is texturetype 2 in this engine
+				pModel->LoadTexture(texturePath, 0, TextureType(m.textureType));
 
 				break;
 			}
 			case Headers::eNAMECHANGE:
 			{
+				NameChange m;
+				memcpy((char*)&m, message, header->msgLen);
+				int index = mp_gApi->NameFindModel(m.oldName);
+				THROW_POPUP_ERRORF(index != -1, "Namechanging: mesh not found");
+
+				mp_gApi->GetModelList()[index]->SetName(m.newName);
 
 				break;
 			}
 			case Headers::eNEWMESH:
 			{
+				NewMeshMessageStruct m;
+				memcpy((char*)&m, message, sizeof(NewMeshMessageStruct));
+				uint sizeOfVertexMessage = sizeof(MayaVertex) * m.numVertices;
+				uint sizeOfVertexMessage = sizeof(uint) * m.numIndexes;
+				std::vector<Vertex3D> vertexes;
+				std::vector<uint> indexes;
+				for (int i = 0; i < m.numVertices; i++)
+				{
+					MayaVertex vertex;
+					memcpy((char*)&vertex, 
+						(message + sizeof(NewMeshMessageStruct)) + (i * sizeof(MayaVertex)),
+							sizeof(MayaVertex) );
+					vertexes.emplace_back(vertex);
+				}
+				if (SENDiNDEXBUFFERWITHMAYA)
+				{
+					for (int i = 0; i < m.numVertices; i++)
+					{
+						uint index = 0;
+						uint offset = sizeof(NewMeshMessageStruct);
+						offset += (m.numVertices * sizeof(MayaVertex));
+						offset += (i * sizeof(uint));
+						memcpy((char*)&indexes, (message + offset), sizeof(uint));
+						vertexes.emplace_back(index);
+					}
+				}
+				else
+				{
+					for (int i = 0; i < m.numVertices; i++)
+					{
+						indexes.emplace_back(i);
+					}
+				}
 
+
+				mp_gApi->AddNewModel(m.meshName, vertexes, indexes);
 				break;
 			}
 			case Headers::eNEWTOPOLOGY:
 			{
+				NewMeshMessageStruct m;
+				memcpy((char*)&m, message, sizeof(NewMeshMessageStruct));
+				uint sizeOfVertexMessage = sizeof(MayaVertex) * m.numVertices;
+				uint sizeOfVertexMessage = sizeof(uint) * m.numIndexes;
+				std::vector<Vertex3D> vertexes;
+				std::vector<uint> indexes;
+				for (int i = 0; i < m.numVertices; i++)
+				{
+					MayaVertex vertex;
+					memcpy((char*)&vertex,
+						(message + sizeof(NewMeshMessageStruct)) + (i * sizeof(MayaVertex)),
+						sizeof(MayaVertex));
+					vertexes.emplace_back(vertex);
+				}
+				if (SENDiNDEXBUFFERWITHMAYA)
+				{
+					for (int i = 0; i < m.numVertices; i++)
+					{
+						uint index = 0;
+						uint offset = sizeof(NewMeshMessageStruct);
+						offset += (m.numVertices * sizeof(MayaVertex));
+						offset += (i * sizeof(uint));
+						memcpy((char*)&indexes, (message + offset), sizeof(uint));
+						vertexes.emplace_back(index);
+					}
+				}
+				else
+				{
+					for (int i = 0; i < m.numVertices; i++)
+					{
+						indexes.emplace_back(i);
+					}
+				}
 
+
+				mp_gApi->AddNewModel(m.meshName, vertexes, indexes);
 				break;
 			}
 			case Headers::eOBJECTDRAG:
 			{
+				MoveObjectStruct m;
+				memcpy((char*)&m, message, header->msgLen);
+				int index = mp_gApi->NameFindModel(m.meshName);
+				THROW_POPUP_ERRORF(index != -1, "eOBJECTDRAG: mesh not found");
+				Model* pModel = mp_gApi->GetModelList()[index];
+				
+				sm::Matrix mat = *reinterpret_cast<sm::Matrix*>(m.matrix);
+
+				pModel->OverrideWorldMatrix(mat);
 
 				break;
 			}
 			case Headers::eVERTEXDRAG:
 			{
+				VertexDrag m;
+				memcpy((char*)&m, message, header->msgLen);
+				int index = mp_gApi->NameFindModel(m.meshName);
+				THROW_POPUP_ERRORF(index != -1, "eVERTEXDRAG: mesh not found");
+				Model* pModel = mp_gApi->GetModelList()[index];
 
+
+				Vertex3D ptVert;
+				ptVert.position.x = m.newVertex.position[0];
+				ptVert.position.y = m.newVertex.position[1];
+				ptVert.position.z = m.newVertex.position[2];
+				ptVert.texCoord.x = m.newVertex.uv[0];
+				ptVert.texCoord.y = m.newVertex.uv[1];
+				ptVert.normal.x = m.newVertex.normal[0];
+				ptVert.normal.y = m.newVertex.normal[1];
+				ptVert.normal.z = m.newVertex.normal[2];
+				pModel->ChangeVertex(m.vertexId, ptVert);
 				break;
 			}
 			default:

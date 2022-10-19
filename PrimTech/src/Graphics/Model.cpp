@@ -581,7 +581,9 @@ void Mesh::ResetUses()
 
 void Mesh::UpdateVertex(const uint& id, const Vertex3D& v)
 {
-	m_vbuffer.Data(id) = v;
+	m_vbuffer.Data(id).position = v.position;
+	m_vbuffer.Data(id).normal = v.normal;
+	m_vbuffer.Data(id).texCoord = v.texCoord;
 
 	m_vbuffer.MapBuffer();
 }

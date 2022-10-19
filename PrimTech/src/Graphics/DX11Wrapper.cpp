@@ -583,9 +583,19 @@ int nameFindModel(const std::string name, std::vector<Model*> v)
 	return -1;
 }
 
-void DX11Addon::AddNewModel(const std::string name, std::vector<Vertex3D>& vertexArray, std::vector<uint> iArray, std::vector<Model*>& v)
+int DX11Addon::NameFindModel(const std::string name)
 {
-	int modelIndex = nameFindModel(name, v);
+	for (uint i = 0; i < m_models.size(); i++)
+	{
+		if (name == m_models[i]->GetName())
+			return i;
+	}
+	return -1;
+}
+
+void DX11Addon::AddNewModel(const std::string& name, std::vector<Vertex3D>& vertexArray, std::vector<uint> iArray)
+{
+	int modelIndex = nameFindModel(name, m_models);
 
 	//calculate tangent and bitangent
 	for (uint i = 0; i < vertexArray.size(); i += 3)
@@ -638,7 +648,7 @@ void DX11Addon::AddNewModel(const std::string name, std::vector<Vertex3D>& verte
 	}
 }
 
-void DX11Addon::MoveVertex(const std::string name, const uint& id, std::vector<Model*> v)
+void DX11Addon::MoveVertex(const std::string& name, const uint& id, std::vector<Model*> v)
 {
 	int index = nameFindModel(name, v);
 	Model* pModel = v[index];
@@ -673,7 +683,7 @@ void DX11Addon::ImguiDebug()
 			for (int i = 0; i < vertexArray.size(); i++)
 				vertexArray[i].normal = { 0.f, 0.f, -1.f };
 
-			AddNewModel("debugMaya", vertexArray, iArray, m_models);
+			AddNewModel("debugMaya", vertexArray, iArray);
 		}
 		ImGui::SameLine();
 		if (ImGui::Button("VertexMove"))

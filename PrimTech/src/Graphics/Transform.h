@@ -20,7 +20,7 @@ public:
 	void Scale(sm::Vector3 v);
 	void Scale(float xyz);
 
-	void SetWorldMatrix(sm::Matrix m);
+	void OverrideWorldMatrix(sm::Matrix m);
 
 	sm::Vector3 GetPosition() const;
 	sm::Vector3 GetRotation() const;

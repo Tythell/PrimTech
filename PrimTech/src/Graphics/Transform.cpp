@@ -106,7 +106,7 @@ void Transform::Scale(float xyz)
 	UpdateWorld();
 }
 
-void Transform::SetWorldMatrix(sm::Matrix m)
+void Transform::OverrideWorldMatrix(sm::Matrix m)
 {
 	worldTransposed = m.Transpose();
 }
