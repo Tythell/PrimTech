@@ -1,149 +1,134 @@
 #include "Comlib.h"
 
-RingBuffer::RingBuffer(const std::wstring& sharedMemName, TYPE type, const size_t& bufferSize)
-	:m_type(type), m_bufferSize(bufferSize), M_OFFSET(sizeof(int) * 3), m_mutex(L"MutexMap")
-{
-	m_hFileMap = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE,
-		(DWORD)0, bufferSize, sharedMemName.c_str());
+Comlib::Comlib(LPCWSTR bufferName, size_t bufferSize, ProcessType type)
+{   
+    this->type = type;
+    //Creating our shared memory inside our constructor of the comlib.cpp.
+    sharedMemory = new Memory(bufferName, bufferSize);
+    messageData = sharedMemory->GetMemoryBuffer();
+    mutex = new Mutex(L"MutexMap");
 
-	if (m_hFileMap == NULL) throw; // FATAL ERROR
+    /*
+    When creating each process, we need to separate if it is the producer or the
+    consumer we are creating by its type.Last, we set the same address as the file
+    mapping has to another char - pointer that we call messageData.Like this, we can
+    sendand receive our messages through this pointer.
 
-	m_data = MapViewOfFile(m_hFileMap, FILE_MAP_ALL_ACCESS, 0, 0, 0);
+    We can now create a shared memory to use between two processes with the
+    help of arguments. In main() we can insert so that we look specifically for
+    “producer” or “consumer” when we run our programs.*/
 
-	m_head = (int*)m_data;
-	m_tail = (int*)m_data + 1;
 
-	if (!(GetLastError() == ERROR_ALREADY_EXISTS))
-	{
-		*m_head = 0;
-		*m_tail = 0;
-	}
+    head = sharedMemory->GetControlBuffer();
+    tail = head + 1;
+    freeMemory = tail + 1;
+
+    if (type == Producer)
+    {
+        std::cout << "Producer activated" << std::endl;
+        *head = 0;
+        *tail = 0;
+        *freeMemory = bufferSize * 1048576;
+    }
+    else if (type == Producer)
+    {
+        std::cout << "Consumer activated" << std::endl;
+        *tail = 0;
+    }
+
 }
 
-RingBuffer::~RingBuffer()
-{
-	//print("Ringbuffer closed");
-	UnmapViewOfFile((LPCVOID)m_data);
-	CloseHandle(m_hFileMap);
+Comlib::~Comlib()
+{    
 }
 
-void*& RingBuffer::GetMem()
-{
-	return m_data;
+bool Comlib::Send(char* message, MessageHeader* msgHeader)
+{       
+    //Protocol Producer
+    bool result = false;
+    //mutex->Lock();
+    //size_t memoryLeft = sharedMemory->GetBufferSize() - *head;
+    //if (msgHeader->messageLength + sizeof(MessageHeader) >= memoryLeft)
+    //{
+    //    if (*tail != 0)
+    //    {
+    //        msgHeader->messageID = 0;
+    //        memcpy(messageData + *head, msgHeader, sizeof(MessageHeader));
+
+    //        *freeMemory -= (msgHeader->messageLength + sizeof(MessageHeader));
+    //        *head = 0;
+
+    //        mutex->Unlock();
+    //    }
+    //    else
+    //    {
+    //        mutex->Unlock();
+    //        result = false;
+    //    }
+    //}
+    //else if (msgHeader->messageLength + sizeof(MessageHeader) <*freeMemory -1)
+    //{
+    //    msgHeader->messageID = 1;
+    //    
+    //    //Print stuff
+    //    memcpy(messageData + *head, msgHeader, sizeof(MessageHeader));
+    //    memcpy(messageData + *head + sizeof(MessageHeader), message, msgHeader->messageLength);
+
+    //    *freeMemory -= (msgHeader->messageLength + sizeof(MessageHeader));
+    //    *head = (*head + msgHeader->messageLength + sizeof(MessageHeader)) % sharedMemory->GetBufferSize();
+
+    //    mutex->Unlock();
+    //    result = true;
+    //}
+    //else
+    //{
+    //    mutex->Unlock();
+    //    result = false;
+    //}
+    //return result;
 }
 
-const std::string RingBuffer::GetWholeBuffer() const
-{
-	//std::string result = "???? ???? ";
-	//int buffersize = 8;
+bool Comlib::Recieve(char* message)
+{   
+    //Protocol Consumer
+    mutex->Lock();
+    bool result = false;
+    //size_t msgLenght = 0;
+    ////Checking if the free memory is less than the total amount of memory to know if the Producer has started producing the messages
+    //if (*freeMemory < sharedMemory->GetBufferSize())
+    //{
+    //    if (*head != *tail)
+    //    {
+    //        messageHeader = ((MessageHeader*)&messageData[*tail]);
+    //        msgLenght = messageHeader->messageLength;
+    //        if (messageHeader->messageID == 0)
+    //        {
+    //            *freeMemory += (msgLenght + sizeof(MessageHeader));
+    //            *tail = 0;
 
-	//char* dd = new char[1];
+    //            mutex->Unlock();
+    //            result = false;
+    //        }
+    //        else
+    //        {
+    //            memcpy(message, &messageData[*tail + sizeof(MessageHeader)], msgLenght);
+    //            *tail = (*tail + msgLenght + sizeof(MessageHeader)) % sharedMemory->GetBufferSize();
+    //            *freeMemory +=(msgLenght + sizeof(MessageHeader));
 
-	//int stringSize = *m_msgLength;
-
-	//for (int i = 0; i < m_bufferSize / 2; i+= *m_msgLength)
-	//{
-	//	memcpy(dd,
-	//	M_OFFSET + (char*)m_data + i,
-	//		*m_msgLength);
-
-	//	result += dd;
-
-	//	//result += std::to_string(stringSize);
-	//}
-	//result += "\nSize of buffer:" + std::to_string(buffersize);
-	//result += "\nHead: " + std::to_string(*m_head) + " Tail: " + std::to_string(*m_tail);
-
-
-	//
-	//delete dd;
-	return std::string("whole buffer");
-}
-
-const bool RingBuffer::IsBufferFull() const
-{
-	if (*m_head == *m_tail)
-		return true;
-	return false;
-}
-
-bool RingBuffer::Send(const char* msg, SectionHeader* size)
-{
-	if (m_type == READ)
-	{
-		printf("Error: Reader can't send messages\n");
-		return false;
-	}
-	m_mutex.Lock();
-
-	int paddedSize = size->msgLen + (size->msgLen % MULTIBLE_VAR);
-
-	if (M_OFFSET + *m_head + paddedSize > m_bufferSize / 2)
-	{
-		int dummy = -1;
-		memcpy((char*)m_data + *m_head + M_OFFSET, (int*)&dummy, sizeof(int));
-		*m_head = 0;
-	}
-
-	memcpy((char*)m_data + *m_head + M_OFFSET, (int*)&paddedSize, sizeof(int));
-	memcpy((char*)m_data + *m_head + M_OFFSET + sizeof(int), msg, paddedSize); // send string
-
-	*m_head += std::abs(paddedSize) + sizeof(int);
-	m_mutex.Unlock();
-
-	return true;
-}
-
-bool RingBuffer::Recieve(char*& s, SectionHeader*& msgHeader)
-{
-	if (m_type == WRITE)
-	{
-		printf("Error: Writer can't read messages\n");
-		return false;
-	}
-
-	if (IsBufferFull()) return false;
-
-	m_mutex.Lock();
-
-	memcpy((char*)msgHeader, M_OFFSET + (char*)m_data + *m_tail, sizeof(SectionHeader));
-
-	if (msgHeader->msgLen < 0)
-	{
-		*m_tail = 0;
-		memcpy((char*)msgHeader, M_OFFSET + (char*)m_data + *m_tail, sizeof(int));
-	}
-
-	if (M_OFFSET + *m_tail + msgHeader->msgLen > m_bufferSize)
-		*m_tail = 0;
-
-	memcpy((char*)s, M_OFFSET + (char*)m_data + *m_tail + sizeof(SectionHeader), msgHeader->msgLen);
-
-	*m_tail += msgHeader->msgLen + sizeof(int);
-	m_mutex.Unlock();
-	return true;
-}
-
-Mutex::Mutex(LPCWSTR mutexName)
-{
-	m_mutexHandle = CreateMutex(nullptr, false, mutexName);
-	if (!m_mutexHandle)
-		std::cout << "Failed to create mutex object\n";
-	if (GetLastError() == ERROR_ALREADY_EXISTS)
-		std::cout << "Mutex already exists\n";
-}
-
-Mutex::~Mutex()
-{
-	CloseHandle(m_mutexHandle);
-}
-
-void Mutex::Lock()
-{
-	WaitForSingleObject(m_mutexHandle, INFINITE);
-}
-
-void Mutex::Unlock()
-{
-	ReleaseMutex(m_mutexHandle);
+    //            mutex->Unlock();
+    //            result = true;
+    //        }
+    //    }
+    //    else
+    //    {
+    //        mutex->Unlock();
+    //        result = false;
+    //    }
+    //}
+    //else
+    //{
+    //    mutex->Unlock();
+    //    result = false;
+    //}
+    return result;
 }

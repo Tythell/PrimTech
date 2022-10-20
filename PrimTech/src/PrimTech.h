@@ -20,7 +20,9 @@ namespace pt
 		void ShowCursor();
 
 		//Testing Comlib
-		RingBuffer m_consumerBuffer;
+		Comlib* consumerBuffer;
+		char* message;
+		SectionHeader* mainHeader;
 
 		Window m_window;
 		DX11Addon* mp_gApi = nullptr;

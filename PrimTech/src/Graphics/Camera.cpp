@@ -184,19 +184,14 @@ void Camera::SetRotationSpeed(float f)
 	m_rotationSpeed = f;
 }
 
-void Camera::OverrideView(const sm::Matrix& m)
-{
-	m_viewM = m;
-}
-
-void Camera::OverrideProjection(const sm::Matrix& m)
+void Camera::OverrideProjectionMatrix(const sm::Matrix& m)
 {
 	m_projM = m;
 }
 
-void Camera::OverrideViewProj(const sm::Matrix& m)
+void Camera::OverrideViewMatrix(const sm::Matrix& m)
 {
-	THROW_POPUP_ERRORF(false, "OverrideViewProj är inte supported än, fråga Christian");
+	m_viewM = m;
 }
 
 std::string Camera::GetName() const
@@ -236,7 +231,8 @@ CameraHandler::CameraHandler()
 
 void CameraHandler::Init(const d::XMINT2& resolutions, unsigned char flags)
 {
-	if (!(flags & eNO_DEFAULT_CAM))
+	m_flags = flags;
+	if (!(m_flags & CamFlags_eNO_DEFAULT_CAM))
 	{
 		Camera* pCam = CreatePerspectiveCamera("DefaultCamera", 80, (float)resolutions.x / (float)resolutions.y, 0.1f, 100.f);
 		pCam->SetPosition(2.f, 0, -3.f);
@@ -249,11 +245,20 @@ Camera* CameraHandler::CreatePerspectiveCamera(std::string name, float fovDeg, f
 	bool nameExists = false;
 	for (int i = 0; i < m_cams.size(); i++)
 	{
-		if (m_cams[i].GetName() == name)
+		if (m_flags & CamFlags_SAME_NAME_EQUALS_SAMECAM)
 		{
-			name.append("1");
-			break;
+			if (m_cams[i].GetName() == name)
+				return &m_cams[i];
 		}
+		else
+		{
+			if (m_cams[i].GetName() == name)
+			{
+				name.append("1");
+				break;
+			}
+		}
+		
 	}
 	if (!nameExists)
 	{
@@ -266,6 +271,13 @@ Camera* CameraHandler::CreatePerspectiveCamera(std::string name, float fovDeg, f
 	else
 		CreatePerspectiveCamera(name, fovDeg, aspectRatio, nearZ, farZ);
 	return nullptr;
+}
+
+Camera* CameraHandler::CreateEmptyCamera(std::string name)
+{
+	Camera cam(name);
+	m_cams.emplace_back(cam);
+	return &m_cams[m_cams.size()-1];
 }
 
 Camera* CameraHandler::GetCameraAdress(std::string name)

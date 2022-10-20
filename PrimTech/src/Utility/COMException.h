@@ -4,8 +4,8 @@
 
 #define COM_ERROR(hr, msg) if(FAILED(hr) )throw COMException(hr, msg, __FILE__, __FUNCTION__, __LINE__)
 #define THROW_POPUP_ERRORF(b, msg) if(!b )throw COMException(msg, __FILE__, __FUNCTION__, __LINE__)
-//#define POPUP_ERRORF(b, msg) if(!b ) Popup::Error(msg)
-#define POPUP_ERRORF(b, msg) if(!b ) COMException(msg, __FILE__, __FUNCTION__, __LINE__)
+#define POPUP_ERRORF(b, msg) if(!b ) Popup::Error(msg)
+//#define POPUP_ERRORF(b, msg) if(!b ) COMException(msg, __FILE__, __FUNCTION__, __LINE__)
 class COMException
 {
 public:

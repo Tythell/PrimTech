@@ -8,7 +8,8 @@ public:
 	Camera(std::string name = "default");
 	void SetPerspective(float fovDeg, float aspectRatio, float nearZ, float farZ);
 	void SetOrtographic(float width, float height, float nearZ, float farZ);
-	void OverrideProjection(const sm::Matrix& m);
+	void OverrideProjectionMatrix(const sm::Matrix& m);
+	void OverrideViewMatrix(const sm::Matrix& m);
 
 	void SetPosition(float x, float y, float z);
 	void SetPosition(const sm::Vector3 v);
@@ -40,8 +41,6 @@ public:
 
 	void SetRotationSpeed(float f);
 
-	void OverrideView(const sm::Matrix& m);
-	void OverrideViewProj(const sm::Matrix& m);
 	std::string GetName() const;
 	void SetName(const std::string& name);
 private:
@@ -57,8 +56,9 @@ private:
 
 enum CamFlags
 {
-	eNONE = 0,
-	eNO_DEFAULT_CAM,
+	CamFlags_eNONE = 0,
+	CamFlags_eNO_DEFAULT_CAM,
+	CamFlags_SAME_NAME_EQUALS_SAMECAM
 };
 
 class CameraHandler
@@ -67,6 +67,7 @@ public:
 	CameraHandler();
 	void Init(const d::XMINT2& resolutions, unsigned char flags = 0);
 	Camera* CreatePerspectiveCamera(std::string name, float fovDeg, float aspectRatio, float nearZ, float farZ);
+	Camera* CreateEmptyCamera(std::string name);
 	Camera* GetCameraAdress(std::string name);
 	Camera* GetCameraAdress(uint i);
 
@@ -84,5 +85,6 @@ private:
 	std::vector<Camera> m_cams;
 	uint m_currentCamIndex = 0;
 	Camera* mp_curentCam = nullptr;
+	unsigned char m_flags = 0;
 };
 

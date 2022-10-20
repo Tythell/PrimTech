@@ -165,6 +165,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Comlib\Comlib.cpp" />
+    <ClCompile Include="src\Comlib\Memory.cpp" />
+    <ClCompile Include="src\Comlib\Mutex.cpp" />
     <ClCompile Include="src\Graphics\RenderShapes.cpp" />
     <ClCompile Include="src\Graphics\ShadowMap.cpp" />
     <ClCompile Include="src\PrimTech\Scene.cpp" />
@@ -197,6 +199,8 @@
   <ItemGroup>
     <ClInclude Include="src\Comlib\MahaHeaders.h" />
     <ClInclude Include="src\Comlib\Comlib.h" />
+    <ClInclude Include="src\Comlib\Memory.h" />
+    <ClInclude Include="src\Comlib\Mutex.h" />
     <ClInclude Include="src\Graphics\3rdParty\assimp\Vertex.h" />
     <ClInclude Include="src\Graphics\RenderShapes.h" />
     <ClInclude Include="src\Graphics\ShadowMap.h" />
