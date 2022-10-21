@@ -1,9 +1,6 @@
 #pragma once
 #include <DirectXMath.h>
 
-enum Headers {
-	MESSAGE = 0,
-};
 struct SectionHeader
 {
 	Headers header;

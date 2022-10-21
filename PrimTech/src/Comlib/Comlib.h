@@ -3,6 +3,7 @@
 #include "Memory.h"
 #include "SectionHeader.h"
 #include "Mutex.h"
+#include "MahaHeaders.h"
 
 enum ProcessType {Producer, Consumer};
 
