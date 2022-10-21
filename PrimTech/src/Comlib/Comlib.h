@@ -1,8 +1,8 @@
 #pragma once
 #include <string>
 #include "Memory.h"
+#include "SectionHeader.h"
 #include "Mutex.h"
-#include "MahaHeaders.h"
 
 enum ProcessType {Producer, Consumer};
 
@@ -17,6 +17,7 @@ private:
 	size_t* tail;
 	size_t* freeMemory;
 
+	//MessageHeader* messageHeader;
 	ControlHeader* ctrler;
 	ProcessType type;
 
@@ -26,5 +27,5 @@ public:
 
 	Memory* GetSharedMemory() { return sharedMemory; }
 	bool Send(char* message, SectionHeader* secHeader);
-	bool Recieve(char* message);
+	bool Recieve(char* message, SectionHeader*& secHeader);
 };

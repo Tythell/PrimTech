@@ -15,7 +15,9 @@ enum Headers
 
 struct SectionHeader
 {
+	Headers header;
 	size_t messageLength;
+	size_t messageID;
 };
 
 struct MayaVertex

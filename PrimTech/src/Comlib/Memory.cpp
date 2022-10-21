@@ -2,7 +2,7 @@
 
 Memory::Memory(LPCWSTR bufferName, size_t bufferSize)
 { 
-	this->bufferSize = bufferSize * 1048576;
+	this->bufferSize = bufferSize * 1048576; //(1 << 10);
 	this->controlbufferSize = sizeof(ControlHeader);
 	this->ctrlbufferName = L"CtrlMap";
 

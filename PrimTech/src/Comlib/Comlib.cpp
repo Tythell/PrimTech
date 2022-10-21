@@ -28,7 +28,7 @@ Comlib::Comlib(LPCWSTR bufferName, size_t bufferSize, ProcessType type)
         std::cout << "Producer activated" << std::endl;
         *head = 0;
         *tail = 0;
-        *freeMemory = bufferSize * 1048576;
+        *freeMemory = bufferSize * 1048576; 
     }
     else if (type == Producer)
     {
@@ -39,98 +39,97 @@ Comlib::Comlib(LPCWSTR bufferName, size_t bufferSize, ProcessType type)
 }
 
 Comlib::~Comlib()
-{
-    delete mutex;
-    delete sharedMemory;
+{    
 }
 
-bool Comlib::Send(char* message, SectionHeader* msgHeader)
+bool Comlib::Send(char* message, SectionHeader* secHeader)
 {       
     //Protocol Producer
     bool result = false;
-    //mutex->Lock();
-    //size_t memoryLeft = sharedMemory->GetBufferSize() - *head;
-    //if (msgHeader->messageLength + sizeof(MessageHeader) >= memoryLeft)
-    //{
-    //    if (*tail != 0)
-    //    {
-    //        msgHeader->messageID = 0;
-    //        memcpy(messageData + *head, msgHeader, sizeof(MessageHeader));
+    mutex->Lock();
+    size_t memoryLeft = sharedMemory->GetBufferSize() - *head;
+    if (secHeader->messageLength + sizeof(SectionHeader) >= memoryLeft)
+    {
+        if (*tail != 0)
+        {
+            secHeader->messageID = 0;
+            memcpy(messageData + *head, secHeader, sizeof(SectionHeader));
 
-    //        *freeMemory -= (msgHeader->messageLength + sizeof(MessageHeader));
-    //        *head = 0;
+            *freeMemory -= (secHeader->messageLength + sizeof(SectionHeader));
+            *head = 0;
 
-    //        mutex->Unlock();
-    //    }
-    //    else
-    //    {
-    //        mutex->Unlock();
-    //        result = false;
-    //    }
-    //}
-    //else if (msgHeader->messageLength + sizeof(MessageHeader) <*freeMemory -1)
-    //{
-    //    msgHeader->messageID = 1;
-    //    
-    //    //Print stuff
-    //    memcpy(messageData + *head, msgHeader, sizeof(MessageHeader));
-    //    memcpy(messageData + *head + sizeof(MessageHeader), message, msgHeader->messageLength);
+            mutex->Unlock();
+        }
+        else
+        {
+            mutex->Unlock();
+            result = false;
+        }
+    }
+    else if (secHeader->messageLength + sizeof(SectionHeader) <*freeMemory -1)
+    {
+        secHeader->messageID = 1;
+        
+        //Print stuff
+        memcpy(messageData + *head, secHeader, sizeof(SectionHeader));
+        memcpy(messageData + *head + sizeof(SectionHeader), message, secHeader->messageLength);
 
-    //    *freeMemory -= (msgHeader->messageLength + sizeof(MessageHeader));
-    //    *head = (*head + msgHeader->messageLength + sizeof(MessageHeader)) % sharedMemory->GetBufferSize();
+        *freeMemory -= (secHeader->messageLength + sizeof(SectionHeader));
+        *head = (*head + secHeader->messageLength + sizeof(SectionHeader)) % sharedMemory->GetBufferSize();
 
-    //    mutex->Unlock();
-    //    result = true;
-    //}
-    //else
-    //{
-    //    mutex->Unlock();
-    //    result = false;
-    //}
+        mutex->Unlock();
+        result = true;
+    }
+    else
+    {
+        mutex->Unlock();
+        result = false;
+    }
     return result;
 }
 
-bool Comlib::Recieve(char* message)
+bool Comlib::Recieve(char* message, SectionHeader*& secHeader)
 {   
     //Protocol Consumer
     mutex->Lock();
     bool result = false;
-    //size_t msgLenght = 0;
-    ////Checking if the free memory is less than the total amount of memory to know if the Producer has started producing the messages
-    //if (*freeMemory < sharedMemory->GetBufferSize())
-    //{
-    //    if (*head != *tail)
-    //    {
-    //        messageHeader = ((MessageHeader*)&messageData[*tail]);
-    //        msgLenght = messageHeader->messageLength;
-    //        if (messageHeader->messageID == 0)
-    //        {
-    //            *freeMemory += (msgLenght + sizeof(MessageHeader));
-    //            *tail = 0;
+    size_t msgLenght = 0;
+    //Checking if the free memory is less than the total amount of memory to know if the Producer has started producing the messages
+    if (*freeMemory < sharedMemory->GetBufferSize())
+    {
+        if (*head != *tail)
+        {
+            secHeader = ((SectionHeader*)&messageData[*tail]);
+            msgLenght = secHeader->messageLength;
+            if (secHeader->messageID == 0)
+            {
+                *freeMemory += (msgLenght + sizeof(SectionHeader));
+                *tail = 0;
 
-    //            mutex->Unlock();
-    //            result = false;
-    //        }
-    //        else
-    //        {
-    //            memcpy(message, &messageData[*tail + sizeof(MessageHeader)], msgLenght);
-    //            *tail = (*tail + msgLenght + sizeof(MessageHeader)) % sharedMemory->GetBufferSize();
-    //            *freeMemory +=(msgLenght + sizeof(MessageHeader));
+                mutex->Unlock();
+                result = false;
+            }
+            else
+            {
+                message = new char[msgLenght];
+                memcpy(message, &messageData[*tail + sizeof(SectionHeader)], msgLenght);
+                *tail = (*tail + msgLenght + sizeof(SectionHeader)) % sharedMemory->GetBufferSize();
+                *freeMemory +=(msgLenght + sizeof(SectionHeader));
 
-    //            mutex->Unlock();
-    //            result = true;
-    //        }
-    //    }
-    //    else
-    //    {
-    //        mutex->Unlock();
-    //        result = false;
-    //    }
-    //}
-    //else
-    //{
-    //    mutex->Unlock();
-    //    result = false;
-    //}
+                mutex->Unlock();
+                result = true;
+            }
+        }
+        else
+        {
+            mutex->Unlock();
+            result = false;
+        }
+    }
+    else
+    {
+        mutex->Unlock();
+        result = false;
+    }
     return result;
 }
