@@ -20,11 +20,13 @@ private:
 	ControlHeader* ctrler;
 	ProcessType type;
 
+	
+
 public:
 	Comlib(LPCWSTR bufferName, size_t bufferSize, ProcessType type);
 	~Comlib();
 
 	Memory* GetSharedMemory() { return sharedMemory; }
 	bool Send(char* message, SectionHeader* secHeader);
-	bool Recieve(char* message);
+	bool Recieve(char* message, SectionHeader*& msgHeader);
 };

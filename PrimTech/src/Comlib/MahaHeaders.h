@@ -15,7 +15,15 @@ enum Headers
 
 struct SectionHeader
 {
-	size_t messageLength;
+	Headers header;
+	size_t msgLen;
+	size_t msgID;
+};
+//Just Testing head
+struct MessageHeader
+{
+	char message[1024];
+	float position[3];
 };
 
 struct MayaVertex
