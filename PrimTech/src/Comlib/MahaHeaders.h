@@ -13,6 +13,11 @@ enum Headers
 	eNAMECHANGE,
 };
 
+struct SectionHeader
+{
+	size_t messageLength;
+};
+
 struct MayaVertex
 {
 	float position[3]{0.f};

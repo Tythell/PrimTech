@@ -1,6 +1,11 @@
 #pragma once
 #include <d3d11.h>
 #include "../Math/Math.h"
+#include "Utility/Popup.h"
+enum class ShaderType
+{
+	VS, GS, HS, DS, PS
+};
 class TextureMap
 {
 private:
@@ -15,6 +20,7 @@ public:
 	static const unsigned char* CreateCharFromFile(const char* path, unsigned char*& imagedData, int imagewidth, int imageheight, int channels, bool flipUV = true);
 	static void ExportCharToImage(const char* path, unsigned char* imageData, int width, int height, int channels);
 	bool CreatePerlinNoise(ID3D11Device*& device);
+	void Bind(uint slot, ShaderType shadertype, ID3D11DeviceContext*& dc);
 
 	ID3D11ShaderResourceView* GetSRV();
 	ID3D11ShaderResourceView** GetSRVAdress();

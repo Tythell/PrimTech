@@ -39,10 +39,12 @@ Comlib::Comlib(LPCWSTR bufferName, size_t bufferSize, ProcessType type)
 }
 
 Comlib::~Comlib()
-{    
+{
+    delete mutex;
+    delete sharedMemory;
 }
 
-bool Comlib::Send(char* message, MessageHeader* msgHeader)
+bool Comlib::Send(char* message, SectionHeader* msgHeader)
 {       
     //Protocol Producer
     bool result = false;
@@ -85,7 +87,7 @@ bool Comlib::Send(char* message, MessageHeader* msgHeader)
     //    mutex->Unlock();
     //    result = false;
     //}
-    //return result;
+    return result;
 }
 
 bool Comlib::Recieve(char* message)

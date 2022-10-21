@@ -696,6 +696,10 @@ void DX11Addon::ImguiDebug()
 
 			pmodel->ChangeVertex(1, v);
 		}
+		if (ImGui::Button("RemoveCam"))
+		{
+			mp_camHandler->RemoveCamera("testcam");
+		}
 	}
 	
 	if (ImGui::IsWindowHovered())

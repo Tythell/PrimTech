@@ -106,9 +106,9 @@ void Material::SetDistortionScrollSpeed(float x, float y)
 void Material::Set(ID3D11DeviceContext*& dc)
 {
 	if (mp_textures[eDiffuse])
-		dc->PSSetShaderResources(1, 1, mp_textures[eDiffuse]->GetSRVAdress());
+		mp_textures[eDiffuse]->Bind(1, ShaderType::PS, dc);
 	else // If Model has no diffuse it will default to first texture in vector
-		dc->PSSetShaderResources(1, 1, ResourceHandler::GetTextureAdress(0)->GetSRVAdress());
+		ResourceHandler::GetTextureAdress(0)->Bind(1, ShaderType::PS, dc);
 
 	for (int i = 1; i < eTextureTypeAMOUNT; i++)
 	{

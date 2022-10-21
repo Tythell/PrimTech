@@ -295,6 +295,27 @@ Camera* CameraHandler::GetCameraAdress(uint i)
 	return &m_cams[i];
 }
 
+void CameraHandler::RemoveCamera(std::string name)
+{
+	int i = GetCameraIndex(name);
+	THROW_POPUP_ERRORF((i != -1), "Camera: " + name + "does not exist");
+	RemoveCamera(i);
+	//SetCurrentCamera(0);
+}
+
+void CameraHandler::RemoveCamera(uint i)
+{
+	if (m_currentCamIndex == i)
+	{
+		if (m_cams.size() > 1)
+		{
+			m_currentCamIndex--;
+			mp_curentCam = &m_cams[m_currentCamIndex];
+		}
+	}
+	m_cams.pop_back();
+}
+
 Camera* CameraHandler::SetCurrentCamera(uint i)
 {
 	m_currentCamIndex = i;

@@ -25,6 +25,6 @@ public:
 	~Comlib();
 
 	Memory* GetSharedMemory() { return sharedMemory; }
-	bool Send(char* message, MessageHeader* secHeader);
+	bool Send(char* message, SectionHeader* secHeader);
 	bool Recieve(char* message);
 };

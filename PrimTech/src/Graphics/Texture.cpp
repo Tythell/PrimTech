@@ -155,6 +155,30 @@ bool TextureMap::CreatePerlinNoise(ID3D11Device*& device)
 	return false;
 }
 
+void TextureMap::Bind(uint slot, ShaderType shadertype, ID3D11DeviceContext*& dc)
+{
+	switch (shadertype)
+	{
+	case ShaderType::VS:
+		dc->VSSetShaderResources(slot, 1, &m_textureSRV);
+		break;
+	case ShaderType::GS:
+		dc->GSSetShaderResources(slot, 1, &m_textureSRV);
+		break;
+	case ShaderType::HS:
+		dc->HSSetShaderResources(slot, 1, &m_textureSRV);
+		break;
+	case ShaderType::DS:
+		dc->DSSetShaderResources(slot, 1, &m_textureSRV);
+		break;
+	case ShaderType::PS:
+		dc->PSSetShaderResources(slot, 1, &m_textureSRV);
+		break;
+	default:
+		break;
+	}
+}
+
 ID3D11ShaderResourceView* TextureMap::GetSRV()
 {
 	return m_textureSRV;

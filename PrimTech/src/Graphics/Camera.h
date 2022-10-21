@@ -71,6 +71,9 @@ public:
 	Camera* GetCameraAdress(std::string name);
 	Camera* GetCameraAdress(uint i);
 
+	void RemoveCamera(std::string name);
+	void RemoveCamera(uint i);
+
 	Camera* SetCurrentCamera(uint i);
 	Camera* SetCurrentCamera(std::string name);
 

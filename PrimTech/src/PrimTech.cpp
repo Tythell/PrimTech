@@ -28,6 +28,7 @@ namespace pt
 
 		//m_cellCam.SetPosition(0.f, 0.f, -1.f);
 		m_cams.Init({ (int)width, (int)height }, CamFlags_SAME_NAME_EQUALS_SAMECAM);
+		m_cams.CreatePerspectiveCamera("testcam", 70, (float)width / (float)height, 0.1f, 100.f);
 		//pCam2->SetPosition(2.f, 0.5f, -3.f);
 		//m_cam3d[0].SetPosition(2.f, 0, -3.f);
 
@@ -74,118 +75,118 @@ namespace pt
 		if (m_kb.IsKeyDown(m_shutDownKey))
 			m_window.ShutDown();
 
-		while (consumerBuffer->Recieve(message, mainHeader))
-		{
-			if (mainHeader->header == MESSAGE)
-			{
-				OutputDebugStringW(L"We got a MESSAGE message.");
-			}
-			switch (this->mainHeader->header)
-			{
-			case Headers::MESSAGE:
-			{
-				OutputDebugStringA(this->message);
-				OutputDebugStringA("\n");
-				break;
-			}
-			case Headers::eCAMMESSAGE:
-			{
-				CameraData camMessage;
-				memcpy((char*)&camMessage, message, mainHeader->messageLength);
-				Camera* pcam = m_cams.CreateEmptyCamera(camMessage.cameraName);
-				sm::Matrix projMatrix = *reinterpret_cast<sm::Matrix*>(camMessage.projMatrix);
-				sm::Matrix viewMatrix = *reinterpret_cast<sm::Matrix*>(camMessage.viewMatrix);
-				pcam->OverrideProjectionMatrix(projMatrix);
-				pcam->OverrideViewMatrix(viewMatrix);
+		//while (consumerBuffer->Recieve(message, mainHeader))
+		//{
+		//	if (mainHeader->header == MESSAGE)
+		//	{
+		//		OutputDebugStringW(L"We got a MESSAGE message.");
+		//	}
+		//	switch (this->mainHeader->header)
+		//	{
+		//	case Headers::MESSAGE:
+		//	{
+		//		OutputDebugStringA(this->message);
+		//		OutputDebugStringA("\n");
+		//		break;
+		//	}
+		//	case Headers::eCAMMESSAGE:
+		//	{
+		//		CameraData camMessage;
+		//		memcpy((char*)&camMessage, message, mainHeader->messageLength);
+		//		Camera* pcam = m_cams.CreateEmptyCamera(camMessage.cameraName);
+		//		sm::Matrix projMatrix = *reinterpret_cast<sm::Matrix*>(camMessage.projMatrix);
+		//		sm::Matrix viewMatrix = *reinterpret_cast<sm::Matrix*>(camMessage.viewMatrix);
+		//		pcam->OverrideProjectionMatrix(projMatrix);
+		//		pcam->OverrideViewMatrix(viewMatrix);
 
-				break;
-			}
-			case Headers::eLOADTEXTURE:
-			{
-				NewTexture m;
-				memcpy((char*)&m, message, mainHeader->messageLength);
-				int index = mp_gApi->NameFindModel(m.meshName);
-				THROW_POPUP_ERRORF(index != -1, "Namechanging: mesh not found");
-				Model* pModel = mp_gApi->GetModelList()[index];
-				std::string texturePath = ".";
-				texturePath.append(m.texturePath);
-				if (m.textureType == 1)
-					m.textureType = 2; // NormalMap is texturetype 2 in this engine
-				pModel->LoadTexture(texturePath, 0, TextureType(m.textureType));
+		//		break;
+		//	}
+		//	case Headers::eLOADTEXTURE:
+		//	{
+		//		NewTexture m;
+		//		memcpy((char*)&m, message, mainHeader->messageLength);
+		//		int index = mp_gApi->NameFindModel(m.meshName);
+		//		THROW_POPUP_ERRORF(index != -1, "Namechanging: mesh not found");
+		//		Model* pModel = mp_gApi->GetModelList()[index];
+		//		std::string texturePath = ".";
+		//		texturePath.append(m.texturePath);
+		//		if (m.textureType == 1)
+		//			m.textureType = 2; // NormalMap is texturetype 2 in this engine
+		//		pModel->LoadTexture(texturePath, 0, TextureType(m.textureType));
 
-				break;
-			}
-			case Headers::eNAMECHANGE:
-			{
-				NameChange m;
-				memcpy((char*)&m, message, mainHeader->messageLength);
-				int index = mp_gApi->NameFindModel(m.oldName);
-				THROW_POPUP_ERRORF(index != -1, "Namechanging: mesh not found");
+		//		break;
+		//	}
+		//	case Headers::eNAMECHANGE:
+		//	{
+		//		NameChange m;
+		//		memcpy((char*)&m, message, mainHeader->messageLength);
+		//		int index = mp_gApi->NameFindModel(m.oldName);
+		//		THROW_POPUP_ERRORF(index != -1, "Namechanging: mesh not found");
 
-				mp_gApi->GetModelList()[index]->SetName(m.newName);
+		//		mp_gApi->GetModelList()[index]->SetName(m.newName);
 
-				break;
-			}
-			case Headers::eNEWMESH:
-			{
-				std::vector<Vertex3D> verts;
-				std::vector<uint> indexes;
-				NewMeshMessageStruct m;
-				newMeshMessage(message, m, verts, indexes);
+		//		break;
+		//	}
+		//	case Headers::eNEWMESH:
+		//	{
+		//		std::vector<Vertex3D> verts;
+		//		std::vector<uint> indexes;
+		//		NewMeshMessageStruct m;
+		//		newMeshMessage(message, m, verts, indexes);
 
-				mp_gApi->AddNewModel(m.meshName, verts, indexes);
-				break;
-			}
-			case Headers::eNEWTOPOLOGY:
-			{
-				std::vector<Vertex3D> verts;
-				std::vector<uint> indexes;
-				NewMeshMessageStruct m;
-				newMeshMessage(message, m, verts, indexes);
+		//		mp_gApi->AddNewModel(m.meshName, verts, indexes);
+		//		break;
+		//	}
+		//	case Headers::eNEWTOPOLOGY:
+		//	{
+		//		std::vector<Vertex3D> verts;
+		//		std::vector<uint> indexes;
+		//		NewMeshMessageStruct m;
+		//		newMeshMessage(message, m, verts, indexes);
 
-				mp_gApi->AddNewModel(m.meshName, verts, indexes);
-				break;
-			}
-			case Headers::eOBJECTDRAG:
-			{
-				MoveObjectStruct m;
-				memcpy((char*)&m, message, mainHeader->messageLength);
-				int index = mp_gApi->NameFindModel(m.meshName);
-				THROW_POPUP_ERRORF(index != -1, "eOBJECTDRAG: mesh not found");
-				Model* pModel = mp_gApi->GetModelList()[index];
-				
-				sm::Matrix mat = *reinterpret_cast<sm::Matrix*>(m.matrix);
+		//		mp_gApi->AddNewModel(m.meshName, verts, indexes);
+		//		break;
+		//	}
+		//	case Headers::eOBJECTDRAG:
+		//	{
+		//		MoveObjectStruct m;
+		//		memcpy((char*)&m, message, mainHeader->messageLength);
+		//		int index = mp_gApi->NameFindModel(m.meshName);
+		//		THROW_POPUP_ERRORF(index != -1, "eOBJECTDRAG: mesh not found");
+		//		Model* pModel = mp_gApi->GetModelList()[index];
+		//		
+		//		sm::Matrix mat = *reinterpret_cast<sm::Matrix*>(m.matrix);
 
-				pModel->OverrideWorldMatrix(mat);
+		//		pModel->OverrideWorldMatrix(mat);
 
-				break;
-			}
-			case Headers::eVERTEXDRAG:
-			{
-				VertexDrag m;
-				memcpy((char*)&m, message, mainHeader->messageLength);
-				int index = mp_gApi->NameFindModel(m.meshName);
-				THROW_POPUP_ERRORF(index != -1, "eVERTEXDRAG: mesh not found");
-				Model* pModel = mp_gApi->GetModelList()[index];
+		//		break;
+		//	}
+		//	case Headers::eVERTEXDRAG:
+		//	{
+		//		VertexDrag m;
+		//		memcpy((char*)&m, message, mainHeader->messageLength);
+		//		int index = mp_gApi->NameFindModel(m.meshName);
+		//		THROW_POPUP_ERRORF(index != -1, "eVERTEXDRAG: mesh not found");
+		//		Model* pModel = mp_gApi->GetModelList()[index];
 
 
-				Vertex3D ptVert;
-				ptVert.position.x = m.newVertex.position[0];
-				ptVert.position.y = m.newVertex.position[1];
-				ptVert.position.z = m.newVertex.position[2];
-				ptVert.texCoord.x = m.newVertex.uv[0];
-				ptVert.texCoord.y = m.newVertex.uv[1];
-				ptVert.normal.x = m.newVertex.normal[0];
-				ptVert.normal.y = m.newVertex.normal[1];
-				ptVert.normal.z = m.newVertex.normal[2];
-				pModel->ChangeVertex(m.vertexId, ptVert);
-				break;
-			}
-			default:
-				POPUP_ERRORF(false, "There is no message for enum(" + std::to_string(mainHeader->header) + ")");
-				break;
-			}
-		}
+		//		Vertex3D ptVert;
+		//		ptVert.position.x = m.newVertex.position[0];
+		//		ptVert.position.y = m.newVertex.position[1];
+		//		ptVert.position.z = m.newVertex.position[2];
+		//		ptVert.texCoord.x = m.newVertex.uv[0];
+		//		ptVert.texCoord.y = m.newVertex.uv[1];
+		//		ptVert.normal.x = m.newVertex.normal[0];
+		//		ptVert.normal.y = m.newVertex.normal[1];
+		//		ptVert.normal.z = m.newVertex.normal[2];
+		//		pModel->ChangeVertex(m.vertexId, ptVert);
+		//		break;
+		//	}
+		//	default:
+		//		POPUP_ERRORF(false, "There is no message for enum(" + std::to_string(mainHeader->header) + ")");
+		//		break;
+		//	}
+		//}
 		//bool recievedSuccess = m_consumerBuffer.Recieve(message, header);
 		//if (recievedSuccess)
 		//{
@@ -296,7 +297,7 @@ namespace pt
 			//}
 		//}
 		
-	}
+}
 
 	void PrimTech::HideCursor()
 	{
