@@ -35,11 +35,12 @@ Comlib::Comlib(LPCWSTR bufferName, size_t bufferSize, ProcessType type)
         std::cout << "Consumer activated" << std::endl;
         *tail = 0;
     }
-
 }
 
 Comlib::~Comlib()
-{    
+{
+    delete mutex;
+    delete messageData;
 }
 
 bool Comlib::Send(char* message, SectionHeader* secHeader)
