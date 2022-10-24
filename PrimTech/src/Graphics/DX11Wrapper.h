@@ -60,7 +60,7 @@ struct ImGuiVars
 	bool viewshadowcam = false;
 	float shadowcamPos[3] = {0.f,5.f,0.f};
 	float shadowcamrotation[3] = { d::XM_PIDIV2,0.f,0.f};
-	SpotLight sl;
+	//SpotLight sl;
 	float shadowBias = 0.005f;
 };
 
@@ -85,6 +85,7 @@ public:
 
 	int NameFindModel(const std::string name);
 	void AddNewModel(const std::string& name, std::vector<Vertex3D>& vertexArray, std::vector<uint> iArray);
+	void DeleteModel(const uint& i);
 	void MoveVertex(const std::string& name, const uint& id, std::vector<Model*> v);
 	ModelList GetModelList();
 private:
@@ -146,15 +147,16 @@ private:
 	Buffer<hlsl::cbpLightBuffer> m_lightbuffer;
 	Buffer<hlsl::cbpMaterialBuffer> m_materialBuffer;
 
-	Camera* mp_cam;
+	Camera* mp_currentCam;
 	CameraHandler* mp_camHandler;
 
 	ImGuiVars im;
 	KeyboardHandler* mp_kb;
 
 	int m_selected = -1;
+	int m_selectedMaterial = -1;
 	Model m_bulb;
-	Model m_spotlight;
+	//Model m_spotlight;
 	ModelList m_models;
 	RenderBox m_renderbox;
 	sm::Ray m_ray;
@@ -168,5 +170,6 @@ private:
 	bool m_isHoveringWindow = false;
 	bool m_canMove = true;
 	ShadowMap m_shadowmap;
+	TextureMap m_icon;
 };
 

@@ -9,7 +9,11 @@
 
 Model::~Model()
 {
-	delete[] mp_material;
+	if (mp_material->GetType() == MaterialType::Embedded)
+	{
+		delete[] mp_material;
+	}
+	
 	// if it's a maya mesh, it's not apart of the resource handler
 	if (m_type == ModelType::eMAYA)
 		delete mp_mesh;
@@ -63,7 +67,7 @@ void Model::Init(const std::string path, ModelType e, unsigned char flags)
 
 void Model::CreateFromArray(std::vector<Vertex3D> vArray, std::vector<uint> iArray, ID3D11Device*& device, ID3D11DeviceContext*& dc)
 {
-	m_nOfMats = 1;
+	m_nOfMats = 0;
 	bool isUpdate = mp_mesh != nullptr;
 	if (isUpdate)
 	{
@@ -71,13 +75,10 @@ void Model::CreateFromArray(std::vector<Vertex3D> vArray, std::vector<uint> iArr
 		mp_mesh = nullptr;
 	}
 	else
-		mp_material = new Material[m_nOfMats];
+		mp_material = ResourceHandler::GetMaterial(0);
 
 	m_type = ModelType::eMAYA;
 	mp_mesh = new Mesh(vArray, iArray, device, dc);
-	
-	mp_material->SetLeftHanded(true);
-	mp_material->SetRimColor(WHITE_3F);
 }
 
 void Model::ChangeVertex(const uint& id, const Vertex3D& v)
@@ -181,6 +182,18 @@ const sm::Vector4 Model::GetCharacterLight(int i) const
 void Model::SetName(const std::string& n)
 {
 	m_name = n;
+}
+
+void Model::AssignMaterial(std::string mtrlName)
+{
+	mp_material = ResourceHandler::GetMaterial(mtrlName);
+	POPUP_ERRORF((mp_material != nullptr), (mtrlName + " does not exist"));
+}
+
+void Model::AssignMaterial(int index)
+{
+	mp_material = ResourceHandler::GetMaterial(index);
+	//POPUP_ERRORF((mp_material != nullptr), (mtrlName + " does not exist"));
 }
 
 template <class T>

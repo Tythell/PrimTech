@@ -6,6 +6,7 @@
 
 class Mesh;
 class TextureMap;
+class Material;
 
 class ResourceHandler
 {
@@ -15,9 +16,17 @@ public:
 	static Mesh* AddMesh(std::string path, unsigned char makeLeftHanded = 1);
 	static Mesh& GetMesh(unsigned int index);
 	static Mesh* GetMeshAdress(unsigned int index);
+
 	static TextureMap* AddTexture(std::string path, bool flipUV = true);
 	static TextureMap& GetTexture(unsigned int index);
 	static TextureMap* GetTextureAdress(unsigned int index);
+
+	static Material* AddMaterial(std::string name, bool nameNewIsNew = true);
+	static void DeleteMaterial(std::string name);
+	static Material* GetMaterial(std::string name);
+	static Material* GetMaterial(unsigned int index);
+	static uint GetMtrlAmount();
+
 	static int CheckMeshNameExists(std::string meshName);
 	static int CheckTextureNameExists(std::string textureName);
 	static void Unload();
@@ -26,5 +35,6 @@ public:
 private:
 	static std::vector<Mesh*> m_meshes;
 	static std::vector<TextureMap*> m_textures;
+	static std::vector<Material*> m_materials;
 	static ID3D11Device* pDevice;
 };

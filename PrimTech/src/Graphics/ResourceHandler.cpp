@@ -3,6 +3,7 @@
 
 std::vector<Mesh*> ResourceHandler::m_meshes;
 std::vector<TextureMap*> ResourceHandler::m_textures;
+std::vector<Material*> ResourceHandler::m_materials;
 ID3D11Device* ResourceHandler::pDevice;
 
 void ResourceHandler::SetDevice(ID3D11Device*& device)
@@ -49,6 +50,57 @@ TextureMap* ResourceHandler::GetTextureAdress(unsigned int index)
 	return m_textures[index];;
 }
 
+Material* ResourceHandler::AddMaterial(std::string name, bool nameNewIsNew)
+{
+	for (int i = 0; i < m_materials.size(); i++)
+	{
+		if (m_materials[i]->GetFileName() == name && nameNewIsNew)
+		{
+			name.append("1");
+			return AddMaterial(name, true);
+		}
+		else if (m_materials[i]->GetFileName() == name)
+			return m_materials[i];
+	}
+	Material* pMat = new Material(name, MaterialType::Resource);
+	m_materials.emplace_back(pMat);
+	return pMat;
+}
+
+void ResourceHandler::DeleteMaterial(std::string name)
+{
+	for (int i = 0; i < m_materials.size(); i++)
+	{
+		if (m_materials[i]->GetFileName() == name)
+		{
+			delete m_materials[i];
+			m_materials.erase(m_materials.begin() + i);
+		}
+	}
+}
+
+Material* ResourceHandler::GetMaterial(std::string name)
+{
+	for (int i = 0; i < m_materials.size(); i++)
+	{
+		if (m_materials[i]->GetFileName() == name)
+		{
+			return m_materials[i];
+		}
+	}
+	return nullptr;
+}
+
+Material* ResourceHandler::GetMaterial(unsigned int index)
+{
+	return m_materials[index];
+}
+
+uint ResourceHandler::GetMtrlAmount()
+{
+	return m_materials.size();
+}
+
 int ResourceHandler::CheckMeshNameExists(std::string meshName)
 {
 	for (int i = 0; i < m_meshes.size(); i++)
@@ -75,6 +127,8 @@ void ResourceHandler::Unload()
 		delete m_meshes[i];
 	for (int i = 0; i < m_textures.size(); i++)
 		delete m_textures[i];
+	for (int i = 0; i < m_materials.size(); i++)
+		delete m_materials[i];
 }
 
 ID3D11Device* ResourceHandler::GetDevice()

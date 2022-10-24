@@ -18,6 +18,12 @@ enum class eMaterialHeaders
 	eDIFFCLR,
 };
 
+enum class MaterialType
+{
+	Embedded,
+	Resource,
+};
+
 //struct MaterialHeader
 //{
 //	unsigned char diffuseName[16] = {};
@@ -36,6 +42,7 @@ enum class eMaterialHeaders
 class Material
 {
 public:
+	Material(std::string name = "", MaterialType mt = MaterialType::Embedded);
 	void LoadTexture(std::string textureName, TextureType type);
 	void UpdateTextureScroll(const float& deltatime);
 	void SetDiffuseScrollSpeed(float x, float y);
@@ -56,6 +63,7 @@ public:
 	void RemoveTexture(const TextureType e);
 	void SetDiffuseClr(const sm::Vector3& v);
 	void SetDiffuseClr(float r, float g, float b);
+	void SetName(std::string name);
 
 	//std::string GetMaterialName() const;
 	std::string GetMapName(const TextureType& e) const;
@@ -70,6 +78,7 @@ public:
 	bool HasTexture(const TextureType& e) const;
 	bool HasTexture(const UINT& e) const;
 	void SetPointers(Buffer<hlsl::cbpMaterialBuffer>* cbMaterialBuffer);
+	MaterialType GetType() const;
 private:
 	void ReadRecursion(eMaterialHeaders& header, std::ifstream& reader);
 	void ClearMaterial();
@@ -86,6 +95,7 @@ private:
 	sm::Vector2 m_diffuseOffsetValue, m_distortionValue;
 	sm::Vector2 m_diffuseOffsetSpeed, m_distortionOffsetSpeed;
 	float m_transparency = 1.f;
+	MaterialType m_mt;
 
 	Buffer<hlsl::cbpMaterialBuffer>* mp_matBuffer;
 };

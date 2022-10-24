@@ -2,6 +2,10 @@
 #include "Model.h"
 #include <fstream>
 
+Material::Material(std::string name, MaterialType mt):
+	m_name(name), m_mt(mt)
+{}
+
 void Material::LoadTexture(std::string textureName, TextureType type)
 {
 	int textureIndex = ResourceHandler::CheckTextureNameExists(StringHelper::GetName(textureName));
@@ -352,6 +356,11 @@ void Material::SetDiffuseClr(float r, float g, float b)
 	SetDiffuseClr(sm::Vector3(r,g,b));
 }
 
+void Material::SetName(std::string name)
+{
+	m_name = name;
+}
+
 sm::Vector2 Material::GetDiffuseScrollSpeed() const
 {
 	return m_diffuseOffsetSpeed;
@@ -389,4 +398,9 @@ bool Material::HasTexture(const UINT& e) const
 void Material::SetPointers(Buffer<hlsl::cbpMaterialBuffer>* cbMaterialBuffer)
 {
 	mp_matBuffer = cbMaterialBuffer;
+}
+
+MaterialType Material::GetType() const
+{
+	return m_mt;
 }

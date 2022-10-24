@@ -8,8 +8,8 @@ DX11Addon::DX11Addon(Window& window, CameraHandler& camera) :
 	m_shadowmap(1024 * shadowQuality, 1024 * shadowQuality, camera.GetCurrentCamera()), m_viewport(0.f, 0.f, (float)m_width, (float)m_height)
 {
 	m_pWin = &window;
-	mp_cam = camera.GetCurrentCamera();
 	mp_camHandler = &camera;
+	mp_currentCam = camera.GetCurrentCamera();
 
 	initSwapChain();
 	initRTV();
@@ -264,6 +264,10 @@ bool DX11Addon::InitScene()
 	//ResourceHandler::AddTexture("missingTexture.png"); // setting missingtexture
 	ResourceHandler::AddTexture(".NoTexture.pngg"); // setting missingtexture
 	ResourceHandler::AddTexture("ZANormal.png"); // Load LightWarp Texture
+	Material* defaultMaterial = ResourceHandler::AddMaterial("DefaultMaterial"); // Load LightWarp Texture
+	m_icon.CreateFromFile("icons/icon.png", device);
+	defaultMaterial->SetPointers(&m_materialBuffer);
+
 	//ResourceHandler::AddTexture("ZATf2esk.png"); // Load LightWarp Texture
 	dc->PSSetShaderResources(0, 1, ResourceHandler::GetTexture(1).GetSRVAdress());
 
@@ -274,15 +278,15 @@ bool DX11Addon::InitScene()
 	NewScene();
 
 	m_bulb.Init("bulb.obj", ModelType::eDEBUG, 3);
-	m_spotlight.Init("bulb.obj", ModelType::eDEBUG, 3);
+	//m_spotlight.Init("bulb.obj", ModelType::eDEBUG, 3);
 	m_bulb.SetScale(1.2f);
 	m_bulb.GetMaterial().SetTransparency(1.f);
 
 	m_bulb.SetMaterialBuffer(m_materialBuffer);
 	m_bulb.SetDCandBuffer(dc, m_transformBuffer);
 	m_bulb.SetMaterialBuffer(m_materialBuffer);
-	m_spotlight.SetDCandBuffer(dc, m_transformBuffer);
-	m_spotlight.SetMaterialBuffer(m_materialBuffer);
+	//m_spotlight.SetDCandBuffer(dc, m_transformBuffer);
+	//m_spotlight.SetMaterialBuffer(m_materialBuffer);
 
 	dc->VSSetConstantBuffers(0, 1, m_transformBuffer.GetReference());
 
@@ -320,7 +324,7 @@ void DX11Addon::UpdateScene(const float& deltatime)
 	m_lightbuffer.Data().direction = sm::Vector3(0.f, 1.f, 0.f);
 	m_lightbuffer.Data().pointLightPosition = sm::Vector3(im.pointLightPos[0], im.pointLightPos[1], im.pointLightPos[2]);
 	//m_lightbuffer.Data().forwardDir = mp_cam->GetForwardVector();
-	m_lightbuffer.Data().camPos = { mp_cam->GetPosition().x, mp_cam->GetPosition().y, mp_cam->GetPosition().z, 1.f };
+	m_lightbuffer.Data().camPos = { mp_currentCam->GetPosition().x, mp_currentCam->GetPosition().y, mp_currentCam->GetPosition().z, 1.f };
 	m_lightbuffer.MapBuffer();
 }
 
@@ -648,6 +652,14 @@ void DX11Addon::AddNewModel(const std::string& name, std::vector<Vertex3D>& vert
 	}
 }
 
+void DX11Addon::DeleteModel(const uint& i)
+{
+	m_models[m_selected]->DecreaseMeshUsage();
+	delete m_models[m_selected];
+	m_models.erase(m_models.begin() + m_selected);
+	m_selected = -1;
+}
+
 void DX11Addon::MoveVertex(const std::string& name, const uint& id, std::vector<Model*> v)
 {
 	int index = nameFindModel(name, v);
@@ -684,6 +696,7 @@ void DX11Addon::ImguiDebug()
 				vertexArray[i].normal = { 0.f, 0.f, -1.f };
 
 			AddNewModel("debugMaya", vertexArray, iArray);
+			
 		}
 		ImGui::SameLine();
 		if (ImGui::Button("VertexMove"))
@@ -709,12 +722,13 @@ void DX11Addon::ImguiDebug()
 	std::string fpsString = "FPS: " + std::to_string(m_fps);
 	ImGui::Text(fpsString.c_str());
 
-	ImGui::Checkbox("Show selection", &im.showSelection);
+	//ImGui::Checkbox("Show selection", &im.showSelection);
 	if (ImGui::CollapsingHeader("ShadowMap"))
 	{
-		ImGui::Checkbox("Shadows", &im.shadowMap); ImGui::SameLine();
-		ImGui::Checkbox("View Shadowcam", &im.viewshadowcam);
-		ImGui::DragFloat3("Pos", im.shadowcamPos, 0.1f);
+		//ImGui::Checkbox("Shadows", &im.shadowMap); ImGui::SameLine();
+		im.shadowMap = true;
+		//ImGui::Checkbox("View Shadowcam", &im.viewshadowcam);
+		//ImGui::DragFloat3("Pos", im.shadowcamPos, 0.1f);
 
 		im.shadowcamrotation[0] = m_shadowmap.GetShadowCam().GetRotation().x;
 		im.shadowcamrotation[1] = m_shadowmap.GetShadowCam().GetRotation().y;
@@ -729,66 +743,26 @@ void DX11Addon::ImguiDebug()
 		m_shadowmap.GetShadowCam().SetPosition(im.shadowcamPos[0], im.shadowcamPos[1], im.shadowcamPos[2]);
 		if (ImGui::Button("TP cam"))
 		{
-			im.shadowcamrotation[0] = mp_cam->GetRotation().x;
-			im.shadowcamrotation[1] = mp_cam->GetRotation().y;
-			im.shadowcamrotation[2] = mp_cam->GetRotation().z;
-			im.shadowcamPos[0] = mp_cam->GetPosition().x;
-			im.shadowcamPos[1] = mp_cam->GetPosition().y;
-			im.shadowcamPos[2] = mp_cam->GetPosition().z;
+			im.shadowcamrotation[0] = mp_currentCam->GetRotation().x;
+			im.shadowcamrotation[1] = mp_currentCam->GetRotation().y;
+			im.shadowcamrotation[2] = mp_currentCam->GetRotation().z;
+			im.shadowcamPos[0] = mp_currentCam->GetPosition().x;
+			im.shadowcamPos[1] = mp_currentCam->GetPosition().y;
+			im.shadowcamPos[2] = mp_currentCam->GetPosition().z;
 		}
 		if (ImGui::Button("winname"))
 		{
 			::SetWindowTextA(*m_pHWND, "balls");
 		}
 	}
-	if (ImGui::CollapsingHeader("General"))
-	{
-		if (ImGui::SliderInt("FOV", &im.fov, 40, 110))
-			mp_cam->SetPerspective((float)im.fov, (float)m_width / (float)m_height, .1f, 100.f);
-		ImGui::Checkbox("Vsync", &im.useVsync); ImGui::SameLine();
-		ImGui::Checkbox("Handmodel", &im.enableHandModel); ImGui::SameLine();
-		ImGui::Checkbox("Raycast", &im.drawRayCast);
-		ImGui::SameLine();
-		ImGui::Checkbox("BCircle", &im.drawBCircle);
-	}
 
-	if (ImGui::CollapsingHeader("Light"/*, ImGuiTreeNodeFlags_DefaultOpen */))
+	if (ImGui::CollapsingHeader("Light", ImGuiTreeNodeFlags_DefaultOpen ))
 	{
 		ImGui::DragFloat4("Ambient", im.ambient, 0.002f, 0.f, 1.f);
 		ImGui::DragFloat3("Pointlight Position", im.pointLightPos, 0.01f);
-		ImGui::DragFloat3("PointLightColor", im.pointLightColor, 0.01f, 0.f, 1.f);
-		m_bulb.GetMaterial().SetRimColor({ im.pointLightColor[0], im.pointLightColor[1], im.pointLightColor[2] });
 		ImGui::SliderFloat("PointLight Strength", &im.pointLightStr, 0.f, 3.f);
 		ImGui::SliderFloat("Specular power", &im.specPow, 1.f, 1000.f);
 		ImGui::SliderFloat("Distance", &im.pointLightDistance, 0.f, 100.f);
-
-		std::string shadowCamString = "Shadow cam dir: " + GetVectorAsString(m_shadowmap.GetShadowCam().GetForwardVector());
-		ImGui::Text(shadowCamString.c_str());
-
-		ImGui::SliderFloat("Attenuation", &im.atten, 0.f, 10.f);
-	}
-
-	if (ImGui::CollapsingHeader("SpotLight"/*, ImGuiTreeNodeFlags_DefaultOpen */))
-	{
-		ImGui::DragFloat3("Position##sl", im.sl.position, 0.01f);
-		if (ImGui::Button("Move to cam##sl"))
-		{
-			//m_spotlight.SetPosition(mp_cam->GetPosition());
-			//m_spotlight.SetRotation(mp_cam->GetForwardVector());
-			im.sl.position[0] = mp_cam->GetPosition().x;
-			im.sl.position[1] = mp_cam->GetPosition().y;
-			im.sl.position[2] = mp_cam->GetPosition().z;
-
-			im.sl.rotation[0] = mp_cam->GetRotation().x * d::XM_PIDIV2;
-			im.sl.rotation[1] = mp_cam->GetRotation().y * d::XM_PIDIV2;
-			im.sl.rotation[2] = mp_cam->GetRotation().z * d::XM_PIDIV2;
-		}
-		//ImGui::DragFloat3("Angle##sl", im.sl.rotation, 0.01f);
-		//ImGui::DragFloat3("Color##sl", im.pointLightColor, 0.01f, 0.f, 1.f);
-		//m_bulb.GetMaterial().SetRimColor({ im.pointLightColor[0], im.pointLightColor[1], im.pointLightColor[2] });
-		ImGui::SliderFloat("Strength##sl", &im.pointLightStr, 0.f, 3.f);
-		ImGui::SliderFloat("Specular power##sl", &im.specPow, 1.f, 1000.f);
-		//ImGui::SliderFloat("Distance", &im.pointLightDistance, 0.f, 100.f);
 
 		std::string shadowCamString = "Shadow cam dir: " + GetVectorAsString(m_shadowmap.GetShadowCam().GetForwardVector());
 		ImGui::Text(shadowCamString.c_str());
@@ -802,12 +776,12 @@ void DX11Addon::ImguiDebug()
 	m_lightbuffer.Data().atten = im.atten;
 
 	std::string camoffsetString = "Camera offset: ";
-	camoffsetString += std::to_string(mp_cam->GetOffset().z);
+	camoffsetString += std::to_string(mp_currentCam->GetOffset().z);
 	ImGui::Text(camoffsetString.c_str());
-
 	m_bulb.SetPosition(im.pointLightPos[0], im.pointLightPos[1], im.pointLightPos[2]);
 
-	ImGui::Text(GetVectorAsString(mp_cam->GetRotation()).c_str());
+
+	ImGui::Text(GetVectorAsString(mp_currentCam->GetRotation()).c_str());
 	ImGui::End();
 }
 
@@ -820,7 +794,7 @@ void DX11Addon::ImGuiRender()
 
 	ImGuiMenu();
 	if (im.showDebugWindow) ImguiDebug();
-	if (im.showShadowMapDepth) ImGuTextureDisplay();
+	//if (im.showShadowMapDepth) ImGuTextureDisplay();
 
 	//ImGuiGradientWindow();
 	if(im.showObjectListWindow) ImGuiEntList();
@@ -852,6 +826,7 @@ void DX11Addon::ImGuiMenu()
 		{
 			if (ImGui::IsWindowHovered())
 				m_isHoveringWindow = true;
+			ImGui::BeginDisabled(true);
 			if (ImGui::MenuItem("New Scene", NULL, false, true))
 			{
 				ResourceHandler::ResetUses();
@@ -882,7 +857,7 @@ void DX11Addon::ImGuiMenu()
 					ExportScene(diapath);
 				}
 			}
-			ImGui::BeginDisabled(true);
+			
 			if (ImGui::MenuItem("Update Materials..."))
 			{
 				std::vector<std::string> diapath = Dialogs::OpenMultifile("Pmaterial (*.pmtrl)\0*.pmtrl\0", "Assets\\pmtrl");
@@ -938,14 +913,6 @@ void DX11Addon::ImGuiMenu()
 
 			ImGui::EndMenu();
 		}
-		if (ImGui::BeginMenu("Utility"))
-		{
-			if (ImGui::MenuItem("TP to spawn", NULL))
-				mp_cam->SetPosition(0.f, 1.f, 0.f);
-
-			ImGui::EndMenu();
-		}
-
 
 		ImGui::EndMainMenuBar();
 	}
@@ -1017,10 +984,15 @@ void DX11Addon::ImGuiEntList()
 			{
 				if (ImGui::Selectable("Model"))
 					m_selected = InterfaceAddModelToVector(dc, m_transformBuffer, m_materialBuffer, m_models);
-				ImGui::BeginDisabled();
-				if (ImGui::Selectable("Particle"))
-					m_selected = InterfaceAddModelToVector(dc, m_transformBuffer, m_materialBuffer, m_models);
-				ImGui::EndDisabled();
+				//ImGui::BeginDisabled();
+				if (ImGui::Selectable("Material"))
+				{
+					Material* mat = ResourceHandler::AddMaterial("Material");
+					mat->SetDiffuseClr(0.f, 1.f, 0.f);
+					mat->SetPointers(&m_materialBuffer);
+				}
+					
+				//ImGui::EndDisabled();
 
 				ImGui::EndPopup();
 			}
@@ -1035,16 +1007,27 @@ void DX11Addon::ImGuiEntList()
 			if (ImGui::Selectable(m_models[i]->GetName().c_str(), m_selected == i))
 				m_selected = i;
 		}
-		ImGui::EndChild();
-		ImGui::BeginChild("Lefty##cameras", ImVec2(150, 100), true);
-		if (ImGui::IsWindowHovered())
-			m_isHoveringWindow = true;
+		if(m_models.size() > 0)
+			ImGui::Separator();
 		for (int i = 0; i < mp_camHandler->GetNoOfCams(); i++)
 		{
 			if (ImGui::Selectable(mp_camHandler->GetCameraName(i).c_str(), mp_camHandler->GetCurrentCamIndex() == i))
 			{
 				mp_camHandler->SetCurrentCamera(i);
-				mp_cam = mp_camHandler->GetCurrentCamera();
+				mp_currentCam = mp_camHandler->GetCurrentCamera();
+			}
+			ImGui::SameLine();
+			ImTextureID icon = m_icon.GetSRV();
+			ImGui::Image(icon, { 15, 15 });
+		}
+		uint mtrlCount = ResourceHandler::GetMtrlAmount();
+		if (mtrlCount > 0)
+			ImGui::Separator();
+		for (int i = 0; i < mtrlCount; i++)
+		{
+			if (ImGui::Selectable(ResourceHandler::GetMaterial(i)->GetFileName().c_str(), m_selectedMaterial == i))
+			{
+				m_selectedMaterial = i;
 			}
 		}
 		ImGui::EndChild();
@@ -1054,8 +1037,33 @@ void DX11Addon::ImGuiEntList()
 		if (m_selected != -1)
 		{
 			ImGui::Begin("Model properties");
-			Model* pSelectedModel = m_models[m_selected];
 
+			
+			Model* pSelectedModel = m_models[m_selected];
+			std::vector<char*> fullString;
+			if (pSelectedModel->GetModelType() == ModelType::eMAYA)
+			{
+				
+				int assignedMat = 0;
+				for (int i = 0; i < ResourceHandler::GetMtrlAmount(); i++)
+				{
+					uint siz = ResourceHandler::GetMaterial(i)->GetFileName().size() + 1;
+					char* st = new char[siz];
+					memcpy_s(st, siz, ResourceHandler::GetMaterial(i)->GetFileName().c_str(), siz);
+					fullString.emplace_back(st);
+					if (std::string(fullString[i]) == pSelectedModel->GetMaterial().GetFileName())
+						assignedMat = i;
+				}
+				uint noOfchars = 0;
+				if (ImGui::Combo("##materials", &assignedMat, fullString.data(), fullString.size()))
+				{
+					pSelectedModel->AssignMaterial(assignedMat);
+				}
+				for (int i = 0; i < ResourceHandler::GetMtrlAmount(); i++)
+				{
+					delete[] fullString[i];
+				}
+			}
 			if (ImGui::IsWindowHovered())
 				m_isHoveringWindow = true;
 
@@ -1245,7 +1253,7 @@ void DX11Addon::ImGuiEntList()
 			}
 		if (m_selected != -1 && im.showSelection)
 			for (UINT m = 0; m < m_models[m_selected]->GetMeshP()->GetNofMeshes(); m++)
-				m_models[m_selected]->GetMaterial(m).SetSelection(true);
+				m_models[m_selected]->GetMaterial(m).SetSelection(false);
 	}
 }
 
@@ -1466,7 +1474,7 @@ void DX11Addon::Click(const sm::Vector3& dir)
 	if (!m_isHoveringWindow)
 	{
 		sm::Ray ray;
-		ray.position = mp_cam->GetPosition();
+		ray.position = mp_currentCam->GetPosition();
 		ray.direction = dir;
 		//#ifdef _DEBUG
 		if (im.drawRayCast)
@@ -1489,6 +1497,8 @@ void DX11Addon::Render(const float& deltatime)
 {
 	int modelAmount = (int)m_models.size();
 	float bgColor[] = { .1f,.1f,.1f,1.f };
+
+	mp_currentCam = mp_camHandler->GetCurrentCamera();
 
 	dc->ClearRenderTargetView(m_rtv, bgColor);
 	dc->ClearDepthStencilView(m_dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
@@ -1517,7 +1527,7 @@ void DX11Addon::Render(const float& deltatime)
 	dc->PSSetShader(m_linePS.GetShader(), NULL, 0);
 
 	if (!im.viewshadowcam)
-		m_transformBuffer.Data().viewProj = d::XMMatrixTranspose(mp_cam->GetViewM() * mp_cam->GetProjM());
+		m_transformBuffer.Data().viewProj = d::XMMatrixTranspose(mp_currentCam->GetViewM() * mp_currentCam->GetProjM());
 
 	if (im.drawBCircle && m_selected != -1)
 	{
@@ -1569,9 +1579,9 @@ void DX11Addon::Render(const float& deltatime)
 	dc->PSSetShader(m_3dnoLightps.GetShader(), NULL, 0);
 
 	m_bulb.Draw();
-	m_spotlight.Draw();
-	m_spotlight.SetPosition(im.sl.position[0], im.sl.position[1], im.sl.position[2]);
-	m_spotlight.SetRotation(im.sl.rotation[0], im.sl.rotation[1], im.sl.rotation[2]);
+	//m_spotlight.Draw();
+	//m_spotlight.SetPosition(im.sl.position[0], im.sl.position[1], im.sl.position[2]);
+	//m_spotlight.SetRotation(im.sl.rotation[0], im.sl.rotation[1], im.sl.rotation[2]);
 	m_shadowmap.DrawModel();
 	//m_transformBuffer.Data().world = d::XMMatrixTranspose(d::XMMatrixTranslation(0.f, 0.f, 1.f));
 	//m_transformBuffer.UpdateCB();

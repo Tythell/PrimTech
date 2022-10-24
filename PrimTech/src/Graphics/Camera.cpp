@@ -276,6 +276,25 @@ Camera* CameraHandler::CreatePerspectiveCamera(std::string name, float fovDeg, f
 Camera* CameraHandler::CreateEmptyCamera(std::string name)
 {
 	Camera cam(name);
+
+	for (int i = 0; i < m_cams.size(); i++)
+	{
+		if (m_flags & CamFlags_SAME_NAME_EQUALS_SAMECAM)
+		{
+			if (m_cams[i].GetName() == name)
+				return &m_cams[i];
+		}
+		else
+		{
+			if (m_cams[i].GetName() == name)
+			{
+				name.append("1");
+				break;
+			}
+		}
+
+	}
+
 	m_cams.emplace_back(cam);
 	return &m_cams[m_cams.size()-1];
 }

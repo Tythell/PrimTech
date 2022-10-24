@@ -9,8 +9,9 @@ enum Headers
 	eCAMMESSAGE,
 	eVERTEXDRAG,
 	eNEWTOPOLOGY,
-	eLOADTEXTURE,
+	eMaterialConnected,
 	eNAMECHANGE,
+	eDELETEMODEL
 };
 
 struct SectionHeader
@@ -18,12 +19,6 @@ struct SectionHeader
 	Headers header;
 	size_t msgLen;
 	size_t msgID;
-};
-//Just Testing head
-struct MessageHeader
-{
-	char message[1024];
-	float position[3];
 };
 
 struct MayaVertex
@@ -47,11 +42,9 @@ struct NewMessage
 	MayaVertex newVertex;
 };
 
-struct NewTexture
+struct DeleteMesh
 {
 	char meshName[64]{ "" };
-	uint textureType= 0;
-	char texturePath[128];
 };
 
 struct NameChange
@@ -82,5 +75,13 @@ struct CameraData
 	//float fov = 0.f;
 	//float nearZ = 0.f;
 	//float farZ = 0.f;
+};
+
+struct MaterialMessage
+{
+	char mtrlName[64]{ "" };
+	float color[3];
+	char diffuseName[128]{ "" };
+	char normalName[128]{ "" };
 };
 
