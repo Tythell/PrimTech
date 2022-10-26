@@ -11,7 +11,8 @@ enum Headers
 	eNEWTOPOLOGY,
 	eMaterialConnected,
 	eNAMECHANGE,
-	eDELETEMODEL
+	eDELETENODE, 
+	eMaterialCreated,
 };
 
 struct SectionHeader
@@ -81,6 +82,7 @@ struct MaterialMessage
 {
 	char mtrlName[64]{ "" };
 	float color[3];
+	float ambient[3];
 	char diffuseName[128]{ "" };
 	char normalName[128]{ "" };
 };

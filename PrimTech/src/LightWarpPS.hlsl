@@ -50,6 +50,7 @@ cbuffer MaterialBuffer : register(b1)
     float4 characterLight[2];
     float3 rimColor;
     float textureScaleDist;
+    float4 localAmbient;
 }
 
 struct PSInput
@@ -129,9 +130,9 @@ float4 main(PSInput input) : SV_Target
     
     float4 diffuse;
     if (flags & MaterialFlag_eHasDiffuse)
-        diffuse = saturate(diffuseMap.Sample(wrapSampler, texCoord + distortion) /** float4(input.vcolor, 1.f)*/);
+        diffuse = saturate(diffuseMap.Sample(wrapSampler, texCoord + distortion) * localAmbient);
     else
-        diffuse = float4(diffuseColor, 1.f);
+        diffuse = float4(diffuseColor, 1.f) * localAmbient;
     
     diffuse.w = 1.f;
     //float4 diffuse = diffuseMap.Sample(samplerState, texCoord + distortion);

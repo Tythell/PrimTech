@@ -88,6 +88,7 @@ public:
 	void DeleteModel(const uint& i);
 	void MoveVertex(const std::string& name, const uint& id, std::vector<Model*> v);
 	ModelList GetModelList();
+	void GiveMtrlBuffer(Material*& pMat);
 private:
 	bool initSwapChain();
 	bool initRTV();

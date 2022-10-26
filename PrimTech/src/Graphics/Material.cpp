@@ -8,11 +8,20 @@ Material::Material(std::string name, MaterialType mt):
 
 void Material::LoadTexture(std::string textureName, TextureType type)
 {
-	int textureIndex = ResourceHandler::CheckTextureNameExists(StringHelper::GetName(textureName));
+	int textureIndex = -1;
+	if (textureName == "")
+		return;
+
+	if (textureName[0] != '.')
+		textureIndex = ResourceHandler::CheckTextureNameExists(StringHelper::GetName(textureName));
+	else
+		textureIndex = ResourceHandler::CheckTextureNameExists(textureName);
+
 	if (textureIndex != -1)
 		mp_textures[type] = ResourceHandler::GetTextureAdress(textureIndex);
 	else
 		mp_textures[type] = ResourceHandler::AddTexture(textureName);
+	
 }
 
 void Material::ReadRecursion(eMaterialHeaders& header, std::ifstream& reader)
@@ -59,6 +68,11 @@ void Material::ReadRecursion(eMaterialHeaders& header, std::ifstream& reader)
 sm::Vector3 Material::GetDiffuseClr() const
 {
 	return m_diffuseClr;
+}
+
+sm::Vector4 Material::GetAmbientClr() const
+{
+	return m_ambient;
 }
 
 void Material::ClearMaterial()
@@ -133,6 +147,7 @@ void Material::Set(ID3D11DeviceContext*& dc)
 	mp_matBuffer->Data().textureScale = m_textureScale;
 	mp_matBuffer->Data().rimColor = m_rimColor;
 	mp_matBuffer->Data().rim = (int)m_selection;
+	mp_matBuffer->Data().localAmbient = m_ambient + sm::Vector4(1.f,1.f,1.f,1.f);
 
 	
 	for (UINT i = 0; i < eTextureTypeAMOUNT; i++)
@@ -351,6 +366,12 @@ std::string Material::GetFileName() const
 	return m_name;
 }
 
+std::string Material::GetFilePath(const TextureType& e) const
+{
+	if (!mp_textures[e]) return "does not exist";
+	return mp_textures[e]->GetFullName();
+}
+
 void Material::SetDiffuseClr(float r, float g, float b)
 {
 	SetDiffuseClr(sm::Vector3(r,g,b));
@@ -359,6 +380,11 @@ void Material::SetDiffuseClr(float r, float g, float b)
 void Material::SetName(std::string name)
 {
 	m_name = name;
+}
+
+void Material::SetAmbient(sm::Vector4 v)
+{
+	m_ambient = v;
 }
 
 sm::Vector2 Material::GetDiffuseScrollSpeed() const

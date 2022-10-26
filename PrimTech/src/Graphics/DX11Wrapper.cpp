@@ -119,6 +119,11 @@ ModelList DX11Addon::GetModelList()
 	return m_models;
 }
 
+void DX11Addon::GiveMtrlBuffer(Material*& pMat)
+{
+	pMat->SetPointers(&m_materialBuffer);
+}
+
 bool DX11Addon::SetupDSAndVP()
 {
 	CD3D11_TEXTURE2D_DESC depthStencilTextureDesc(DXGI_FORMAT_D24_UNORM_S8_UINT, m_width, m_height);
@@ -654,9 +659,9 @@ void DX11Addon::AddNewModel(const std::string& name, std::vector<Vertex3D>& vert
 
 void DX11Addon::DeleteModel(const uint& i)
 {
-	m_models[m_selected]->DecreaseMeshUsage();
-	delete m_models[m_selected];
-	m_models.erase(m_models.begin() + m_selected);
+	m_models[i]->DecreaseMeshUsage();
+	delete m_models[i];
+	m_models.erase(m_models.begin() + i);
 	m_selected = -1;
 }
 
@@ -1244,6 +1249,24 @@ void DX11Addon::ImGuiEntList()
 			else if (!mp_kb->IsKeyDown(Key::CONTROL) && !mp_kb->IsKeyDown(Key::D))
 				ispressed = false;
 
+			ImGui::End();
+		}
+		if (m_selectedMaterial != -1)
+		{
+			ImGui::Begin("Material Properties");
+
+			Material* pMaterial = ResourceHandler::GetMaterial(m_selectedMaterial);
+
+			float clrDiff[] = {pMaterial->GetDiffuseClr().x, pMaterial->GetDiffuseClr().y, pMaterial->GetDiffuseClr().z, 1.f};
+			float clrAmb[] = {pMaterial->GetAmbientClr().x, pMaterial->GetAmbientClr().y, pMaterial->GetAmbientClr().z, pMaterial->GetAmbientClr().w };
+			
+			ImGui::ColorEdit3("Diffuse##local", clrDiff);
+			ImGui::ColorEdit4("Ambient##local", clrAmb);
+
+			std::string texName = pMaterial->GetFilePath(eDiffuse);
+			ImGui::Text(texName.c_str());
+
+			if (ImGui::Button("Close")) m_selectedMaterial = -1;
 			ImGui::End();
 		}
 		for (int i = 0; i < m_models.size(); i++)

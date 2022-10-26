@@ -34,7 +34,6 @@ namespace pt
 		mp_gApi = new DX11Addon(m_window, m_cams);
 		mp_gApi->SetInputP(m_kb);
 	}
-
 	void newMeshMessage(char* message, NewMeshMessageStruct& m, std::vector<Vertex3D>& verts, std::vector<uint>& iBuffer)
 	{
 		memcpy((char*)&m, message, sizeof(NewMeshMessageStruct));
@@ -68,7 +67,7 @@ namespace pt
 				indexes.emplace_back(i);
 		}
 	}
-
+#define HandleMsg(m) memcpy((char*)&m, message, mainHeader->msgLen)
 	void PrimTech::Update(const float& dt)
 	{
 		if (m_kb.IsKeyDown(m_shutDownKey))
@@ -97,41 +96,13 @@ namespace pt
 
 		while (consumerBuffer->Recieve(message, mainHeader))
 		{
-			if (mainHeader->header == MESSAGE)
-			{
-				OutputDebugStringW(L"We got a MESSAGE message.");
-			}
 			switch (this->mainHeader->header)
 			{
-			case Headers::MESSAGE:
-			{
-				//OutputDebugStringA(this->message);
-				//OutputDebugStringA("\n");
-				//
-				//MessageHeader* pMessage = new MessageHeader;
-				//memcpy(pMessage,message, sizeof(MessageHeader));
-
-				//const size_t size = strlen(pMessage->message) + 1;
-				//wchar_t* recievedMsg = new wchar_t[size];
-				////mbstowcs(recievedMsg, pMessage->message, size);
-				//
-				//sm::Vector3 p(pMessage->position[0], pMessage->position[1], pMessage->position[2]);
-				//std::wstring pos = L"\nPosition " + std::to_wstring((int)pMessage->position[0]) + L" "
-				//	+ std::to_wstring((int)pMessage->message[1]) + L" "
-				//	+std::to_wstring((int)pMessage->message[2]);
-
-				//OutputDebugStringW(L"\n\n");
-				//OutputDebugStringW(recievedMsg);
-				//OutputDebugStringW(pos.c_str());
-
-				//delete pMessage;
-				//message = nullptr;
-				break;
-			}
 			case Headers::eCAMMESSAGE:
 			{
 				CameraData camMessage;
-				memcpy((char*)&camMessage, message, mainHeader->msgLen);
+				//memcpy((char*)&camMessage, message, mainHeader->msgLen);
+				HandleMsg(camMessage);
 				Camera* pcam = m_cams.CreateEmptyCamera(camMessage.cameraName);
 				sm::Matrix projMatrix = *reinterpret_cast<sm::Matrix*>(camMessage.projMatrix);
 				sm::Matrix viewMatrix = *reinterpret_cast<sm::Matrix*>(camMessage.viewMatrix);
@@ -139,28 +110,12 @@ namespace pt
 				pcam->OverrideViewMatrix(viewMatrix);
 				m_cams.SetCurrentCamera(camMessage.cameraName);
 
-				
 				break;
 			}
-			//case Headers::eLOADTEXTURE:
-			//{
-			//	NewTexture m;
-			//	memcpy((char*)&m, message, mainHeader->msgLen);
-			//	int index = mp_gApi->NameFindModel(m.meshName);
-			//	THROW_POPUP_ERRORF(index != -1, "Namechanging: mesh not found");
-			//	Model* pModel = mp_gApi->GetModelList()[index];
-			//	std::string texturePath = ".";
-			//	texturePath.append(m.texturePath);
-			//	if (m.textureType == 1)
-			//		m.textureType = 2; // NormalMap is texturetype 2 in this engine
-			//	pModel->LoadTexture(texturePath, 0, TextureType(m.textureType));
-
-			//	break;
-			//}
 			case Headers::eNAMECHANGE:
 			{
 				NameChange m;
-				memcpy((char*)&m, message, mainHeader->msgLen);
+				HandleMsg(m);
 				int index = mp_gApi->NameFindModel(m.oldName);
 				if (index == -1)
 				{
@@ -186,7 +141,7 @@ namespace pt
 			case Headers::eNEWMESH:
 			{
 				NewMeshMessageStruct m;
-				memcpy((char*)&m, message, mainHeader->msgLen);
+				HandleMsg(m);
 				//newMeshMessage(message, m, verts, indexes);
 
 				uint nOfVerts = 3;
@@ -238,29 +193,29 @@ namespace pt
 			}
 			case Headers::eVERTEXDRAG:
 			{
-				VertexDrag m;
-				memcpy((char*)&m, message, mainHeader->msgLen);
-				int index = mp_gApi->NameFindModel(m.meshName);
-				THROW_POPUP_ERRORF(index != -1, "eVERTEXDRAG: mesh not found");
-				Model* pModel = mp_gApi->GetModelList()[index];
+				//VertexDrag m;
+				//memcpy((char*)&m, message, mainHeader->msgLen);
+				//int index = mp_gApi->NameFindModel(m.meshName);
+				//THROW_POPUP_ERRORF(index != -1, "eVERTEXDRAG: mesh not found");
+				//Model* pModel = mp_gApi->GetModelList()[index];
 
 
-				Vertex3D ptVert;
-				ptVert.position.x = m.newVertex.position[0];
-				ptVert.position.y = m.newVertex.position[1];
-				ptVert.position.z = m.newVertex.position[2];
-				ptVert.texCoord.x = m.newVertex.uv[0];
-				ptVert.texCoord.y = m.newVertex.uv[1];
-				ptVert.normal.x = m.newVertex.normal[0];
-				ptVert.normal.y = m.newVertex.normal[1];
-				ptVert.normal.z = m.newVertex.normal[2];
-				pModel->ChangeVertex(m.vertexId, ptVert);
+				//Vertex3D ptVert;
+				//ptVert.position.x = m.newVertex.position[0];
+				//ptVert.position.y = m.newVertex.position[1];
+				//ptVert.position.z = m.newVertex.position[2];
+				//ptVert.texCoord.x = m.newVertex.uv[0];
+				//ptVert.texCoord.y = m.newVertex.uv[1];
+				//ptVert.normal.x = m.newVertex.normal[0];
+				//ptVert.normal.y = m.newVertex.normal[1];
+				//ptVert.normal.z = m.newVertex.normal[2];
+				//pModel->ChangeVertex(m.vertexId, ptVert);
 				break;
 			}
-			case Headers::eDELETEMODEL:
+			case Headers::eDELETENODE:
 			{
 				DeleteMesh m;
-				memcpy((char*)&m, message, mainHeader->msgLen);
+				HandleMsg(m);
 
 				for (int i = 0; i < mp_gApi->GetModelList().size(); i++)
 				{
@@ -269,6 +224,26 @@ namespace pt
 						mp_gApi->DeleteModel(i);
 					}
 				}
+				break;
+			}
+			case Headers::eMaterialCreated:
+			{
+				MaterialMessage m;
+				HandleMsg(m);
+
+				Material* pMat = ResourceHandler::AddMaterial(std::string(m.mtrlName), false);
+				mp_gApi->GiveMtrlBuffer(pMat);
+				pMat->SetAmbient({ m.ambient[0], m.ambient[1], m.ambient[2], 1.f});
+				pMat->SetDiffuseClr(sm::Vector3(m.color));
+				std::string diffuse = "." + std::string(m.diffuseName);
+				if (diffuse != ".")
+					pMat->LoadTexture(diffuse, TextureType::eDiffuse);
+
+				std::string normal = "." + std::string(m.normalName);
+				if (normal != ".")
+					pMat->LoadTexture(diffuse, TextureType::eNormal);
+				
+				break;
 			}
 			default:
 				POPUP_ERRORF(false, "There is no message for enum(" + std::to_string(mainHeader->header) + ")");

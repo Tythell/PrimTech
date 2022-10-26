@@ -33,11 +33,14 @@ bool TextureMap::CreateFromFile(const char* texturePath, ID3D11Device* device, c
 	if (texturePath[0] == '.')
 	{
 		fullpath = std::string(texturePath).substr(1);
+		
 	}
 	else if (texturePath[1] != ':')
 		fullpath = "Assets/Textures/" + std::string(texturePath);
 	else
 		fullpath = "Assets\\Textures\\" + m_name;
+
+	m_fullName = fullpath;
 
 
 	int textureWidth;
@@ -192,4 +195,9 @@ ID3D11ShaderResourceView** TextureMap::GetSRVAdress()
 std::string TextureMap::GetName() const
 {
 	return m_name;
+}
+
+std::string TextureMap::GetFullName() const
+{
+	return m_fullName;
 }

@@ -64,15 +64,18 @@ public:
 	void SetDiffuseClr(const sm::Vector3& v);
 	void SetDiffuseClr(float r, float g, float b);
 	void SetName(std::string name);
+	void SetAmbient(sm::Vector4 v);
 
 	//std::string GetMaterialName() const;
 	std::string GetMapName(const TextureType& e) const;
 	std::string GetFileName() const;
+	std::string GetFilePath(const TextureType& e) const;
 	sm::Vector2 GetDiffuseScrollSpeed() const;
 	sm::Vector2 GetDistortionScrollSpeed() const;
 	float GetTextureScale() const;
 	float GetTextureScaleDist() const;
 	sm::Vector3 GetDiffuseClr() const;
+	sm::Vector4 GetAmbientClr() const;
 
 	Buffer<hlsl::cbpMaterialBuffer>* GetBuffer();
 	bool HasTexture(const TextureType& e) const;
@@ -91,6 +94,7 @@ private:
 	float m_distDivider = 1.f;
 	bool m_lefthanded = true;
 	sm::Vector3 m_diffuseClr = WHITE_3F;
+	sm::Vector4 m_ambient = WHITE_4F;
 
 	sm::Vector2 m_diffuseOffsetValue, m_distortionValue;
 	sm::Vector2 m_diffuseOffsetSpeed, m_distortionOffsetSpeed;

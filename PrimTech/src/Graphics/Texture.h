@@ -11,6 +11,7 @@ class TextureMap
 private:
 	ID3D11ShaderResourceView* m_textureSRV = nullptr;
 	std::string m_name = "";
+	std::string m_fullName = "";
 public:
 	TextureMap();
 	TextureMap(const char* texturePath, ID3D11Device* device, const bool& flipUV = true);
@@ -25,4 +26,5 @@ public:
 	ID3D11ShaderResourceView* GetSRV();
 	ID3D11ShaderResourceView** GetSRVAdress();
 	std::string GetName() const;
+	std::string GetFullName() const;
 };

@@ -81,5 +81,6 @@ namespace hlsl
 		float4 characterLight[2];
 		float3 rimColor;
 		float textureScaleDist;
+		float4 localAmbient;
 	};
 }
