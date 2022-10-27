@@ -87,3 +87,8 @@ struct MaterialMessage
 	char normalName[128]{ "" };
 };
 
+struct MtrlConnectionMsg
+{
+	char mtrlName[64]{ "" };
+	char meshName[64]{ "" };
+};

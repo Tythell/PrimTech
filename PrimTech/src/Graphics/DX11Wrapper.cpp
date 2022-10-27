@@ -269,9 +269,10 @@ bool DX11Addon::InitScene()
 	//ResourceHandler::AddTexture("missingTexture.png"); // setting missingtexture
 	ResourceHandler::AddTexture(".NoTexture.pngg"); // setting missingtexture
 	ResourceHandler::AddTexture("ZANormal.png"); // Load LightWarp Texture
-	Material* defaultMaterial = ResourceHandler::AddMaterial("DefaultMaterial"); // Load LightWarp Texture
+	Material* noMaterial = ResourceHandler::AddMaterial("NoMaterial"); // Load LightWarp Texture
 	m_icon.CreateFromFile("icons/icon.png", device);
-	defaultMaterial->SetPointers(&m_materialBuffer);
+	noMaterial->SetPointers(&m_materialBuffer);
+	noMaterial->LoadTexture(".NoTexture.pngg", TextureType::eDiffuse);
 
 	//ResourceHandler::AddTexture("ZATf2esk.png"); // Load LightWarp Texture
 	dc->PSSetShaderResources(0, 1, ResourceHandler::GetTexture(1).GetSRVAdress());

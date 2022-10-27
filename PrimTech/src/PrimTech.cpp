@@ -22,8 +22,6 @@ namespace pt
 	{
 		m_window.init(windowName, hInstance, windowClass, width, height);
 
-
-
 		m_window.SetInputP(m_kb);
 
 		//m_cellCam.SetPosition(0.f, 0.f, -1.f);
@@ -73,26 +71,6 @@ namespace pt
 		if (m_kb.IsKeyDown(m_shutDownKey))
 			m_window.ShutDown();
 
-		static bool ismessage = false;
-		if (m_kb.IsKeyDown('J') && !ismessage)
-		{
-			NameChange nc;
-			SectionHeader* scHeader = new SectionHeader;
-			const uint msgSize = sizeof(NameChange);
-			scHeader->header = Headers::eNAMECHANGE;
-			scHeader->msgLen = msgSize;
-			strcpy_s(nc.newName, "newname");
-			strcpy_s(nc.oldName, "oldName");
-
-			char* message = new char[msgSize];
-			memcpy(message, (char*)&nc, msgSize);
-
-			delete scHeader;
-			delete[] message;
-			ismessage = true;
-		}
-		else if (!m_kb.IsKeyDown('J'))
-			ismessage = false;
 
 		while (consumerBuffer->Recieve(message, mainHeader))
 		{
@@ -242,6 +220,32 @@ namespace pt
 				std::string normal = "." + std::string(m.normalName);
 				if (normal != ".")
 					pMat->LoadTexture(diffuse, TextureType::eNormal);
+				
+				break;
+			}
+			case Headers::eMaterialConnected:
+			{
+				MtrlConnectionMsg m;
+				HandleMsg(m);
+
+				std::string mtrlName = m.mtrlName;
+				std::string meshName = m.meshName;
+
+				if (meshName[0] == '-')
+				{
+
+				}
+				else
+				{
+					int modelIndex = mp_gApi->NameFindModel(meshName);
+
+					if (modelIndex != -1)
+						mp_gApi->GetModelList()[modelIndex]->AssignMaterial(mtrlName);
+
+					POPUP_ERRORF((modelIndex != -1), meshName + " does not exist");
+				}
+
+				
 				
 				break;
 			}

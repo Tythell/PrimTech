@@ -88,7 +88,7 @@ Material* ResourceHandler::GetMaterial(std::string name)
 			return m_materials[i];
 		}
 	}
-	return nullptr;
+	return m_materials[0];
 }
 
 Material* ResourceHandler::GetMaterial(unsigned int index)
