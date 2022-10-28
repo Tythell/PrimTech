@@ -32,6 +32,9 @@ namespace pt
 		mp_gApi = new DX11Addon(m_window, m_cams);
 		mp_gApi->SetInputP(m_kb);
 	}
+
+
+
 	void newMeshMessage(char* message, NewMeshMessageStruct& m, std::vector<Vertex3D>& verts, std::vector<uint>& iBuffer)
 	{
 		memcpy((char*)&m, message, sizeof(NewMeshMessageStruct));
@@ -65,7 +68,9 @@ namespace pt
 				indexes.emplace_back(i);
 		}
 	}
-#define HandleMsg(m) memcpy((char*)&m, message, mainHeader->msgLen)
+
+
+#define HandleMsg(m) memcpy((char*)&m, message, mainHeader->msgLen) 
 	void PrimTech::Update(const float& dt)
 	{
 		if (m_kb.IsKeyDown(m_shutDownKey))
@@ -79,7 +84,6 @@ namespace pt
 			case Headers::eCAMMESSAGE:
 			{
 				CameraData camMessage;
-				//memcpy((char*)&camMessage, message, mainHeader->msgLen);
 				HandleMsg(camMessage);
 				Camera* pcam = m_cams.CreateEmptyCamera(camMessage.cameraName);
 				sm::Matrix projMatrix = *reinterpret_cast<sm::Matrix*>(camMessage.projMatrix);
@@ -147,12 +151,12 @@ namespace pt
 			}
 			case Headers::eNEWTOPOLOGY:
 			{
-				std::vector<Vertex3D> verts;
-				std::vector<uint> indexes;
-				NewMeshMessageStruct m;
-				newMeshMessage(message, m, verts, indexes);
+				//std::vector<Vertex3D> verts;
+				//std::vector<uint> indexes;
+				//NewMeshMessageStruct m;
+				//newMeshMessage(message, m, verts, indexes);
 
-				mp_gApi->AddNewModel(m.meshName, verts, indexes);
+				//mp_gApi->AddNewModel(m.meshName, verts, indexes);
 				break;
 			}
 			case Headers::eOBJECTDRAG:
@@ -160,7 +164,7 @@ namespace pt
 				MoveObjectStruct m;
 				memcpy((char*)&m, message, mainHeader->msgLen);
 				int index = mp_gApi->NameFindModel(m.meshName);
-				THROW_POPUP_ERRORF(index != -1, "eOBJECTDRAG: mesh not found");
+				THROW_POPUP_ERRORF((index != -1), "eOBJECTDRAG: mesh not found");
 				Model* pModel = mp_gApi->GetModelList()[index];
 
 				sm::Matrix mat = *reinterpret_cast<sm::Matrix*>(m.matrix);
@@ -174,7 +178,7 @@ namespace pt
 				//VertexDrag m;
 				//memcpy((char*)&m, message, mainHeader->msgLen);
 				//int index = mp_gApi->NameFindModel(m.meshName);
-				//THROW_POPUP_ERRORF(index != -1, "eVERTEXDRAG: mesh not found");
+				//THROW_POPUP_ERRORF((index != -1), "eVERTEXDRAG: mesh not found");
 				//Model* pModel = mp_gApi->GetModelList()[index];
 
 
@@ -194,7 +198,7 @@ namespace pt
 			{
 				DeleteMesh m;
 				HandleMsg(m);
-
+				
 				for (int i = 0; i < mp_gApi->GetModelList().size(); i++)
 				{
 					if (mp_gApi->GetModelList()[i])
@@ -231,22 +235,13 @@ namespace pt
 				std::string mtrlName = m.mtrlName;
 				std::string meshName = m.meshName;
 
-				if (meshName[0] == '-')
-				{
-
-				}
-				else
-				{
-					int modelIndex = mp_gApi->NameFindModel(meshName);
-
-					if (modelIndex != -1)
-						mp_gApi->GetModelList()[modelIndex]->AssignMaterial(mtrlName);
-
-					POPUP_ERRORF((modelIndex != -1), meshName + " does not exist");
-				}
-
+				int modelIndex = mp_gApi->NameFindModel(meshName);
 				
+				if (modelIndex != -1)
+					mp_gApi->GetModelList()[modelIndex]->AssignMaterial(mtrlName, false); // is false because we send invalid mtrl-names on purpose
 				
+				POPUP_ERRORF((m.meshName[0] != '-') && (modelIndex != -1), meshName + " does not exist");
+
 				break;
 			}
 			default:

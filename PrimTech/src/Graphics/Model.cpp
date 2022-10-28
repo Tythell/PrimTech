@@ -184,10 +184,10 @@ void Model::SetName(const std::string& n)
 	m_name = n;
 }
 
-void Model::AssignMaterial(std::string mtrlName)
+void Model::AssignMaterial(std::string mtrlName, bool checkError)
 {
 	mp_material = ResourceHandler::GetMaterial(mtrlName);
-	POPUP_ERRORF((mp_material != nullptr), (mtrlName + " does not exist"));
+	POPUP_ERRORF((!checkError && (mp_material != nullptr)), (mtrlName + " does not exist"));
 }
 
 void Model::AssignMaterial(int index)

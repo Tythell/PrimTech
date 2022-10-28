@@ -57,8 +57,7 @@ struct NameChange
 struct MoveObjectStruct
 {
 	char meshName[64]{""};
-	float matrix[4 * 4]{0.f};
-	uint childCount = 0;
+	float matrix[4][4]{0.f};
 };
 
 struct VertexDrag

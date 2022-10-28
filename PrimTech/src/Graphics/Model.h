@@ -86,7 +86,7 @@ public:
 	void SetMaterialBuffer(Buffer<hlsl::cbpMaterialBuffer>& cbMaterialBuffer);
 	void DecreaseMeshUsage();
 	void SetName(const std::string& n);
-	void AssignMaterial(std::string mtrlName);
+	void AssignMaterial(std::string mtrlName, bool checkError = true);
 	void AssignMaterial(int index);
 	//void CreateMaterial();
 	//void AssignMaterial(Material& material);

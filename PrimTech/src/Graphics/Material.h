@@ -43,7 +43,7 @@ class Material
 {
 public:
 	Material(std::string name = "", MaterialType mt = MaterialType::Embedded);
-	void LoadTexture(std::string textureName, TextureType type);
+	void LoadTexture(std::string textureName, TextureType type = eDiffuse);
 	void UpdateTextureScroll(const float& deltatime);
 	void SetDiffuseScrollSpeed(float x, float y);
 	void SetDistortionScrollSpeed(float x, float y);
