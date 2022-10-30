@@ -201,9 +201,10 @@ namespace pt
 				
 				for (int i = 0; i < mp_gApi->GetModelList().size(); i++)
 				{
-					if (mp_gApi->GetModelList()[i])
+					if (mp_gApi->GetModelList()[i]->GetName() == std::string(m.meshName))
 					{
 						mp_gApi->DeleteModel(i);
+						break;
 					}
 				}
 				break;
@@ -279,7 +280,5 @@ namespace pt
 
 			running = m_window.processMsg();
 		}
-
 	}
 }
-
