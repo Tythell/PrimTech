@@ -70,7 +70,8 @@ namespace pt
 	}
 
 
-#define HandleMsg(m) memcpy((char*)&m, message, mainHeader->msgLen) 
+#define HandleMsg(m) memcpy((char*)&m, message, mainHeader->msgLen)
+#define HandleMsgType(m, type) memcpy((char*)&m, message, sizeof(type))
 	void PrimTech::Update(const float& dt)
 	{
 		if (m_kb.IsKeyDown(m_shutDownKey))
@@ -124,29 +125,58 @@ namespace pt
 			{
 				NewMeshMessageStruct m;
 				HandleMsg(m);
-				//newMeshMessage(message, m, verts, indexes);
+				std::vector<Vertex3D> verts;
+				std::vector<uint> indexes;
+				if (true) // accept mesh from message
+				{
+					
+					//newMeshMessage(message, m, verts, indexes);
 
-				uint nOfVerts = 3;
-				std::vector<Vertex3D> vertexArray;
-				std::vector<uint> iArray;
-				vertexArray.resize(nOfVerts);
+					for (int i = 0; i < m.numVertices; i++)
+					{
+						MayaVertex mv;
+						HandleMsgType(mv, MayaVertex);
+						Vertex3D vert(mv);
+						verts.emplace_back(vert);
+					}
 
-				vertexArray[0].position = { -.5f, -.5f, 0.f };
-				vertexArray[1].position = { 0.0f, .5f, 0.f };
-				vertexArray[2].position = { 0.5f, -.5f, 0.f };
+					for (int i = 0; i < m.numIndexes; i++)
+					{
+						uint index = 0;
+						HandleMsgType(index, uint);
+						indexes.emplace_back(index);
+					}
 
-				vertexArray[0].texCoord = { 0.f, 0.f };
-				vertexArray[1].texCoord = { .5f, 1.f };
-				vertexArray[2].texCoord = { 1.f, 0.f };
+					if (m.numIndexes <= 0) // If there is no index buffer
+					{
+						for (int i = 0; i < verts.size(); i++)
+							indexes.emplace_back(i);
+					}
+				}
+				else // make triangle
+				{
+					uint nOfVerts = 3;
+					verts.resize(nOfVerts);
 
+					verts[0].position = { -.5f, -.5f, 0.f };
+					verts[1].position = { 0.0f, .5f, 0.f };
+					verts[2].position = { 0.5f, -.5f, 0.f };
 
-				for (int i = 0; i < 3; i++)
-					iArray.emplace_back(i);
+					verts[0].texCoord = { 0.f, 0.f };
+					verts[1].texCoord = { .5f, 1.f };
+					verts[2].texCoord = { 1.f, 0.f };
 
-				for (int i = 0; i < vertexArray.size(); i++)
-					vertexArray[i].normal = { 0.f, 0.f, 1.f };
+					for (int i = 0; i < 3; i++)
+						indexes.emplace_back(i);
+
+					for (int i = 0; i < verts.size(); i++)
+						verts[i].normal = { 0.f, 0.f, 1.f };
+					
+				}
 				
-				mp_gApi->AddNewModel(m.meshName, vertexArray, iArray);
+				mp_gApi->AddNewModel(m.meshName, verts, indexes);
+				
+				
 				break;
 			}
 			case Headers::eNEWTOPOLOGY:
@@ -175,23 +205,23 @@ namespace pt
 			}
 			case Headers::eVERTEXDRAG:
 			{
-				//VertexDrag m;
-				//memcpy((char*)&m, message, mainHeader->msgLen);
-				//int index = mp_gApi->NameFindModel(m.meshName);
-				//THROW_POPUP_ERRORF((index != -1), "eVERTEXDRAG: mesh not found");
-				//Model* pModel = mp_gApi->GetModelList()[index];
+				VertexDrag m;
+				memcpy((char*)&m, message, mainHeader->msgLen);
+				int index = mp_gApi->NameFindModel(m.meshName);
+				THROW_POPUP_ERRORF((index != -1), "eVERTEXDRAG: mesh not found");
+				Model* pModel = mp_gApi->GetModelList()[index];
 
 
-				//Vertex3D ptVert;
-				//ptVert.position.x = m.newVertex.position[0];
-				//ptVert.position.y = m.newVertex.position[1];
-				//ptVert.position.z = m.newVertex.position[2];
-				//ptVert.texCoord.x = m.newVertex.uv[0];
-				//ptVert.texCoord.y = m.newVertex.uv[1];
-				//ptVert.normal.x = m.newVertex.normal[0];
-				//ptVert.normal.y = m.newVertex.normal[1];
-				//ptVert.normal.z = m.newVertex.normal[2];
-				//pModel->ChangeVertex(m.vertexId, ptVert);
+				Vertex3D ptVert;
+				ptVert.position.x = m.newVertex.position[0];
+				ptVert.position.y = m.newVertex.position[1];
+				ptVert.position.z = m.newVertex.position[2];
+				ptVert.texCoord.x = m.newVertex.uv[0];
+				ptVert.texCoord.y = m.newVertex.uv[1];
+				ptVert.normal.x = m.newVertex.normal[0];
+				ptVert.normal.y = m.newVertex.normal[1];
+				ptVert.normal.z = m.newVertex.normal[2];
+				pModel->ChangeVertex(m.vertexId, ptVert);
 				break;
 			}
 			case Headers::eDELETENODE:

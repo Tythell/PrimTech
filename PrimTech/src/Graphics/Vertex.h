@@ -1,5 +1,6 @@
 #pragma once
 #include "../Math/Math.h"
+#include "Comlib/MahaHeaders.h"
 
 //struct VertexQuad
 //{
@@ -24,6 +25,18 @@ struct Vertex3D
 			return true;
 		return false;
 	}
+	Vertex3D()
+	{}
+	Vertex3D(const MayaVertex& obj)
+	{
+		this->position = *(sm::Vector3*)obj.position;
+		this->texCoord = *(sm::Vector2*)obj.uv;
+		this->normal = *(sm::Vector3*)obj.normal;
+	}
+	//Vertex3D operator=(const MayaVertex& obj)
+	//{
+	//	
+	//}
 	void MarkDuplicate()
 	{
 		texCoord = { -1,-1 }; // texCoord  will normally never be -1
