@@ -371,16 +371,16 @@ Shape ProcessMesh(aiMesh* mesh, const aiScene* scene, Mtl& mtl)
 	material->Get(AI_MATKEY_TEXTURE(aiTextureType_DIFFUSE, 0), diffuseName);
 	mtl.diffuseName = diffuseName.C_Str();
 	// making vertexes clockwise because assimp is retarded
-	//for (int i = 0; i < numVerts / 3; i++)
-	//{
-	//	Vertex3D triangle[3];
-	//	for (int j = 0; j < 3; j++)
-	//		triangle[j] = shape.verts[i*3+j];
-	//	Swap(triangle[0], triangle[2]);
+	for (int i = 0; i < numVerts / 3; i++)
+	{
+		Vertex3D triangle[3];
+		for (int j = 0; j < 3; j++)
+			triangle[j] = shape.verts[i*3+j];
+		Swap(triangle[0], triangle[2]);
 
-	//	for (int j = 0; j < 3; j++)
-	//		shape.verts[i*3+j] = triangle[j];
-	//}
+		for (int j = 0; j < 3; j++)
+			shape.verts[i*3+j] = triangle[j];
+	}
 	return shape;
 }
 
@@ -400,7 +400,7 @@ void ProcessNode(aiNode* node, const aiScene* scene, std::vector<Shape>& fullSha
 bool AssimpLoad(const std::string path, std::vector<Shape>& shape, std::vector<Mtl>& allMtls)
 {
 	Assimp::Importer importer;
-	const aiScene* pScene = importer.ReadFile(path.c_str(), /*aiProcess_MakeLeftHanded |*/ aiProcess_CalcTangentSpace);
+	const aiScene* pScene = importer.ReadFile(path.c_str(), aiProcess_MakeLeftHanded | aiProcess_CalcTangentSpace);
 	std::string errString = path + " file does not exist";
 
 	THROW_POPUP_ERROR(pScene != NULL, errString);
