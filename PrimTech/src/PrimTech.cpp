@@ -155,8 +155,7 @@ namespace pt
 				}
 				else // make triangle
 				{
-					uint nOfVerts = 3;
-					verts.resize(nOfVerts);
+					verts.resize(3);
 
 					verts[0].position = { -.5f, -.5f, 0.f };
 					verts[1].position = { 0.0f, .5f, 0.f };
@@ -169,13 +168,12 @@ namespace pt
 					for (int i = 0; i < 3; i++)
 						indexes.emplace_back(i);
 
-					for (int i = 0; i < verts.size(); i++)
+					for (int i = 0; i < 3; i++)
 						verts[i].normal = { 0.f, 0.f, 1.f };
 					
 				}
 				
 				mp_gApi->AddNewModel(m.meshName, verts, indexes);
-				
 				
 				break;
 			}
