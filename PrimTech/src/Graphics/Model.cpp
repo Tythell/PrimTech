@@ -65,7 +65,7 @@ void Model::Init(const std::string path, ModelType e, unsigned char flags)
 	//dc->VSSetConstantBuffers(0, 1, mp_cbTransformBuffer->GetReference());
 }
 
-void Model::CreateFromArray(std::vector<Vertex3D> vArray, std::vector<uint> iArray, ID3D11Device*& device, ID3D11DeviceContext*& dc)
+void Model::CreateFromArray(std::vector<Vertex3D> vArray, std::vector<DWORD> iArray, ID3D11Device*& device, ID3D11DeviceContext*& dc)
 {
 	m_nOfMats = 0;
 	bool isUpdate = mp_mesh != nullptr;
@@ -545,7 +545,7 @@ Mesh::Mesh(std::string path, ID3D11Device*& device, char flags)
 	COM_ERROR(hr, "Failed to load index buffer");
 }
 
-Mesh::Mesh(std::vector<Vertex3D> vArray, std::vector<uint> iArray, ID3D11Device*& device, ID3D11DeviceContext*& dc)
+Mesh::Mesh(std::vector<Vertex3D> vArray, std::vector<DWORD> iArray, ID3D11Device*& device, ID3D11DeviceContext*& dc)
 {
 	m_shape.index = iArray;
 	m_shape.verts = vArray;
@@ -557,7 +557,7 @@ Mesh::Mesh(std::vector<Vertex3D> vArray, std::vector<uint> iArray, ID3D11Device*
 	int lastSize = 0;
 	for (int i = 0; i < m_nofMeshes; i++)
 	{
-		lastSize += vArray.size();
+		lastSize += iArray.size();
 		m_offsets.emplace_back(lastSize);
 	}
 }
@@ -567,7 +567,7 @@ Buffer<Vertex3D>& Mesh::GetVBuffer()
 	return m_vbuffer;
 }
 
-Buffer<uint>& Mesh::GetIBuffer()
+Buffer<DWORD>& Mesh::GetIBuffer()
 {
 	return m_ibuffer;
 }

@@ -155,7 +155,7 @@ bool DX11Addon::InitRastNSampState()
 	ZeroMemory(&rastDesc, sizeof(D3D11_RASTERIZER_DESC));
 	rastDesc.FillMode = D3D11_FILL_MODE::D3D11_FILL_SOLID;
 	rastDesc.CullMode = D3D11_CULL_MODE::D3D11_CULL_BACK;
-	rastDesc.FrontCounterClockwise = false;
+	rastDesc.FrontCounterClockwise = true;
 
 	HRESULT hr = device->CreateRasterizerState(&rastDesc, &m_rasterizerState);
 	COM_ERROR(hr, "Rasterizer State setup failed");
@@ -603,20 +603,20 @@ int DX11Addon::NameFindModel(const std::string name)
 	return -1;
 }
 
-void DX11Addon::AddNewModel(const std::string& name, std::vector<Vertex3D>& vertexArray, std::vector<uint> iArray)
+void DX11Addon::AddNewModel(const std::string& name, std::vector<Vertex3D>& vertexArray, std::vector<DWORD>& iArray)
 {
 	int modelIndex = nameFindModel(name, m_models);
 
 	//calculate tangent and bitangent
-	for (uint i = 0; i < vertexArray.size(); i += 3)
+	for (uint i = 0; i < iArray.size(); i += 3)
 	{
-		sm::Vector2 UVA = vertexArray[i + 0].texCoord;
-		sm::Vector2 UVB = vertexArray[i + 1].texCoord;
-		sm::Vector2 UVC = vertexArray[i + 2].texCoord;
+		sm::Vector2 UVA = vertexArray[iArray[i + 0]].texCoord;
+		sm::Vector2 UVB = vertexArray[iArray[i + 1]].texCoord;
+		sm::Vector2 UVC = vertexArray[iArray[i + 2]].texCoord;
 
-		sm::Vector3 POSA = vertexArray[i + 0].position;
-		sm::Vector3 POSB = vertexArray[i + 1].position;
-		sm::Vector3 POSC = vertexArray[i + 2].position;
+		sm::Vector3 POSA = vertexArray[iArray[i + 0]].position;
+		sm::Vector3 POSB = vertexArray[iArray[i + 1]].position;
+		sm::Vector3 POSC = vertexArray[iArray[i + 2]].position;
 
 		sm::Vector2 dAB = UVB - UVA;
 		sm::Vector2 dAC = UVC - UVA;
@@ -631,13 +631,13 @@ void DX11Addon::AddNewModel(const std::string& name, std::vector<Vertex3D>& vert
 		tangent.y = f * (dAC.y * edge1.y - dAB.y * edge2.y);
 		tangent.z = f * (dAC.y * edge1.z - dAB.y * edge2.z);
 
-		vertexArray[i].tangent = tangent;
-		vertexArray[i + 1].tangent = tangent;
-		vertexArray[i + 2].tangent = tangent;
+		vertexArray[iArray[i + 0]].tangent = tangent;
+		vertexArray[iArray[i + 1]].tangent = tangent;
+		vertexArray[iArray[i + 2]].tangent = tangent;
 
-		vertexArray[i].bitangent = tangent;
-		vertexArray[i + 1].bitangent = tangent;
-		vertexArray[i + 2].bitangent = tangent;
+		vertexArray[iArray[i + 0]].bitangent = tangent;
+		vertexArray[iArray[i + 1]].bitangent = tangent;
+		vertexArray[iArray[i + 2]].bitangent = tangent;
 	}
 
 	Model* pModel = nullptr;
@@ -676,50 +676,50 @@ void DX11Addon::MoveVertex(const std::string& name, const uint& id, std::vector<
 void DX11Addon::ImguiDebug()
 {
 	ImGui::Begin("Debug", &im.showDebugWindow);
-	if (ImGui::CollapsingHeader("Maya", ImGuiTreeNodeFlags_DefaultOpen))
-	{
-		if (ImGui::Button("init cube"))
-		{
-			uint nOfVerts = 3;
-			std::vector<Vertex3D> vertexArray;
-			std::vector<uint> iArray;
-			vertexArray.resize(nOfVerts);
+	//if (ImGui::CollapsingHeader("Maya", ImGuiTreeNodeFlags_DefaultOpen))
+	//{
+	//	if (ImGui::Button("init cube"))
+	//	{
+	//		uint nOfVerts = 3;
+	//		std::vector<Vertex3D> vertexArray;
+	//		std::vector<DWORD> iArray;
+	//		vertexArray.resize(nOfVerts);
 
-			vertexArray[0].position = { -.5f, -.5f, 0.f };
-			vertexArray[1].position = { 0.0f, .5f, 0.f };
-			vertexArray[2].position = { 0.5f, -.5f, 0.f };
+	//		vertexArray[0].position = { -.5f, -.5f, 0.f };
+	//		vertexArray[1].position = { 0.0f, .5f, 0.f };
+	//		vertexArray[2].position = { 0.5f, -.5f, 0.f };
 
-			vertexArray[0].texCoord = { 0.f, 0.f };
-			vertexArray[1].texCoord = { .5f, 1.f };
-			vertexArray[2].texCoord = { 1.f, 0.f };
+	//		vertexArray[0].texCoord = { 0.f, 0.f };
+	//		vertexArray[1].texCoord = { .5f, 1.f };
+	//		vertexArray[2].texCoord = { 1.f, 0.f };
 
-			for (int i = 0; i < 3; i++)
-			{
-				iArray.emplace_back(i);
-			}
+	//		for (int i = 0; i < 3; i++)
+	//		{
+	//			iArray.emplace_back(i);
+	//		}
 
-			for (int i = 0; i < vertexArray.size(); i++)
-				vertexArray[i].normal = { 0.f, 0.f, -1.f };
+	//		for (int i = 0; i < vertexArray.size(); i++)
+	//			vertexArray[i].normal = { 0.f, 0.f, -1.f };
 
-			AddNewModel("debugMaya", vertexArray, iArray);
-			
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("VertexMove"))
-		{
-			Model* pmodel = m_models[nameFindModel("debugMaya", m_models)];
-			Vertex3D v;
-			v.position = { 0.0f, 1.5f, 0.f };
-			v.texCoord = { .5f, 1.f };
-			v.normal = { 0.f, 0.f, -1.f };
+	//		AddNewModel("debugMaya", vertexArray, iArray);
+	//		
+	//	}
+	//	ImGui::SameLine();
+	//	if (ImGui::Button("VertexMove"))
+	//	{
+	//		Model* pmodel = m_models[nameFindModel("debugMaya", m_models)];
+	//		Vertex3D v;
+	//		v.position = { 0.0f, 1.5f, 0.f };
+	//		v.texCoord = { .5f, 1.f };
+	//		v.normal = { 0.f, 0.f, -1.f };
 
-			pmodel->ChangeVertex(1, v);
-		}
-		if (ImGui::Button("RemoveCam"))
-		{
-			mp_camHandler->RemoveCamera("testcam");
-		}
-	}
+	//		pmodel->ChangeVertex(1, v);
+	//	}
+	//	if (ImGui::Button("RemoveCam"))
+	//	{
+	//		mp_camHandler->RemoveCamera("testcam");
+	//	}
+	//}
 	
 	if (ImGui::IsWindowHovered())
 		m_isHoveringWindow = true;
@@ -1042,215 +1042,222 @@ void DX11Addon::ImGuiEntList()
 
 		if (m_selected != -1)
 		{
-			ImGui::Begin("Model properties");
 
 			
 			Model* pSelectedModel = m_models[m_selected];
-			std::vector<char*> fullString;
-			if (pSelectedModel->GetModelType() == ModelType::eMAYA)
+			if (pSelectedModel->GetModelType() != ModelType::eMAYA)
 			{
-				
-				int assignedMat = 0;
-				for (int i = 0; i < ResourceHandler::GetMtrlAmount(); i++)
+				ImGui::Begin("Model properties");
+				std::vector<char*> fullString;
+				if (pSelectedModel->GetModelType() == ModelType::eMAYA)
 				{
-					uint siz = ResourceHandler::GetMaterial(i)->GetFileName().size() + 1;
-					char* st = new char[siz];
-					memcpy_s(st, siz, ResourceHandler::GetMaterial(i)->GetFileName().c_str(), siz);
-					fullString.emplace_back(st);
-					if (std::string(fullString[i]) == pSelectedModel->GetMaterial().GetFileName())
-						assignedMat = i;
-				}
-				uint noOfchars = 0;
-				if (ImGui::Combo("##materials", &assignedMat, fullString.data(), fullString.size()))
-				{
-					pSelectedModel->AssignMaterial(assignedMat);
-				}
-				for (int i = 0; i < ResourceHandler::GetMtrlAmount(); i++)
-				{
-					delete[] fullString[i];
-				}
-			}
-			if (ImGui::IsWindowHovered())
-				m_isHoveringWindow = true;
 
-			ImGui::BeginGroup();
-			ImGui::Text(m_models[m_selected]->GetName().c_str());
-			ImGui::Separator();
-			if (ImGui::CollapsingHeader("Transformations", ImGuiTreeNodeFlags_DefaultOpen))
-			{
-				sm::Vector3 pos = pSelectedModel->GetPosition();
-				float position[3] = { pos.x, pos.y, pos.z };
-				ImGui::PushItemWidth(m_width * .105f);
-				ImGui::DragFloat3("Position", position, .02f);
-				ImGui::SameLine();
-				if (ImGui::Button("Reset##Position")) for (int i = 0; i < 3; i++)
-					position[i] = 0.f;
-				pSelectedModel->SetPosition(position[0], position[1], position[2]);
-
-				sm::Vector3 rot = pSelectedModel->GetRotation();
-				float rotation[3] = { rot.x, rot.y, rot.z };
-				ImGui::DragFloat3("Rotation", rotation, .02f);
-
-				ImGui::SameLine();
-				if (ImGui::Button("Reset##Rotation"))
-					for (int i = 0; i < 3; i++)
-						rotation[i] = 0.f;
-				pSelectedModel->SetRotation(rotation[0], rotation[1], rotation[2]);
-
-				sm::Vector3 scale = pSelectedModel->GetScale();
-				float scalef[3] = { scale.x, scale.y, scale.z };
-
-				ImGui::DragFloat3("Scale   ", scalef, .02f);
-
-
-				ImGui::SameLine();
-				if (ImGui::Button("Reset##Scale"))
-					for (int i = 0; i < 3; i++)
-						scalef[i] = 1.f;
-
-				ImGui::SameLine();
-				if (ImGui::Button("X"))
-				{
-					scalef[1] = scalef[0];
-					scalef[2] = scalef[0];
-				}
-				pSelectedModel->SetScale(scalef[0], scalef[1], scalef[2]);
-			}
-			for (UINT matIndex = 0; matIndex < pSelectedModel->GetMeshP()->GetNofMeshes(); matIndex++)
-			{
-				Material* pMaterial = &pSelectedModel->GetMaterial(matIndex);
-				std::string matName = "Material - " + std::to_string(matIndex);
-				if (ImGui::CollapsingHeader(matName.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
-				{
-					LoadButton(pMaterial, "Diffuse: ", eDiffuse, matIndex);
-					LoadButton(pMaterial, "NormalMap: ", eNormal, matIndex);
-					LoadButton(pMaterial, "DistMap: ", eDistortion, matIndex);
-					LoadButton(pMaterial, "OpacityMap: ", eOpacity, matIndex);
-
-					sm::Vector2 diffuseSpeed(pMaterial->GetDiffuseScrollSpeed());
-					sm::Vector2 distortionSpeed(pMaterial->GetDistortionScrollSpeed());
-					bool hasDistMap = pMaterial->HasTexture(eDistortion);
-					bool hasDiffuse = pMaterial->HasTexture(eDiffuse) || pMaterial->HasTexture(eNormal) || pMaterial->HasTexture(eOpacity);
-
-					float diffSpeed[2]{ diffuseSpeed.x, diffuseSpeed.y };
-					float distSpeed[2]{ distortionSpeed.x, distortionSpeed.y };
-
-					std::string title = "Diffuse Scroll" + std::to_string(matIndex);
-					ImGui::PushItemWidth(m_width * 0.14f);
-					if (hasDiffuse)
+					int assignedMat = 0;
+					for (int i = 0; i < ResourceHandler::GetMtrlAmount(); i++)
 					{
-						ImGui::SliderFloat2(title.c_str(), diffSpeed, -.5f, .5f);
+						uint siz = ResourceHandler::GetMaterial(i)->GetFileName().size() + 1;
+						char* st = new char[siz];
+						memcpy_s(st, siz, ResourceHandler::GetMaterial(i)->GetFileName().c_str(), siz);
+						fullString.emplace_back(st);
+						if (std::string(fullString[i]) == pSelectedModel->GetMaterial().GetFileName())
+							assignedMat = i;
 					}
-					
-
-					title = "Distortion Scroll##" + std::to_string(matIndex);
-					if (hasDistMap)
-						ImGui::SliderFloat2(title.c_str(), distSpeed, -.5f, .5f);
-
-					title = "Reset Scrollspeed##" + std::to_string(matIndex);
-					if (ImGui::Button(title.c_str()))
+					uint noOfchars = 0;
+					if (ImGui::Combo("##materials", &assignedMat, fullString.data(), fullString.size()))
 					{
-						for (int i = 0; i < 2; i++)
+						pSelectedModel->AssignMaterial(assignedMat);
+					}
+					for (int i = 0; i < ResourceHandler::GetMtrlAmount(); i++)
+					{
+						delete[] fullString[i];
+					}
+				}
+				if (ImGui::IsWindowHovered())
+					m_isHoveringWindow = true;
+
+				ImGui::BeginGroup();
+				ImGui::Text(m_models[m_selected]->GetName().c_str());
+				ImGui::Separator();
+				if (ImGui::CollapsingHeader("Transformations", ImGuiTreeNodeFlags_DefaultOpen))
+				{
+					if (pSelectedModel->GetModelType() != ModelType::eMAYA)
+					{
+						sm::Vector3 pos = pSelectedModel->GetPosition();
+						float position[3] = { pos.x, pos.y, pos.z };
+						ImGui::PushItemWidth(m_width * .105f);
+						ImGui::DragFloat3("Position", position, .02f);
+						ImGui::SameLine();
+						if (ImGui::Button("Reset##Position")) for (int i = 0; i < 3; i++)
+							position[i] = 0.f;
+						pSelectedModel->SetPosition(position[0], position[1], position[2]);
+
+						sm::Vector3 rot = pSelectedModel->GetRotation();
+						float rotation[3] = { rot.x, rot.y, rot.z };
+						ImGui::DragFloat3("Rotation", rotation, .02f);
+
+						ImGui::SameLine();
+						if (ImGui::Button("Reset##Rotation"))
+							for (int i = 0; i < 3; i++)
+								rotation[i] = 0.f;
+						pSelectedModel->SetRotation(rotation[0], rotation[1], rotation[2]);
+
+						sm::Vector3 scale = pSelectedModel->GetScale();
+						float scalef[3] = { scale.x, scale.y, scale.z };
+
+						ImGui::DragFloat3("Scale   ", scalef, .02f);
+
+						ImGui::SameLine();
+						if (ImGui::Button("Reset##Scale"))
+							for (int i = 0; i < 3; i++)
+								scalef[i] = 1.f;
+
+						ImGui::SameLine();
+						if (ImGui::Button("X"))
 						{
-							diffSpeed[i] = 0.f;
-							distSpeed[i] = 0.f;
+							scalef[1] = scalef[0];
+							scalef[2] = scalef[0];
 						}
-					}
-					ImGui::SameLine();
-					title = "Reset scrollvalues##" + std::to_string(matIndex);
-					if (ImGui::Button(title.c_str()))
-						pMaterial->ResetScrollValue();
-
-					pMaterial->SetDiffuseScrollSpeed(diffSpeed[0], diffSpeed[1]);
-					pMaterial->SetDistortionScrollSpeed(distSpeed[0], distSpeed[1]);
-
-					if (hasDistMap)
-					{
-						int distDivider = pMaterial->GetDistortionDivider();
-						title = "Dist divider##" + std::to_string(matIndex);
-						ImGui::SliderInt(title.c_str(), &distDivider, 1, 20);
-						pMaterial->SetDistortionDivider(distDivider);
-					}
-
-					float transparancy = pMaterial->GetTransparancy();
-					title = "Transparancy##" + std::to_string(matIndex);
-					ImGui::SliderFloat(title.c_str(), &transparancy, 0.f, 1.f);
-					pMaterial->SetTransparency(transparancy);
-
-					float tiling = pMaterial->GetTextureScale();
-					title = "Tiling##" + std::to_string(matIndex);
-					ImGui::SliderFloat(title.c_str(), &tiling, 1.f, 10.f);
-					pMaterial->SetTextureScale(tiling);
-					if (hasDistMap)
-					{
-						float distScale = pMaterial->GetTextureScaleDist();
-
-						title = "Dist Scale##" + std::to_string(matIndex);
-						ImGui::SliderFloat(title.c_str(), &distScale, 1.f, 10.f);
-						pMaterial->SetTextureScaleDist(distScale);
-					}
-
-					title = "Import##" + std::to_string(matIndex);
-					if (ImGui::Button(title.c_str()))
-					{
-						std::string savePath = "";
-						savePath = Dialogs::OpenFile("Material (*.pmtrl)\0*.pmtrl;\0", "Assets\\pmtrl\\");
-
-						if (savePath != "")
-						{
-							std::string test = StringHelper::GetExtension(savePath);
-							if (!(test != "pmtrl" || test != "mtl"))
-								savePath += ".pmtrl";
-							pMaterial->ImportMaterial(StringHelper::GetName(savePath));
-						}
-					}
-					ImGui::SameLine();
-					title = "Export##" + std::to_string(matIndex);
-					if (ImGui::Button(title.c_str()))
-					{
-						std::string savePath = "";
-						savePath = Dialogs::SaveFile("Material (*.pmtrl)\0*.pmtrl\0", "Assets\\pmtrl\\");
-
-						if (savePath != "")
-						{
-							std::string test = StringHelper::GetExtension(savePath);
-							if (test != "pmtrl")
-								savePath += ".pmtrl";
-							pMaterial->ExportMaterial(savePath);
-						}
+						pSelectedModel->SetScale(scalef[0], scalef[1], scalef[2]);
 					}
 
 				}
-			}
-			if (ImGui::CollapsingHeader("Character Light", ImGuiTreeNodeFlags_DefaultOpen))
-			{
-				float light[]{ pSelectedModel->GetCharacterLight(0).x,
-					pSelectedModel->GetCharacterLight(0).y,
-					pSelectedModel->GetCharacterLight(0).z,
-					pSelectedModel->GetCharacterLight(0).w };
+				for (UINT matIndex = 0; matIndex < pSelectedModel->GetMeshP()->GetNofMeshes(); matIndex++)
+				{
+					Material* pMaterial = &pSelectedModel->GetMaterial(matIndex);
+					std::string matName = "Material - " + std::to_string(matIndex);
+					if (ImGui::CollapsingHeader(matName.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
+					{
+						LoadButton(pMaterial, "Diffuse: ", eDiffuse, matIndex);
+						LoadButton(pMaterial, "NormalMap: ", eNormal, matIndex);
+						LoadButton(pMaterial, "DistMap: ", eDistortion, matIndex);
+						LoadButton(pMaterial, "OpacityMap: ", eOpacity, matIndex);
 
-				ImGui::DragFloat4("DirLight", light, 0.01f);
+						sm::Vector2 diffuseSpeed(pMaterial->GetDiffuseScrollSpeed());
+						sm::Vector2 distortionSpeed(pMaterial->GetDistortionScrollSpeed());
+						bool hasDistMap = pMaterial->HasTexture(eDistortion);
+						bool hasDiffuse = pMaterial->HasTexture(eDiffuse) || pMaterial->HasTexture(eNormal) || pMaterial->HasTexture(eOpacity);
 
-				pSelectedModel->SetLight(sm::Vector4(light[0], light[1], light[2], light[3]), 0);
-			}
-			ImGui::EndGroup();
-			if (mp_kb->IsKeyDown(Key::DELETEKEY))
-			{
-				m_models[m_selected]->DecreaseMeshUsage();
-				delete m_models[m_selected];
-				m_models.erase(m_models.begin() + m_selected);
-				m_selected = -1;
-			}
-			static bool ispressed = false;
-			if (mp_kb->IsKeyDown(Key::CONTROL) && mp_kb->IsKeyDown(Key::D) && !ispressed)
-			{
-				CopyModel(dc, m_transformBuffer, m_materialBuffer, m_models, m_selected);
-				ispressed = true;
-			}
-			else if (!mp_kb->IsKeyDown(Key::CONTROL) && !mp_kb->IsKeyDown(Key::D))
-				ispressed = false;
+						float diffSpeed[2]{ diffuseSpeed.x, diffuseSpeed.y };
+						float distSpeed[2]{ distortionSpeed.x, distortionSpeed.y };
 
-			ImGui::End();
+						std::string title = "Diffuse Scroll" + std::to_string(matIndex);
+						ImGui::PushItemWidth(m_width * 0.14f);
+						if (hasDiffuse)
+						{
+							ImGui::SliderFloat2(title.c_str(), diffSpeed, -.5f, .5f);
+						}
+
+
+						title = "Distortion Scroll##" + std::to_string(matIndex);
+						if (hasDistMap)
+							ImGui::SliderFloat2(title.c_str(), distSpeed, -.5f, .5f);
+
+						title = "Reset Scrollspeed##" + std::to_string(matIndex);
+						if (ImGui::Button(title.c_str()))
+						{
+							for (int i = 0; i < 2; i++)
+							{
+								diffSpeed[i] = 0.f;
+								distSpeed[i] = 0.f;
+							}
+						}
+						ImGui::SameLine();
+						title = "Reset scrollvalues##" + std::to_string(matIndex);
+						if (ImGui::Button(title.c_str()))
+							pMaterial->ResetScrollValue();
+
+						pMaterial->SetDiffuseScrollSpeed(diffSpeed[0], diffSpeed[1]);
+						pMaterial->SetDistortionScrollSpeed(distSpeed[0], distSpeed[1]);
+
+						if (hasDistMap)
+						{
+							int distDivider = pMaterial->GetDistortionDivider();
+							title = "Dist divider##" + std::to_string(matIndex);
+							ImGui::SliderInt(title.c_str(), &distDivider, 1, 20);
+							pMaterial->SetDistortionDivider(distDivider);
+						}
+
+						float transparancy = pMaterial->GetTransparancy();
+						title = "Transparancy##" + std::to_string(matIndex);
+						ImGui::SliderFloat(title.c_str(), &transparancy, 0.f, 1.f);
+						pMaterial->SetTransparency(transparancy);
+
+						float tiling = pMaterial->GetTextureScale();
+						title = "Tiling##" + std::to_string(matIndex);
+						ImGui::SliderFloat(title.c_str(), &tiling, 1.f, 10.f);
+						pMaterial->SetTextureScale(tiling);
+						if (hasDistMap)
+						{
+							float distScale = pMaterial->GetTextureScaleDist();
+
+							title = "Dist Scale##" + std::to_string(matIndex);
+							ImGui::SliderFloat(title.c_str(), &distScale, 1.f, 10.f);
+							pMaterial->SetTextureScaleDist(distScale);
+						}
+
+						title = "Import##" + std::to_string(matIndex);
+						if (ImGui::Button(title.c_str()))
+						{
+							std::string savePath = "";
+							savePath = Dialogs::OpenFile("Material (*.pmtrl)\0*.pmtrl;\0", "Assets\\pmtrl\\");
+
+							if (savePath != "")
+							{
+								std::string test = StringHelper::GetExtension(savePath);
+								if (!(test != "pmtrl" || test != "mtl"))
+									savePath += ".pmtrl";
+								pMaterial->ImportMaterial(StringHelper::GetName(savePath));
+							}
+						}
+						ImGui::SameLine();
+						title = "Export##" + std::to_string(matIndex);
+						if (ImGui::Button(title.c_str()))
+						{
+							std::string savePath = "";
+							savePath = Dialogs::SaveFile("Material (*.pmtrl)\0*.pmtrl\0", "Assets\\pmtrl\\");
+
+							if (savePath != "")
+							{
+								std::string test = StringHelper::GetExtension(savePath);
+								if (test != "pmtrl")
+									savePath += ".pmtrl";
+								pMaterial->ExportMaterial(savePath);
+							}
+						}
+
+					}
+				}
+				if (ImGui::CollapsingHeader("Character Light", ImGuiTreeNodeFlags_DefaultOpen))
+				{
+					float light[]{ pSelectedModel->GetCharacterLight(0).x,
+						pSelectedModel->GetCharacterLight(0).y,
+						pSelectedModel->GetCharacterLight(0).z,
+						pSelectedModel->GetCharacterLight(0).w };
+
+					ImGui::DragFloat4("DirLight", light, 0.01f);
+
+					pSelectedModel->SetLight(sm::Vector4(light[0], light[1], light[2], light[3]), 0);
+				}
+				ImGui::EndGroup();
+				if (mp_kb->IsKeyDown(Key::DELETEKEY) && m_models[m_selected]->GetModelType() != ModelType::eMAYA)
+				{
+					m_models[m_selected]->DecreaseMeshUsage();
+					delete m_models[m_selected];
+					m_models.erase(m_models.begin() + m_selected);
+					m_selected = -1;
+				}
+				static bool ispressed = false;
+				if (mp_kb->IsKeyDown(Key::CONTROL) && mp_kb->IsKeyDown(Key::D) && !ispressed)
+				{
+					CopyModel(dc, m_transformBuffer, m_materialBuffer, m_models, m_selected);
+					ispressed = true;
+				}
+				else if (!mp_kb->IsKeyDown(Key::CONTROL) && !mp_kb->IsKeyDown(Key::D))
+					ispressed = false;
+
+				ImGui::End();
+			}
+			
 		}
 		if (m_selectedMaterial != -1)
 		{

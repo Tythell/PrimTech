@@ -15,7 +15,7 @@ struct Mtl
 struct Shape
 {
 	std::vector<Vertex3D> verts;
-	std::vector<uint> index;
+	std::vector<DWORD> index;
 	//UINT mtlIndex = 0;
 	//Mtl material;
 };
@@ -26,9 +26,9 @@ class Mesh
 public:
 	Mesh(std::string path, ID3D11Device*& device, char makeLeftHanded = 1);
 	// ignores error checking
-	Mesh(std::vector<Vertex3D> vArray, std::vector<uint> iArray, ID3D11Device*& device, ID3D11DeviceContext*& dc);
+	Mesh(std::vector<Vertex3D> vArray, std::vector<DWORD> iArray, ID3D11Device*& device, ID3D11DeviceContext*& dc);
 	Buffer<Vertex3D>& GetVBuffer();
-	Buffer<uint>& GetIBuffer();
+	Buffer<DWORD>& GetIBuffer();
 	std::string GetName() const;
 	void IncreaseUses();
 	void DecreaseUses();
@@ -43,7 +43,7 @@ public:
 	std::vector<int> GetMeshOffsfets() const;
 private:
 	Buffer<Vertex3D> m_vbuffer;
-	Buffer<uint> m_ibuffer;
+	Buffer<DWORD> m_ibuffer;
 	std::vector<Mtl> m_mtls;
 	std::vector<int> m_mtlIndexes;
 	std::vector<int> m_offsets;
@@ -77,7 +77,7 @@ class Model : public Transform
 public:
 	~Model();
 	void Init(const std::string path, ModelType e = ModelType(0), unsigned char makeLeftHanded = true);
-	void CreateFromArray(std::vector<Vertex3D> vArray, std::vector<uint> iArray, ID3D11Device*& device, ID3D11DeviceContext*& dc);
+	void CreateFromArray(std::vector<Vertex3D> vArray, std::vector<DWORD> iArray, ID3D11Device*& device, ID3D11DeviceContext*& dc);
 	void ChangeVertex(const uint& id, const Vertex3D& v);
 	void Draw();
 	void UpdateTextureScroll(const float& deltatime);

@@ -7,6 +7,12 @@
 
 namespace pt
 {
+	struct PendingMtrl
+	{
+		std::string mtrlName;
+		std::string meshName;
+	};
+
 	class PrimTech
 	{
 	public:
@@ -33,6 +39,7 @@ namespace pt
 		unsigned char m_shutDownKey = Key::ESCAPE;
 		const unsigned char m_camlockKey = Key::Q;
 		d::XMINT2 m_windowPos;
+		PendingMtrl m_pendingmtrl;
 	};
 
 };

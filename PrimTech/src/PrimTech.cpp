@@ -35,38 +35,9 @@ namespace pt
 
 
 
-	void newMeshMessage(char* message, NewMeshMessageStruct& m, std::vector<Vertex3D>& verts, std::vector<uint>& iBuffer)
+	void newMeshMessage(char* message, NewMeshMessageStruct& m, std::vector<Vertex3D>& verts, std::vector<DWORD>& iBuffer)
 	{
-		memcpy((char*)&m, message, sizeof(NewMeshMessageStruct));
-		uint sizeOfVertexMessage = sizeof(MayaVertex) * m.numVertices;
-		uint sizeOfIndexMessage = sizeof(uint) * m.numIndexes;
-		std::vector<Vertex3D> vertexes;
-		std::vector<uint> indexes;
-		for (int i = 0; i < m.numVertices; i++)
-		{
-			Vertex3D vertex;
-			memcpy((char*)&vertex,
-				(message + sizeof(NewMeshMessageStruct)) + (i * sizeof(MayaVertex)),
-				sizeof(MayaVertex));
-			vertexes.emplace_back(vertex);
-		}
-		if (true) // if we want to recieve index bufffer
-		{
-			for (int i = 0; i < m.numVertices; i++)
-			{
-				uint index = 0;
-				uint offset = sizeof(NewMeshMessageStruct);
-				offset += sizeOfVertexMessage;
-				offset += (i * sizeof(uint));
-				memcpy((char*)&index, (message + offset), sizeof(uint));
-				indexes.emplace_back(index);
-			}
-		}
-		else
-		{
-			for (int i = 0; i < m.numVertices; i++)
-				indexes.emplace_back(i);
-		}
+
 	}
 
 
@@ -76,7 +47,6 @@ namespace pt
 	{
 		if (m_kb.IsKeyDown(m_shutDownKey))
 			m_window.ShutDown();
-
 
 		while (consumerBuffer->Recieve(message, mainHeader))
 		{
@@ -106,7 +76,7 @@ namespace pt
 					if (index == -1)
 					{
 						Material* pMat = ResourceHandler::GetMaterial(m.oldName);
-						if (pMat)
+						if (pMat->GetFileName() != "NoMaterial")
 							pMat->SetName(m.newName);
 					}
 					else
@@ -126,61 +96,50 @@ namespace pt
 				NewMeshMessageStruct m;
 				HandleMsg(m);
 				std::vector<Vertex3D> verts;
-				std::vector<uint> indexes;
-				if (true) // accept mesh from message
-				{
-					
-					//newMeshMessage(message, m, verts, indexes);
+				std::vector<DWORD> indexes;
 
+				std::vector<MayaVertex> mayaVerts;
+
+				mayaVerts.resize(m.numVertices);
+				indexes.resize(m.numIndexes);
+
+				delete message;
+				while (!consumerBuffer->Recieve(message, mainHeader)) {}
+				memcpy((char*)mayaVerts.data(), message, mainHeader->msgLen);
+
+				if (m.numIndexes > 0) // Ifall vi kör med index buffer
+				{
+					delete message;
+					while (!consumerBuffer->Recieve(message, mainHeader)) {}
+
+					memcpy((char*)indexes.data(), message, mainHeader->msgLen);
+				}
+				else
+				{
 					for (int i = 0; i < m.numVertices; i++)
-					{
-						MayaVertex mv;
-						HandleMsgType(mv, MayaVertex);
-						Vertex3D vert(mv);
-						verts.emplace_back(vert);
-					}
-
-					for (int i = 0; i < m.numIndexes; i++)
-					{
-						uint index = 0;
-						HandleMsgType(index, uint);
-						indexes.emplace_back(index);
-					}
-
-					if (m.numIndexes <= 0) // If there is no index buffer
-					{
-						for (int i = 0; i < verts.size(); i++)
-							indexes.emplace_back(i);
-					}
-				}
-				else // make triangle
-				{
-					verts.resize(3);
-
-					verts[0].position = { -.5f, -.5f, 0.f };
-					verts[1].position = { 0.0f, .5f, 0.f };
-					verts[2].position = { 0.5f, -.5f, 0.f };
-
-					verts[0].texCoord = { 0.f, 0.f };
-					verts[1].texCoord = { .5f, 1.f };
-					verts[2].texCoord = { 1.f, 0.f };
-
-					for (int i = 0; i < 3; i++)
 						indexes.emplace_back(i);
-
-					for (int i = 0; i < 3; i++)
-						verts[i].normal = { 0.f, 0.f, 1.f };
-					
 				}
 				
+				for (int i = 0; i < m.numVertices; i++)
+					verts.emplace_back(mayaVerts[i]); // convert mayaVertex to Vertex3D
+
 				mp_gApi->AddNewModel(m.meshName, verts, indexes);
-				
+
+				if (std::string(m_pendingmtrl.meshName) == std::string(m.meshName))
+				{
+					int modelIndex = mp_gApi->NameFindModel(m_pendingmtrl.meshName);
+					mp_gApi->GetModelList()[modelIndex]->AssignMaterial(m_pendingmtrl.mtrlName, false);
+
+					m_pendingmtrl.meshName = "";
+					m_pendingmtrl.mtrlName = "";
+				}
+
 				break;
 			}
 			case Headers::eNEWTOPOLOGY:
 			{
 				//std::vector<Vertex3D> verts;
-				//std::vector<uint> indexes;
+				//std::vector<DWORD> indexes;
 				//NewMeshMessageStruct m;
 				//newMeshMessage(message, m, verts, indexes);
 
@@ -226,7 +185,7 @@ namespace pt
 			{
 				DeleteMesh m;
 				HandleMsg(m);
-				
+
 				for (int i = 0; i < mp_gApi->GetModelList().size(); i++)
 				{
 					if (mp_gApi->GetModelList()[i]->GetName() == std::string(m.meshName))
@@ -244,7 +203,7 @@ namespace pt
 
 				Material* pMat = ResourceHandler::AddMaterial(std::string(m.mtrlName), false);
 				mp_gApi->GiveMtrlBuffer(pMat);
-				pMat->SetAmbient({ m.ambient[0], m.ambient[1], m.ambient[2], 1.f});
+				pMat->SetAmbient({ m.ambient[0], m.ambient[1], m.ambient[2], 1.f });
 				pMat->SetDiffuseClr(sm::Vector3(m.color));
 				std::string diffuse = "." + std::string(m.diffuseName);
 				if (diffuse != ".")
@@ -253,7 +212,7 @@ namespace pt
 				std::string normal = "." + std::string(m.normalName);
 				if (normal != ".")
 					pMat->LoadTexture(diffuse, TextureType::eNormal);
-				
+
 				break;
 			}
 			case Headers::eMaterialConnected:
@@ -265,10 +224,17 @@ namespace pt
 				std::string meshName = m.meshName;
 
 				int modelIndex = mp_gApi->NameFindModel(meshName);
-				
+
 				if (modelIndex != -1)
+				{
 					mp_gApi->GetModelList()[modelIndex]->AssignMaterial(mtrlName, false); // is false because we send invalid mtrl-names on purpose
-				
+				}
+				else
+				{
+					m_pendingmtrl.meshName = m.meshName;
+					m_pendingmtrl.mtrlName = m.mtrlName;
+				}
+
 				POPUP_ERRORF((m.meshName[0] != '-') && (modelIndex != -1), meshName + " does not exist");
 
 				break;

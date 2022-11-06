@@ -84,7 +84,7 @@ public:
 	void SetCanMove(bool b);
 
 	int NameFindModel(const std::string name);
-	void AddNewModel(const std::string& name, std::vector<Vertex3D>& vertexArray, std::vector<uint> iArray);
+	void AddNewModel(const std::string& name, std::vector<Vertex3D>& vertexArray, std::vector<DWORD>& iArray);
 	void DeleteModel(const uint& i);
 	void MoveVertex(const std::string& name, const uint& id, std::vector<Model*> v);
 	ModelList GetModelList();
