@@ -203,6 +203,6 @@ float4 main(PSInput input) : SV_Target
     //float3 final = warpedSpecular;
     float3 final = diffuse.xyz * (cellLightStr) + (rimDot.xxx * rimColor) + specular;
 
-    //return float4(normal, 1.f);
+    return float4(normal, 1.f);
     return float4(final, opacity * transparency);
 }

@@ -1273,6 +1273,8 @@ void DX11Addon::ImGuiEntList()
 
 			std::string texName = pMaterial->GetFilePath(eDiffuse);
 			ImGui::Text(texName.c_str());
+			texName = pMaterial->GetFilePath(eNormal);
+			ImGui::Text(texName.c_str());
 
 			if (ImGui::Button("Close")) m_selectedMaterial = -1;
 			ImGui::End();

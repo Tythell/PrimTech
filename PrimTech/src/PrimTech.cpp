@@ -136,16 +136,6 @@ namespace pt
 
 				break;
 			}
-			case Headers::eNEWTOPOLOGY:
-			{
-				//std::vector<Vertex3D> verts;
-				//std::vector<DWORD> indexes;
-				//NewMeshMessageStruct m;
-				//newMeshMessage(message, m, verts, indexes);
-
-				//mp_gApi->AddNewModel(m.meshName, verts, indexes);
-				break;
-			}
 			case Headers::eOBJECTDRAG:
 			{
 				MoveObjectStruct m;
@@ -211,7 +201,7 @@ namespace pt
 
 				std::string normal = "." + std::string(m.normalName);
 				if (normal != ".")
-					pMat->LoadTexture(diffuse, TextureType::eNormal);
+					pMat->LoadTexture(normal, TextureType::eNormal);
 
 				break;
 			}

@@ -77,7 +77,7 @@ class Model : public Transform
 public:
 	~Model();
 	void Init(const std::string path, ModelType e = ModelType(0), unsigned char makeLeftHanded = true);
-	void CreateFromArray(std::vector<Vertex3D> vArray, std::vector<DWORD> iArray, ID3D11Device*& device, ID3D11DeviceContext*& dc);
+	void CreateFromArray(std::vector<Vertex3D>& vArray, std::vector<DWORD>& iArray, ID3D11Device*& device, ID3D11DeviceContext*& dc);
 	void ChangeVertex(const uint& id, const Vertex3D& v);
 	void Draw();
 	void UpdateTextureScroll(const float& deltatime);
