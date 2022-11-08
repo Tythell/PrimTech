@@ -457,8 +457,8 @@ bool LoadObjToBuffer(std::string path, std::vector<Shape>& shape, std::vector<Mt
 		for (int i = 0; i < shape[si].index.size(); i += 3)
 		{
 			uint correctIndex0 = localShape.index[i];
-			uint correctIndex1 = localShape.index[i+1];
-			uint correctIndex2 = localShape.index[i+2];
+			uint correctIndex1 = localShape.index[i + 1];
+			uint correctIndex2 = localShape.index[i + 2];
 			sm::Vector2 UVA = shape[si].verts[correctIndex0].texCoord;
 			sm::Vector2 UVB = shape[si].verts[correctIndex1].texCoord;
 			sm::Vector2 UVC = shape[si].verts[correctIndex2].texCoord;
@@ -480,9 +480,14 @@ bool LoadObjToBuffer(std::string path, std::vector<Shape>& shape, std::vector<Mt
 			tangent.y = f * (dAC.y * edge1.y - dAB.y * edge2.y);
 			tangent.z = f * (dAC.y * edge1.z - dAB.y * edge2.z);
 
+
 			shape[si].verts[correctIndex0].tangent = tangent;
 			shape[si].verts[correctIndex1].tangent = tangent;
 			shape[si].verts[correctIndex2].tangent = tangent;
+
+			shape[si].verts[correctIndex0].bitangent = tangent.Cross(shape[si].verts[correctIndex0].normal);
+			shape[si].verts[correctIndex1].bitangent = tangent.Cross(shape[si].verts[correctIndex1].normal);
+			shape[si].verts[correctIndex2].bitangent = tangent.Cross(shape[si].verts[correctIndex2].normal);
 		}
 
 		//if(!localMtls.empty())

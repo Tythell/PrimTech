@@ -26,7 +26,7 @@ cbuffer LightBuffer : register(b0)
     float3 shadowDir;
     float cbShadowBias;
     float3 spotLightPos;
-    float pad1;
+    uint lightFlags;
     float3 spotLightAngle;
     float pad2;
 };
@@ -201,8 +201,9 @@ float4 main(PSInput input) : SV_Target
     float rimIntesnity = smoothstep(rimamount - 0.06, rimamount + 0.06f, rimDot);
     
     //float3 final = warpedSpecular;
-    float3 final = diffuse.xyz * (cellLightStr) + (rimDot.xxx * rimColor) + specular;
+    float3 final = diffuse.xyz * (cellLightStr) + (rimDot.xxx * rimColor)/* + specular*/;
 
-    return float4(normal, 1.f);
+    if(lightFlags & 1)
+        return float4(normal, 1.f);
     return float4(final, opacity * transparency);
 }

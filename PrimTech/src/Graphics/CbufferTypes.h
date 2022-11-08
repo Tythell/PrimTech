@@ -60,7 +60,7 @@ namespace hlsl
 		float3 shadowDir;
 		float cbShadowBias;
 		float3 spotLightPos;
-		float pad1;
+		uint lightFlags;
 		float3 spotLightAngle;
 		float pad2;
 	};

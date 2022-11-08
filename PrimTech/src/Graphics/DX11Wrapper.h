@@ -62,6 +62,7 @@ struct ImGuiVars
 	float shadowcamrotation[3] = { d::XM_PIDIV2,0.f,0.f};
 	//SpotLight sl;
 	float shadowBias = 0.005f;
+	bool viewnormals = false;
 };
 
 void RecursiveRead(Sceneheaders& header, ModelList& v, std::ifstream& reader);

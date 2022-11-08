@@ -635,9 +635,12 @@ void DX11Addon::AddNewModel(const std::string& name, std::vector<Vertex3D>& vert
 		vertexArray[iArray[i + 1]].tangent = tangent;
 		vertexArray[iArray[i + 2]].tangent = tangent;
 
-		vertexArray[iArray[i + 0]].bitangent = tangent;
-		vertexArray[iArray[i + 1]].bitangent = tangent;
-		vertexArray[iArray[i + 2]].bitangent = tangent;
+		/*vertexArray[iArray[i + 0]].bitangent = tangent.Cross(vertexArray[i+0].normal);
+		vertexArray[iArray[i + 1]].bitangent = tangent.Cross(vertexArray[i+1].normal);
+		vertexArray[iArray[i + 2]].bitangent = tangent.Cross(vertexArray[i+2].normal);*/
+		vertexArray[iArray[i + 0]].bitangent = vertexArray[iArray[i + 0]].normal.Cross(tangent);
+		vertexArray[iArray[i + 1]].bitangent = vertexArray[iArray[i + 1]].normal.Cross(tangent);
+		vertexArray[iArray[i + 2]].bitangent = vertexArray[iArray[i + 2]].normal.Cross(tangent);
 	}
 
 	Model* pModel = nullptr;
@@ -774,7 +777,14 @@ void DX11Addon::ImguiDebug()
 		ImGui::Text(shadowCamString.c_str());
 
 		ImGui::SliderFloat("Attenuation", &im.atten, 0.f, 10.f);
+		ImGui::Checkbox("view normal", &im.viewnormals);
 	}
+
+	if (im.viewnormals)
+		m_lightbuffer.Data().lightFlags |= 1;
+	else
+		m_lightbuffer.Data().lightFlags &= ~1u;
+	
 
 	m_lightbuffer.Data().pointLightDistance = im.pointLightDistance;
 	m_lightbuffer.Data().specularInstensity = im.specPow;
