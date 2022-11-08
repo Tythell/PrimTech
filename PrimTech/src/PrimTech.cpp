@@ -198,10 +198,14 @@ namespace pt
 				std::string diffuse = "." + std::string(m.diffuseName);
 				if (diffuse != ".")
 					pMat->LoadTexture(diffuse, TextureType::eDiffuse);
+				else
+					pMat->RemoveTexture(TextureType::eDiffuse);
 
 				std::string normal = "." + std::string(m.normalName);
 				if (normal != ".")
 					pMat->LoadTexture(normal, TextureType::eNormal);
+				else
+					pMat->RemoveTexture(TextureType::eNormal);
 
 				break;
 			}

@@ -272,7 +272,7 @@ bool DX11Addon::InitScene()
 	Material* noMaterial = ResourceHandler::AddMaterial("NoMaterial"); // Load LightWarp Texture
 	m_icon.CreateFromFile("icons/icon.png", device);
 	noMaterial->SetPointers(&m_materialBuffer);
-	noMaterial->LoadTexture(".NoTexture.pngg", TextureType::eDiffuse);
+	//noMaterial->LoadTexture(".NoTexture.pngg", TextureType::eDiffuse);
 
 	//ResourceHandler::AddTexture("ZATf2esk.png"); // Load LightWarp Texture
 	dc->PSSetShaderResources(0, 1, ResourceHandler::GetTexture(1).GetSRVAdress());
@@ -732,38 +732,6 @@ void DX11Addon::ImguiDebug()
 	ImGui::Text(fpsString.c_str());
 
 	//ImGui::Checkbox("Show selection", &im.showSelection);
-	if (ImGui::CollapsingHeader("ShadowMap"))
-	{
-		//ImGui::Checkbox("Shadows", &im.shadowMap); ImGui::SameLine();
-		im.shadowMap = true;
-		//ImGui::Checkbox("View Shadowcam", &im.viewshadowcam);
-		//ImGui::DragFloat3("Pos", im.shadowcamPos, 0.1f);
-
-		im.shadowcamrotation[0] = m_shadowmap.GetShadowCam().GetRotation().x;
-		im.shadowcamrotation[1] = m_shadowmap.GetShadowCam().GetRotation().y;
-		im.shadowcamrotation[2] = m_shadowmap.GetShadowCam().GetRotation().z;
-		im.shadowcamPos[0] = m_shadowmap.GetShadowCam().GetPosition().x;
-		im.shadowcamPos[1] = m_shadowmap.GetShadowCam().GetPosition().y;
-		im.shadowcamPos[2] = m_shadowmap.GetShadowCam().GetPosition().z;
-
-		ImGui::DragFloat3("Rotate", im.shadowcamrotation, 0.1f);
-		ImGui::DragFloat("ShadowBias", &im.shadowBias, 0.001f, 0.0f, 0.5f);
-		m_shadowmap.GetShadowCam().SetRotation(im.shadowcamrotation[0], im.shadowcamrotation[1], im.shadowcamrotation[2]);
-		m_shadowmap.GetShadowCam().SetPosition(im.shadowcamPos[0], im.shadowcamPos[1], im.shadowcamPos[2]);
-		if (ImGui::Button("TP cam"))
-		{
-			im.shadowcamrotation[0] = mp_currentCam->GetRotation().x;
-			im.shadowcamrotation[1] = mp_currentCam->GetRotation().y;
-			im.shadowcamrotation[2] = mp_currentCam->GetRotation().z;
-			im.shadowcamPos[0] = mp_currentCam->GetPosition().x;
-			im.shadowcamPos[1] = mp_currentCam->GetPosition().y;
-			im.shadowcamPos[2] = mp_currentCam->GetPosition().z;
-		}
-		if (ImGui::Button("winname"))
-		{
-			::SetWindowTextA(*m_pHWND, "balls");
-		}
-	}
 
 	if (ImGui::CollapsingHeader("Light", ImGuiTreeNodeFlags_DefaultOpen ))
 	{
