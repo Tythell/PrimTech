@@ -1,6 +1,6 @@
 #include "CommonDialogs.h"
 
-HWND* Dialogs::m_ownerhandle;
+HWND* Dialogs::m_ownerhandle = NULL;
 
 void Dialogs::SetOwnerHandle(HWND* h)
 {

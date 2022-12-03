@@ -39,5 +39,6 @@ public:
 	ID3D11PixelShader* GetShader();
 private:
 	ID3D11PixelShader* m_pshader = nullptr;
+	ID3D11ComputeShader* m_d;
 };
 
