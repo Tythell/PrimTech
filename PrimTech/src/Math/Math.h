@@ -8,6 +8,8 @@
 namespace sm = DirectX::SimpleMath;
 namespace d = DirectX;
 
+using uint = unsigned int;
+
 //inline unsigned int RandomNum(int n1, int n2)
 //{
 //	if (n2 < n1)

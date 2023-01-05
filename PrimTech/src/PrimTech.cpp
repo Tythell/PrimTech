@@ -22,9 +22,11 @@ namespace pt
 		m_window.SetInputP(m_kb);
 
 		//m_cellCam.SetPosition(0.f, 0.f, -1.f);
-		m_cam3d.SetPerspective(80, (float)width / (float)height, 0.1f, 100.f);
-		m_cam3d.SetPosition(2.f, 0, -3.f);
+		//m_cam3d.SetPerspective(80, (float)width / (float)height, 0.1f, 100.f);
+		//m_cam3d.SetPosition(2.f, 0, -3.f);
 		//m_camera.SetOrtographic(width, height, 0, 1);
+
+		m_cams.Init({ (int)width, (int)height }, NULL);
 
 		mp_gApi = new DX11Addon(m_window, m_cam3d);
 		mp_gApi->SetInputP(m_kb);

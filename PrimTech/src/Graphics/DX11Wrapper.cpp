@@ -3,12 +3,12 @@
 
 #define shadowQuality 2
 
-DX11Addon::DX11Addon(Window& window, Camera& camera) :
+DX11Addon::DX11Addon(Window& window, CameraHandler& camera) :
 	m_width(window.getWinWidth()), m_height(window.getWinHeight()), m_pHWND(&window.getHWND()),
-	m_shadowmap(1024 * shadowQuality, 1024 * shadowQuality, &camera), m_viewport(0.f, 0.f, (float)m_width, (float)m_height)
+	m_shadowmap(1024 * shadowQuality, 1024 * shadowQuality, camera.GetCurrentCamera()), m_viewport(0.f, 0.f, (float)m_width, (float)m_height)
 {
 	m_pWin = &window;
-	mp_cam = &camera;
+	mp_currentCam = camera.GetCurrentCamera();
 
 	initSwapChain();
 	initRTV();
@@ -641,7 +641,7 @@ void DX11Addon::ImguiDebug()
 		ImGui::Checkbox("Raycast", &im.drawRayCast);
 		ImGui::SameLine();
 		ImGui::Checkbox("BCircle", &im.drawBCircle);
-		if (ImGui::SliderInt("sphere point count", &im.points, 1, 30))
+		if (im.drawBCircle && ImGui::SliderInt("sphere point count", &im.points, 1, 8))
 			m_sphere.Init(device, dc, im.points);
 	}
 

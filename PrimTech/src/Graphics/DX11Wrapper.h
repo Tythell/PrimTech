@@ -71,7 +71,7 @@ void RecursiveRead(Sceneheaders& header, ModelList& v, std::ifstream& reader);
 class DX11Addon
 {
 public:
-	DX11Addon(Window& window, Camera& camera);
+	DX11Addon(Window& window, CameraHandler& camera);
 	~DX11Addon();
 
 	void SetInputP(KeyboardHandler& kb);
@@ -123,7 +123,7 @@ private:
 	ID3D11RenderTargetView* m_rtv = nullptr;
 	ID3D11Texture2D* m_depthStencilBuffer = nullptr;
 	ID3D11DepthStencilView* m_dsView = nullptr;
-	ID3D11DepthStencilState* m_dsState;
+	ID3D11DepthStencilState* m_dsState = nullptr;
 
 	ID3D11RasterizerState* m_rasterizerState = nullptr;
 	ID3D11SamplerState* m_wrapSampler = nullptr;
@@ -144,10 +144,11 @@ private:
 	Buffer<hlsl::cbpLightBuffer> m_lightbuffer;
 	Buffer<hlsl::cbpMaterialBuffer> m_materialBuffer;
 
-	Camera* mp_cam;
+	CameraHandler* mp_camHandler = nullptr;
+	Camera* mp_currentCam = nullptr;
 
 	ImGuiVars im;
-	KeyboardHandler* mp_kb;
+	KeyboardHandler* mp_kb = nullptr;
 
 	int m_selected = -1;
 	Model m_bulb;
