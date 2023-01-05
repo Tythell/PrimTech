@@ -17,6 +17,12 @@ enum BufferUsage
 	eDYNAMIC = D3D11_USAGE_DYNAMIC
 };
 
+enum BufferFlags
+{
+	eBufferFlags_IgnoreCreateTwice = 0x1,
+
+};
+
 template<class T>
 class Buffer
 {
@@ -54,9 +60,14 @@ public:
 		return &m_buffer;
 	}
 	// DeviceContext only needed if buffer is dynamic
-	HRESULT CreateVertexBuffer(ID3D11Device*& device, T* data, UINT bufferSize, ID3D11DeviceContext* dc = NULL)
+	HRESULT CreateVertexBuffer(ID3D11Device*& device, T* data, UINT bufferSize, ID3D11DeviceContext* dc = NULL, unsigned char flags = 0)
 	{
-		THROW_POPUP_ERROR((m_buffer == nullptr), "Buffer created twice");
+		if (flags & eBufferFlags_IgnoreCreateTwice && m_buffer)
+		{
+			m_buffer->Release();
+		}
+		else
+			THROW_POPUP_ERROR((m_buffer == nullptr), "Buffer created twice");
 		m_type = eVERTEX;
 
 		m_usage = eIMMULATBLE;
@@ -121,20 +132,27 @@ public:
 		return HRESULT(device->CreateBuffer(&bufferDesc, NULL, &m_buffer));
 	}
 	// DeviceContext only needed if buffer will be changed
-	HRESULT CreateIndexBuffer(ID3D11Device*& device, T* indexData, UINT numIndices, ID3D11DeviceContext* dc = NULL)
+	HRESULT CreateIndexBuffer(ID3D11Device*& device, T* indexData, UINT numIndices, ID3D11DeviceContext* dc = NULL, unsigned char flags = 0x0)
 	{
+		if (flags & eBufferFlags_IgnoreCreateTwice && m_buffer)
+		{
+			m_buffer->Release();
+		}
+		else
+			THROW_POPUP_ERROR((m_buffer == nullptr), "Buffer created twice");
+
 		m_type = eINDEX;
 		m_usage = eIMMULATBLE;
-		if (m_buffer)
-		{
-			Popup::Error("Buffer created twice");
-			throw;
-		}
-		else if (sizeof(T) != sizeof(DWORD))
-		{
-			Popup::Error("Indexbuffer type must be DWORD");
-			throw;
-		}
+		//if (m_buffer)
+		//{
+		//	Popup::Error("Buffer created twice");
+		//	throw;
+		//}
+		//else if (sizeof(T) != sizeof(DWORD))
+		//{
+		//	Popup::Error("Indexbuffer type must be DWORD");
+		//	throw;
+		//}
 			
 		//m_type = BufferType::eINDEX
 		mp_dc = dc;

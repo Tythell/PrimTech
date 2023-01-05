@@ -23,5 +23,5 @@ struct Vertex3D
 struct BBVertex
 {
 	sm::Vector3 m_position;
-	sm::Vector3 m_color;
+	sm::Vector3 m_color = {1.f,1.f,1.f};
 };

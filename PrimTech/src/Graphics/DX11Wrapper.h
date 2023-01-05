@@ -54,7 +54,7 @@ struct ImGuiVars
 	float gradientOffset = 0.f;
 	float specPow = 50.f;
 	bool drawRayCast = false;
-	bool drawBCircle = false;
+	bool drawBCircle = true;
 	ImGuizmo::MODE transformMode = ImGuizmo::MODE::LOCAL;
 	bool showSelection = true;
 	bool shadowMap = true;
@@ -63,6 +63,7 @@ struct ImGuiVars
 	float shadowcamrotation[3] = { d::XM_PIDIV2,0.f,0.f};
 	SpotLight sl;
 	float shadowBias = 0.005f;
+	int points = 4;
 };
 
 void RecursiveRead(Sceneheaders& header, ModelList& v, std::ifstream& reader);

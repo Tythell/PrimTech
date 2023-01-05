@@ -264,7 +264,7 @@ bool DX11Addon::InitScene()
 	dc->PSSetShaderResources(0, 1, ResourceHandler::GetTexture(1).GetSRVAdress());
 
 	m_rLine.Init(device, dc);
-	m_sphere.Init(device, dc);
+	m_sphere.Init(device, dc, 8);
 
 	//ImportScene("Scenes\\multsc.ptscene");
 	NewScene();
@@ -597,6 +597,8 @@ void DX11Addon::ImguiDebug()
 	ImGui::Text(fpsString.c_str());
 
 	ImGui::Checkbox("Show selection", &im.showSelection);
+
+	
 	if (ImGui::CollapsingHeader("ShadowMap"))
 	{
 		ImGui::Checkbox("Shadows", &im.shadowMap); ImGui::SameLine();
@@ -639,6 +641,8 @@ void DX11Addon::ImguiDebug()
 		ImGui::Checkbox("Raycast", &im.drawRayCast);
 		ImGui::SameLine();
 		ImGui::Checkbox("BCircle", &im.drawBCircle);
+		if (ImGui::SliderInt("sphere point count", &im.points, 1, 30))
+			m_sphere.Init(device, dc, im.points);
 	}
 
 	if (ImGui::CollapsingHeader("Light"/*, ImGuiTreeNodeFlags_DefaultOpen */))
@@ -1179,7 +1183,7 @@ void DX11Addon::ExportScene(std::string path)
 		}
 	}
 	header = Sceneheaders::enull;
-	writer.write((const char*)&header, 4);
+	writer.write((const char*)&header, 1);
 	writer.close();
 }
 
