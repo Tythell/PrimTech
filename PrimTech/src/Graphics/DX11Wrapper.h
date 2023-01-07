@@ -126,6 +126,7 @@ private:
 	ID3D11DepthStencilState* m_dsState = nullptr;
 
 	ID3D11RasterizerState* m_rasterizerState = nullptr;
+	ID3D11RasterizerState* m_wireFrameState = nullptr;
 	ID3D11SamplerState* m_wrapSampler = nullptr;
 	ID3D11SamplerState* m_clampSampler = nullptr;
 	ID3D11SamplerState* m_shadowSampler = nullptr;
@@ -151,10 +152,12 @@ private:
 	KeyboardHandler* mp_kb = nullptr;
 
 	int m_selected = -1;
+	int m_selectedMtrl = -1;
 	Model m_bulb;
 	Model m_spotlight;
 	ViewModel m_viewmdl;
 	Model m_playermodel;
+	Model m_camModel;
 	ModelList m_models;
 	RenderBox m_renderbox;
 	sm::Ray m_ray;

@@ -9,6 +9,7 @@ DX11Addon::DX11Addon(Window& window, CameraHandler& camera) :
 {
 	m_pWin = &window;
 	mp_currentCam = camera.GetCurrentCamera();
+	mp_camHandler = &camera;
 
 	initSwapChain();
 	initRTV();
@@ -48,6 +49,7 @@ DX11Addon::~DX11Addon()
 	m_shadowSampler->Release();
 	m_clampSampler->Release();
 	m_blendState->Release();
+	m_wireFrameState->Release();
 }
 
 bool DX11Addon::initSwapChain()
@@ -145,11 +147,16 @@ bool DX11Addon::InitRastNSampState()
 	D3D11_RASTERIZER_DESC rastDesc;
 	ZeroMemory(&rastDesc, sizeof(D3D11_RASTERIZER_DESC));
 	rastDesc.FillMode = D3D11_FILL_MODE::D3D11_FILL_SOLID;
+	
 	rastDesc.CullMode = D3D11_CULL_MODE::D3D11_CULL_BACK;
 	rastDesc.FrontCounterClockwise = false;
 
 	HRESULT hr = device->CreateRasterizerState(&rastDesc, &m_rasterizerState);
 	COM_ERROR(hr, "Rasterizer State setup failed");
+
+	rastDesc.CullMode = D3D11_CULL_MODE::D3D11_CULL_NONE;
+	rastDesc.FillMode = D3D11_FILL_MODE::D3D11_FILL_WIREFRAME;
+	COM_ERROR(device->CreateRasterizerState(&rastDesc, &m_wireFrameState), "Failed to setup wireframestate");
 
 	D3D11_SAMPLER_DESC sampDesc;
 	ZeroMemory(&sampDesc, sizeof(D3D11_SAMPLER_DESC));
@@ -272,12 +279,17 @@ bool DX11Addon::InitScene()
 	m_playermodel.Init("dirCapsule.obj", ModelType::eUNSPECIFIED, false);
 	m_playermodel.SetScale(.1f);
 
+	m_camModel.Init("camera.obj", ModelType::eDEBUG, false);
+	m_camModel.SetMaterialBuffer(m_materialBuffer);
+	m_camModel.SetDCandBuffer(dc, m_transformBuffer);
+	m_camModel.GetMaterial().SetTransparency(1.f);
+
 	m_bulb.Init("bulb.obj", ModelType::eDEBUG);
 	m_spotlight.Init("bulb.obj", ModelType::eDEBUG);
 	m_bulb.SetScale(1.2f);
 	m_bulb.GetMaterial().SetTransparency(1.f);
 
-	m_viewmdl.Init("handmodel2.obj", mp_cam);
+	m_viewmdl.Init("handmodel2.obj", mp_camHandler);
 	m_bulb.SetMaterialBuffer(m_materialBuffer);
 	m_playermodel.SetMaterialBuffer(m_materialBuffer);
 	m_playermodel.SetDCandBuffer(dc, m_transformBuffer);
@@ -324,13 +336,13 @@ void DX11Addon::UpdateScene(const float& deltatime)
 	m_lightbuffer.Data().direction = sm::Vector3(0.f, 1.f, 0.f);
 	m_lightbuffer.Data().pointLightPosition = sm::Vector3(im.pointLightPos[0], im.pointLightPos[1], im.pointLightPos[2]);
 	//m_lightbuffer.Data().forwardDir = mp_cam->GetForwardVector();
-	m_lightbuffer.Data().camPos = { mp_cam->GetPosition().x, mp_cam->GetPosition().y, mp_cam->GetPosition().z, 1.f };
+	m_lightbuffer.Data().camPos = { mp_currentCam->GetPosition().x, mp_currentCam->GetPosition().y, mp_currentCam->GetPosition().z, 1.f };
 	m_lightbuffer.MapBuffer();
 
 
-	m_playermodel.SetRotation(0.f/*-mp_cam->GetRotation().x*/, mp_cam->GetRotation().y, 0.f);
+	m_playermodel.SetRotation(0.f/*-mp_cam->GetRotation().x*/, mp_currentCam->GetRotation().y, 0.f);
 	m_playermodel.Rotate(0.f, d::XM_PI, 0.f);
-	m_playermodel.SetPosition(mp_cam->GetPositionNoOffset() + sm::Vector3(0.f, -0.1f, 0.f));
+	m_playermodel.SetPosition(mp_currentCam->GetPositionNoOffset() + sm::Vector3(0.f, -0.1f, 0.f));
 	//m_shadowmap.SetPos(mp_cam->GetPositionNoOffset());
 	//m_model.Rotate(0.f, 2.f * deltatime, 0.f);
 }
@@ -618,12 +630,12 @@ void DX11Addon::ImguiDebug()
 		m_shadowmap.GetShadowCam().SetPosition(im.shadowcamPos[0], im.shadowcamPos[1], im.shadowcamPos[2]);
 		if (ImGui::Button("TP cam"))
 		{
-			im.shadowcamrotation[0] = mp_cam->GetRotation().x;
-			im.shadowcamrotation[1] = mp_cam->GetRotation().y;
-			im.shadowcamrotation[2] = mp_cam->GetRotation().z;
-			im.shadowcamPos[0] = mp_cam->GetPosition().x;
-			im.shadowcamPos[1] = mp_cam->GetPosition().y;
-			im.shadowcamPos[2] = mp_cam->GetPosition().z;
+			im.shadowcamrotation[0] = mp_currentCam->GetRotation().x;
+			im.shadowcamrotation[1] = mp_currentCam->GetRotation().y;
+			im.shadowcamrotation[2] = mp_currentCam->GetRotation().z;
+			im.shadowcamPos[0] = mp_currentCam->GetPosition().x;
+			im.shadowcamPos[1] = mp_currentCam->GetPosition().y;
+			im.shadowcamPos[2] = mp_currentCam->GetPosition().z;
 		}
 		if (ImGui::Button("winname"))
 		{
@@ -635,7 +647,7 @@ void DX11Addon::ImguiDebug()
 		ImGui::RadioButton("local", (int*)&im.transformMode, 0); ImGui::SameLine();
 		ImGui::RadioButton("world", (int*)&im.transformMode, 1);
 		if (ImGui::SliderInt("FOV", &im.fov, 40, 110))
-			mp_cam->SetPerspective((float)im.fov, (float)m_width / (float)m_height, .1f, 100.f);
+			mp_currentCam->SetPerspective((float)im.fov, (float)m_width / (float)m_height, .1f, 100.f);
 		ImGui::Checkbox("Vsync", &im.useVsync); ImGui::SameLine();
 		ImGui::Checkbox("Handmodel", &im.enableHandModel); ImGui::SameLine();
 		ImGui::Checkbox("Raycast", &im.drawRayCast);
@@ -668,13 +680,13 @@ void DX11Addon::ImguiDebug()
 		{
 			//m_spotlight.SetPosition(mp_cam->GetPosition());
 			//m_spotlight.SetRotation(mp_cam->GetForwardVector());
-			im.sl.position[0] = mp_cam->GetPosition().x;
-			im.sl.position[1] = mp_cam->GetPosition().y;
-			im.sl.position[2] = mp_cam->GetPosition().z;
+			im.sl.position[0] = mp_currentCam->GetPosition().x;
+			im.sl.position[1] = mp_currentCam->GetPosition().y;
+			im.sl.position[2] = mp_currentCam->GetPosition().z;
 
-			im.sl.rotation[0] = mp_cam->GetRotation().x * d::XM_PIDIV2;
-			im.sl.rotation[1] = mp_cam->GetRotation().y * d::XM_PIDIV2;
-			im.sl.rotation[2] = mp_cam->GetRotation().z * d::XM_PIDIV2;
+			im.sl.rotation[0] =mp_currentCam->GetRotation().x * d::XM_PIDIV2;
+			im.sl.rotation[1] =mp_currentCam->GetRotation().y * d::XM_PIDIV2;
+			im.sl.rotation[2] =mp_currentCam->GetRotation().z * d::XM_PIDIV2;
 		}
 		//ImGui::DragFloat3("Angle##sl", im.sl.rotation, 0.01f);
 		//ImGui::DragFloat3("Color##sl", im.pointLightColor, 0.01f, 0.f, 1.f);
@@ -695,12 +707,12 @@ void DX11Addon::ImguiDebug()
 	m_lightbuffer.Data().atten = im.atten;
 
 	std::string camoffsetString = "Camera offset: ";
-	camoffsetString += std::to_string(mp_cam->GetOffset().z);
+	camoffsetString += std::to_string(mp_currentCam->GetOffset().z);
 	ImGui::Text(camoffsetString.c_str());
 
 	m_bulb.SetPosition(im.pointLightPos[0], im.pointLightPos[1], im.pointLightPos[2]);
 
-	ImGui::Text(GetVectorAsString(mp_cam->GetRotation()).c_str());
+	ImGui::Text(GetVectorAsString(mp_currentCam->GetRotation()).c_str());
 	ImGui::End();
 }
 
@@ -834,7 +846,7 @@ void DX11Addon::ImGuiMenu()
 		if (ImGui::BeginMenu("Utility"))
 		{
 			if (ImGui::MenuItem("TP to spawn", NULL))
-				mp_cam->SetPosition(0.f, 1.f, 0.f);
+				mp_currentCam->SetPosition(0.f, 1.f, 0.f);
 
 			ImGui::EndMenu();
 		}
@@ -906,11 +918,30 @@ void DX11Addon::ImGuiEntList()
 		if (ImGui::BeginPopup("popup##context"))
 		{
 			if (ImGui::Selectable("Model"))
+			{
 				m_selected = InterfaceAddModelToVector(dc, m_transformBuffer, m_materialBuffer, m_models);
-			ImGui::BeginDisabled();
-			if (ImGui::Selectable("Particle"))
-				m_selected = InterfaceAddModelToVector(dc, m_transformBuffer, m_materialBuffer, m_models);
-			ImGui::EndDisabled();
+				m_selected = -1;
+			}
+			
+			if (ImGui::Selectable("Camera"))
+			{
+				mp_currentCam = mp_camHandler->CreatePerspectiveCamera("New camera", 80.f, (float)m_width / (float)m_height, 0.1f, 100.f);
+				mp_camHandler->SetCurrentCamera(mp_camHandler->GetNoOfCams()-1);
+			}
+
+			ImGui::Separator();
+
+			if (ImGui::Selectable("Create Material"))
+			{
+				ResourceHandler::AddMaterial("new material");
+			}
+
+			//if (ImGui::Selectable("Load Material"))
+			//{
+			//	mp_currentCam = mp_camHandler->CreatePerspectiveCamera("New camera", 80.f, (float)m_width / (float)m_height, 0.1f, 100.f);
+			//	mp_camHandler->SetCurrentCamera(mp_camHandler->GetNoOfCams() - 1);
+			//}
+			
 
 			ImGui::EndPopup();
 		}
@@ -921,7 +952,39 @@ void DX11Addon::ImGuiEntList()
 		for (int i = 0; i < m_models.size(); i++)
 		{
 			if (ImGui::Selectable(m_models[i]->GetName().c_str(), m_selected == i))
+			{
 				m_selected = i;
+				m_selectedMtrl = -1;
+			}
+		}
+
+		if (m_models.size() > 0)
+			ImGui::Separator();
+
+		uint mtrlCount = ResourceHandler::GetMtrlCount();
+
+		for (int i = 0; i < mtrlCount; i++)
+		{
+			if (ImGui::Selectable(ResourceHandler::GetMaterial(i).GetFileName().c_str(), m_selectedMtrl == i))
+			{
+				m_selectedMtrl = i;
+				m_selected = -1;
+			}
+		}
+
+		if (mtrlCount > 0)
+			ImGui::Separator();
+
+		for (int i = 0; i < mp_camHandler->GetNoOfCams(); i++)
+		{
+			if (ImGui::Selectable(mp_camHandler->GetCameraName(i).c_str(), mp_camHandler->GetCurrentCamIndex() == i))
+			{
+				mp_camHandler->SetCurrentCamera(i);
+				mp_currentCam = mp_camHandler->GetCurrentCamera();
+			}
+			//ImGui::SameLine();
+			//ImTextureID icon = m_icon.GetSRV();
+			//ImGui::Image(icon, { 15, 15 });
 		}
 
 		ImGui::EndChild();
@@ -929,7 +992,7 @@ void DX11Addon::ImGuiEntList()
 
 		if (m_selected != -1)
 		{
-			ImGui::Begin("Model properties");
+			ImGui::Begin("Properties");
 			Model* pSelectedModel = m_models[m_selected];
 
 			if (ImGui::IsWindowHovered())
@@ -1122,6 +1185,130 @@ void DX11Addon::ImGuiEntList()
 		if (m_selected != -1 && im.showSelection)
 			for (UINT m = 0; m < m_models[m_selected]->GetMeshP()->GetNofMeshes(); m++)
 				m_models[m_selected]->GetMaterial(m).SetSelection(true);
+
+		if (m_selectedMtrl != -1)
+		{
+			ImGui::Begin("Properties");
+
+			if (ImGui::IsWindowHovered())
+				m_isHoveringWindow = true;
+
+			Material* pMaterial = ResourceHandler::GetMaterialAdress(m_selectedMtrl);
+			std::string matName = pMaterial->GetFileName();
+			if (ImGui::CollapsingHeader(matName.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
+			{
+				char* nameBuffer = new char[16];
+				strcpy_s(nameBuffer, 16, matName.c_str());
+				if (ImGui::InputText("##MaterialName", nameBuffer, 16))
+				{
+					pMaterial->SetName(nameBuffer);
+				}
+
+				delete[] nameBuffer;
+				
+				LoadButton(pMaterial, "Diffuse: ", eDiffuse);
+				LoadButton(pMaterial, "NormalMap: ", eNormal);
+				LoadButton(pMaterial, "DistMap: ", eDistortion);
+				LoadButton(pMaterial, "OpacityMap: ", eOpacity);
+
+				sm::Vector2 diffuseSpeed(pMaterial->GetDiffuseScrollSpeed());
+				sm::Vector2 distortionSpeed(pMaterial->GetDistortionScrollSpeed());
+				bool hasDistMap = pMaterial->HasTexture(eDistortion);
+				bool hasDiffuse = pMaterial->HasTexture(eDiffuse) || pMaterial->HasTexture(eNormal) || pMaterial->HasTexture(eOpacity);
+
+				float diffSpeed[2]{ diffuseSpeed.x, diffuseSpeed.y };
+				float distSpeed[2]{ distortionSpeed.x, distortionSpeed.y };
+
+				std::string title = "Diffuse Scroll";
+				ImGui::PushItemWidth(m_width * 0.14f);
+				if (hasDiffuse)
+				{
+					ImGui::SliderFloat2(title.c_str(), diffSpeed, -.5f, .5f);
+				}
+
+
+				title = "Distortion Scroll##";
+				if (hasDistMap)
+					ImGui::SliderFloat2(title.c_str(), distSpeed, -.5f, .5f);
+
+				title = "Reset Scrollspeed##";
+				if (ImGui::Button(title.c_str()))
+				{
+					for (int i = 0; i < 2; i++)
+					{
+						diffSpeed[i] = 0.f;
+						distSpeed[i] = 0.f;
+					}
+				}
+				ImGui::SameLine();
+				title = "Reset scrollvalues##";
+				if (ImGui::Button(title.c_str()))
+					pMaterial->ResetScrollValue();
+
+				pMaterial->SetDiffuseScrollSpeed(diffSpeed[0], diffSpeed[1]);
+				pMaterial->SetDistortionScrollSpeed(distSpeed[0], distSpeed[1]);
+
+				if (hasDistMap)
+				{
+					int distDivider = pMaterial->GetDistortionDivider();
+					title = "Dist divider##";
+					ImGui::SliderInt(title.c_str(), &distDivider, 1, 20);
+					pMaterial->SetDistortionDivider(distDivider);
+				}
+
+				float transparancy = pMaterial->GetTransparancy();
+				title = "Transparancy##";
+				ImGui::SliderFloat(title.c_str(), &transparancy, 0.f, 1.f);
+				pMaterial->SetTransparency(transparancy);
+
+				float tiling = pMaterial->GetTextureScale();
+				title = "Tiling##";
+				ImGui::SliderFloat(title.c_str(), &tiling, 1.f, 10.f);
+				pMaterial->SetTextureScale(tiling);
+				if (hasDistMap)
+				{
+					float distScale = pMaterial->GetTextureScaleDist();
+
+					title = "Dist Scale##";
+					ImGui::SliderFloat(title.c_str(), &distScale, 1.f, 10.f);
+					pMaterial->SetTextureScaleDist(distScale);
+				}
+
+				title = "Import##";
+				if (ImGui::Button(title.c_str()))
+				{
+					std::string savePath = "";
+					savePath = Dialogs::OpenFile("Material (*.pmtrl)\0*.pmtrl;\0", "Assets\\pmtrl\\");
+
+					if (savePath != "")
+					{
+						std::string test = StringHelper::GetExtension(savePath);
+						if (!(test != "pmtrl" || test != "mtl"))
+							savePath += ".pmtrl";
+						pMaterial->ImportMaterial(StringHelper::GetName(savePath));
+					}
+				}
+				ImGui::SameLine();
+				title = "Export##";
+				if (ImGui::Button(title.c_str()))
+				{
+					std::string savePath = "";
+					savePath = Dialogs::SaveFile("Material (*.pmtrl)\0*.pmtrl\0", "Assets\\pmtrl\\");
+
+					if (savePath != "")
+					{
+						std::string test = StringHelper::GetExtension(savePath);
+						if (test != "pmtrl")
+							savePath += ".pmtrl";
+						pMaterial->ExportMaterial(savePath);
+					}
+				}
+
+			}
+
+			ImGui::End();
+		}
+		
 	}
 }
 
@@ -1211,8 +1398,8 @@ void DX11Addon::ImGuizmo()
 		ImGuizmo::SetDrawlist();
 		ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, (float)m_width, (float)m_height);
 
-		sm::Matrix camViewM = mp_cam->GetViewM();
-		sm::Matrix camProj = mp_cam->GetProjM();
+		sm::Matrix camViewM = mp_currentCam->GetViewM();
+		sm::Matrix camProj = mp_currentCam->GetProjM();
 		sm::Matrix world = m_models[m_selected]->GetWorld();
 
 
@@ -1259,7 +1446,6 @@ void DX11Addon::NewScene()
 {
 	m_selected = -1;
 	ClearModelList();
-	m_selected = -1;
 	m_models.emplace_back(new Model);
 	UINT i = (UINT)m_models.size() - 1;
 	m_models[i]->Init("scaledplane.obj");
@@ -1392,7 +1578,7 @@ void DX11Addon::Click(const sm::Vector3& dir)
 	if (!m_isHoveringWindow)
 	{
 		sm::Ray ray;
-		ray.position = mp_cam->GetPosition();
+		ray.position = mp_currentCam->GetPosition();
 		ray.direction = dir;
 		//#ifdef _DEBUG
 		if (im.drawRayCast)
@@ -1403,6 +1589,7 @@ void DX11Addon::Click(const sm::Vector3& dir)
 		//#endif // _DEBUG
 		int n = ClickFoo(ray, m_models);
 		m_selected = n;
+		m_selectedMtrl = -1;
 	}
 }
 
@@ -1421,6 +1608,7 @@ void DX11Addon::Render(const float& deltatime)
 	dc->OMSetBlendState(m_blendState, NULL, 0xFFFFFFFF);
 
 	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	dc->RSSetState(m_rasterizerState);
 	if (im.shadowMap)
 	{
 		dc->IASetInputLayout(m_3dvs.GetInputLayout());
@@ -1444,7 +1632,7 @@ void DX11Addon::Render(const float& deltatime)
 	dc->PSSetShader(m_linePS.GetShader(), NULL, 0);
 
 	if (!im.viewshadowcam)
-		m_transformBuffer.Data().viewProj = d::XMMatrixTranspose(mp_cam->GetViewM() * mp_cam->GetProjM());
+		m_transformBuffer.Data().viewProj = d::XMMatrixTranspose(mp_currentCam->GetViewM() * mp_currentCam->GetProjM());
 
 	if (im.drawBCircle && m_selected != -1)
 	{
@@ -1487,7 +1675,7 @@ void DX11Addon::Render(const float& deltatime)
 	//dc->PSSetShader(m_3dps.GetShader(), NULL, 0);
 	dc->PSSetShader(m_toonPS.GetShader(), NULL, 0);
 	m_shadowmap.BindSRV(dc, 10);
-	if (mp_cam->GetOffset().z != 0.f)
+	if (mp_currentCam->GetOffset().z != 0.f)
 		m_playermodel.Draw();
 
 	for (int i = 0; i < modelAmount; i++)
@@ -1497,11 +1685,25 @@ void DX11Addon::Render(const float& deltatime)
 	}
 	dc->PSSetShader(m_3dnoLightps.GetShader(), NULL, 0);
 
-	if (mp_cam->GetOffset().z == 0.f && im.enableHandModel)
+	if (mp_currentCam->GetOffset().z == 0.f && im.enableHandModel)
 	{
 		dc->ClearDepthStencilView(m_dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.f, 0);
 		m_viewmdl.Draw();
 	}
+	uint numnCams = mp_camHandler->GetNoOfCams();
+	dc->RSSetState(m_wireFrameState);
+	for (int i = 0; i < numnCams; i++)
+	{
+		if (i != mp_camHandler->GetCurrentCamIndex())
+		{
+			m_camModel.SetPosition(mp_camHandler->GetCameraAdress(i)->GetPositionNoOffset());
+			sm::Vector3 rotation = mp_camHandler->GetCameraAdress(i)->GetRotation();
+			m_camModel.SetRotation(rotation.x, rotation.y, 0.f);
+			m_camModel.Rotate(d::XM_PI, 0.f, 0.f);
+			m_camModel.Draw();
+		}
+	}
+	
 	m_bulb.Draw();
 	m_spotlight.Draw();
 	m_spotlight.SetPosition(im.sl.position[0], im.sl.position[1], im.sl.position[2]);
@@ -1510,6 +1712,8 @@ void DX11Addon::Render(const float& deltatime)
 	//m_transformBuffer.Data().world = d::XMMatrixTranspose(d::XMMatrixTranslation(0.f, 0.f, 1.f));
 	//m_transformBuffer.UpdateCB();
 	//m_renderbox.Draw(dc);
+
+	
 
 	ImGuiRender();
 	m_swapChain->Present((UINT)im.useVsync, NULL);

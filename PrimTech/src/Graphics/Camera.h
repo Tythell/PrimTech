@@ -50,7 +50,7 @@ private:
 
 	sm::Vector3 m_forwardV, m_leftV, m_upV;
 	const float OFFSETMAX = 4.f;
-	float m_rotationSpeed = 0.f;
+	float m_rotationSpeed = 0.001f;
 };
 
 enum CamFlags

@@ -3,6 +3,7 @@
 
 std::vector<Mesh*> ResourceHandler::m_meshes;
 std::vector<TextureMap*> ResourceHandler::m_textures;
+std::vector<Material*> ResourceHandler::m_materials;
 ID3D11Device* ResourceHandler::pDevice;
 
 void ResourceHandler::SetDevice(ID3D11Device*& device)
@@ -49,6 +50,29 @@ TextureMap* ResourceHandler::GetTextureAdress(unsigned int index)
 	return m_textures[index];;
 }
 
+Material* ResourceHandler::AddMaterial(std::string name)
+{
+	Material* pMat = new Material;
+	pMat->SetName(name);
+	m_materials.emplace_back(pMat);
+	return pMat;
+}
+
+Material& ResourceHandler::GetMaterial(unsigned int index)
+{
+	return *m_materials[index];
+}
+
+Material* ResourceHandler::GetMaterialAdress(unsigned int index)
+{
+	return m_materials[index];
+}
+
+const uint ResourceHandler::GetMtrlCount()
+{
+	return m_materials.size();
+}
+
 int ResourceHandler::CheckMeshNameExists(std::string meshName)
 {
 	for (int i = 0; i < m_meshes.size(); i++)
@@ -75,6 +99,8 @@ void ResourceHandler::Unload()
 		delete m_meshes[i];
 	for (int i = 0; i < m_textures.size(); i++)
 		delete m_textures[i];
+	for (int i = 0; i < m_materials.size(); i++)
+		delete m_materials[i];
 }
 
 ID3D11Device* ResourceHandler::GetDevice()

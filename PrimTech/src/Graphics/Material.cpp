@@ -352,6 +352,11 @@ void Material::SetDiffuseClr(float r, float g, float b)
 	SetDiffuseClr(sm::Vector3(r,g,b));
 }
 
+void Material::SetName(std::string name)
+{
+	m_name = name;
+}
+
 sm::Vector2 Material::GetDiffuseScrollSpeed() const
 {
 	return m_diffuseOffsetSpeed;

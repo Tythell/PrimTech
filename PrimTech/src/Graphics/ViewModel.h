@@ -4,9 +4,9 @@
 class ViewModel
 {
 public:
-	void Init(std::string path, Camera* cam);
+	void Init(std::string path, CameraHandler* cam);
 	void Draw();
 	Model m_model;
 private:
-	Camera* mp_cam = nullptr;
+	CameraHandler* mp_cam = nullptr;
 };

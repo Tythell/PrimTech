@@ -56,6 +56,7 @@ public:
 	void RemoveTexture(const TextureType e);
 	void SetDiffuseClr(const sm::Vector3& v);
 	void SetDiffuseClr(float r, float g, float b);
+	void SetName(std::string name);
 
 	//std::string GetMaterialName() const;
 	std::string GetMapName(const TextureType& e) const;
