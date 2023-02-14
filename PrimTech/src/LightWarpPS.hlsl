@@ -32,7 +32,6 @@ cbuffer LightBuffer : register(b0)
 };
 
 // Material flags
-#define Flag_eNull                      (0     )
 #define MaterialFlag_eHasDiffuse        (1 << 0)
 #define MaterialFlag_eHasDistortion	    (1 << 1)
 #define MaterialFlag_eHasNormal         (1 << 2)

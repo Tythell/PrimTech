@@ -89,8 +89,8 @@ bool TextureMap::CreateFromData(unsigned char* imageData, ID3D11Device*& m_devic
 	if (m_textureSRV)
 		m_textureSRV->Release();
 
-	ID3D11Texture2D* texture;
-	D3D11_TEXTURE2D_DESC desc;
+	ID3D11Texture2D* texture = nullptr;
+	D3D11_TEXTURE2D_DESC desc = {};
 
 	desc.Width = dimensions.x;
 	desc.Height = dimensions.y;

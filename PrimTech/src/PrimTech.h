@@ -27,6 +27,4 @@ namespace pt
 		const unsigned char m_camlockKey = Key::Q;
 		d::XMINT2 m_windowPos;
 	};
-
 };
-

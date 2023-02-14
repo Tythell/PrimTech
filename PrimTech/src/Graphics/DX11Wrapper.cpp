@@ -1415,6 +1415,7 @@ void DX11Addon::ImGuizmo()
 			sm::Vector3 scale;
 			sm::Quaternion rot;
 			world.Decompose(scale, rot, pos);
+			//ImGuizmo::DecomposeMatrixToComponents(&world._11, &pos.x, &rot.x, &scale.x);
 
 			m_models[m_selected]->SetScale(scale);
 			m_models[m_selected]->SetRotation(rot);
@@ -1604,7 +1605,7 @@ void DX11Addon::Render(const float& deltatime)
 	float bgColor[] = { .1f,.1f,.1f,1.f };
 
 	dc->ClearRenderTargetView(m_rtv, bgColor);
-	dc->ClearDepthStencilView(m_dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
+	dc->ClearDepthStencilView(m_dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.f, 0);
 	dc->OMSetBlendState(m_blendState, NULL, 0xFFFFFFFF);
 
 	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -1685,11 +1686,6 @@ void DX11Addon::Render(const float& deltatime)
 	}
 	dc->PSSetShader(m_3dnoLightps.GetShader(), NULL, 0);
 
-	if (mp_currentCam->GetOffset().z == 0.f && im.enableHandModel)
-	{
-		dc->ClearDepthStencilView(m_dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.f, 0);
-		m_viewmdl.Draw();
-	}
 	uint numnCams = mp_camHandler->GetNoOfCams();
 	dc->RSSetState(m_wireFrameState);
 	for (int i = 0; i < numnCams; i++)
@@ -1712,8 +1708,14 @@ void DX11Addon::Render(const float& deltatime)
 	//m_transformBuffer.Data().world = d::XMMatrixTranspose(d::XMMatrixTranslation(0.f, 0.f, 1.f));
 	//m_transformBuffer.UpdateCB();
 	//m_renderbox.Draw(dc);
-
 	
+	if (mp_currentCam->GetOffset().z == 0.f && im.enableHandModel)
+	{
+		dc->RSSetState(m_rasterizerState);
+		dc->ClearDepthStencilView(m_dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.f, 0);
+		m_transformBuffer.Data().viewProj = d::XMMatrixTranspose(mp_currentCam->GetProjM());
+		m_viewmdl.Draw();
+	}
 
 	ImGuiRender();
 	m_swapChain->Present((UINT)im.useVsync, NULL);

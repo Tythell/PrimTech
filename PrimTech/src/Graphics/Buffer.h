@@ -62,6 +62,9 @@ public:
 	// DeviceContext only needed if buffer is dynamic
 	HRESULT CreateVertexBuffer(ID3D11Device*& device, T* data, UINT bufferSize, ID3D11DeviceContext* dc = NULL, unsigned char flags = 0)
 	{
+		D3D11_BUFFER_DESC bufferDesc;
+		ZeroMemory(&bufferDesc, sizeof(D3D11_BUFFER_DESC));
+
 		if (flags & eBufferFlags_IgnoreCreateTwice && m_buffer)
 		{
 			m_buffer->Release();
@@ -70,8 +73,10 @@ public:
 			THROW_POPUP_ERROR((m_buffer == nullptr), "Buffer created twice");
 		m_type = eVERTEX;
 
+		DWORD
+
 		m_usage = eIMMULATBLE;
-		UINT cpuFlags = 0;
+		bufferDesc.CPUAccessFlags = 0;
 		//m_data = new T[bufferSize];
 		//for (int i = 0; i < bufferSize; i++)
 		//{
@@ -82,19 +87,17 @@ public:
 		{
 			m_usage = eDYNAMIC;
 			mp_dc = dc;
-			cpuFlags = D3D11_CPU_ACCESS_WRITE;
+			bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 		}
 
 		m_bufferSize = bufferSize;
 
 		//m_data = data;
 		mp_dc = dc;
-		D3D11_BUFFER_DESC bufferDesc;
-		ZeroMemory(&bufferDesc, sizeof(D3D11_BUFFER_DESC));
+
 		bufferDesc.Usage = (D3D11_USAGE)m_usage;
 		bufferDesc.ByteWidth = m_stride * m_bufferSize;
 		bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-		bufferDesc.CPUAccessFlags = cpuFlags;
 		bufferDesc.MiscFlags = 0;
 		bufferDesc.Usage = (D3D11_USAGE)m_usage;
 
@@ -135,9 +138,7 @@ public:
 	HRESULT CreateIndexBuffer(ID3D11Device*& device, T* indexData, UINT numIndices, ID3D11DeviceContext* dc = NULL, unsigned char flags = 0x0)
 	{
 		if (flags & eBufferFlags_IgnoreCreateTwice && m_buffer)
-		{
 			m_buffer->Release();
-		}
 		else
 			THROW_POPUP_ERROR((m_buffer == nullptr), "Buffer created twice");
 
