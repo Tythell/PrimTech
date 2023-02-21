@@ -7,11 +7,11 @@ LRESULT CALLBACK MessageDirect(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 	switch (uMsg)
 	{
 	case WM_CLOSE:
-		//if (MessageBox(hwnd, L"Leaving already?", L"[REDACTED]", MB_OKCANCEL) == IDOK)
-		//{
-		//	MessageBox(hwnd, L"NO!", L"You can't leave", 0);
-		//	//DestroyWindow(hwnd);
-		//}
+		if (MessageBox(hwnd, L"Leaving already?", L"[REDACTED]", MB_OKCANCEL) == IDOK)
+		{
+			MessageBox(hwnd, L"NO!", L"You can't leave", 0);
+			//DestroyWindow(hwnd);
+		}
 		DestroyWindow(hwnd);
 		return 0;
 
@@ -23,7 +23,6 @@ LRESULT CALLBACK MessageDirect(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 	{
 		Window* const pWindow = reinterpret_cast<Window*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
 		return pWindow->WindowProc(hwnd, uMsg, wParam, lParam);
-
 	}
 	}
 }
@@ -264,7 +263,7 @@ bool Window::init(LPCWSTR windowName, HINSTANCE hInstance, std::wstring windowCl
 
 	WNDCLASS wc = {};
 
-	//wc.style = CS_DBLCLKS | CS_NOCLOSE; // om vi vill att fönstret ska registrera dubbel klicks
+	wc.style = CS_DBLCLKS | CS_NOCLOSE; // om vi vill att fönstret ska registrera dubbel klicks
 	wc.lpfnWndProc = HandleMessageSetup;
 	wc.hInstance = hInstance;
 	wc.lpszClassName = m_wndClass.c_str();

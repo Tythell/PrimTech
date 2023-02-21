@@ -23,7 +23,6 @@ public:
 	void ShutDown();
 	bool GetIsFocused() const;
 private:
-	bool m_apiLoaded = false;
 	int m_windowWidth = 0, m_windowHeight = 0;
 	std::wstring m_windowName;
 	HWND m_hwnd = NULL;
