@@ -9,12 +9,12 @@
 #include"../Input/Keyboard.h"
 #include"ViewModel.h"
 #include<fstream>
+#include <thread>
 #pragma warning(push)
 #pragma warning(disable : 26812)
 #include "imgui.h"
 #include "imgui_impl_win32.h"
 #include "imgui_impl_dx11.h"
-
 
 #include "ImGuizmo.h"
 
@@ -64,6 +64,7 @@ struct ImGuiVars
 	SpotLight sl;
 	float shadowBias = 0.005f;
 	int points = 4;
+	bool showKeybinds = false;
 };
 
 void RecursiveRead(Sceneheaders& header, ModelList& v, std::ifstream& reader);
@@ -103,6 +104,7 @@ private:
 	void ImGuiEntList();
 	void ImGuizmo();
 	void ImGuTextureDisplay();
+	void ImGuiKeyBinds();
 
 	void ImportScene(std::string path);
 	void ExportScene(std::string path);

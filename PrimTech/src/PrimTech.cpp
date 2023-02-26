@@ -74,7 +74,6 @@ namespace pt
 				m_windowPos.y = rec.top;
 			}
 		}
-
 		while (!MouseHandler::BufferIsEmpty())
 		{
 			MouseEvent me = MouseHandler::ReadEvent();
@@ -112,8 +111,12 @@ namespace pt
 				mp_gApi->Click(normRay);
 			}
 		}
-		if (m_kb.IsKeyDown(m_shutDownKey))
+#ifdef _DEBUG
+		if (m_kb.IsKeyDown(m_optionkey))
 			m_window.ShutDown();
+#endif // _DEBUG
+
+		
 	}
 
 	void PrimTech::HideCursor()

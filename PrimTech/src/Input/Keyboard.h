@@ -6,7 +6,8 @@ public:
 	enum EventType
 	{
 		eINVALID,
-		ePUSH, eRELEASE
+		ePUSH, eRELEASE,
+		eCHAR
 	};
 	KeyboardEvent(EventType e, const unsigned char key);
 private:
@@ -22,10 +23,18 @@ public:
 	bool IsKeyDown(const unsigned char key);
 	void SetKeyState(const unsigned char key, bool b);
 	void AddKeyboardEvent(KeyboardEvent e);
+	void AddRecordEvent(unsigned char key);
 	KeyboardEvent ReadEvent();
+	unsigned char ReadRecordKey(bool popOnUse = true);
+	void SetRecording(const bool& b);
+	bool IsRecording() const;
+
+	bool IsEmpty() const;
 private:
 	bool m_isKeyDown[256]{false};
+	bool m_isRecording = false;
 	std::queue<KeyboardEvent> m_keyboardBuffer;
+	std::queue<unsigned char> m_recordBuffer;
 };
 
 namespace Key

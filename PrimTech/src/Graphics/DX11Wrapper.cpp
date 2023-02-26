@@ -728,6 +728,7 @@ void DX11Addon::ImGuiRender()
 	ImGuiMenu();
 	if (im.showDebugWindow) ImguiDebug();
 	if (im.showShadowMapDepth) ImGuTextureDisplay();
+	if (im.showKeybinds) ImGuiKeyBinds();
 
 	//ImGuiGradientWindow();
 	ImGuiEntList();
@@ -818,6 +819,9 @@ void DX11Addon::ImGuiMenu()
 				Popup::Error("stfu and die");
 				DestroyWindow(*m_pHWND);
 			}
+			ImGui::BeginDisabled(true);
+			ImGui::MenuItem("Keybinds", NULL, &im.showKeybinds);
+			ImGui::EndDisabled();
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("Lighting"))
@@ -1439,6 +1443,29 @@ void DX11Addon::ImGuTextureDisplay()
 	ImGui::Image(tex, { winSize.x, winSize.x });
 	if (ImGui::IsWindowHovered())
 		m_isHoveringWindow = true;
+
+	ImGui::End();
+}
+using uchar = unsigned char;
+
+void threadFunc2(KeyboardHandler* kb, uchar* recordkey)
+{
+	while (true)
+	{
+		//uchar key = kb->ReadRecordKey(true);
+
+		//if (key != 0)
+		//{
+		//	kb->SetRecording(false);
+		//	*recordkey = key;
+		//}
+	}
+}
+
+void DX11Addon::ImGuiKeyBinds()
+{
+	ImGui::Begin("Keybinds", &im.showKeybinds);
+
 
 	ImGui::End();
 }

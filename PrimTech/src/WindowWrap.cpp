@@ -7,12 +7,15 @@ LRESULT CALLBACK MessageDirect(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 	switch (uMsg)
 	{
 	case WM_CLOSE:
+#ifdef _DEBUG
 		if (MessageBox(hwnd, L"Leaving already?", L"[REDACTED]", MB_OKCANCEL) == IDOK)
 		{
-			MessageBox(hwnd, L"NO!", L"You can't leave", 0);
+			MessageBox(hwnd, L"lmao you wish", L"[REDACTED]", 0);
 			//DestroyWindow(hwnd);
 		}
+#else
 		DestroyWindow(hwnd);
+#endif // _DEBUG
 		return 0;
 
 	case WM_DESTROY:
@@ -163,6 +166,16 @@ LRESULT Window::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		return 0;
 
 	}
+	case WM_CHAR:
+	{
+		unsigned char key = static_cast<unsigned char>(wParam);
+		if (mp_kb->IsRecording())
+		{
+			mp_kb->AddKeyboardEvent(KeyboardEvent(KeyboardEvent::EventType::eCHAR, key));
+		}
+		return 0;
+
+	}
 	case WM_INPUT:
 	{
 		UINT dataSize = 0;
@@ -190,8 +203,6 @@ LRESULT Window::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	default:
 		return DefWindowProc(hwnd, uMsg, wParam, lParam);
 	}
-
-
 }
 
 std::wstring Window::getWinName() const
@@ -263,7 +274,7 @@ bool Window::init(LPCWSTR windowName, HINSTANCE hInstance, std::wstring windowCl
 
 	WNDCLASS wc = {};
 
-	wc.style = CS_DBLCLKS | CS_NOCLOSE; // om vi vill att fönstret ska registrera dubbel klicks
+	//wc.style = CS_DBLCLKS | CS_NOCLOSE; // om vi vill att fönstret ska registrera dubbel klicks
 	wc.lpfnWndProc = HandleMessageSetup;
 	wc.hInstance = hInstance;
 	wc.lpszClassName = m_wndClass.c_str();
