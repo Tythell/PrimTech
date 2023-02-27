@@ -69,11 +69,11 @@ struct ImGuiVars
 
 void RecursiveRead(Sceneheaders& header, ModelList& v, std::ifstream& reader);
 
-class DX11Addon
+class DX11Renderer
 {
 public:
-	DX11Addon(Window& window, CameraHandler& camera);
-	~DX11Addon();
+	DX11Renderer(Window& window, CameraHandler& camera);
+	~DX11Renderer();
 
 	void SetInputP(KeyboardHandler& kb);
 	void Render(const float& deltatime);

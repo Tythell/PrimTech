@@ -13,11 +13,11 @@ namespace pt
 		void Init(LPCWSTR windowName, HINSTANCE hInstance, std::wstring windowClass, unsigned int width, unsigned int height);
 		void Run();
 	private:
-		void Update(const float& dt);
+		void Update(float& dt);
 		void HideCursor();
 		void ShowCursor();
 		Window m_window;
-		DX11Addon* mp_gApi = nullptr;
+		DX11Renderer* mp_dxrenderer = nullptr;
 
 		CameraHandler m_cams;
 

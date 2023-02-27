@@ -12,8 +12,8 @@ namespace pt
 
 	PrimTech::~PrimTech()
 	{
-		if (mp_gApi) 
-			delete mp_gApi;
+		if (mp_dxrenderer) 
+			delete mp_dxrenderer;
 	}
 
 	void PrimTech::Init(LPCWSTR windowName, HINSTANCE hInstance, std::wstring windowClass, unsigned int width, unsigned int height)
@@ -29,11 +29,11 @@ namespace pt
 		m_cams.Init({ (int)width, (int)height }, NULL);
 
 		m_cams.GetCameraAdress(0)->SetRotationSpeed(0.001f);
-		mp_gApi = new DX11Addon(m_window, m_cams);
-		mp_gApi->SetInputP(m_kb);
+		mp_dxrenderer = new DX11Renderer(m_window, m_cams);
+		mp_dxrenderer->SetInputP(m_kb);
 	}
 
-	void PrimTech::Update(const float& dt)
+	void PrimTech::Update(float& dt)
 	{
 		sm::Vector3 move = { 0.f,0.f,0.f };
 		//bool canMove = MouseHandler::GetIsMouseDown(eRIGHTCLICK);
@@ -55,7 +55,7 @@ namespace pt
 		}
 		m_cams.GetCurrentCamera()->Move(move);
 		
-		mp_gApi->SetCanMove(canMove);
+		mp_dxrenderer->SetCanMove(canMove);
 		
 		if (!m_kb.IsKeyDown(m_camlockKey))
 			isclick = false;
@@ -108,7 +108,7 @@ namespace pt
 
 				normRay.Normalize();
 
-				mp_gApi->Click(normRay);
+				mp_dxrenderer->Click(normRay);
 			}
 		}
 #ifdef _DEBUG
@@ -129,23 +129,48 @@ namespace pt
 		while(::ShowCursor(true) < 0);
 	}
 
+	void ThreadFunc(DX11Renderer* dx, bool* running)
+	{
+		double start = 0, deltatime = 0;
+
+		while (*running)
+		{
+			start = omp_get_wtime();
+			//float dt = .5f;
+			float dt = (float)deltatime;
+			dx->CalculateFps(dt);
+			dx->UpdateScene(dt);
+			dx->Render(dt);
+
+			deltatime = omp_get_wtime() - start;
+		}
+
+	}
+
 	void PrimTech::Run()
 	{
 		double start = 0, deltatime = 0;
 
 		bool running = true;
+
+		//std::thread renderThread(ThreadFunc, mp_dxrenderer, &running);
+
+		float deltaf = 0.f;
 		while (running)
 		{
 			start = omp_get_wtime();
-			Update((float)deltatime);
-			mp_gApi->CalculateFps((float)deltatime);
-			mp_gApi->UpdateScene((float)deltatime);
-			mp_gApi->Render((float)deltatime);
+			Update(deltaf);
+			mp_dxrenderer->CalculateFps((deltatime));
+			mp_dxrenderer->UpdateScene((deltatime));
+			mp_dxrenderer->Render((deltatime));
+			
 			deltatime = omp_get_wtime() - start;
+			deltaf = (float)deltatime;
 
 			running = m_window.processMsg();
 		}
 
+		//renderThread.join();
 	}
 }
 

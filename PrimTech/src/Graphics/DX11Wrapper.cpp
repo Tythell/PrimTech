@@ -3,7 +3,7 @@
 
 #define shadowQuality 2
 
-DX11Addon::DX11Addon(Window& window, CameraHandler& camera) :
+DX11Renderer::DX11Renderer(Window& window, CameraHandler& camera) :
 	m_width(window.getWinWidth()), m_height(window.getWinHeight()), m_pHWND(&window.getHWND()),
 	m_shadowmap(1024 * shadowQuality, 1024 * shadowQuality, camera.GetCurrentCamera()), m_viewport(0.f, 0.f, (float)m_width, (float)m_height)
 {
@@ -27,7 +27,7 @@ DX11Addon::DX11Addon(Window& window, CameraHandler& camera) :
 	ImGuiInit(window.getHWND());
 }
 
-DX11Addon::~DX11Addon()
+DX11Renderer::~DX11Renderer()
 {
 	ImGuiShutDown();
 
@@ -52,7 +52,7 @@ DX11Addon::~DX11Addon()
 	m_wireFrameState->Release();
 }
 
-bool DX11Addon::initSwapChain()
+bool DX11Renderer::initSwapChain()
 {
 	UINT flags = 0;
 #ifdef _DEBUG
@@ -97,7 +97,7 @@ bool DX11Addon::initSwapChain()
 	return true;
 }
 
-bool DX11Addon::initRTV()
+bool DX11Renderer::initRTV()
 {
 	ID3D11Texture2D* backBuffer = nullptr;
 
@@ -111,12 +111,12 @@ bool DX11Addon::initRTV()
 	return true;
 }
 
-void DX11Addon::SetCanMove(bool b)
+void DX11Renderer::SetCanMove(bool b)
 {
 	m_canMove = b;
 }
 
-bool DX11Addon::SetupDSAndVP()
+bool DX11Renderer::SetupDSAndVP()
 {
 	CD3D11_TEXTURE2D_DESC depthStencilTextureDesc(DXGI_FORMAT_D24_UNORM_S8_UINT, m_width, m_height);
 	depthStencilTextureDesc.MipLevels = 1;
@@ -141,7 +141,7 @@ bool DX11Addon::SetupDSAndVP()
 	return SUCCEEDED(hr);
 }
 
-bool DX11Addon::InitRastNSampState()
+bool DX11Renderer::InitRastNSampState()
 {
 
 	D3D11_RASTERIZER_DESC rastDesc;
@@ -203,7 +203,7 @@ bool DX11Addon::InitRastNSampState()
 	return true;
 }
 
-void DX11Addon::InitBlendState()
+void DX11Renderer::InitBlendState()
 {
 	D3D11_BLEND_DESC blendDesc;
 	ZeroMemory(&blendDesc, sizeof(D3D11_BLEND_DESC));
@@ -223,7 +223,7 @@ void DX11Addon::InitBlendState()
 	//dc->OMSetBlendState(m_blendState, NULL, 0xFFFFFFFF);
 }
 
-bool DX11Addon::InitShaders()
+bool DX11Renderer::InitShaders()
 {
 	D3D11_INPUT_ELEMENT_DESC layout3D[] =
 	{
@@ -256,7 +256,7 @@ bool DX11Addon::InitShaders()
 	return true;
 }
 
-bool DX11Addon::InitScene()
+bool DX11Renderer::InitScene()
 {
 	dc->RSSetState(m_rasterizerState);
 	dc->OMSetDepthStencilState(m_dsState, 0);
@@ -314,7 +314,7 @@ bool DX11Addon::InitScene()
 	return true;
 }
 
-void DX11Addon::InitConstantBuffers()
+void DX11Renderer::InitConstantBuffers()
 {
 	m_transformBuffer.CreateConstantBuffer(device, dc);
 	dc->VSSetConstantBuffers(0, 1, m_transformBuffer.GetReference());
@@ -324,7 +324,7 @@ void DX11Addon::InitConstantBuffers()
 	dc->PSSetConstantBuffers(1, 1, m_materialBuffer.GetReference());
 }
 
-void DX11Addon::UpdateScene(const float& deltatime)
+void DX11Renderer::UpdateScene(const float& deltatime)
 {
 	m_lightbuffer.Data().ambientColor = { im.ambient[0], im.ambient[1], im.ambient[2] };
 	m_lightbuffer.Data().ambientStr = im.ambient[3];
@@ -492,7 +492,7 @@ void SetImGuiTheme()
 	colors[ImGuiCol_ModalWindowDimBg]       = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);*/
 }
 
-void DX11Addon::ImGuiInit(HWND& hwnd)
+void DX11Renderer::ImGuiInit(HWND& hwnd)
 {
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -521,7 +521,7 @@ void ExportToon(char* name, unsigned char* data, int offset, const int& grad1, c
 	TextureMap::ExportCharToImage(name, data, 255, 1, 1);
 }
 
-void DX11Addon::ImGuiGradientWindow()
+void DX11Renderer::ImGuiGradientWindow()
 {
 	ImGui::Begin("Gradient");
 	ImDrawList* draw_list = ImGui::GetWindowDrawList();
@@ -596,7 +596,7 @@ void LoadButton(Material* pMaterial, std::string name, TextureType e, const UINT
 
 }
 
-void DX11Addon::ImguiDebug()
+void DX11Renderer::ImguiDebug()
 {
 	ImGui::Begin("Debug", &im.showDebugWindow);
 	ImGui::Text("Press \"Q\" to lock/unlock mouse");
@@ -716,7 +716,7 @@ void DX11Addon::ImguiDebug()
 	ImGui::End();
 }
 
-void DX11Addon::ImGuiRender()
+void DX11Renderer::ImGuiRender()
 {
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
@@ -743,14 +743,14 @@ void DX11Addon::ImGuiRender()
 
 //#define PRINTER(name) printer(#name, )
 
-void DX11Addon::ImGuiShutDown()
+void DX11Renderer::ImGuiShutDown()
 {
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
 }
 
-void DX11Addon::ImGuiMenu()
+void DX11Renderer::ImGuiMenu()
 {
 	if (ImGui::BeginMainMenuBar())
 	{
@@ -910,7 +910,7 @@ int CopyModel(ID3D11DeviceContext*& dc, Buffer<hlsl::cbpWorldTransforms3D>& tbuf
 	return (int)newIndex;
 }
 
-void DX11Addon::ImGuiEntList()
+void DX11Renderer::ImGuiEntList()
 {
 	ImGui::SetNextWindowSize(ImVec2(500, 400), ImGuiCond_FirstUseEver);
 	if (ImGui::Begin("Model List##2", (bool*)false/*, /*ImGuiWindowFlags_MenuBar*/))
@@ -1316,7 +1316,7 @@ void DX11Addon::ImGuiEntList()
 	}
 }
 
-void DX11Addon::ImportScene(std::string path)
+void DX11Renderer::ImportScene(std::string path)
 {
 	m_selected = -1;
 	std::ifstream reader(path, std::ios::binary | std::ios::in);
@@ -1338,7 +1338,7 @@ int countDigits(int n)
 	return total;
 }
 
-void DX11Addon::ExportScene(std::string path)
+void DX11Renderer::ExportScene(std::string path)
 {
 	std::ofstream writer(path, std::ios::binary | std::ios::out);
 
@@ -1378,7 +1378,7 @@ void DX11Addon::ExportScene(std::string path)
 	writer.close();
 }
 
-void DX11Addon::ImGuizmo()
+void DX11Renderer::ImGuizmo()
 {
 	static ImGuizmo::OPERATION op = ImGuizmo::OPERATION::TRANSLATE;
 	if (!m_canMove)
@@ -1430,7 +1430,7 @@ void DX11Addon::ImGuizmo()
 	}
 }
 
-void DX11Addon::ImGuTextureDisplay()
+void DX11Renderer::ImGuTextureDisplay()
 {
 	float winvar = 400;
 	float offset = 35;
@@ -1462,7 +1462,7 @@ void threadFunc2(KeyboardHandler* kb, uchar* recordkey)
 	}
 }
 
-void DX11Addon::ImGuiKeyBinds()
+void DX11Renderer::ImGuiKeyBinds()
 {
 	ImGui::Begin("Keybinds", &im.showKeybinds);
 
@@ -1470,7 +1470,7 @@ void DX11Addon::ImGuiKeyBinds()
 	ImGui::End();
 }
 
-void DX11Addon::NewScene()
+void DX11Renderer::NewScene()
 {
 	m_selected = -1;
 	ClearModelList();
@@ -1484,7 +1484,7 @@ void DX11Addon::NewScene()
 	//m_models[i]->LoadTexture("tfground.png");
 }
 
-void DX11Addon::ClearModelList()
+void DX11Renderer::ClearModelList()
 {
 	for (int i = 0; i < m_models.size(); i++)
 	{
@@ -1493,7 +1493,7 @@ void DX11Addon::ClearModelList()
 	m_models.clear();
 }
 
-void DX11Addon::SetLightWarp(const std::string& path)
+void DX11Renderer::SetLightWarp(const std::string& path)
 {
 	//int textureIndex = ResourceHandler::CheckTextureNameExists(StringHelper::GetName(path));
 	//if (textureIndex != -1)
@@ -1507,17 +1507,22 @@ void DX11Addon::SetLightWarp(const std::string& path)
 	dc->PSSetShaderResources(0, 1, ResourceHandler::GetTexture(1).GetSRVAdress());
 }
 
-void DX11Addon::CalculateFps(const float& deltatime)
+void DX11Renderer::CalculateFps(const float& deltatime)
 {
 	static float fpsTimer = 0.f;
-	static int fpsCounter = 0;
+	//static int fpsCounter = 0;
 	fpsTimer += deltatime;
-	fpsCounter++;
+	//fpsCounter++;
+	//if (fpsTimer >= 1.f)
+	//{
+	//	m_fps = fpsCounter;
+	//	fpsCounter = 0;
+	//	fpsTimer = 0.f;
+	//}
 	if (fpsTimer >= 1.f)
 	{
-		m_fps = fpsCounter;
-		fpsCounter = 0;
 		fpsTimer = 0.f;
+		m_fps = 1.f / deltatime;
 	}
 }
 
@@ -1601,7 +1606,7 @@ int ClickFoo(const sm::Ray& ray, ModelList& models)
 	return index;
 }
 
-void DX11Addon::Click(const sm::Vector3& dir)
+void DX11Renderer::Click(const sm::Vector3& dir)
 {
 	if (!m_isHoveringWindow)
 	{
@@ -1621,12 +1626,12 @@ void DX11Addon::Click(const sm::Vector3& dir)
 	}
 }
 
-void DX11Addon::SetInputP(KeyboardHandler& kb)
+void DX11Renderer::SetInputP(KeyboardHandler& kb)
 {
 	mp_kb = &kb;
 }
 
-void DX11Addon::Render(const float& deltatime)
+void DX11Renderer::Render(const float& deltatime)
 {
 	int modelAmount = (int)m_models.size();
 	float bgColor[] = { .1f,.1f,.1f,1.f };
@@ -1749,17 +1754,17 @@ void DX11Addon::Render(const float& deltatime)
 	//dc->ClearState();
 }
 
-ID3D11Device* DX11Addon::GetDevice() const
+ID3D11Device* DX11Renderer::GetDevice() const
 {
 	return device;
 }
 
-ID3D11DeviceContext* DX11Addon::GetDeviceContext() const
+ID3D11DeviceContext* DX11Renderer::GetDeviceContext() const
 {
 	return dc;
 }
 
-void DX11Addon::ShutDown()
+void DX11Renderer::ShutDown()
 {
 	DestroyWindow(*m_pHWND);
 }
