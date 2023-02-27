@@ -13,6 +13,7 @@ class ResourceHandler
 public:
 	static void SetDevice(ID3D11Device*& device);
 	//static Mesh* AddMesh(std::string path, bool makeLeftHanded = true);
+	static void ReserveMeshMemory(int num);
 	static Mesh* AddMesh(std::string path, bool makeLeftHanded = true);
 	static Mesh& GetMesh(unsigned int index);
 	static Mesh* GetMeshAdress(unsigned int index);
@@ -29,7 +30,7 @@ public:
 	static ID3D11Device* GetDevice();
 	static void ResetUses();
 private:
-	static std::vector<Mesh*> m_meshes;
+	static std::vector<Mesh> m_meshes;
 	static std::vector<TextureMap*> m_textures;
 	static std::vector<Material*> m_materials;
 	static ID3D11Device* pDevice;

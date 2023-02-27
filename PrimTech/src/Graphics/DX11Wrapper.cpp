@@ -19,6 +19,7 @@ DX11Renderer::DX11Renderer(Window& window, CameraHandler& camera) :
 	m_shadowmap.Init(device);
 
 	ResourceHandler::SetDevice(device);
+	ResourceHandler::ReserveMeshMemory(10);
 
 	InitShaders();
 	InitConstantBuffers();
@@ -500,25 +501,6 @@ void DX11Renderer::ImGuiInit(HWND& hwnd)
 	ImGui_ImplDX11_Init(device, dc);
 	ImGui_ImplWin32_Init(hwnd);
 	SetImGuiTheme();
-}
-
-void ExportToon(char* name, unsigned char* data, int offset, const int& grad1, const int& grad2)
-{
-	unsigned int gradSize = grad2 + (255 / 2) - grad1;
-	offset += (255 / 2);
-	for (int i = 0; i < 255; i++)
-	{
-		if (i < offset)
-			data[i] = 0;
-		else
-			data[i] = 255;
-		// if index is in gradient
-		if (i < grad2 + (255 / 2) && i > grad1)
-		{
-
-		}
-	}
-	TextureMap::ExportCharToImage(name, data, 255, 1, 1);
 }
 
 void DX11Renderer::ImGuiGradientWindow()

@@ -1,7 +1,7 @@
 #include "ResourceHandler.h"
 #include "Model.h"
 
-std::vector<Mesh*> ResourceHandler::m_meshes;
+std::vector<Mesh> ResourceHandler::m_meshes;
 std::vector<TextureMap*> ResourceHandler::m_textures;
 std::vector<Material*> ResourceHandler::m_materials;
 ID3D11Device* ResourceHandler::pDevice;
@@ -11,21 +11,26 @@ void ResourceHandler::SetDevice(ID3D11Device*& device)
 	pDevice = device;
 }
 
+void ResourceHandler::ReserveMeshMemory(int num)
+{
+	m_meshes.reserve(num);
+}
+
 Mesh* ResourceHandler::AddMesh(std::string path, bool makeLeftHanded)
 {
-	Mesh* pMesh = new Mesh(path, pDevice, makeLeftHanded);
-	m_meshes.emplace_back(pMesh);
-	return pMesh;
+	//Mesh* pMesh = new Mesh(path, pDevice, makeLeftHanded);
+	m_meshes.emplace_back(path, pDevice, makeLeftHanded);
+	return &m_meshes[m_meshes.size()-1];
 }
 
 Mesh& ResourceHandler::GetMesh(unsigned int index)
 {
-	return *m_meshes[index];
+	return m_meshes[index];
 }
 
 Mesh* ResourceHandler::GetMeshAdress(unsigned int index)
 {
-	return m_meshes[index];
+	return &m_meshes[index];
 }
 
 TextureMap* ResourceHandler::AddTexture(std::string path, bool flipUV)
@@ -77,7 +82,7 @@ int ResourceHandler::CheckMeshNameExists(std::string meshName)
 {
 	for (int i = 0; i < m_meshes.size(); i++)
 	{
-		if (m_meshes[i]->GetName() == meshName)
+		if (m_meshes[i].GetName() == meshName)
 			return i;
 	}
 	return -1;
@@ -95,8 +100,8 @@ int ResourceHandler::CheckTextureNameExists(std::string textureName)
 
 void ResourceHandler::Unload()
 {
-	for (int i = 0; i < m_meshes.size(); i++)
-		delete m_meshes[i];
+	//for (int i = 0; i < m_meshes.size(); i++)
+	//	delete m_meshes[i];
 	for (int i = 0; i < m_textures.size(); i++)
 		delete m_textures[i];
 	for (int i = 0; i < m_materials.size(); i++)
@@ -112,6 +117,6 @@ void ResourceHandler::ResetUses()
 {
 	for (int i = 0; i < m_meshes.size(); i++)
 	{
-		m_meshes[i]->ResetUses();
+		m_meshes[i].ResetUses();
 	}
 }

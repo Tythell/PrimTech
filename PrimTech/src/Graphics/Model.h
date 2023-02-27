@@ -24,6 +24,8 @@ class Mesh
 {
 public:
 	Mesh(std::string path, ID3D11Device*& device, bool makeLeftHanded = true);
+	void operator=(const Mesh& other);
+
 	Buffer<Vertex3D>& GetVBuffer();
 	std::string GetName() const;
 	void IncreaseUses();
