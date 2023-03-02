@@ -26,6 +26,8 @@ public:
 	static Material* AddMaterial(std::string name);
 	static Material& GetMaterial(unsigned int index);
 	static Material* GetMaterialAdress(unsigned int index);
+	static int CheckMtrlNameExists(std::string mtrlName);
+	static uint GetNoMaterials();
 	static const uint GetMtrlCount();
 	static int CheckMeshNameExists(std::string meshName);
 	static int CheckTextureNameExists(std::string textureName);

@@ -18,12 +18,12 @@ void ResourceHandler::ReserveMeshMemory(int num)
 
 void ResourceHandler::ReserveTextureMemory(int num)
 {
-	m_materials.reserve(num);
+	m_textures.reserve(num);
 }
 
 void ResourceHandler::ReserveMaterialMemory(int num)
 {
-	m_textures.reserve(num);
+	m_materials.reserve(num);
 }
 
 Mesh* ResourceHandler::AddMesh(std::string path, bool makeLeftHanded)
@@ -66,7 +66,8 @@ TextureMap* ResourceHandler::GetTextureAdress(unsigned int index)
 
 Material* ResourceHandler::AddMaterial(std::string name)
 {
-	THROW_POPUP_ERROR(!(m_materials.size() == m_materials.capacity()), "not enough memory reserved for new mesh");
+	THROW_POPUP_ERROR(!(m_materials.size() == m_materials.capacity()), "not enough memory reserved for new material");
+
 	return &m_materials.emplace_back(name);
 }
 
@@ -78,6 +79,21 @@ Material& ResourceHandler::GetMaterial(unsigned int index)
 Material* ResourceHandler::GetMaterialAdress(unsigned int index)
 {
 	return &m_materials[index];
+}
+
+int ResourceHandler::CheckMtrlNameExists(std::string mtrlName)
+{
+	for (int i = 0; i < m_meshes.size(); i++)
+	{
+		if (m_materials[i].GetFileName() == mtrlName)
+			return i;
+	}
+	return -1;
+}
+
+uint ResourceHandler::GetNoMaterials()
+{
+	return (uint)m_materials.size();
 }
 
 const uint ResourceHandler::GetMtrlCount()

@@ -37,13 +37,13 @@ class Material
 {
 public:
 	Material(){};
-	Material(uint entId){};
 	Material(std::string name);
 	void LoadTexture(std::string textureName, TextureType type);
 	void UpdateTextureScroll(const float& deltatime);
 	void SetDiffuseScrollSpeed(float x, float y);
 	void SetDistortionScrollSpeed(float x, float y);
 	void Set(ID3D11DeviceContext*& dc);
+	void Set(ID3D11DeviceContext*& dc, Buffer<hlsl::cbpMaterialBuffer>& mp_matBuffer);
 	void SetTransparency(float f);
 	void SetTextureScale(float f);
 	void SetTextureScaleDist(float f);

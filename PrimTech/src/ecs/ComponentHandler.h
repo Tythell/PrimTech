@@ -7,7 +7,7 @@ enum HasComponent
 	ec_null = 0,
 	ec_meshRef = 0x1,
 	ec_transform = 0x2,
-	ec_bling = 0x4,
+	ec_materials = 0x4,
 	ec_pling = 0x6,
 	ec_ring = 0x10,
 	ec_07 = 0x20,

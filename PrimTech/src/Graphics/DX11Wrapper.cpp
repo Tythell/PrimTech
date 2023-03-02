@@ -715,7 +715,7 @@ void DX11Renderer::ImGuiRender()
 	if (im.showKeybinds) ImGuiKeyBinds();
 
 	//ImGuiGradientWindow();
-	//ImGuiEntList();
+	ImGuiEntList();
 
 
 	if (im.showDemoWindow)
@@ -1709,8 +1709,11 @@ void DX11Renderer::Render(const float& deltatime)
 	//dc->RSSetState(m_wireFrameState);
 
 
-	std::vector<MeshRef>& m_meshrefs = ComponentHandler::GetComponentArray<MeshRef>();
-	uint numMEshRefs = m_meshrefs.size();
+	std::vector<MeshRef>& rMeshrefs = ComponentHandler::GetComponentArray<MeshRef>();
+	//std::vector<MaterialComp>& rMaterials = ComponentHandler::GetComponentArray<MaterialComp>();
+
+
+	uint numMEshRefs = rMeshrefs.size();
 	static int imnumMEshRefs = numMEshRefs;
 	static bool imcheck = false;
 
@@ -1720,20 +1723,21 @@ void DX11Renderer::Render(const float& deltatime)
 
 	for (int i = 0; i < imnumMEshRefs; i++)
 	{
-		uint entId = m_meshrefs[i].EntId();
-		Mesh* meshPtr = m_meshrefs[i].m_pMesh;
+		uint entId = rMeshrefs[i].EntId();
+		Mesh* meshPtr = rMeshrefs[i].m_pMesh;
 
-		TransformComp* m_transformComps = Entity::s_ents[entId]->GetComponent<TransformComp>();
-		m_transformBuffer.Data().world = m_transformComps->GetWorldTransposed();
+		TransformComp* pTransformComp = Entity::s_ents[entId]->GetComponent<TransformComp>();
 
+		m_transformBuffer.Data().world = pTransformComp->GetWorldTransposed();
 
 		m_transformBuffer.MapBuffer();
 		uint offset = 0;
 		dc->IASetVertexBuffers(0, 1, meshPtr->GetVBuffer().GetReference(), meshPtr->GetVBuffer().GetStrideP(), &offset);
 		for (int i = 0; i < meshPtr->GetNofMeshes(); i++)
 		{
-
-			//m_material[i].Set(dc);
+			Material& rMat = ResourceHandler::GetMaterial(rMeshrefs[i].m_pMaterialindexes[i]);
+			rMat.Set(dc, m_materialBuffer);
+			
 			int v1 = meshPtr->GetMeshOffsfets()[i + 1], v2 = meshPtr->GetMeshOffsfets()[i];
 			dc->Draw(v1 - v2, v2);
 		}

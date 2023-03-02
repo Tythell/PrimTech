@@ -110,6 +110,11 @@ void Material::SetDistortionScrollSpeed(float x, float y)
 
 void Material::Set(ID3D11DeviceContext*& dc)
 {
+	Set(dc, *mp_matBuffer);
+}
+
+void Material::Set(ID3D11DeviceContext*& dc, Buffer<hlsl::cbpMaterialBuffer>& matBuffer)
+{
 	if (mp_textures[eDiffuse])
 		dc->PSSetShaderResources(1, 1, mp_textures[eDiffuse]->GetSRVAdress());
 	else // If Model has no diffuse it will default to first texture in vector
@@ -121,30 +126,30 @@ void Material::Set(ID3D11DeviceContext*& dc)
 			dc->PSSetShaderResources(1 + i, 1, mp_textures[i]->GetSRVAdress());
 	}
 
-	mp_matBuffer->Data().textureScaleDist = m_textureScaleDist;
+	matBuffer.Data().textureScaleDist = m_textureScaleDist;
 
-	mp_matBuffer->Data().diffuseColor = m_diffuseClr;
+	matBuffer.Data().diffuseColor = m_diffuseClr;
 
 	//dc->PSSetConstantBuffers(1, 1, mp_matBuffer->GetReference());
-	mp_matBuffer->Data().texCoordOffset = m_diffuseOffsetValue;
-	
-	mp_matBuffer->Data().texCoordoffsetDist = m_distortionValue;
-	mp_matBuffer->Data().distDiv = m_distDivider;
-	mp_matBuffer->Data().transparency = m_transparency;
-	mp_matBuffer->Data().textureScale = m_textureScale;
-	mp_matBuffer->Data().rimColor = m_rimColor;
-	mp_matBuffer->Data().rim = (int)m_selection;
+	matBuffer.Data().texCoordOffset = m_diffuseOffsetValue;
 
-	
+	matBuffer.Data().texCoordoffsetDist = m_distortionValue;
+	matBuffer.Data().distDiv = m_distDivider;
+	matBuffer.Data().transparency = m_transparency;
+	matBuffer.Data().textureScale = m_textureScale;
+	matBuffer.Data().rimColor = m_rimColor;
+	matBuffer.Data().rim = (int)m_selection;
+
+
 	for (UINT i = 0; i < eTextureTypeAMOUNT; i++)
 	{
 		UINT bitFlag = (1 << i);
 		if (HasTexture(i))
-			mp_matBuffer->Data().flags |= bitFlag;
-		else 
-			mp_matBuffer->Data().flags &= ~bitFlag;
+			matBuffer.Data().flags |= bitFlag;
+		else
+			matBuffer.Data().flags &= ~bitFlag;
 	}
-	mp_matBuffer->MapBuffer();
+	matBuffer.MapBuffer();
 }
 
 void Material::SetTransparency(float f)

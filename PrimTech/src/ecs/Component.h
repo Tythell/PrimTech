@@ -1,5 +1,6 @@
 #pragma once
 #include "../Graphics/Mesh.h"
+#include "../Graphics/Material.h"
 #include<string>
 
 class Component
@@ -17,11 +18,14 @@ class MeshRef : public Component
 {
 public:
 	MeshRef(uint entId, std::string meshName = "");
-	MeshRef(const MeshRef& other);
+	//MeshRef(const MeshRef& other);
 
 	void Init(std::string path);
+	void SetMaterial(uint materialIndex, uint slot = 0);
+	void SetMaterial(std::string materialName, uint slot = 0);
 private:
 	Mesh* m_pMesh = &ResourceHandler::GetMesh(0);
+	std::vector<uint> m_pMaterialindexes;
 
 	friend class DX11Renderer;
 };
