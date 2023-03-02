@@ -29,7 +29,7 @@ void ResourceHandler::ReserveMaterialMemory(int num)
 Mesh* ResourceHandler::AddMesh(std::string path, bool makeLeftHanded)
 {
 	THROW_POPUP_ERROR(!(m_meshes.size() == m_meshes.capacity()), "not enough memory reserved for new mesh");
-	return &m_meshes.emplace_back(path, pDevice, makeLeftHanded);;
+	return &m_meshes.emplace_back(path, pDevice, makeLeftHanded);
 }
 
 Mesh& ResourceHandler::GetMesh(unsigned int index)

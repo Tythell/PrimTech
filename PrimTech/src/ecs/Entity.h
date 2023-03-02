@@ -54,6 +54,11 @@ public:
 		return NULL;
 	}
 
+	TransformComp& Transform()
+	{
+		return ComponentHandler::GetComponentArray<TransformComp>()[m_id];
+	}
+
 private:
 	uint m_id = 0xffffffff;
 	uint m_hasComponents = 0;

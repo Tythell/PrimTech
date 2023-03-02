@@ -69,7 +69,7 @@
     <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\WindowWrap.cpp">
+    <ClCompile Include="src\Windows\WindowWrap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Utility\Popup.cpp">
@@ -91,9 +91,6 @@
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="src\Graphics\Transform.cpp">
-      <Filter>Source Files\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Graphics\Vertex.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="src\Graphics\3rdParty\imgui\imgui.cpp">
@@ -138,13 +135,7 @@
     <ClCompile Include="src\Utility\CommonDialogs.cpp">
       <Filter>Source Files\Utility</Filter>
     </ClCompile>
-    <ClCompile Include="src\Defines.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\PrimTech\Scene.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Graphics\ViewModel.cpp">
+    <ClCompile Include="src\Macros\Defines.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Graphics\RenderShapes.cpp">
@@ -183,6 +174,9 @@
     <ClCompile Include="src\ecs\TransformC.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Graphics\ViewModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
@@ -214,7 +208,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\WindowWrap.h">
+    <ClInclude Include="src\Windows\WindowWrap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Utility\COMException.h">
@@ -271,7 +265,7 @@
     <ClInclude Include="src\Graphics\3rdParty\imgui\imstb_truetype.h">
       <Filter>Header Files\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="src\Colors.h">
+    <ClInclude Include="src\Macros\Colors.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="src\Input\Mouse.h">
@@ -300,9 +294,6 @@
     </ClInclude>
     <ClInclude Include="src\Utility\CommonDialogs.h">
       <Filter>Header Files\Utility</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\ViewModel.h">
-      <Filter>Header Files\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\RenderShapes.h">
       <Filter>Header Files</Filter>
@@ -577,27 +568,30 @@
     <ClInclude Include="src\ecs\ComponentHandler.h">
       <Filter>Header Files\ecs</Filter>
     </ClInclude>
+    <ClInclude Include="src\Graphics\ViewModel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="src\QuadVS.hlsl">
+    <FxCompile Include="src\Shaders\QuadVS.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
-    <FxCompile Include="src\QuadPS.hlsl">
+    <FxCompile Include="src\Shaders\QuadPS.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
-    <FxCompile Include="src\vertexshader.hlsl">
+    <FxCompile Include="src\Shaders\vertexshader.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
-    <FxCompile Include="src\basePS.hlsl">
+    <FxCompile Include="src\Shaders\basePS.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
-    <FxCompile Include="src\NoLightPS.hlsl">
+    <FxCompile Include="src\Shaders\NoLightPS.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
-    <FxCompile Include="src\LightWarpPS.hlsl">
+    <FxCompile Include="src\Shaders\LightWarpPS.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
-    <FxCompile Include="src\ToonPS.hlsl">
+    <FxCompile Include="src\Shaders\ToonPS.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
   </ItemGroup>

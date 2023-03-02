@@ -38,24 +38,24 @@ namespace pt
 		ResourceHandler::AddMesh("Assets/models/cube.txt"); 
 		ResourceHandler::AddMesh("Assets/models/gunter.obj");
 		ResourceHandler::AddMesh("Assets/models/scuffball.obj");
-		ResourceHandler::AddMaterial("ecsMat");
+		ResourceHandler::AddMaterial("DefaultMaterial");
 
 		//ComponentHandler::ReserveMemory<MeshRef>(6);
 
 		MeshRef* meshref = testEntity.AddComponent<MeshRef>();
 		meshref->Init("cube.txt");
-		meshref->SetMaterial("ecsMat");
+		//meshref->SetMaterial("ecsMat");
 
 		MeshRef* meshref2 = testEntity2.AddComponent<MeshRef>();
 		meshref2->Init("gunter.obj");
-		meshref2->SetMaterial("ecsMat");
+		//meshref2->SetMaterial("ecsMat");
 		MeshRef* meshref3 = testEntity3.AddComponent<MeshRef>();
 		meshref3->Init("scuffball.obj");
-		meshref3->SetMaterial("ecsMat");
+		//meshref3->SetMaterial("ecsMat");
 
-		testEntity.GetComponent<TransformComp>()->SetPosition(1.f, 0.f, 0.f);
-		testEntity2.GetComponent<TransformComp>()->SetPosition(0.f, 0.f, 1.f);
-		testEntity3.GetComponent<TransformComp>()->SetPosition(0.f, 1.f, 0.f);
+		testEntity.GetComponent<TransformComp>()->SetPosition(1.f, -1.f, 0.f);
+		testEntity2.GetComponent<TransformComp>()->SetPosition(0.f, 0.f, 1.5f);
+		testEntity3.GetComponent<TransformComp>()->SetPosition(0.f, 1.f, -1.f);
 	}
 
 	void PrimTech::Update(float& dt)

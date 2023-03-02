@@ -1,5 +1,5 @@
 #pragma once
-#include "WindowWrap.h"
+#include "Windows/WindowWrap.h"
 #include <omp.h>
 #include <thread>
 

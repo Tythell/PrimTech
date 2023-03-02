@@ -1,5 +1,5 @@
 #include "DX11Wrapper.h"
-#include"../WindowWrap.h"
+#include"Windows/WindowWrap.h"
 
 #define shadowQuality 2
 
@@ -1710,7 +1710,7 @@ void DX11Renderer::Render(const float& deltatime)
 
 
 	std::vector<MeshRef>& rMeshrefs = ComponentHandler::GetComponentArray<MeshRef>();
-	//std::vector<MaterialComp>& rMaterials = ComponentHandler::GetComponentArray<MaterialComp>();
+	std::vector<TransformComp>& rTransforms = ComponentHandler::GetComponentArray<TransformComp>();
 
 
 	uint numMEshRefs = rMeshrefs.size();
@@ -1726,7 +1726,8 @@ void DX11Renderer::Render(const float& deltatime)
 		uint entId = rMeshrefs[i].EntId();
 		Mesh* meshPtr = rMeshrefs[i].m_pMesh;
 
-		TransformComp* pTransformComp = Entity::s_ents[entId]->GetComponent<TransformComp>();
+		//TransformComp* pTransformComp = &Entity::s_ents[entId]->Transform();
+		TransformComp* pTransformComp = &rTransforms[entId];
 
 		m_transformBuffer.Data().world = pTransformComp->GetWorldTransposed();
 

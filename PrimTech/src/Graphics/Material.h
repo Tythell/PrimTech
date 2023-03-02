@@ -4,7 +4,7 @@
 #include "../Utility/StringHelper.h"
 #include "Buffer.h"
 #include <string>
-#include "../Colors.h"
+#include "../Macros/Colors.h"
 
 enum TextureType
 {

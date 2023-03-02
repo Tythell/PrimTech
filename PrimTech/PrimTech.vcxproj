@@ -79,7 +79,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <LibraryPath>$(SolutionDir)3rdparty;$(SolutionDir)3rdparty\Debug;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(IncludePath)</IncludePath>
+    <IncludePath>$(ProkectDir)src;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -178,9 +178,9 @@ IF EXIST 3rdparty\*.dll ( copy 3rdparty\*.dll x64\Release\ )</Command>
     <ClCompile Include="src\Graphics\Mesh.cpp" />
     <ClCompile Include="src\Graphics\RenderShapes.cpp" />
     <ClCompile Include="src\Graphics\ShadowMap.cpp" />
-    <ClCompile Include="src\PrimTech\Scene.cpp" />
+    <ClCompile Include="src\Graphics\ViewModel.cpp" />
     <ClCompile Include="src\Utility\CommonDialogs.cpp" />
-    <ClCompile Include="src\Defines.cpp" />
+    <ClCompile Include="src\Macros\Defines.cpp" />
     <ClCompile Include="src\Graphics\3rdParty\imgui\imgui.cpp" />
     <ClCompile Include="src\Graphics\3rdParty\imgui\imgui_demo.cpp" />
     <ClCompile Include="src\Graphics\3rdParty\imgui\imgui_draw.cpp" />
@@ -202,9 +202,7 @@ IF EXIST 3rdparty\*.dll ( copy 3rdparty\*.dll x64\Release\ )</Command>
     <ClCompile Include="src\Utility\StringHelper.cpp" />
     <ClCompile Include="src\Utility\Popup.cpp" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\Graphics\Vertex.cpp" />
-    <ClCompile Include="src\WindowWrap.cpp" />
-    <ClCompile Include="src\Graphics\ViewModel.cpp" />
+    <ClCompile Include="src\Windows\WindowWrap.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ecs\ComponentHandler.h" />
@@ -296,9 +294,10 @@ IF EXIST 3rdparty\*.dll ( copy 3rdparty\*.dll x64\Release\ )</Command>
     <ClInclude Include="src\Graphics\Mesh.h" />
     <ClInclude Include="src\Graphics\RenderShapes.h" />
     <ClInclude Include="src\Graphics\ShadowMap.h" />
+    <ClInclude Include="src\Graphics\ViewModel.h" />
     <ClInclude Include="src\Utility\CommonDialogs.h" />
     <ClInclude Include="src\Graphics\Buffer.h" />
-    <ClInclude Include="src\Colors.h" />
+    <ClInclude Include="src\Macros\Colors.h" />
     <ClInclude Include="src\Graphics\3rdParty\imgui\imconfig.h" />
     <ClInclude Include="src\Graphics\3rdParty\imgui\imgui.h" />
     <ClInclude Include="src\Graphics\3rdParty\imgui\imgui_impl_dx11.h" />
@@ -326,8 +325,7 @@ IF EXIST 3rdparty\*.dll ( copy 3rdparty\*.dll x64\Release\ )</Command>
     <ClInclude Include="src\Utility\COMException.h" />
     <ClInclude Include="src\Graphics\DX11Wrapper.h" />
     <ClInclude Include="src\Utility\Popup.h" />
-    <ClInclude Include="src\WindowWrap.h" />
-    <ClInclude Include="src\Graphics\ViewModel.h" />
+    <ClInclude Include="src\Windows\WindowWrap.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
@@ -343,43 +341,43 @@ IF EXIST 3rdparty\*.dll ( copy 3rdparty\*.dll x64\Release\ )</Command>
     <None Include="src\Graphics\3rdParty\assimp\vector3.inl" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="src\NoLightPS.hlsl">
+    <FxCompile Include="src\Shaders\NoLightPS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
     </FxCompile>
-    <FxCompile Include="src\basePS.hlsl">
+    <FxCompile Include="src\Shaders\basePS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
     </FxCompile>
-    <FxCompile Include="src\LightWarpPS.hlsl">
+    <FxCompile Include="src\Shaders\LightWarpPS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
     </FxCompile>
-    <FxCompile Include="src\ToonPS.hlsl">
+    <FxCompile Include="src\Shaders\ToonPS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
     </FxCompile>
-    <FxCompile Include="src\vertexshader.hlsl">
+    <FxCompile Include="src\Shaders\vertexshader.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
     </FxCompile>
-    <FxCompile Include="src\QuadPS.hlsl">
+    <FxCompile Include="src\Shaders\QuadPS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
     </FxCompile>
-    <FxCompile Include="src\QuadVS.hlsl">
+    <FxCompile Include="src\Shaders\QuadVS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
