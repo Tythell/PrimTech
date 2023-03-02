@@ -14,9 +14,12 @@ public:
 	static void SetDevice(ID3D11Device*& device);
 	//static Mesh* AddMesh(std::string path, bool makeLeftHanded = true);
 	static void ReserveMeshMemory(int num);
+	static void ReserveTextureMemory(int num);
+	static void ReserveMaterialMemory(int num);
 	static Mesh* AddMesh(std::string path, bool makeLeftHanded = true);
 	static Mesh& GetMesh(unsigned int index);
 	static Mesh* GetMeshAdress(unsigned int index);
+	static std::vector<Mesh>& GetMeshArrayReference() { return m_meshes; };
 	static TextureMap* AddTexture(std::string path, bool flipUV = true);
 	static TextureMap& GetTexture(unsigned int index);
 	static TextureMap* GetTextureAdress(unsigned int index);
@@ -32,6 +35,6 @@ public:
 private:
 	static std::vector<Mesh> m_meshes;
 	static std::vector<TextureMap*> m_textures;
-	static std::vector<Material*> m_materials;
+	static std::vector<Material> m_materials;
 	static ID3D11Device* pDevice;
 };

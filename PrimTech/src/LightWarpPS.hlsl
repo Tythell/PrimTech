@@ -183,7 +183,7 @@ float4 main(PSInput input) : SV_Target
     float3 cellLightStr = ZAToon.Sample(clampSampler, float2(lightindex, .5f)).xyz;
     specular = ZAToon.Sample(clampSampler, float2(specular.z, .5f)).xyz;
     
-    cellLightStr *= shadow;
+    //cellLightStr *= shadow;
     
     cellLightStr += ambientColor * ambientStr;
     

@@ -26,5 +26,11 @@ namespace pt
 		const unsigned char m_optionkey = Key::ESCAPE;
 		const unsigned char m_camlockKey = Key::Q;
 		d::XMINT2 m_windowPos;
+
+		Entity testEntity;
+		Entity testEntity2;
+		Entity testEntity3;
+
+		Entity m_tfFloor;
 	};
 };

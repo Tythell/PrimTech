@@ -2,6 +2,11 @@
 #include "Model.h"
 #include <fstream>
 
+Material::Material(std::string name)
+{
+	SetName(name);
+}
+
 void Material::LoadTexture(std::string textureName, TextureType type)
 {
 	int textureIndex = ResourceHandler::CheckTextureNameExists(StringHelper::GetName(textureName));

@@ -166,11 +166,15 @@ IF EXIST 3rdparty\*.dll ( copy 3rdparty\*.dll x64\Release\ )</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\ecs\ComponentHandler.cpp" />
+    <ClCompile Include="src\ecs\Component.cpp" />
+    <ClCompile Include="src\ecs\Entity.cpp" />
     <ClCompile Include="src\Graphics\3rdParty\ImGuizmo\GraphEditor.cpp" />
     <ClCompile Include="src\Graphics\3rdParty\ImGuizmo\ImCurveEdit.cpp" />
     <ClCompile Include="src\Graphics\3rdParty\ImGuizmo\ImGradient.cpp" />
     <ClCompile Include="src\Graphics\3rdParty\ImGuizmo\ImGuizmo.cpp" />
     <ClCompile Include="src\Graphics\3rdParty\ImGuizmo\ImSequencer.cpp" />
+    <ClCompile Include="src\Graphics\Mesh.cpp" />
     <ClCompile Include="src\Graphics\RenderShapes.cpp" />
     <ClCompile Include="src\Graphics\ShadowMap.cpp" />
     <ClCompile Include="src\PrimTech\Scene.cpp" />
@@ -202,6 +206,9 @@ IF EXIST 3rdparty\*.dll ( copy 3rdparty\*.dll x64\Release\ )</Command>
     <ClCompile Include="src\Graphics\ViewModel.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\ecs\ComponentHandler.h" />
+    <ClInclude Include="src\ecs\Component.h" />
+    <ClInclude Include="src\ecs\Entity.h" />
     <ClInclude Include="src\Graphics\3rdParty\assimp\aabb.h" />
     <ClInclude Include="src\Graphics\3rdParty\assimp\ai_assert.h" />
     <ClInclude Include="src\Graphics\3rdParty\assimp\anim.h" />
@@ -285,6 +292,7 @@ IF EXIST 3rdparty\*.dll ( copy 3rdparty\*.dll x64\Release\ )</Command>
     <ClInclude Include="src\Graphics\3rdParty\ImGuizmo\ImGuizmo.h" />
     <ClInclude Include="src\Graphics\3rdParty\ImGuizmo\ImSequencer.h" />
     <ClInclude Include="src\Graphics\3rdParty\ImGuizmo\ImZoomSlider.h" />
+    <ClInclude Include="src\Graphics\Mesh.h" />
     <ClInclude Include="src\Graphics\RenderShapes.h" />
     <ClInclude Include="src\Graphics\ShadowMap.h" />
     <ClInclude Include="src\Utility\CommonDialogs.h" />

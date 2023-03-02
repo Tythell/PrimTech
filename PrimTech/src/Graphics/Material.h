@@ -36,6 +36,9 @@ enum class eMaterialHeaders
 class Material
 {
 public:
+	Material(){};
+	Material(uint entId){};
+	Material(std::string name);
 	void LoadTexture(std::string textureName, TextureType type);
 	void UpdateTextureScroll(const float& deltatime);
 	void SetDiffuseScrollSpeed(float x, float y);

@@ -3,7 +3,7 @@
 
 std::vector<Mesh> ResourceHandler::m_meshes;
 std::vector<TextureMap*> ResourceHandler::m_textures;
-std::vector<Material*> ResourceHandler::m_materials;
+std::vector<Material> ResourceHandler::m_materials;
 ID3D11Device* ResourceHandler::pDevice;
 
 void ResourceHandler::SetDevice(ID3D11Device*& device)
@@ -16,11 +16,20 @@ void ResourceHandler::ReserveMeshMemory(int num)
 	m_meshes.reserve(num);
 }
 
+void ResourceHandler::ReserveTextureMemory(int num)
+{
+	m_materials.reserve(num);
+}
+
+void ResourceHandler::ReserveMaterialMemory(int num)
+{
+	m_textures.reserve(num);
+}
+
 Mesh* ResourceHandler::AddMesh(std::string path, bool makeLeftHanded)
 {
-	//Mesh* pMesh = new Mesh(path, pDevice, makeLeftHanded);
-	m_meshes.emplace_back(path, pDevice, makeLeftHanded);
-	return &m_meshes[m_meshes.size()-1];
+	THROW_POPUP_ERROR(!(m_meshes.size() == m_meshes.capacity()), "not enough memory reserved for new mesh");
+	return &m_meshes.emplace_back(path, pDevice, makeLeftHanded);;
 }
 
 Mesh& ResourceHandler::GetMesh(unsigned int index)
@@ -57,20 +66,18 @@ TextureMap* ResourceHandler::GetTextureAdress(unsigned int index)
 
 Material* ResourceHandler::AddMaterial(std::string name)
 {
-	Material* pMat = new Material;
-	pMat->SetName(name);
-	m_materials.emplace_back(pMat);
-	return pMat;
+	THROW_POPUP_ERROR(!(m_materials.size() == m_materials.capacity()), "not enough memory reserved for new mesh");
+	return &m_materials.emplace_back(name);
 }
 
 Material& ResourceHandler::GetMaterial(unsigned int index)
 {
-	return *m_materials[index];
+	return m_materials[index];
 }
 
 Material* ResourceHandler::GetMaterialAdress(unsigned int index)
 {
-	return m_materials[index];
+	return &m_materials[index];
 }
 
 const uint ResourceHandler::GetMtrlCount()
@@ -104,8 +111,6 @@ void ResourceHandler::Unload()
 	//	delete m_meshes[i];
 	for (int i = 0; i < m_textures.size(); i++)
 		delete m_textures[i];
-	for (int i = 0; i < m_materials.size(); i++)
-		delete m_materials[i];
 }
 
 ID3D11Device* ResourceHandler::GetDevice()

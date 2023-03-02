@@ -67,11 +67,11 @@ namespace hlsl
 
 	struct cbpMaterialBuffer
 	{
-		float3 diffuseColor;
+		float3 diffuseColor = {1.f,1.f,1.f};
 		uint flags;
 
 		float2 texCoordOffset;
-		float transparency;
+		float transparency = 1.f;
 		int distDiv;
 
 		float2 texCoordoffsetDist;

@@ -1,5 +1,6 @@
 #include "PrimTech.h"
 #include "Graphics/DX11Wrapper.h"
+#include"ecs/Entity.h"
 #include <string>
 
 namespace pt
@@ -31,6 +32,24 @@ namespace pt
 		m_cams.GetCameraAdress(0)->SetRotationSpeed(0.001f);
 		mp_dxrenderer = new DX11Renderer(m_window, m_cams);
 		mp_dxrenderer->SetInputP(m_kb);
+
+		ResourceHandler::AddMesh("Assets/models/cube.txt"); 
+		ResourceHandler::AddMesh("Assets/models/gunter.obj");
+		ResourceHandler::AddMesh("Assets/models/scuffball.obj");
+
+		//ComponentHandler::ReserveMemory<MeshRef>(6);
+
+		MeshRef* meshref = testEntity.AddComponent<MeshRef>();
+		meshref->Init("cube.txt");
+
+		MeshRef* meshref2 = testEntity2.AddComponent<MeshRef>();
+		meshref2->Init("gunter.obj");
+		MeshRef* meshref3 = testEntity3.AddComponent<MeshRef>();
+		meshref3->Init("scuffball.obj");
+
+		testEntity.GetComponent<TransformComp>()->SetPosition(1.f, 0.f, 0.f);
+		testEntity2.GetComponent<TransformComp>()->SetPosition(0.f, 0.f, 1.f);
+		testEntity3.GetComponent<TransformComp>()->SetPosition(0.f, 1.f, 0.f);
 	}
 
 	void PrimTech::Update(float& dt)
@@ -129,23 +148,24 @@ namespace pt
 		while(::ShowCursor(true) < 0);
 	}
 
-	void ThreadFunc(DX11Renderer* dx, bool* running)
-	{
-		double start = 0, deltatime = 0;
+	//void ThreadFunc(DX11Renderer* dx, bool* running)
+	//{
+	//	double start = 0, deltatime = 0;
 
-		while (*running)
-		{
-			start = omp_get_wtime();
-			//float dt = .5f;
-			float dt = (float)deltatime;
-			dx->CalculateFps(dt);
-			dx->UpdateScene(dt);
-			dx->Render(dt);
+	//	while (*running)
+	//	{
+	//		start = omp_get_wtime();
+	//		//float dt = .5f;
+	//		float dt = (float)deltatime;
+	//		dx->CalculateFps(dt);
+	//		dx->UpdateScene(dt);
+	//		
+	//		dx->Render(dt);
 
-			deltatime = omp_get_wtime() - start;
-		}
+	//		deltatime = omp_get_wtime() - start;
+	//	}
 
-	}
+	//}
 
 	void PrimTech::Run()
 	{
@@ -162,7 +182,12 @@ namespace pt
 			Update(deltaf);
 			mp_dxrenderer->CalculateFps((deltatime));
 			mp_dxrenderer->UpdateScene((deltatime));
+			//std::vector<MeshRef>& meshRefs = ComponentHandler::GetComponentArray<MeshRef>();
+			//for (int i = 0; i < meshRefs.size(); i++)
+			//{
+				//mp_dxrenderer->SetMesh(&meshRefs[i]);
 			mp_dxrenderer->Render((deltatime));
+			//}
 			
 			deltatime = omp_get_wtime() - start;
 			deltaf = (float)deltatime;

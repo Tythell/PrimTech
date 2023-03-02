@@ -8,6 +8,7 @@
 #include"../Input/Mouse.h"
 #include"../Input/Keyboard.h"
 #include"ViewModel.h"
+#include "../ecs/Entity.h"
 #include<fstream>
 #include <thread>
 #pragma warning(push)
@@ -85,6 +86,7 @@ public:
 
 	void Click(const sm::Vector3& dir);
 	void SetCanMove(bool b);
+
 private:
 	bool initSwapChain();
 	bool initRTV();
@@ -152,6 +154,8 @@ private:
 
 	ImGuiVars im;
 	KeyboardHandler* mp_kb = nullptr;
+
+	
 
 	int m_selected = -1;
 	int m_selectedMtrl = -1;
