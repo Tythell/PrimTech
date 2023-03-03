@@ -1,3 +1,4 @@
+#include"pch.h"
 #include "CommonDialogs.h"
 
 HWND* Dialogs::m_ownerhandle = NULL;

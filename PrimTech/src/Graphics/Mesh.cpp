@@ -1,7 +1,6 @@
+#include"pch.h"
 #include "Mesh.h"
 
-#include<iostream>
-#include <fstream>
 #include "ResourceHandler.h"
 #include "../Utility/CommonDialogs.h"
 #undef min
@@ -277,7 +276,7 @@ bool AssimpLoad(const std::string path, std::vector<Shape>& shape, std::vector<M
 	return true;
 }
 
-Mesh::Mesh(std::string path, ID3D11Device*& device, bool makeLeftHanded) /*: Component(entId)*/
+Mesh::Mesh(std::string path, ID3D11Device*& device, bool makeLeftHanded)
 {
 	std::vector<Shape> mesh;
 	bool check = false;
@@ -323,6 +322,14 @@ Mesh::Mesh(std::string path, ID3D11Device*& device, bool makeLeftHanded) /*: Com
 	HRESULT hr = m_vbuffer.CreateVertexBuffer(device, m_shape.verts.data(), bsize);
 	COM_ERROR(hr, "Failed to load vertex buffer");
 }
+
+//Mesh::Mesh(const Mesh& other)
+//{
+//	ID3D11Device* pDev = other.pDevice;
+//	Vertex3D verts = other.m_shape.verts
+//
+//	m_vbuffer.CreateVertexBuffer(pDev, other.m_shape.verts.data(), other.m_vbuffer.GetBufferSize());
+//}
 
 Buffer<Vertex3D>& Mesh::GetVBuffer()
 {
@@ -377,4 +384,9 @@ std::vector<int> Mesh::GetMtlIndex() const
 std::vector<int> Mesh::GetMeshOffsfets() const
 {
 	return m_offsets;
+}
+
+void Mesh::Release()
+{
+	m_vbuffer.Release();
 }

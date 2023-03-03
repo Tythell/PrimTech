@@ -1,3 +1,4 @@
+#include"pch.h"
 #include "StringHelper.h"
 
 const std::wstring StringHelper::StringToW(std::string str)

@@ -1,6 +1,6 @@
+#include"pch.h"
 #include "Buffer.h"
 #include"../Math/Math.h"
-#include<vector>
 #include "Model.h"
 
 

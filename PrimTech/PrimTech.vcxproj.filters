@@ -93,24 +93,6 @@
     <ClCompile Include="src\Graphics\Transform.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="src\Graphics\3rdParty\imgui\imgui.cpp">
-      <Filter>Source Files\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Graphics\3rdParty\imgui\imgui_draw.cpp">
-      <Filter>Source Files\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Graphics\3rdParty\imgui\imgui_impl_dx11.cpp">
-      <Filter>Source Files\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Graphics\3rdParty\imgui\imgui_impl_win32.cpp">
-      <Filter>Source Files\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Graphics\3rdParty\imgui\imgui_tables.cpp">
-      <Filter>Source Files\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Graphics\3rdParty\imgui\imgui_widgets.cpp">
-      <Filter>Source Files\ImGui</Filter>
-    </ClCompile>
     <ClCompile Include="src\Input\Mouse.cpp">
       <Filter>Source Files\Input</Filter>
     </ClCompile>
@@ -129,9 +111,6 @@
     <ClCompile Include="src\Graphics\Material.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="src\Graphics\3rdParty\imgui\imgui_demo.cpp">
-      <Filter>Source Files\ImGui</Filter>
-    </ClCompile>
     <ClCompile Include="src\Utility\CommonDialogs.cpp">
       <Filter>Source Files\Utility</Filter>
     </ClCompile>
@@ -140,21 +119,6 @@
     </ClCompile>
     <ClCompile Include="src\Graphics\RenderShapes.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Graphics\3rdParty\ImGuizmo\GraphEditor.cpp">
-      <Filter>Source Files\ImGui\imguizmo</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Graphics\3rdParty\ImGuizmo\ImCurveEdit.cpp">
-      <Filter>Source Files\ImGui\imguizmo</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Graphics\3rdParty\ImGuizmo\ImGradient.cpp">
-      <Filter>Source Files\ImGui\imguizmo</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Graphics\3rdParty\ImGuizmo\ImGuizmo.cpp">
-      <Filter>Source Files\ImGui\imguizmo</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Graphics\3rdParty\ImGuizmo\ImSequencer.cpp">
-      <Filter>Source Files\ImGui\imguizmo</Filter>
     </ClCompile>
     <ClCompile Include="src\Graphics\ShadowMap.cpp">
       <Filter>Source Files</Filter>
@@ -175,6 +139,36 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Graphics\ViewModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\ImGuiHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\pch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\3rdParty\imgui\imgui_demo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\3rdParty\imgui\imgui_draw.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\3rdParty\imgui\imgui_impl_dx11.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\3rdParty\imgui\imgui_impl_win32.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\3rdParty\imgui\imgui_tables.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\3rdParty\imgui\imgui_widgets.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\3rdParty\ImGuizmo\ImGuizmo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\3rdParty\imgui\imgui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -297,24 +291,6 @@
     </ClInclude>
     <ClInclude Include="src\Graphics\RenderShapes.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\ImGuizmo\GraphEditor.h">
-      <Filter>Header Files\ImGui\ImGuizmo</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\ImGuizmo\ImCurveEdit.h">
-      <Filter>Header Files\ImGui\ImGuizmo</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\ImGuizmo\ImGradient.h">
-      <Filter>Header Files\ImGui\ImGuizmo</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\ImGuizmo\ImGuizmo.h">
-      <Filter>Header Files\ImGui\ImGuizmo</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\ImGuizmo\ImSequencer.h">
-      <Filter>Header Files\ImGui\ImGuizmo</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\ImGuizmo\ImZoomSlider.h">
-      <Filter>Header Files\ImGui\ImGuizmo</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\ShadowMap.h">
       <Filter>Header Files</Filter>
@@ -569,6 +545,15 @@
       <Filter>Header Files\ecs</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\ViewModel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\ImGuiHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\pch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\3rdParty\ImGuizmo\ImGuizmo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

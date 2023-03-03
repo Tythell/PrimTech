@@ -1,3 +1,4 @@
+#include"pch.h"
 #include "RenderShapes.h"
 
 void RenderBox::Init(ID3D11Device*& device, ID3D11DeviceContext*& dc)

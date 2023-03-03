@@ -1,3 +1,4 @@
+#include"pch.h"
 #include "WindowWrap.h"
 #include <memory>
 #include<omp.h>

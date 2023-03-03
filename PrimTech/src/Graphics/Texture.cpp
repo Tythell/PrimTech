@@ -1,3 +1,4 @@
+#include"pch.h"
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "3rdParty/stb_image.h"

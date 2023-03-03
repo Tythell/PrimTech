@@ -1,3 +1,4 @@
+#include"pch.h"
 #include "ViewModel.h"
 
 void ViewModel::Init(std::string path, CameraHandler* cam)

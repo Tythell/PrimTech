@@ -1,6 +1,6 @@
+#include"pch.h"
 #include "Material.h"
 #include "Model.h"
-#include <fstream>
 
 Material::Material(std::string name)
 {

@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "Component.h"
 
 Component::Component(const uint id) : m_entId(id)

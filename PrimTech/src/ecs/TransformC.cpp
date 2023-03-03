@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "Component.h"
 
 TransformComp::TransformComp(uint entId) : Component(entId),

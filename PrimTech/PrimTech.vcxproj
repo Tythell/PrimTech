@@ -40,13 +40,13 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -120,7 +120,9 @@
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)PrimTech/src/Graphics/3rdParty/imgui/;$(SolutionDir)PrimTech/src/Graphics/3rdParty/ImGuizmo/;$(SolutionDir)PrimTech/src/Graphics/3rdParty/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)PrimTech/src/Graphics/3rdParty/imgui/;$(SolutionDir)PrimTech/src/Graphics/3rdParty/ImGuizmo/;$(SolutionDir)PrimTech/src/Graphics/3rdParty/;$(SolutionDir)PrimTech/src/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -146,7 +148,9 @@ IF EXIST 3rdparty\*.dll ( copy 3rdparty\*.dll x64\Debug\ )</Command>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)PrimTech/src/Graphics/3rdParty/imgui/;$(SolutionDir)PrimTech/src/Graphics/3rdParty/ImGuizmo/;$(SolutionDir)PrimTech/src/Graphics/3rdParty/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)PrimTech/src/Graphics/3rdParty/imgui/;$(SolutionDir)PrimTech/src/Graphics/3rdParty/ImGuizmo/;$(SolutionDir)PrimTech/src/Graphics/3rdParty/;$(SolutionDir)PrimTech/src/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -170,24 +174,42 @@ IF EXIST 3rdparty\*.dll ( copy 3rdparty\*.dll x64\Release\ )</Command>
     <ClCompile Include="src\ecs\Component.cpp" />
     <ClCompile Include="src\ecs\Entity.cpp" />
     <ClCompile Include="src\ecs\TransformC.cpp" />
-    <ClCompile Include="src\Graphics\3rdParty\ImGuizmo\GraphEditor.cpp" />
-    <ClCompile Include="src\Graphics\3rdParty\ImGuizmo\ImCurveEdit.cpp" />
-    <ClCompile Include="src\Graphics\3rdParty\ImGuizmo\ImGradient.cpp" />
-    <ClCompile Include="src\Graphics\3rdParty\ImGuizmo\ImGuizmo.cpp" />
-    <ClCompile Include="src\Graphics\3rdParty\ImGuizmo\ImSequencer.cpp" />
+    <ClCompile Include="src\Graphics\3rdParty\ImGuizmo\ImGuizmo.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\3rdParty\imgui\imgui.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\3rdParty\imgui\imgui_demo.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\3rdParty\imgui\imgui_draw.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\3rdParty\imgui\imgui_impl_dx11.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\3rdParty\imgui\imgui_impl_win32.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\3rdParty\imgui\imgui_tables.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\3rdParty\imgui\imgui_widgets.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\ImGuiHandler.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="src\Graphics\Mesh.cpp" />
     <ClCompile Include="src\Graphics\RenderShapes.cpp" />
     <ClCompile Include="src\Graphics\ShadowMap.cpp" />
     <ClCompile Include="src\Graphics\ViewModel.cpp" />
+    <ClCompile Include="src\pch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="src\Utility\CommonDialogs.cpp" />
     <ClCompile Include="src\Macros\Defines.cpp" />
-    <ClCompile Include="src\Graphics\3rdParty\imgui\imgui.cpp" />
-    <ClCompile Include="src\Graphics\3rdParty\imgui\imgui_demo.cpp" />
-    <ClCompile Include="src\Graphics\3rdParty\imgui\imgui_draw.cpp" />
-    <ClCompile Include="src\Graphics\3rdParty\imgui\imgui_impl_dx11.cpp" />
-    <ClCompile Include="src\Graphics\3rdParty\imgui\imgui_impl_win32.cpp" />
-    <ClCompile Include="src\Graphics\3rdParty\imgui\imgui_tables.cpp" />
-    <ClCompile Include="src\Graphics\3rdParty\imgui\imgui_widgets.cpp" />
     <ClCompile Include="src\Graphics\Camera.cpp" />
     <ClCompile Include="src\Graphics\DX11Wrapper.cpp" />
     <ClCompile Include="src\Graphics\Shader.cpp" />
@@ -285,16 +307,13 @@ IF EXIST 3rdparty\*.dll ( copy 3rdparty\*.dll x64\Release\ )</Command>
     <ClInclude Include="src\Graphics\3rdParty\assimp\XmlParser.h" />
     <ClInclude Include="src\Graphics\3rdParty\assimp\XMLTools.h" />
     <ClInclude Include="src\Graphics\3rdParty\assimp\ZipArchiveIOSystem.h" />
-    <ClInclude Include="src\Graphics\3rdParty\ImGuizmo\GraphEditor.h" />
-    <ClInclude Include="src\Graphics\3rdParty\ImGuizmo\ImCurveEdit.h" />
-    <ClInclude Include="src\Graphics\3rdParty\ImGuizmo\ImGradient.h" />
     <ClInclude Include="src\Graphics\3rdParty\ImGuizmo\ImGuizmo.h" />
-    <ClInclude Include="src\Graphics\3rdParty\ImGuizmo\ImSequencer.h" />
-    <ClInclude Include="src\Graphics\3rdParty\ImGuizmo\ImZoomSlider.h" />
+    <ClInclude Include="src\Graphics\ImGuiHandler.h" />
     <ClInclude Include="src\Graphics\Mesh.h" />
     <ClInclude Include="src\Graphics\RenderShapes.h" />
     <ClInclude Include="src\Graphics\ShadowMap.h" />
     <ClInclude Include="src\Graphics\ViewModel.h" />
+    <ClInclude Include="src\pch.h" />
     <ClInclude Include="src\Utility\CommonDialogs.h" />
     <ClInclude Include="src\Graphics\Buffer.h" />
     <ClInclude Include="src\Macros\Colors.h" />

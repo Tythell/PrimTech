@@ -28,6 +28,26 @@ class Buffer
 {
 public:
 	Buffer() {}
+	//Buffer(const Buffer& other)
+	//{
+	//	switch (other.m_type)
+	//	{
+	//	case eVERTEX:
+	//	{
+	//		CreateVertexBuffer()
+	//	}
+	//	case eCONSTANT:
+	//	{
+
+	//	}
+	//	case eINDEX:
+	//	{
+
+	//	}
+	//	default:
+	//		THROW_POPUP_ERROR("Failed to copy buffer");
+	//	}
+	//}
 	~Buffer()
 	{
 		m_buffer->Release();
@@ -35,6 +55,12 @@ public:
 			delete m_data;
 	}
 
+	void Release()
+	{
+		//m_buffer->Release();
+		//if (m_data && m_type != eVERTEX)
+		//	delete m_data;
+	}
 	UINT GetStride() const
 	{
 		return m_stride;

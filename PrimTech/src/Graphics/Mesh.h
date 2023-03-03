@@ -17,12 +17,14 @@ struct Shape
 	//Mtl material;
 };
 
-// Contains Vertex data
+/// <summary>
+/// Asset, always created by the ResourceHandler
+/// </summary>
 class Mesh
 {
 public:
 	Mesh(std::string path, ID3D11Device*& device, bool makeLeftHanded = true);
-
+	//Mesh(const Mesh& other);
 	Buffer<Vertex3D>& GetVBuffer();
 	std::string GetName() const;
 	void IncreaseUses();
@@ -34,6 +36,8 @@ public:
 	std::vector<Mtl> GetMtl() const;
 	std::vector<int> GetMtlIndex() const;
 	std::vector<int> GetMeshOffsfets() const;
+
+	void Release();
 private:
 	Buffer<Vertex3D> m_vbuffer;
 	std::vector<Mtl> m_mtls;

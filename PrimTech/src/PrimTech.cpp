@@ -1,7 +1,7 @@
+#include"pch.h"
 #include "PrimTech.h"
 #include "Graphics/DX11Wrapper.h"
 #include"ecs/Entity.h"
-#include <string>
 
 namespace pt
 {
@@ -186,7 +186,6 @@ namespace pt
 		{
 			start = omp_get_wtime();
 			Update(deltaf);
-			mp_dxrenderer->CalculateFps((deltatime));
 			mp_dxrenderer->UpdateScene((deltatime));
 			//std::vector<MeshRef>& meshRefs = ComponentHandler::GetComponentArray<MeshRef>();
 			//for (int i = 0; i < meshRefs.size(); i++)

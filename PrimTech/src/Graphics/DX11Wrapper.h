@@ -1,23 +1,19 @@
 #pragma once
-#include<d3d11.h>
+#include "pch.h"
+
 #include "Shader.h"
 #include"ShadowMap.h"
-#include <Windows.h>
 #include "../Utility/Popup.h"
 #include"Texture.h"
 #include"../Input/Mouse.h"
 #include"../Input/Keyboard.h"
 #include"ViewModel.h"
 #include "../ecs/Entity.h"
-#include<fstream>
-#include <thread>
+
 #pragma warning(push)
 #pragma warning(disable : 26812)
-#include "imgui.h"
-#include "imgui_impl_win32.h"
-#include "imgui_impl_dx11.h"
 
-#include "ImGuizmo.h"
+#include "ImGuiHandler.h"
 
 #define IMGUI_DEFINE_MATH_OPERATORS
 
@@ -26,47 +22,6 @@ using Vector2i = DirectX::XMINT2;
 using ModelList = std::vector<Model*>;
 
 class Window;
-
-struct SpotLight
-{
-	float position[3]{ 0.f, 0.f, 0.f };
-	float rotation[3] {0.f, -1.f, 0.f};
-};
-
-struct ImGuiVars
-{
-	bool useVsync = true;
-	char* buffer = new char[16]{"toon.png"};
-	float pointLightPos[3] = { 0.f,1.f,0.f };
-	float pointLightColor[3]{1.f,1.f,1.f};
-	float pointLightStr = 1.f;
-	float pointLightDistance = 10.f;
-	float offset = 0.f;
-	float ambient[4] = {1.f,1.f,1.f,.6f};
-	float direction[3] = { 0.f, 1.f, 0.f };
-	float atten = .5f;
-	int fov = 80;
-	float scale[3]{ 1.f,1.f,1.f };
-	bool enableHandModel = false;
-	bool showDemoWindow = false;
-	bool showShadowMapDepth = false;
-	bool showDebugWindow = true;
-	float gradient[2] = { 255.f / 2.f,1.f};
-	float gradientOffset = 0.f;
-	float specPow = 50.f;
-	bool drawRayCast = false;
-	bool drawBCircle = true;
-	ImGuizmo::MODE transformMode = ImGuizmo::MODE::LOCAL;
-	bool showSelection = true;
-	bool shadowMap = true;
-	bool viewshadowcam = false;
-	float shadowcamPos[3] = {0.f,5.f,0.f};
-	float shadowcamrotation[3] = { d::XM_PIDIV2,0.f,0.f};
-	SpotLight sl;
-	float shadowBias = 0.005f;
-	int points = 4;
-	bool showKeybinds = false;
-};
 
 void RecursiveRead(Sceneheaders& header, ModelList& v, std::ifstream& reader);
 
@@ -82,7 +37,6 @@ public:
 	ID3D11DeviceContext* GetDeviceContext() const;
 	void ShutDown();
 	void UpdateScene(const float& deltatime);
-	void CalculateFps(const float& deltatime);
 
 	void Click(const sm::Vector3& dir);
 	void SetCanMove(bool b);
@@ -97,11 +51,7 @@ private:
 	bool InitScene();
 	void InitConstantBuffers();
 
-	void ImGuiInit(HWND& hwnd);
-	void ImGuiGradientWindow();
 	void ImGuiRender();
-	void ImGuiShutDown();
-	void ImguiDebug();
 	void ImGuiMenu();
 	void ImGuiEntList();
 	void ImGuizmo();
@@ -152,10 +102,11 @@ private:
 	CameraHandler* mp_camHandler = nullptr;
 	Camera* mp_currentCam = nullptr;
 
-	ImGuiVars im;
-	KeyboardHandler* mp_kb = nullptr;
+	ImGuiHandler m_guiHandler;
+	ImGuiVars* im = nullptr;
+	GuiPtrs m_ptrs;
 
-	
+	KeyboardHandler* mp_kb = nullptr;
 
 	int m_selected = -1;
 	int m_selectedMtrl = -1;

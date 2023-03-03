@@ -1,3 +1,4 @@
+#include"pch.h"
 #include "Mouse.h"
 
 MouseEvent::MouseEvent(EventType type, const int x, const int y):

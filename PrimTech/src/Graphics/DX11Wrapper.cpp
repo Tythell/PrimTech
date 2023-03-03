@@ -1,3 +1,4 @@
+#include"pch.h"
 #include "DX11Wrapper.h"
 #include"Windows/WindowWrap.h"
 
@@ -24,20 +25,27 @@ DX11Renderer::DX11Renderer(Window& window, CameraHandler& camera) :
 
 	InitShaders();
 	InitConstantBuffers();
+	m_guiHandler.SetBufferPtrs(m_lightbuffer, m_materialBuffer);
+	im = m_guiHandler.GetVarPtrs();
+	im->width = m_width;
+	im->height = m_height;
+	m_guiHandler.SetPtrs(mp_camHandler);
 	InitScene();
 	m_renderbox.Init(device, dc);
-	ImGuiInit(window.getHWND());
+	m_guiHandler.ImGuiInit(window.getHWND(), device, dc);
 }
 
 DX11Renderer::~DX11Renderer()
 {
-	ImGuiShutDown();
-
-	delete im.buffer;
+	m_guiHandler.ImGuiShutDown();
 
 	ClearModelList();
 
 	ResourceHandler::Unload();
+
+	//m_transformBuffer.Release();
+	//m_lightbuffer.Release();
+	//m_materialBuffer.Release();
 
 	device->Release();
 	dc->Release();
@@ -329,15 +337,15 @@ void DX11Renderer::InitConstantBuffers()
 
 void DX11Renderer::UpdateScene(const float& deltatime)
 {
-	m_lightbuffer.Data().ambientColor = { im.ambient[0], im.ambient[1], im.ambient[2] };
-	m_lightbuffer.Data().ambientStr = im.ambient[3];
-	m_lightbuffer.Data().pointLightColor = { im.pointLightColor[0], im.pointLightColor[1], im.pointLightColor[2] };
-	m_lightbuffer.Data().pointlightStre = im.pointLightStr;
-	m_lightbuffer.Data().cbShadowBias = im.shadowBias;
+	m_lightbuffer.Data().ambientColor = { im->ambient[0], im->ambient[1], im->ambient[2] };
+	m_lightbuffer.Data().ambientStr = im->ambient[3];
+	m_lightbuffer.Data().pointLightColor = { im->pointLightColor[0], im->pointLightColor[1], im->pointLightColor[2] };
+	m_lightbuffer.Data().pointlightStre = im->pointLightStr;
+	m_lightbuffer.Data().cbShadowBias = im->shadowBias;
 
 
 	m_lightbuffer.Data().direction = sm::Vector3(0.f, 1.f, 0.f);
-	m_lightbuffer.Data().pointLightPosition = sm::Vector3(im.pointLightPos[0], im.pointLightPos[1], im.pointLightPos[2]);
+	m_lightbuffer.Data().pointLightPosition = sm::Vector3(im->pointLightPos[0], im->pointLightPos[1], im->pointLightPos[2]);
 	//m_lightbuffer.Data().forwardDir = mp_cam->GetForwardVector();
 	m_lightbuffer.Data().camPos = { mp_currentCam->GetPosition().x, mp_currentCam->GetPosition().y, mp_currentCam->GetPosition().z, 1.f };
 	m_lightbuffer.MapBuffer();
@@ -495,244 +503,32 @@ void SetImGuiTheme()
 	colors[ImGuiCol_ModalWindowDimBg]       = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);*/
 }
 
-void DX11Renderer::ImGuiInit(HWND& hwnd)
-{
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO();
-	ImGui_ImplDX11_Init(device, dc);
-	ImGui_ImplWin32_Init(hwnd);
-	SetImGuiTheme();
-}
-
-void DX11Renderer::ImGuiGradientWindow()
-{
-	ImGui::Begin("Gradient");
-	ImDrawList* draw_list = ImGui::GetWindowDrawList();
-	ImVec2 full_gradient_size = ImVec2(255, ImGui::GetFrameHeight());
-	float halfPoint = full_gradient_size.x / 2;
-	halfPoint += im.gradientOffset;
-	{
-		ImVec2 pbS = ImVec2(ImGui::GetCursorScreenPos().x, ImGui::GetCursorScreenPos().y);
-		ImVec2 pbE = ImVec2(pbS.x + halfPoint, full_gradient_size.y + pbS.y);
-		ImVec2 pwS = ImVec2(pbS.x + halfPoint, ImGui::GetCursorScreenPos().y /* + full_gradient_size.y */);
-		ImVec2 pwE = ImVec2(ImGui::GetCursorScreenPos().x + full_gradient_size.x, (full_gradient_size.y * 1) + pbS.y);
-		ImU32 col_a = ImGui::GetColorU32(IM_COL32(0, 0, 0, 255));
-		ImU32 col_b = ImGui::GetColorU32(IM_COL32(255, 255, 255, 255));
-
-		ImVec2 gs = ImVec2(pbE.x - ((full_gradient_size.x / 2.f) - im.gradient[0]), pbS.y);
-		//ImVec2 gs = ImVec2(pbE.x - ((full_gradient_size.x / 2.f) - im.gradient[0]), pbS.y);
-		ImVec2 ge = ImVec2(pbE.x + im.gradient[1], pwE.y);
-
-		draw_list->AddRectFilled(pbS, pbE, col_a);
-		draw_list->AddRectFilled(pwS, pwE, col_b);
-		draw_list->AddRectFilledMultiColor(gs, ge, col_a, col_b, col_b, col_a);
-		ImGui::InvisibleButton("##gradient1", full_gradient_size);
-		ImGui::SliderFloat2("grad editor", im.gradient, 1.f, 255.f / 2.f, "%.f");
-		ImGui::SliderFloat("##gradient offset", &im.gradientOffset, -full_gradient_size.x / 2.f, full_gradient_size.x / 2.f, "%.f");
-		ImGui::InputText("##imagename", im.buffer, 16);
-		ImGui::SameLine();
-		if (ImGui::Button("Export"))
-		{
-			//unsigned char data[255];
-			//ExportToon(im.buffer, data, im.gradientOffset, im.gradient[0], im.gradient[1]);
-		}
-	}
-
-	ImGui::End();
-}
-
-void LoadButton(Material* pMaterial, std::string name, TextureType e, const UINT& i = 0)
-{
-	bool diffExpept = (e == 0 && !pMaterial->HasTexture(eDiffuse));
-	if (!diffExpept)
-		name += pMaterial->GetMapName(e);
-
-	ImGui::Text(name.c_str());
-	if (diffExpept)
-	{
-		float diff[3]{ pMaterial->GetDiffuseClr().x, pMaterial->GetDiffuseClr().y, pMaterial->GetDiffuseClr().z };
-		ImGui::SameLine();
-		std::string nem = "##diffusefloat3" + std::to_string(i);
-		ImGui::DragFloat3(nem.c_str(), diff, 0.01f, 0.f, 1.f);
-		pMaterial->SetDiffuseClr(diff[0], diff[1], diff[2]);
-	}
-	ImGui::SameLine();
-	std::string buttonName = "Load##" + name + std::to_string(i);
-	if (ImGui::Button(buttonName.c_str()))
-	{
-		std::string newMtrlString = Dialogs::OpenFile("Images (*.png, *.jpg)\0*.png;*.jpg;\0", "Assets\\Textures\\");
-		if (newMtrlString != "")
-		{
-			pMaterial->LoadTexture(newMtrlString, e);
-		}
-	}
-	std::string remove = "Remove##";
-	remove += name;
-	if (pMaterial->HasTexture(e))
-	{
-		ImGui::SameLine();
-		if (ImGui::Button(remove.c_str()))
-		{
-			pMaterial->RemoveTexture(e);
-		}
-	}
-
-}
-
-void DX11Renderer::ImguiDebug()
-{
-	ImGui::Begin("Debug", &im.showDebugWindow);
-	ImGui::Text("Press \"Q\" to lock/unlock mouse");
-
-	if (ImGui::IsWindowHovered())
-		m_isHoveringWindow = true;
-
-
-	std::string fpsString = "FPS: " + std::to_string(m_fps);
-	ImGui::Text(fpsString.c_str());
-
-	ImGui::Checkbox("Show selection", &im.showSelection);
-
-
-	if (ImGui::CollapsingHeader("ShadowMap"))
-	{
-		ImGui::Checkbox("Shadows", &im.shadowMap); ImGui::SameLine();
-		ImGui::Checkbox("View Shadowcam", &im.viewshadowcam);
-		ImGui::DragFloat3("Pos", im.shadowcamPos, 0.1f);
-
-		im.shadowcamrotation[0] = m_shadowmap.GetShadowCam().GetRotation().x;
-		im.shadowcamrotation[1] = m_shadowmap.GetShadowCam().GetRotation().y;
-		im.shadowcamrotation[2] = m_shadowmap.GetShadowCam().GetRotation().z;
-		im.shadowcamPos[0] = m_shadowmap.GetShadowCam().GetPosition().x;
-		im.shadowcamPos[1] = m_shadowmap.GetShadowCam().GetPosition().y;
-		im.shadowcamPos[2] = m_shadowmap.GetShadowCam().GetPosition().z;
-
-		ImGui::DragFloat3("Rotate", im.shadowcamrotation, 0.1f);
-		ImGui::DragFloat("ShadowBias", &im.shadowBias, 0.001f, 0.0f, 0.5f);
-		m_shadowmap.GetShadowCam().SetRotation(im.shadowcamrotation[0], im.shadowcamrotation[1], im.shadowcamrotation[2]);
-		m_shadowmap.GetShadowCam().SetPosition(im.shadowcamPos[0], im.shadowcamPos[1], im.shadowcamPos[2]);
-		if (ImGui::Button("TP cam"))
-		{
-			im.shadowcamrotation[0] = mp_currentCam->GetRotation().x;
-			im.shadowcamrotation[1] = mp_currentCam->GetRotation().y;
-			im.shadowcamrotation[2] = mp_currentCam->GetRotation().z;
-			im.shadowcamPos[0] = mp_currentCam->GetPosition().x;
-			im.shadowcamPos[1] = mp_currentCam->GetPosition().y;
-			im.shadowcamPos[2] = mp_currentCam->GetPosition().z;
-		}
-		if (ImGui::Button("winname"))
-		{
-			::SetWindowTextA(*m_pHWND, "balls");
-		}
-	}
-	if (ImGui::CollapsingHeader("General"))
-	{
-		ImGui::RadioButton("local", (int*)&im.transformMode, 0); ImGui::SameLine();
-		ImGui::RadioButton("world", (int*)&im.transformMode, 1);
-		if (ImGui::SliderInt("FOV", &im.fov, 40, 110))
-			mp_currentCam->SetPerspective((float)im.fov, (float)m_width / (float)m_height, .1f, 100.f);
-		ImGui::Checkbox("Vsync", &im.useVsync); ImGui::SameLine();
-		ImGui::Checkbox("Handmodel", &im.enableHandModel); ImGui::SameLine();
-		ImGui::Checkbox("Raycast", &im.drawRayCast);
-		ImGui::SameLine();
-		ImGui::Checkbox("BCircle", &im.drawBCircle);
-		if (im.drawBCircle && ImGui::SliderInt("sphere point count", &im.points, 1, 8))
-			m_sphere.Init(device, dc, im.points);
-	}
-
-	if (ImGui::CollapsingHeader("Light"/*, ImGuiTreeNodeFlags_DefaultOpen */))
-	{
-		ImGui::DragFloat4("Ambient", im.ambient, 0.002f, 0.f, 1.f);
-		ImGui::DragFloat3("Pointlight Position", im.pointLightPos, 0.01f);
-		ImGui::DragFloat3("PointLightColor", im.pointLightColor, 0.01f, 0.f, 1.f);
-		m_bulb.GetMaterial().SetRimColor({ im.pointLightColor[0], im.pointLightColor[1], im.pointLightColor[2] });
-		ImGui::SliderFloat("PointLight Strength", &im.pointLightStr, 0.f, 3.f);
-		ImGui::SliderFloat("Specular power", &im.specPow, 1.f, 1000.f);
-		ImGui::SliderFloat("Distance", &im.pointLightDistance, 0.f, 100.f);
-
-		std::string shadowCamString = "Shadow cam dir: " + GetVectorAsString(m_shadowmap.GetShadowCam().GetForwardVector());
-		ImGui::Text(shadowCamString.c_str());
-
-		ImGui::SliderFloat("Attenuation", &im.atten, 0.f, 10.f);
-	}
-
-	if (ImGui::CollapsingHeader("SpotLight"/*, ImGuiTreeNodeFlags_DefaultOpen */))
-	{
-		ImGui::DragFloat3("Position##sl", im.sl.position, 0.01f);
-		if (ImGui::Button("Move to cam##sl"))
-		{
-			//m_spotlight.SetPosition(mp_cam->GetPosition());
-			//m_spotlight.SetRotation(mp_cam->GetForwardVector());
-			im.sl.position[0] = mp_currentCam->GetPosition().x;
-			im.sl.position[1] = mp_currentCam->GetPosition().y;
-			im.sl.position[2] = mp_currentCam->GetPosition().z;
-
-			im.sl.rotation[0] = mp_currentCam->GetRotation().x * d::XM_PIDIV2;
-			im.sl.rotation[1] = mp_currentCam->GetRotation().y * d::XM_PIDIV2;
-			im.sl.rotation[2] = mp_currentCam->GetRotation().z * d::XM_PIDIV2;
-		}
-		//ImGui::DragFloat3("Angle##sl", im.sl.rotation, 0.01f);
-		//ImGui::DragFloat3("Color##sl", im.pointLightColor, 0.01f, 0.f, 1.f);
-		//m_bulb.GetMaterial().SetRimColor({ im.pointLightColor[0], im.pointLightColor[1], im.pointLightColor[2] });
-		ImGui::SliderFloat("Strength##sl", &im.pointLightStr, 0.f, 3.f);
-		ImGui::SliderFloat("Specular power##sl", &im.specPow, 1.f, 1000.f);
-		//ImGui::SliderFloat("Distance", &im.pointLightDistance, 0.f, 100.f);
-
-		std::string shadowCamString = "Shadow cam dir: " + GetVectorAsString(m_shadowmap.GetShadowCam().GetForwardVector());
-		ImGui::Text(shadowCamString.c_str());
-
-		ImGui::SliderFloat("Attenuation", &im.atten, 0.f, 10.f);
-	}
-
-	m_lightbuffer.Data().pointLightDistance = im.pointLightDistance;
-	m_lightbuffer.Data().specularInstensity = im.specPow;
-	m_lightbuffer.Data().shadowDir = m_shadowmap.GetShadowCam().GetForwardVector();
-	m_lightbuffer.Data().atten = im.atten;
-
-	std::string camoffsetString = "Camera offset: ";
-	camoffsetString += std::to_string(mp_currentCam->GetOffset().z);
-	ImGui::Text(camoffsetString.c_str());
-
-	m_bulb.SetPosition(im.pointLightPos[0], im.pointLightPos[1], im.pointLightPos[2]);
-
-	ImGui::Text(GetVectorAsString(mp_currentCam->GetRotation()).c_str());
-	ImGui::End();
-}
-
 void DX11Renderer::ImGuiRender()
 {
-	//ImGui_ImplDX11_NewFrame();
-	//ImGui_ImplWin32_NewFrame();
-	//ImGui::NewFrame();
+	ImGui_ImplDX11_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
 	ImGuizmo::BeginFrame();
 	m_isHoveringWindow = false;
 	ImGuizmo();
 
 	ImGuiMenu();
-	if (im.showDebugWindow) ImguiDebug();
-	if (im.showShadowMapDepth) ImGuTextureDisplay();
-	if (im.showKeybinds) ImGuiKeyBinds();
+	m_guiHandler.ImguiRender();
+	
+	if (im->showShadowMapDepth) ImGuTextureDisplay();
+	if (im->showKeybinds) ImGuiKeyBinds();
 
 	//ImGuiGradientWindow();
 	ImGuiEntList();
 
 
-	if (im.showDemoWindow)
-		ImGui::ShowDemoWindow(&im.showDemoWindow);
+	
 
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 }
 
 //#define PRINTER(name) printer(#name, )
-
-void DX11Renderer::ImGuiShutDown()
-{
-	ImGui_ImplDX11_Shutdown();
-	ImGui_ImplWin32_Shutdown();
-	ImGui::DestroyContext();
-}
 
 void DX11Renderer::ImGuiMenu()
 {
@@ -804,7 +600,7 @@ void DX11Renderer::ImGuiMenu()
 				DestroyWindow(*m_pHWND);
 			}
 			ImGui::BeginDisabled(true);
-			ImGui::MenuItem("Keybinds", NULL, &im.showKeybinds);
+			ImGui::MenuItem("Keybinds", NULL, &im->showKeybinds);
 			ImGui::EndDisabled();
 			ImGui::EndMenu();
 		}
@@ -823,11 +619,11 @@ void DX11Renderer::ImGuiMenu()
 		}
 		if (ImGui::BeginMenu("Windows"))
 		{
-			ImGui::MenuItem("Debug", NULL, &im.showDebugWindow);
+			ImGui::MenuItem("Debug", NULL, &im->showDebugWindow);
 
-			ImGui::MenuItem("ImGui Demo", NULL, &im.showDemoWindow);
+			ImGui::MenuItem("ImGui Demo", NULL, &im->showDemoWindow);
 			ImGui::Separator();
-			ImGui::MenuItem("ShadowMapDepth", NULL, &im.showShadowMapDepth);
+			ImGui::MenuItem("ShadowMapDepth", NULL, &im->showShadowMapDepth);
 
 			ImGui::EndMenu();
 		}
@@ -847,6 +643,8 @@ void DX11Renderer::ImGuiMenu()
 int NewModelToV(std::string path, ID3D11DeviceContext*& dc, Buffer<hlsl::cbpWorldTransforms3D>& tbuffer, Buffer<hlsl::cbpMaterialBuffer>& mbuffer,
 	ModelList& modelV)
 {
+	Entity ent;
+
 	path = StringHelper::GetName(path);
 	modelV.emplace_back(new Model);
 	modelV[modelV.size() - 1]->Init(path);
@@ -1035,10 +833,10 @@ void DX11Renderer::ImGuiEntList()
 				std::string matName = "Material - " + std::to_string(matIndex);
 				if (ImGui::CollapsingHeader(matName.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
 				{
-					LoadButton(pMaterial, "Diffuse: ", eDiffuse, matIndex);
-					LoadButton(pMaterial, "NormalMap: ", eNormal, matIndex);
-					LoadButton(pMaterial, "DistMap: ", eDistortion, matIndex);
-					LoadButton(pMaterial, "OpacityMap: ", eOpacity, matIndex);
+					m_guiHandler.LoadButton(pMaterial, "Diffuse: ", eDiffuse, matIndex);
+					m_guiHandler.LoadButton(pMaterial, "NormalMap: ", eNormal, matIndex);
+					m_guiHandler.LoadButton(pMaterial, "DistMap: ", eDistortion, matIndex);
+					m_guiHandler.LoadButton(pMaterial, "OpacityMap: ", eOpacity, matIndex);
 
 					sm::Vector2 diffuseSpeed(pMaterial->GetDiffuseScrollSpeed());
 					sm::Vector2 distortionSpeed(pMaterial->GetDistortionScrollSpeed());
@@ -1170,7 +968,7 @@ void DX11Renderer::ImGuiEntList()
 			{
 				m_models[i]->GetMaterial(m).SetSelection(false);
 			}
-		if (m_selected != -1 && im.showSelection)
+		if (m_selected != -1 && im->showSelection)
 			for (UINT m = 0; m < m_models[m_selected]->GetMeshP()->GetNofMeshes(); m++)
 				m_models[m_selected]->GetMaterial(m).SetSelection(true);
 
@@ -1194,10 +992,10 @@ void DX11Renderer::ImGuiEntList()
 
 				delete[] nameBuffer;
 
-				LoadButton(pMaterial, "Diffuse: ", eDiffuse);
-				LoadButton(pMaterial, "NormalMap: ", eNormal);
-				LoadButton(pMaterial, "DistMap: ", eDistortion);
-				LoadButton(pMaterial, "OpacityMap: ", eOpacity);
+				m_guiHandler.LoadButton(pMaterial, "Diffuse: ", eDiffuse);
+				m_guiHandler.LoadButton(pMaterial, "NormalMap: ", eNormal);
+				m_guiHandler.LoadButton(pMaterial, "DistMap: ", eDistortion);
+				m_guiHandler.LoadButton(pMaterial, "OpacityMap: ", eOpacity);
 
 				sm::Vector2 diffuseSpeed(pMaterial->GetDiffuseScrollSpeed());
 				sm::Vector2 distortionSpeed(pMaterial->GetDistortionScrollSpeed());
@@ -1395,7 +1193,7 @@ void DX11Renderer::ImGuizmo()
 		const float* proj = reinterpret_cast<const float*>(&camProj);
 		const float* view = reinterpret_cast<const float*>(&camViewM);
 
-		ImGuizmo::Manipulate(view, proj, op, im.transformMode, model);
+		ImGuizmo::Manipulate(view, proj, op, im->transformMode, model);
 
 		if (ImGuizmo::IsUsing())
 		{
@@ -1421,7 +1219,7 @@ void DX11Renderer::ImGuTextureDisplay()
 	ImVec2 winSize(winvar, winvar + offset);
 	ImGui::SetNextWindowSize(winSize);
 
-	ImGui::Begin("Texture Display", &im.showShadowMapDepth, ImGuiWindowFlags_NoResize);
+	ImGui::Begin("Texture Display", &im->showShadowMapDepth, ImGuiWindowFlags_NoResize);
 
 	ImTextureID tex = m_shadowmap.GetSRV();
 	ImGui::Image(tex, { winSize.x, winSize.x });
@@ -1448,7 +1246,7 @@ void threadFunc2(KeyboardHandler* kb, uchar* recordkey)
 
 void DX11Renderer::ImGuiKeyBinds()
 {
-	ImGui::Begin("Keybinds", &im.showKeybinds);
+	ImGui::Begin("Keybinds", &im->showKeybinds);
 
 
 	ImGui::End();
@@ -1489,25 +1287,6 @@ void DX11Renderer::SetLightWarp(const std::string& path)
 	//}
 	ResourceHandler::GetTextureAdress(1)->CreateFromFile(path.c_str(), device);
 	dc->PSSetShaderResources(0, 1, ResourceHandler::GetTexture(1).GetSRVAdress());
-}
-
-void DX11Renderer::CalculateFps(const float& deltatime)
-{
-	static float fpsTimer = 0.f;
-	//static int fpsCounter = 0;
-	fpsTimer += deltatime;
-	//fpsCounter++;
-	//if (fpsTimer >= 1.f)
-	//{
-	//	m_fps = fpsCounter;
-	//	fpsCounter = 0;
-	//	fpsTimer = 0.f;
-	//}
-	if (fpsTimer >= 1.f)
-	{
-		fpsTimer = 0.f;
-		m_fps = 1.f / deltatime;
-	}
 }
 
 float GetHighestValue(const sm::Vector3& v)
@@ -1598,7 +1377,7 @@ void DX11Renderer::Click(const sm::Vector3& dir)
 		ray.position = mp_currentCam->GetPosition();
 		ray.direction = dir;
 		//#ifdef _DEBUG
-		if (im.drawRayCast)
+		if (im->drawRayCast)
 		{
 			sm::Vector3 endPos = ray.position + dir;
 			m_rLine.SetLine(ray.position, endPos);
@@ -1617,6 +1396,7 @@ void DX11Renderer::SetInputP(KeyboardHandler& kb)
 
 void DX11Renderer::Render(const float& deltatime)
 {
+	m_guiHandler.CalculateFps(deltatime);
 	int modelAmount = (int)m_models.size();
 	float bgColor[] = { .1f,.1f,.1f,1.f };
 
@@ -1626,7 +1406,7 @@ void DX11Renderer::Render(const float& deltatime)
 
 	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	dc->RSSetState(m_rasterizerState);
-	//if (im.shadowMap)
+	//if (im->shadowMap)
 	//{
 	//	dc->IASetInputLayout(m_3dvs.GetInputLayout());
 	//	dc->VSSetShader(m_3dvs.GetShader(), NULL, 0);
@@ -1648,10 +1428,10 @@ void DX11Renderer::Render(const float& deltatime)
 	dc->VSSetShader(m_lineVS.GetShader(), NULL, 0);
 	dc->PSSetShader(m_linePS.GetShader(), NULL, 0);
 
-	if (!im.viewshadowcam)
+	if (!im->viewshadowcam)
 		m_transformBuffer.Data().viewProj = d::XMMatrixTranspose(mp_currentCam->GetViewM() * mp_currentCam->GetProjM());
 
-	//if (im.drawBCircle && m_selected != -1)
+	//if (im->drawBCircle && m_selected != -1)
 	//{
 	//	dc->VSSetShader(m_lineVS.GetShader(), NULL, 0);
 	//	dc->PSSetShader(m_linePS.GetShader(), NULL, 0);
@@ -1678,7 +1458,7 @@ void DX11Renderer::Render(const float& deltatime)
 	//	m_transformBuffer.MapBuffer();
 	//	m_sphere.Draw(dc);
 	//}
-	//if (im.drawRayCast)
+	//if (im->drawRayCast)
 	//{
 	//	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
 	//	m_transformBuffer.Data().world = d::XMMatrixIdentity();
@@ -1717,9 +1497,9 @@ void DX11Renderer::Render(const float& deltatime)
 	static int imnumMEshRefs = numMEshRefs;
 	static bool imcheck = false;
 
-	ImGui_ImplDX11_NewFrame();
-	ImGui_ImplWin32_NewFrame();
-	ImGui::NewFrame();
+	//ImGui_ImplDX11_NewFrame();
+	//ImGui_ImplWin32_NewFrame();
+	//ImGui::NewFrame();
 
 	for (int i = 0; i < imnumMEshRefs; i++)
 	{
@@ -1758,8 +1538,8 @@ void DX11Renderer::Render(const float& deltatime)
 	//// Render debug
 	//m_bulb.Draw();
 	//m_spotlight.Draw();
-	//m_spotlight.SetPosition(im.sl.position[0], im.sl.position[1], im.sl.position[2]);
-	//m_spotlight.SetRotation(im.sl.rotation[0], im.sl.rotation[1], im.sl.rotation[2]);
+	//m_spotlight.SetPosition(im->sl.position[0], im->sl.position[1], im->sl.position[2]);
+	//m_spotlight.SetRotation(im->sl.rotation[0], im->sl.rotation[1], im->sl.rotation[2]);
 	//m_shadowmap.DrawModel();
 
 	//// Renderbox
@@ -1769,7 +1549,7 @@ void DX11Renderer::Render(const float& deltatime)
 
 
 
-	//if (mp_currentCam->GetOffset().z == 0.f && im.enableHandModel)
+	//if (mp_currentCam->GetOffset().z == 0.f && im->enableHandModel)
 	//{
 	//	dc->RSSetState(m_rasterizerState);
 	//	dc->ClearDepthStencilView(m_dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.f, 0);
@@ -1778,7 +1558,7 @@ void DX11Renderer::Render(const float& deltatime)
 	//}
 
 	ImGuiRender();
-	m_swapChain->Present((UINT)im.useVsync, NULL);
+	m_swapChain->Present((UINT)im->useVsync, NULL);
 	//dc->ClearState();
 }
 
