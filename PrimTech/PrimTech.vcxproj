@@ -223,7 +223,6 @@ IF EXIST 3rdparty\*.dll ( copy 3rdparty\*.dll x64\Release\ )</Command>
     <ClCompile Include="src\Graphics\ResourceHandler.cpp" />
     <ClCompile Include="src\Utility\StringHelper.cpp" />
     <ClCompile Include="src\Utility\Popup.cpp" />
-    <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Windows\WindowWrap.cpp" />
   </ItemGroup>
   <ItemGroup>

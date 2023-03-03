@@ -20,8 +20,8 @@ DX11Renderer::DX11Renderer(Window& window, CameraHandler& camera) :
 	m_shadowmap.Init(device);
 
 	ResourceHandler::SetDevice(device);
-	ResourceHandler::ReserveMeshMemory(8);
-	ResourceHandler::ReserveMaterialMemory(8);
+	//ResourceHandler::ReserveMeshMemory(10);
+	//ResourceHandler::ReserveMaterialMemory(8);
 
 	InitShaders();
 	InitConstantBuffers();

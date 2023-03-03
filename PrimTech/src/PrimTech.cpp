@@ -29,7 +29,6 @@ namespace pt
 
 		m_cams.Init({ (int)width, (int)height }, NULL);
 
-		ResourceHandler::ReserveMaterialMemory(5);
 		m_cams.GetCameraAdress(0)->SetRotationSpeed(0.001f);
 		mp_dxrenderer = new DX11Renderer(m_window, m_cams);
 		mp_dxrenderer->SetInputP(m_kb);
@@ -41,21 +40,6 @@ namespace pt
 		ResourceHandler::AddMaterial("DefaultMaterial");
 
 		//ComponentHandler::ReserveMemory<MeshRef>(6);
-
-		MeshRef* meshref = testEntity.AddComponent<MeshRef>();
-		meshref->Init("cube.txt");
-		//meshref->SetMaterial("ecsMat");
-
-		MeshRef* meshref2 = testEntity2.AddComponent<MeshRef>();
-		meshref2->Init("gunter.obj");
-		//meshref2->SetMaterial("ecsMat");
-		MeshRef* meshref3 = testEntity3.AddComponent<MeshRef>();
-		meshref3->Init("scuffball.obj");
-		//meshref3->SetMaterial("ecsMat");
-
-		testEntity.GetComponent<TransformComp>()->SetPosition(1.f, -1.f, 0.f);
-		testEntity2.GetComponent<TransformComp>()->SetPosition(0.f, 0.f, 1.5f);
-		testEntity3.GetComponent<TransformComp>()->SetPosition(0.f, 1.f, -1.f);
 	}
 
 	void PrimTech::Update(float& dt)

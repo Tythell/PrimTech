@@ -1,0 +1,99 @@
+newmtl link:BodyA
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.20 0.20 0.20
+Tf 1.00 1.00 1.00
+map_Kd FitLink00_BodyA.png
+Ni 1.50
+Ks 0.20 0.20 0.20
+Ns 43.22
+newmtl link:BodyB
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.20 0.20 0.20
+Tf 1.00 1.00 1.00
+map_Kd FitLink00_BodyB.png
+Ni 1.50
+Ks 0.20 0.20 0.20
+Ns 43.22
+newmtl link:Courage
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.20 0.20 0.20
+Tf 1.00 1.00 1.00
+map_Kd FitLink00_BodyC.png
+Ni 1.50
+Ks 0.20 0.20 0.20
+Ns 43.22
+newmtl link:Face
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.20 0.20 0.20
+Tf 1.00 1.00 1.00
+map_Kd FitLink00_Face.png
+Ni 1.50
+Ks 0.20 0.20 0.20
+Ns 43.22
+newmtl link:FitLink_Blade
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.20 0.20 0.20
+Tf 1.00 1.00 1.00
+map_Kd FitLink00_Blade.png
+Ni 1.50
+Ks 0.20 0.20 0.20
+Ns 43.22
+newmtl link:FitLink_EyeL
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.20 0.20 0.20
+Tf 1.00 1.00 1.00
+map_Kd FitLink00_Eye_SiromeL.png
+Ni 1.50
+Ks 0.20 0.20 0.20
+Ns 43.22
+newmtl link:FitLink_EyeR
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.20 0.20 0.20
+Tf 1.00 1.00 1.00
+map_Kd FitLink00_Eye_Sirome.png
+Ni 1.50
+Ks 0.20 0.20 0.20
+Ns 43.22
+newmtl link:FitLink_Grip
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.20 0.20 0.20
+Tf 1.00 1.00 1.00
+map_Kd FitLink00_Grip.png
+Ni 1.50
+Ks 0.20 0.20 0.20
+Ns 43.22
+newmtl link:FitLink_Sheath
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.20 0.20 0.20
+Tf 1.00 1.00 1.00
+map_Kd FitLink00_Sheathd.png
+Ni 1.50
+Ks 0.20 0.20 0.20
+Ns 43.22
+newmtl link:Hair
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.20 0.20 0.20
+Tf 1.00 1.00 1.00
+map_Kd FitLink00_BodyB.png
+Ni 1.50
+Ks 0.20 0.20 0.20
+Ns 43.22
+newmtl link:Shield
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.20 0.20 0.20
+Tf 1.00 1.00 1.00
+map_Kd FitLink00_Shield.png
+Ni 1.50
+Ks 0.20 0.20 0.20
+Ns 43.22
