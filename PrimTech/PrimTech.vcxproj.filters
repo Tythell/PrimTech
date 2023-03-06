@@ -25,23 +25,11 @@
     <Filter Include="Header Files\Graphics">
       <UniqueIdentifier>{5cdb3501-31e7-4e83-97ca-1dd37ef16590}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Logic">
-      <UniqueIdentifier>{bf1dd856-18c1-4118-aa27-f7192055b27a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Logic">
-      <UniqueIdentifier>{1438c42c-9e2e-4e48-bdb8-ce8b08abe80e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\ImGui">
       <UniqueIdentifier>{6074b742-45c8-441a-8474-d967f195eea0}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\ImGui">
       <UniqueIdentifier>{80df9a67-c832-4992-a954-5e61db1fca2d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Noise">
-      <UniqueIdentifier>{859cbf7c-3d71-4f9a-aadd-6a1446d2e5a9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Noise">
-      <UniqueIdentifier>{e3f0592c-2a80-45d0-bffe-9be99af29a02}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\Input">
       <UniqueIdentifier>{2dd9630b-7d23-4a11-9d19-3d902dfdb1ac}</UniqueIdentifier>
@@ -144,29 +132,29 @@
     <ClCompile Include="src\pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Graphics\3rdParty\imgui\imgui.cpp">
+      <Filter>Source Files\ImGui</Filter>
+    </ClCompile>
     <ClCompile Include="src\Graphics\3rdParty\imgui\imgui_demo.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="src\Graphics\3rdParty\imgui\imgui_draw.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="src\Graphics\3rdParty\imgui\imgui_impl_dx11.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="src\Graphics\3rdParty\imgui\imgui_impl_win32.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="src\Graphics\3rdParty\imgui\imgui_tables.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="src\Graphics\3rdParty\imgui\imgui_widgets.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="src\Graphics\3rdParty\ImGuizmo\ImGuizmo.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Graphics\3rdParty\imgui\imgui.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ImGui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -295,9 +283,6 @@
     <ClInclude Include="src\Graphics\Model.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="src\Graphics\3rdParty\assimp\Vertex.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\aabb.h">
       <Filter>Header Files\assimp</Filter>
     </ClInclude>
@@ -410,9 +395,6 @@
       <Filter>Header Files\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\material.h">
-      <Filter>Header Files\assimp</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Math\Math.h">
       <Filter>Header Files\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\MathFunctions.h">
@@ -551,6 +533,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\ImGuizmo\ImGuizmo.h">
+      <Filter>Header Files\ImGui\ImGuizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\3rdParty\assimp\Vertex.h">
+      <Filter>Header Files\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Math\Math.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

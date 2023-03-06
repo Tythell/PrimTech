@@ -18,115 +18,122 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 
 namespace sm = DirectX::SimpleMath;
-using Vector2i = DirectX::XMINT2;
-using ModelList = std::vector<Model*>;
 
-class Window;
-
-void RecursiveRead(Sceneheaders& header, ModelList& v, std::ifstream& reader);
-
-class DX11Renderer
+namespace PrimtTech
 {
-public:
-	DX11Renderer(Window& window, CameraHandler& camera);
-	~DX11Renderer();
+	using Vector2i = DirectX::XMINT2;
+	using ModelList = std::vector<Model*>;
 
-	void SetInputP(KeyboardHandler& kb);
-	void Render(const float& deltatime);
-	ID3D11Device* GetDevice() const;
-	ID3D11DeviceContext* GetDeviceContext() const;
-	void ShutDown();
-	void UpdateScene(const float& deltatime);
+	class Window;
 
-	void Click(const sm::Vector3& dir);
-	void SetCanMove(bool b);
+	void RecursiveRead(Sceneheaders& header, ModelList& v, std::ifstream& reader);
 
-private:
-	bool initSwapChain();
-	bool initRTV();
-	bool SetupDSAndVP();
-	bool InitRastNSampState();
-	void InitBlendState();
-	bool InitShaders();
-	bool InitScene();
-	void InitConstantBuffers();
+	class DX11Renderer
+	{
+	public:
+		DX11Renderer(Window& window, CameraHandler& camera);
+		~DX11Renderer();
 
-	void ImGuiRender();
-	void ImGuiMenu();
-	void ImGuiEntList();
-	void ImGuizmo();
-	void ImGuTextureDisplay();
-	void ImGuiKeyBinds();
+		void SetInputP(KeyboardHandler& kb);
+		void Render(const float& deltatime);
+		ID3D11Device* GetDevice() const;
+		ID3D11DeviceContext* GetDeviceContext() const;
+		void ShutDown();
+		void UpdateScene(const float& deltatime);
 
-	void ImportScene(std::string path);
-	void ExportScene(std::string path);
-	void NewScene();
-	void ClearModelList();
-	void SetLightWarp(const std::string& path);
+		void Click(const sm::Vector3& dir);
+		void SetCanMove(bool b);
 
-	Window* m_pWin = nullptr;
+		ImGuiHandler* GetGuiHandlerP() { return &m_guiHandler; }
 
-	const unsigned int m_width, m_height;
+	private:
+		bool initSwapChain();
+		bool initRTV();
+		bool SetupDSAndVP();
+		bool InitRastNSampState();
+		void InitBlendState();
+		bool InitShaders();
+		bool InitScene();
+		void InitConstantBuffers();
 
-	HWND* m_pHWND = nullptr;
+		void ImGuiRender();
+		void ImGuiMenu();
+		void ImGuiEntList();
+		void ImGuizmo();
+		void ImGuTextureDisplay();
+		void ImGuiKeyBinds();
 
-	ID3D11Device* device = nullptr;
-	ID3D11DeviceContext* dc = nullptr;
-	IDXGISwapChain* m_swapChain = nullptr;
+		void ImportScene(std::string path);
+		void ExportScene(std::string path);
+		void NewScene();
+		void ClearModelList();
+		void SetLightWarp(const std::string& path);
 
-	ID3D11RenderTargetView* m_rtv = nullptr;
-	ID3D11Texture2D* m_depthStencilBuffer = nullptr;
-	ID3D11DepthStencilView* m_dsView = nullptr;
-	ID3D11DepthStencilState* m_dsState = nullptr;
+		Window* m_pWin = nullptr;
 
-	ID3D11RasterizerState* m_rasterizerState = nullptr;
-	ID3D11RasterizerState* m_wireFrameState = nullptr;
-	ID3D11SamplerState* m_wrapSampler = nullptr;
-	ID3D11SamplerState* m_clampSampler = nullptr;
-	ID3D11SamplerState* m_shadowSampler = nullptr;
-	ID3D11BlendState* m_blendState = nullptr;
+		const unsigned int m_width, m_height;
 
-	CD3D11_VIEWPORT m_viewport;
+		HWND* m_pHWND = nullptr;
 
-	VertexShader m_3dvs;
-	PixelShader m_3dnoLightps;
-	PixelShader m_toonPS;
+		ID3D11Device* device = nullptr;
+		ID3D11DeviceContext* dc = nullptr;
+		IDXGISwapChain* m_swapChain = nullptr;
 
-	PixelShader m_linePS;
-	VertexShader m_lineVS;
+		ID3D11RenderTargetView* m_rtv = nullptr;
+		ID3D11Texture2D* m_depthStencilBuffer = nullptr;
+		ID3D11DepthStencilView* m_dsView = nullptr;
+		ID3D11DepthStencilState* m_dsState = nullptr;
 
-	Buffer<hlsl::cbpWorldTransforms3D> m_transformBuffer;
-	Buffer<hlsl::cbpLightBuffer> m_lightbuffer;
-	Buffer<hlsl::cbpMaterialBuffer> m_materialBuffer;
+		ID3D11RasterizerState* m_rasterizerState = nullptr;
+		ID3D11RasterizerState* m_wireFrameState = nullptr;
+		ID3D11SamplerState* m_wrapSampler = nullptr;
+		ID3D11SamplerState* m_clampSampler = nullptr;
+		ID3D11SamplerState* m_shadowSampler = nullptr;
+		ID3D11BlendState* m_blendState = nullptr;
 
-	CameraHandler* mp_camHandler = nullptr;
-	Camera* mp_currentCam = nullptr;
+		CD3D11_VIEWPORT m_viewport;
 
-	ImGuiHandler m_guiHandler;
-	ImGuiVars* im = nullptr;
-	GuiPtrs m_ptrs;
+		VertexShader m_3dvs;
+		PixelShader m_3dnoLightps;
+		PixelShader m_toonPS;
 
-	KeyboardHandler* mp_kb = nullptr;
+		PixelShader m_linePS;
+		VertexShader m_lineVS;
 
-	int m_selected = -1;
-	int m_selectedMtrl = -1;
-	Model m_bulb;
-	Model m_spotlight;
-	ViewModel m_viewmdl;
-	Model m_playermodel;
-	Model m_camModel;
-	ModelList m_models;
-	RenderBox m_renderbox;
-	sm::Ray m_ray;
-	int m_fps = 0;
-	RenderLine m_rLine;
-	RenderSphere m_sphere;
+		Buffer<hlsl::cbpWorldTransforms3D> m_transformBuffer;
+		Buffer<hlsl::cbpLightBuffer> m_lightbuffer;
+		Buffer<hlsl::cbpMaterialBuffer> m_materialBuffer;
 
-	sm::Vector2 mouseClickPos = {0.f,0.f};
+		CameraHandler* mp_camHandler = nullptr;
+		Camera* mp_currentCam = nullptr;
 
-	//unsigned char m_ZAToonExport[255] = {};
-	bool m_isHoveringWindow = false;
-	bool m_canMove = true;
-	ShadowMap m_shadowmap;
-};
+		ImGuiHandler m_guiHandler;
+		ImGuiVars* im = nullptr;
+		GuiPtrs m_ptrs;
+
+		KeyboardHandler* mp_kb = nullptr;
+
+		int m_selected = -1;
+		int m_selectedMtrl = -1;
+		Model m_bulb;
+		ViewModel m_viewmdl;
+		Model m_playermodel;
+		Model m_camModel;
+		ModelList m_models;
+		RenderBox m_renderbox;
+		sm::Ray m_ray;
+		int m_fps = 0;
+		RenderLine m_rLine;
+		RenderSphere m_sphere;
+
+		sm::Vector2 mouseClickPos = { 0.f,0.f };
+
+		//unsigned char m_ZAToonExport[255] = {};
+		bool m_isHoveringWindow = false;
+		bool m_canMove = true;
+		ShadowMap m_shadowmap;
+	};
+
+
+}
 

@@ -3,6 +3,8 @@
 #include "Graphics/DX11Wrapper.h"
 #include"ecs/Entity.h"
 
+using namespace PrimtTech;
+
 namespace pt
 {
 	PrimTech::PrimTech() :
@@ -13,8 +15,14 @@ namespace pt
 
 	PrimTech::~PrimTech()
 	{
-		if (mp_dxrenderer) 
+		if (mp_dxrenderer)
 			delete mp_dxrenderer;
+	}
+
+	void PrimTech::LoadPak(std::string path)
+	{
+		// TODO CREATE ASSETLOADER WITH PACKAGING
+		THROW_POPUP_ERROR(false, "asset-pak loading not implemented yet, load assets manually using PrimtTech::ResourceHandler to reserve assets until it's ready");
 	}
 
 	void PrimTech::Init(LPCWSTR windowName, HINSTANCE hInstance, std::wstring windowClass, unsigned int width, unsigned int height)
@@ -34,7 +42,7 @@ namespace pt
 		mp_dxrenderer->SetInputP(m_kb);
 
 
-		ResourceHandler::AddMesh("Assets/models/cube.txt"); 
+		ResourceHandler::AddMesh("Assets/models/cube.txt");
 		ResourceHandler::AddMesh("Assets/models/gunter.obj");
 		ResourceHandler::AddMesh("Assets/models/scuffball.obj");
 		ResourceHandler::AddMaterial("DefaultMaterial");
@@ -47,25 +55,31 @@ namespace pt
 		sm::Vector3 move = { 0.f,0.f,0.f };
 		//bool canMove = MouseHandler::GetIsMouseDown(eRIGHTCLICK);
 		static bool canMove = true;
-		if (m_kb.IsKeyDown(Key::A)) move += m_cams.GetCurrentCamera()->GetLeftVector();
-		if (m_kb.IsKeyDown(Key::D)) move += -m_cams.GetCurrentCamera()->GetLeftVector();
-		if (m_kb.IsKeyDown(Key::W)) move += m_cams.GetCurrentCamera()->GetForwardVectorNoY();
-		if (m_kb.IsKeyDown(Key::S)) move += -m_cams.GetCurrentCamera()->GetForwardVectorNoY();
-		if (m_kb.IsKeyDown(Key::SPACE)) move += {0.f, 1.f, 0.f};
-		if (m_kb.IsKeyDown(Key::SHIFT)) move += {0.f, -1.f, 0.f};
+		if (m_kb.IsKeyDown(Key::A))
+			move += m_cams.GetCurrentCamera()->GetLeftVector();
+		if (m_kb.IsKeyDown(Key::D))
+			move += -m_cams.GetCurrentCamera()->GetLeftVector();
+		if (m_kb.IsKeyDown(Key::W))
+			move += m_cams.GetCurrentCamera()->GetForwardVectorNoY();
+		if (m_kb.IsKeyDown(Key::S))
+			move += -m_cams.GetCurrentCamera()->GetForwardVectorNoY();
+		if (m_kb.IsKeyDown(Key::SPACE))
+			move += {0.f, 1.f, 0.f};
+		if (m_kb.IsKeyDown(Key::SHIFT))
+			move += {0.f, -1.f, 0.f};
 		move.Normalize();
 		move *= m_playerSpeed * dt;
-		
+
 		static bool isclick = false;
 
 		if (canMove && m_window.GetIsFocused())
 		{
-			SetCursorPos(m_windowPos.x + (m_window.getWinWidth() / 2),m_windowPos.y + (m_window.getWinHeight() / 2));
+			SetCursorPos(m_windowPos.x + (m_window.getWinWidth() / 2), m_windowPos.y + (m_window.getWinHeight() / 2));
 		}
 		m_cams.GetCurrentCamera()->Move(move);
-		
+
 		mp_dxrenderer->SetCanMove(canMove);
-		
+
 		if (!m_kb.IsKeyDown(m_camlockKey))
 			isclick = false;
 		else if (m_kb.IsKeyDown(m_camlockKey) && !isclick)
@@ -125,17 +139,17 @@ namespace pt
 			m_window.ShutDown();
 #endif // _DEBUG
 
-		
+
 	}
 
 	void PrimTech::HideCursor()
 	{
-		while(::ShowCursor(false) >= 0);
+		while (::ShowCursor(false) >= 0);
 	}
 
 	void PrimTech::ShowCursor()
 	{
-		while(::ShowCursor(true) < 0);
+		while (::ShowCursor(true) < 0);
 	}
 
 	//void ThreadFunc(DX11Renderer* dx, bool* running)
@@ -159,32 +173,15 @@ namespace pt
 
 	void PrimTech::Run()
 	{
-		double start = 0, deltatime = 0;
-
-		bool running = true;
-
-		//std::thread renderThread(ThreadFunc, mp_dxrenderer, &running);
-
-		float deltaf = 0.f;
-		while (running)
-		{
-			start = omp_get_wtime();
-			Update(deltaf);
-			mp_dxrenderer->UpdateScene((deltatime));
-			//std::vector<MeshRef>& meshRefs = ComponentHandler::GetComponentArray<MeshRef>();
-			//for (int i = 0; i < meshRefs.size(); i++)
-			//{
-				//mp_dxrenderer->SetMesh(&meshRefs[i]);
-			mp_dxrenderer->Render((deltatime));
-			//}
-			
-			deltatime = omp_get_wtime() - start;
-			deltaf = (float)deltatime;
-
-			running = m_window.processMsg();
-		}
-
-		//renderThread.join();
+		float dtf = (float)m_deltaTime;
+		Update(dtf);
+		mp_dxrenderer->UpdateScene((m_deltaTime));
+		mp_dxrenderer->Render((float)m_deltaTime);
+		m_isOpen = m_window.processMsg();
+	}
+	bool PrimTech::IsOpen() const
+	{
+		return m_isOpen;
 	}
 }
 

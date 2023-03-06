@@ -1,4 +1,6 @@
 #include "pch.h"
 #include"ComponentHandler.h"
-
-COMPONENT_LIST(, ComponentHandler::);
+namespace PrimtTech
+{
+	COMPONENT_LIST(, ComponentHandler::);
+}
