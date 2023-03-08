@@ -140,12 +140,12 @@ namespace pt
 		worldTransposed = worldTransposed.Transpose();
 	}
 
-	sm::Matrix TransformComp::GetWorldTransposed()
+	sm::Matrix TransformComp::GetWorldTransposed() const
 	{
 		return worldTransposed;
 	}
 
-	sm::Matrix TransformComp::GetWorld()
+	sm::Matrix TransformComp::GetWorld() const
 	{
 		sm::Matrix world = worldTransposed;
 		return world.Transpose();

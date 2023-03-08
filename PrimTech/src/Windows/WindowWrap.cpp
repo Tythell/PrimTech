@@ -156,30 +156,30 @@ namespace PrimtTech
 		case WM_KEYDOWN:
 		{
 			unsigned char key = static_cast<unsigned char>(wParam);
-			//KeyboardHandler::SetKeyState(key, true);
-			mp_kb->AddKeyboardEvent(KeyboardEvent(KeyboardEvent::EventType::ePUSH, key));
-			mp_kb->SetKeyState(key, true);
+			KeyboardHandler::SetKeyState(key, true);
+			//mp_kb->AddKeyboardEvent(KeyboardEvent(KeyboardEvent::EventType::ePUSH, key));
+			//mp_kb->SetKeyState(key, true);
 			return 0;
 		}
 		case WM_KEYUP:
 		{
 			unsigned char key = static_cast<unsigned char>(wParam);
-			//KeyboardHandler::SetKeyState(key, false);
-			mp_kb->AddKeyboardEvent(KeyboardEvent(KeyboardEvent::EventType::eRELEASE, key));
-			mp_kb->SetKeyState(key, false);
+			KeyboardHandler::SetKeyState(key, false);
+			//mp_kb->AddKeyboardEvent(KeyboardEvent(KeyboardEvent::EventType::eRELEASE, key));
+			//mp_kb->SetKeyState(key, false);
 			return 0;
 
 		}
-		case WM_CHAR:
-		{
-			unsigned char key = static_cast<unsigned char>(wParam);
-			if (mp_kb->IsRecording())
-			{
-				mp_kb->AddKeyboardEvent(KeyboardEvent(KeyboardEvent::EventType::eCHAR, key));
-			}
-			return 0;
+		//case WM_CHAR:
+		//{
+		//	unsigned char key = static_cast<unsigned char>(wParam);
+		//	if (mp_kb->IsRecording())
+		//	{
+		//		mp_kb->AddKeyboardEvent(KeyboardEvent(KeyboardEvent::EventType::eCHAR, key));
+		//	}
+		//	return 0;
 
-		}
+		//}
 		case WM_INPUT:
 		{
 			UINT dataSize = 0;

@@ -54,7 +54,6 @@ namespace PrimtTech
 
 		void ImGuiRender();
 		void ImGuiMenu();
-		void ImGuiEntList();
 		void ImGuTextureDisplay();
 
 		//void ImportScene(std::string path);

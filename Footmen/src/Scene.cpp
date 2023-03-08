@@ -29,7 +29,7 @@ void Gui_EntList(void* test)
 	ImGui::BeginChild("Lefty", ImVec2(150, 400), true);
 	for (int i = 0; i < p->ents.size(); i++)
 	{
-		ImGui::BeginDisabled(i == 0);
+		ImGui::BeginDisabled(false);
 		if (ImGui::Selectable(std::to_string(i).c_str(), p->selected == i))
 			p->selected = i;
 		ImGui::EndDisabled();
@@ -55,6 +55,7 @@ void Gui_EntList(void* test)
 			ImGui::EndPopup();
 		}
 		sm::Vector3 transform = pEnt->Transform().GetPosition();
+		ImGui::BeginDisabled(p->selected == 0);
 		ImGui::DragFloat3("Translate", reinterpret_cast<float*>(&transform), 0.02f);
 		pEnt->Transform().SetPosition(transform);
 
@@ -65,12 +66,15 @@ void Gui_EntList(void* test)
 		transform = pEnt->Transform().GetScale();
 		ImGui::DragFloat3("Scale", reinterpret_cast<float*>(&transform), 0.02f);
 		pEnt->Transform().SetScale(transform);
+		ImGui::EndDisabled();
 
 		if (p->ents[p->selected].HasComponentType(PrimtTech::ec_meshRef))
 		{
 			if (ImGui::CollapsingHeader("MeshRef", ImGuiTreeNodeFlags_DefaultOpen))
 			{
 				pt::MeshRef* mr = p->ents[p->selected].GetComponent<pt::MeshRef>();
+				ImGui::Text(mr->GetNameOfMesh().c_str());
+				ImGui::Separator();
 
 				char charbuffer[16]{ "" };
 				strcpy_s(charbuffer, mr->GetNameOfMesh().c_str());
@@ -79,11 +83,15 @@ void Gui_EntList(void* test)
 				{
 					mr->Init(std::string(charbuffer));
 				}
-				if (ImGui::InputText("material", charbuffer, 16, ImGuiInputTextFlags_EnterReturnsTrue))
+				uint matSize = mr->GetMeshContainerP()->GetMtl().size();
+				for (int i = 0; i < matSize; i++)
 				{
-					mr->SetMaterial(std::string(charbuffer));
+					std::string s = "material " + std::to_string(i);
+					if (ImGui::InputText(s.c_str(), charbuffer, 16, ImGuiInputTextFlags_EnterReturnsTrue))
+					{
+						mr->SetMaterial(std::string(charbuffer), i);
+					}
 				}
-
 			}
 		}
 		if (p->ents[p->selected].HasComponentType(PrimtTech::ec_cam))
@@ -101,7 +109,15 @@ void Gui_EntList(void* test)
 				mr->SetPositionOffset(pos);
 				mr->SetRotationOffset(rot);
 
-				mr->UpdateView(pEnt->Transform().GetWorld());
+				std::string displaytext = "ForwardVec: " + ptm::GetVectorAsString(mr->GetForwardV());
+				ImGui::Text(displaytext.c_str());
+				displaytext = "LeftVec: " + ptm::GetVectorAsString(mr->Getleft());
+				ImGui::Text(displaytext.c_str());
+				displaytext = "UpVec: " + ptm::GetVectorAsString(mr->GetUp());
+				ImGui::Text(displaytext.c_str());
+				
+
+				//mr->UpdateView(pEnt->Transform());
 
 				//im->
 			}
@@ -158,8 +174,10 @@ void Gui_EntList(void* test)
 	}
 }
 
-void Gui_AssetList(void* func)
+void Gui_AssetList(void* ptr)
 {
+	EntListStruct* p = (EntListStruct*)ptr;
+
 	ImGui::SetNextWindowSize(ImVec2(450, 400), ImGuiCond_Once);
 	if (ImGui::Begin("Loaded Assets"))
 	{
@@ -167,10 +185,14 @@ void Gui_AssetList(void* func)
 		{
 			if (ImGui::BeginTabItem("Meshes"))
 			{
-				ImGui::Text("Meshes"); ImGui::SameLine();
+				std::vector<PrimtTech::Mesh>& arr = PrimtTech::ResourceHandler::GetMeshArrayReference();
+				std::string displayText = "Meshes: ";
+				displayText += std::to_string(arr.size()) + "/";
+				displayText += std::to_string(arr.capacity());
+				ImGui::Text(displayText.c_str()); ImGui::SameLine();
 				if (ImGui::Button(" + ##addMesh"))
 				{
-
+					p->console.AddLog("create mesh");
 				}
 				ImGui::Separator();
 				std::vector<PrimtTech::Mesh>& meshArr = PrimtTech::ResourceHandler::GetMeshArrayReference();
@@ -184,17 +206,22 @@ void Gui_AssetList(void* func)
 			}
 			if (ImGui::BeginTabItem("Materials"))
 			{
-				ImGui::Text("Materials		"); ImGui::SameLine();
+				std::vector<PrimtTech::Material>& arr = PrimtTech::ResourceHandler::GetMaterialArrayReference();
+				std::string displayText = "Materials: ";
+				displayText += std::to_string(arr.size()) + "/";
+				displayText += std::to_string(arr.capacity());
+				ImGui::Text(displayText.c_str()); ImGui::SameLine();
 				if (ImGui::Button(" + ##addMaterial"))
 				{
-					
+					p->console.AddLog("create material");
 				}
 				ImGui::Separator();
 				std::vector<PrimtTech::Material>& meshArr = PrimtTech::ResourceHandler::GetMaterialArrayReference();
 				for (int i = 0; i < meshArr.size(); i++)
 				{
 					std::string name = meshArr[i].GetFileName();
-					ImGui::Text(name.c_str());
+					if (ImGui::Selectable(name.c_str(), p->m_selectedMaterial == i))
+						p->m_selectedMaterial = i;
 				}
 
 				ImGui::EndTabItem();
@@ -233,13 +260,176 @@ void Gui_Console(void* ptr)
 	ImGui::Separator();
 
 	ImGuiInputTextFlags input_text_flags = ImGuiInputTextFlags_EnterReturnsTrue /*| ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory*/;
-	if (ImGui::InputText("##Input", pCon->m_inputBuffer, ARRAYSIZE(pCon->m_inputBuffer), input_text_flags))
+	if (ImGui::InputText("Input", pCon->m_inputBuffer, ARRAYSIZE(pCon->m_inputBuffer), input_text_flags))
 	{
 		pCon->AddLog(pCon->m_inputBuffer);
 		strcpy_s(pCon->m_inputBuffer, "");
 	}
 
 	ImGui::End();
+}
+
+void LoadButton(PrimtTech::Material* pMaterial, std::string name, unsigned int e, const unsigned int& i)
+{
+	using namespace PrimtTech;
+	bool diffExpept = (e == 0 && !pMaterial->HasTexture(eDiffuse));
+	if (!diffExpept)
+		name += pMaterial->GetMapName((TextureType)e);
+
+	ImGui::Text(name.c_str());
+	if (diffExpept)
+	{
+		float diff[3]{ pMaterial->GetDiffuseClr().x, pMaterial->GetDiffuseClr().y, pMaterial->GetDiffuseClr().z };
+		ImGui::SameLine();
+		std::string nem = "##diffusefloat3" + std::to_string(i);
+		ImGui::DragFloat3(nem.c_str(), diff, 0.01f, 0.f, 1.f);
+		pMaterial->SetDiffuseClr(diff[0], diff[1], diff[2]);
+	}
+	ImGui::SameLine();
+	std::string buttonName = "Load##" + name + std::to_string(i);
+	if (ImGui::Button(buttonName.c_str()))
+	{
+		std::string newMtrlString = Dialogs::OpenFile("Images (*.png, *.jpg)\0*.png;*.jpg;\0", "Assets\\Textures\\");
+		if (newMtrlString != "")
+		{
+			pMaterial->LoadTexture(newMtrlString, (TextureType)e);
+		}
+	}
+	std::string remove = "Remove##";
+	remove += name;
+	if (pMaterial->HasTexture(e))
+	{
+		ImGui::SameLine();
+		if (ImGui::Button(remove.c_str()))
+		{
+			pMaterial->RemoveTexture((TextureType)e);
+		}
+	}
+}
+
+void Gui_MaterialProperties(void* ptr)
+{
+	int selectedMAt = *(int*)ptr;
+	if (selectedMAt != -1)
+	{
+		ImGui::Begin("Properties");
+
+		PrimtTech::Material* pMaterial = PrimtTech::ResourceHandler::GetMaterialAdress(selectedMAt);
+		std::string matName = pMaterial->GetFileName();
+		if (ImGui::CollapsingHeader(matName.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			char* nameBuffer = new char[16];
+			strcpy_s(nameBuffer, 16, matName.c_str());
+			if (ImGui::InputText("##MaterialName", nameBuffer, 16))
+			{
+				pMaterial->SetName(nameBuffer);
+			}
+
+			delete[] nameBuffer;
+
+			LoadButton(pMaterial, "Diffuse: ", PrimtTech::eDiffuse, 0);
+			LoadButton(pMaterial, "NormalMap: ", PrimtTech::eNormal, 0);
+			LoadButton(pMaterial, "DistMap: ", PrimtTech::eDistortion, 0);
+			LoadButton(pMaterial, "OpacityMap: ", PrimtTech::eOpacity, 0);
+
+			sm::Vector2 diffuseSpeed(pMaterial->GetDiffuseScrollSpeed());
+			sm::Vector2 distortionSpeed(pMaterial->GetDistortionScrollSpeed());
+			bool hasDistMap = pMaterial->HasTexture(PrimtTech::eDistortion);
+			bool hasDiffuse = pMaterial->HasTexture(PrimtTech::eDiffuse) || pMaterial->HasTexture(PrimtTech::eNormal) || pMaterial->HasTexture(PrimtTech::eOpacity);
+
+			float diffSpeed[2]{ diffuseSpeed.x, diffuseSpeed.y };
+			float distSpeed[2]{ distortionSpeed.x, distortionSpeed.y };
+
+			std::string title = "Diffuse Scroll";
+			//ImGui::PushItemWidth(m_width * 0.14f);
+			if (hasDiffuse)
+			{
+				ImGui::SliderFloat2(title.c_str(), diffSpeed, -.5f, .5f);
+			}
+
+
+			title = "Distortion Scroll##";
+			if (hasDistMap)
+				ImGui::SliderFloat2(title.c_str(), distSpeed, -.5f, .5f);
+
+			title = "Reset Scrollspeed##";
+			if (ImGui::Button(title.c_str()))
+			{
+				for (int i = 0; i < 2; i++)
+				{
+					diffSpeed[i] = 0.f;
+					distSpeed[i] = 0.f;
+				}
+			}
+			ImGui::SameLine();
+			title = "Reset scrollvalues##";
+			if (ImGui::Button(title.c_str()))
+				pMaterial->ResetScrollValue();
+
+			pMaterial->SetDiffuseScrollSpeed(diffSpeed[0], diffSpeed[1]);
+			pMaterial->SetDistortionScrollSpeed(distSpeed[0], distSpeed[1]);
+
+			if (hasDistMap)
+			{
+				int distDivider = pMaterial->GetDistortionDivider();
+				title = "Dist divider##";
+				ImGui::SliderInt(title.c_str(), &distDivider, 1, 20);
+				pMaterial->SetDistortionDivider(distDivider);
+			}
+
+			float transparancy = pMaterial->GetTransparancy();
+			title = "Transparancy##";
+			ImGui::SliderFloat(title.c_str(), &transparancy, 0.f, 1.f);
+			pMaterial->SetTransparency(transparancy);
+
+			float tiling = pMaterial->GetTextureScale();
+			title = "Tiling##";
+			ImGui::SliderFloat(title.c_str(), &tiling, 1.f, 10.f);
+			pMaterial->SetTextureScale(tiling);
+			if (hasDistMap)
+			{
+				float distScale = pMaterial->GetTextureScaleDist();
+
+				title = "Dist Scale##";
+				ImGui::SliderFloat(title.c_str(), &distScale, 1.f, 10.f);
+				pMaterial->SetTextureScaleDist(distScale);
+			}
+
+			title = "Import##";
+			if (ImGui::Button(title.c_str()))
+			{
+				std::string savePath = "";
+				savePath = Dialogs::OpenFile("Material (*.pmtrl)\0*.pmtrl;\0", "Assets\\pmtrl\\");
+
+				if (savePath != "")
+				{
+					std::string test = StringHelper::GetExtension(savePath);
+					if (!(test != "pmtrl" || test != "mtl"))
+						savePath += ".pmtrl";
+					pMaterial->ImportMaterial(StringHelper::GetName(savePath));
+				}
+			}
+			ImGui::SameLine();
+			title = "Export##";
+			if (ImGui::Button(title.c_str()))
+			{
+				std::string savePath = "";
+				savePath = Dialogs::SaveFile("Material (*.pmtrl)\0*.pmtrl\0", "Assets\\pmtrl\\");
+
+				if (savePath != "")
+				{
+					std::string test = StringHelper::GetExtension(savePath);
+					if (test != "pmtrl")
+						savePath += ".pmtrl";
+					pMaterial->ExportMaterial(savePath);
+				}
+			}
+
+		}
+
+		ImGui::End();
+	}
+	
 }
 
 /*//int ClickFoo(const sm::Ray& ray, ModelList& models)
@@ -363,12 +553,13 @@ void Gui_Console(void* ptr)
 //}
 */
 
-Scene::Scene(PrimtTech::ImGuiHandler* pGui, d::XMINT2 windowRes) :m_pGui(pGui)
+Editor::Editor(PrimtTech::ImGuiHandler* pGui, d::XMINT2 windowRes) :m_pGui(pGui)
 {
 	m_pGui->AddWindowFunc(Gui_EntList, &m_entlist);
 	//m_pGui->AddWindowFunc(Gui_EntList, &m_console);
 	m_pGui->AddWindowFunc(Gui_AssetList, &m_entlist);
 	m_pGui->AddWindowFunc(Gui_Console, &m_entlist.console);
+	m_pGui->AddWindowFunc(Gui_MaterialProperties, &m_entlist.m_selectedMaterial);
 
 	//int selected;
 
@@ -389,11 +580,11 @@ Scene::Scene(PrimtTech::ImGuiHandler* pGui, d::XMINT2 windowRes) :m_pGui(pGui)
 	//AddEntity();
 }
 
-Scene::~Scene()
+Editor::~Editor()
 {
 }
 
-void Scene::execCommand(std::string cmd)
+void Editor::execCommand(std::string cmd)
 {
 	std::stringstream ss;
 	ss.clear();
@@ -452,7 +643,7 @@ void Scene::execCommand(std::string cmd)
 	}
 }
 
-void Scene::Update()
+void Editor::Update(float deltatime)
 {
 	//  console
 	if (!m_entlist.console.cmdQ.empty())
@@ -461,18 +652,72 @@ void Scene::Update()
 		execCommand(cmd);
 		m_entlist.console.cmdQ.pop();
 	}
-	//if (!m_entlist.commands.empty())
-	//{
-	//	//switch (m_entlist.commands.front())
-	//	//{
-	//	//case SceneCommands::eCreateEntity:
-	//	//{
-	//	//	m_entlist.commands.pop();
 
-	//	//	m_entlist.m_entlist.ents.emplace_back(0);
-	//	//}
-	//	//default:
-	//	//	break;
-	//	//}
-	//}
+	sm::Vector3 move = { 0.f,0.f,0.f };
+	bool canMove = MouseHandler::GetIsMouseDown(eRIGHTCLICK);
+
+	pt::TransformComp* pDevTransform = &PrimtTech::ComponentHandler::GetComponentByIndex<pt::TransformComp>(0);
+	pt::CameraComp* pDevCam = &PrimtTech::ComponentHandler::GetComponentByIndex<pt::CameraComp>(0);
+
+	if (canMove)
+	{
+		if (KeyboardHandler::IsKeyDown(Key::A))
+			move += pDevCam->Getleft();
+		if (KeyboardHandler::IsKeyDown(Key::D))
+			move += -pDevCam->Getleft();
+		if (KeyboardHandler::IsKeyDown(Key::W))
+			move += pDevCam->GetForwardV();
+		if (KeyboardHandler::IsKeyDown(Key::S))
+			move += -pDevCam->GetForwardV();
+		if (KeyboardHandler::IsKeyDown(Key::SPACE))
+			move += {0.f, 1.f, 0.f};
+		if (KeyboardHandler::IsKeyDown(Key::SHIFT))
+			move += {0.f, -1.f, 0.f};
+		move.Normalize();
+
+		move *= 10.f * deltatime;
+
+		pDevTransform->Move(move);
+		pDevCam->UpdateView(*pDevTransform);
+	}
+	
+	while (!MouseHandler::BufferIsEmpty())
+	{
+		MouseEvent me = MouseHandler::ReadEvent();
+		if (me.GetType() == MouseEvent::EventType::RAW_MOVE && canMove)
+		{
+			sm::Vector2 mouseMove = { (float)me.GetPosition().y, (float)me.GetPosition().x };
+			mouseMove *= deltatime * 0.3;
+			pDevTransform->Rotate(mouseMove.x, mouseMove.y, 0.f);
+		}
+		//else if (me.GetType() == MouseEvent::EventType::eSCROLLUP && canMove)
+		//	pDevTransform->Offset(0.f, 0.f, -0.5f);
+		//else if (me.GetType() == MouseEvent::EventType::eSCROLLDOWN && canMove)
+		//	pDevTransform->Offset(0.f, 0.f, 0.5f);
+		else if (me.GetType() == MouseEvent::EventType::eLEFTCLICK)
+		{
+			//float mouseX = (float)me.GetPosition().x;
+			//float mouseY = (float)me.GetPosition().y;
+
+			//float winWidth = m_window.getWinWidth();
+			//float winHeight = m_window.getWinHeight();
+
+			//float x = (2.f * mouseX) / winWidth - 1.f;
+			//float y = 1.f - (2.f * mouseY) / winHeight;
+
+			//sm::Vector4 clipRay(x, y, -1.f, 1.f);
+
+			//sm::Vector4 eyeRay = XMVector4Transform(clipRay, d::XMMatrixInverse(nullptr, pDevTransform->GetProjM()));
+
+			//eyeRay = sm::Vector4(eyeRay.x, eyeRay.y, 1.f, 0.f);
+
+			//sm::Vector4 worldRay = XMVector4Transform(eyeRay, d::XMMatrixInverse(nullptr, pDevTransform->GetViewM()));
+
+			//sm::Vector3 normRay(worldRay.x, worldRay.y, worldRay.z);
+
+			//normRay.Normalize();
+
+			//mp_dxrenderer->Click(normRay);
+		}
+	}
 }

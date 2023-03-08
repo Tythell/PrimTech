@@ -24,20 +24,32 @@ struct EntListStruct
 	int selected = -1;
 	uint currentCamera;
 	int winWidth, winHeight;
+	int m_selectedMaterial = -1;
 };
 
-class Scene
+using uchar = unsigned char;
+
+class Editor
 {
 public:
-	Scene(PrimtTech::ImGuiHandler* pGui, d::XMINT2 windowRes);
-	~Scene();
+	Editor(PrimtTech::ImGuiHandler* pGui, d::XMINT2 windowRes);
+	~Editor();
 
 	//void Update
 
-	void Update();
+	void Update(float deltatime);
 private:
 	PrimtTech::ImGuiHandler* m_pGui = nullptr;
 	EntListStruct m_entlist;
 
+	
+
 	void execCommand(std::string cmd);
+
+	uchar m_keyForward = 'W';
+	uchar m_keyBack = 'S';
+	uchar m_keyLeft = 'A';
+	uchar m_keyRight = 'D';
+	uchar m_keyUp = Key::SPACE;
+	uchar m_keyDown = Key::LSHIFT;
 };

@@ -186,8 +186,6 @@ namespace PrimtTech
 
 	void ImGuiHandler::ImguiRender()
 	{
-		if (im.showDebugWindow) ImguiDebug();
-
 		if (im.showDemoWindow) ImGui::ShowDemoWindow(&im.showDemoWindow);
 
 		for (int i = 0; i < m_windows.size(); i++)
@@ -196,19 +194,19 @@ namespace PrimtTech
 		}
 	}
 
-	void ImGuiHandler::ImguiDebug()
-	{
-		ImGui::Begin("Debug", &im.showDebugWindow);
-		ImGui::Text("Press \"TAB\" to toggle mouse");
+	//void ImGuiHandler::ImguiDebug()
+	//{
+		//ImGui::Begin("Debug", &im.showDebugWindow);
+		//ImGui::Text("Press \"TAB\" to toggle mouse");
 
-		if (ImGui::IsWindowHovered())
-			im.m_isHoveringWindow = true;
+		//if (ImGui::IsWindowHovered())
+		//	im.m_isHoveringWindow = true;
 
 
-		std::string fpsString = "FPS: " + std::to_string(im.m_fps);
-		ImGui::Text(fpsString.c_str());
+		//std::string fpsString = "FPS: " + std::to_string(im.m_fps);
+		//ImGui::Text(fpsString.c_str());
 
-		ImGui::Checkbox("Show selection", &im.showSelection);
+		//ImGui::Checkbox("Show selection", &im.showSelection);
 
 
 		//if (ImGui::CollapsingHeader("ShadowMap"))
@@ -242,20 +240,20 @@ namespace PrimtTech
 		//		::SetWindowTextA(*m_pHWND, "balls");
 		//	}
 		//}
-		if (ImGui::CollapsingHeader("General"))
-		{
-			ImGui::RadioButton("local", (int*)&im.transformMode, 0); ImGui::SameLine();
-			ImGui::RadioButton("world", (int*)&im.transformMode, 1);
-			if (ImGui::SliderInt("FOV", &im.fov, 40, 110))
-				m_pcamHandler->GetCurrentCamera()->SetPerspective((float)im.fov, (float)im.width / (float)im.height, .1f, 100.f);
-			ImGui::Checkbox("Vsync", &im.useVsync); ImGui::SameLine();
-			ImGui::Checkbox("Handmodel", &im.enableHandModel); ImGui::SameLine();
-			ImGui::Checkbox("Raycast", &im.drawRayCast);
-			ImGui::SameLine();
-			ImGui::Checkbox("BCircle", &im.drawBCircle);
+		//if (ImGui::CollapsingHeader("General"))
+		//{
+		//	ImGui::RadioButton("local", (int*)&im.transformMode, 0); ImGui::SameLine();
+		//	ImGui::RadioButton("world", (int*)&im.transformMode, 1);
+		//	if (ImGui::SliderInt("FOV", &im.fov, 40, 110))
+		//		m_pcamHandler->GetCurrentCamera()->SetPerspective((float)im.fov, (float)im.width / (float)im.height, .1f, 100.f);
+		//	ImGui::Checkbox("Vsync", &im.useVsync); ImGui::SameLine();
+		//	ImGui::Checkbox("Handmodel", &im.enableHandModel); ImGui::SameLine();
+		//	ImGui::Checkbox("Raycast", &im.drawRayCast);
+		//	ImGui::SameLine();
+		//	ImGui::Checkbox("BCircle", &im.drawBCircle);
 			//if (im.drawBCircle && ImGui::SliderInt("sphere point count", &im.points, 1, 8))
 			//	m_sphere.Init(device, dc, im.points);
-		}
+		//}
 
 		//if (ImGui::CollapsingHeader("Light"/*, ImGuiTreeNodeFlags_DefaultOpen */))
 		//{
@@ -301,16 +299,16 @@ namespace PrimtTech
 		//	ImGui::SliderFloat("Attenuation", &im.atten, 0.f, 10.f);
 		//}
 
-		m_pLightBuffer->Data().pointLightDistance = im.pointLightDistance;
-		m_pLightBuffer->Data().specularInstensity = im.specPow;
-		m_pLightBuffer->Data().shadowDir = { 0.f,-1.f,0.f };
-		m_pLightBuffer->Data().atten = im.atten;
+		//m_pLightBuffer->Data().pointLightDistance = im.pointLightDistance;
+		//m_pLightBuffer->Data().specularInstensity = im.specPow;
+		//m_pLightBuffer->Data().shadowDir = { 0.f,-1.f,0.f };
+		//m_pLightBuffer->Data().atten = im.atten;
 
 		//m_bulb.SetPosition(im.pointLightPos[0], im.pointLightPos[1], im.pointLightPos[2]);
 
 		//ImGui::Text(GetVectorAsString(mp_currentCam->GetRotation()).c_str());
-		ImGui::End();
-	}
+		//ImGui::End();
+	//}
 
 	void ImGuiHandler::CalculateFps(float deltatime)
 	{

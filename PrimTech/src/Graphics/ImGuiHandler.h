@@ -31,7 +31,6 @@ namespace PrimtTech
 		bool enableHandModel = false;
 		bool showDemoWindow = false;
 		bool showShadowMapDepth = false;
-		bool showDebugWindow = true;
 		float gradient[2] = { 255.f / 2.f,1.f };
 		float gradientOffset = 0.f;
 		float specPow = 50.f;
@@ -72,7 +71,6 @@ namespace PrimtTech
 		void LoadButton(Material* pMaterial, std::string name, unsigned int e, const unsigned int& i = 0);
 		void ImGuiShutDown();
 		void ImguiRender();
-		void ImguiDebug();
 		void CalculateFps(float deltatime);
 		ImGuiVars* GetVarPtrs() { return &im; };
 

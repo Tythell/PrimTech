@@ -27,16 +27,20 @@ namespace pt
 	{
 		m_projM = d::XMMatrixOrthographicLH(width, height, nearZ, farZ);
 	}
-	void CameraComp::UpdateView(const sm::Matrix& entTransform)
+	void CameraComp::UpdateView(const pt::TransformComp& entTransform)
 	{
-		d::XMMATRIX camRot = d::XMMatrixRotationRollPitchYawFromVector(rotateOffset);
+		//d::XMMATRIX camRot = d::XMMatrixRotationRollPitchYawFromVector(entTransform.GetRotation());
 
-		d::XMVECTOR camTarget = d::XMVector3TransformCoord(sm::Vector4(0.f, 0.f, 1.f, 0.f), camRot);
-		camTarget += posOffset;
+		//d::XMVECTOR camTarget = d::XMVector3TransformCoord(sm::Vector4(0.f, 0.f, 1.f, 0.f), camRot);
+		////camTarget += entTransform.GetPosition();
+		//camTarget += posOffset;
 
-		d::XMVECTOR upDir = d::XMVector2TransformCoord(sm::Vector4(0.f, 1.f, 0.f, 0.f), camRot);
+		//d::XMVECTOR upDir = d::XMVector2TransformCoord(sm::Vector4(0.f, 1.f, 0.f, 0.f), camRot);
 
-		m_viewM = entTransform.Invert() * d::XMMatrixLookAtLH(posOffset, camTarget, upDir);
+		//m_viewM = entTransform.GetWorld().Invert() * d::XMMatrixLookAtLH(posOffset, camTarget, upDir);
+
+		m_viewM = entTransform.GetWorld().Invert();
+		sm::Matrix camRot = sm::Matrix::CreateFromYawPitchRoll(entTransform.GetRotation());
 
 
 		m_forwardV = d::XMVector3TransformCoord({ 0,0,1 }, camRot);

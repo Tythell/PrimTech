@@ -50,20 +50,6 @@ namespace pt
 		sm::Vector3 move = { 0.f,0.f,0.f };
 		//bool canMove = MouseHandler::GetIsMouseDown(eRIGHTCLICK);
 		static bool canMove = true;
-		/*if (m_kb.IsKeyDown(Key::A))
-			move += m_cams.GetCurrentCamera()->GetLeftVector();
-		if (m_kb.IsKeyDown(Key::D))
-			move += -m_cams.GetCurrentCamera()->GetLeftVector();
-		if (m_kb.IsKeyDown(Key::W))
-			move += m_cams.GetCurrentCamera()->GetForwardVectorNoY();
-		if (m_kb.IsKeyDown(Key::S))
-			move += -m_cams.GetCurrentCamera()->GetForwardVectorNoY();
-		if (m_kb.IsKeyDown(Key::SPACE))
-			move += {0.f, 1.f, 0.f};
-		if (m_kb.IsKeyDown(Key::SHIFT))
-			move += {0.f, -1.f, 0.f};
-		move.Normalize();
-		move *= m_playerSpeed * dt;*/
 
 		static bool isclick = false;
 
@@ -92,43 +78,7 @@ namespace pt
 				m_windowPos.y = rec.top;
 			}
 		}
-		while (!MouseHandler::BufferIsEmpty())
-		{
-			MouseEvent me = MouseHandler::ReadEvent();
-			if (me.GetType() == MouseEvent::EventType::RAW_MOVE && canMove)
-			{
-				m_cams.GetCurrentCamera()->Rotate((float)me.GetPosition().y, (float)me.GetPosition().x, 0.f);
-			}
-			else if (me.GetType() == MouseEvent::EventType::eSCROLLUP && canMove)
-				m_cams.GetCurrentCamera()->Offset(0.f, 0.f, -0.5f);
-			else if (me.GetType() == MouseEvent::EventType::eSCROLLDOWN && canMove)
-				m_cams.GetCurrentCamera()->Offset(0.f, 0.f, 0.5f);
-			else if (me.GetType() == MouseEvent::EventType::eLEFTCLICK)
-			{
-				//float mouseX = (float)me.GetPosition().x;
-				//float mouseY = (float)me.GetPosition().y;
-
-				//float winWidth = m_window.getWinWidth();
-				//float winHeight = m_window.getWinHeight();
-
-				//float x = (2.f * mouseX) / winWidth - 1.f;
-				//float y = 1.f - (2.f * mouseY) / winHeight;
-
-				//sm::Vector4 clipRay(x, y, -1.f, 1.f);
-
-				//sm::Vector4 eyeRay = XMVector4Transform(clipRay, d::XMMatrixInverse(nullptr, m_cams.GetCurrentCamera()->GetProjM()));
-
-				//eyeRay = sm::Vector4(eyeRay.x, eyeRay.y, 1.f, 0.f);
-
-				//sm::Vector4 worldRay = XMVector4Transform(eyeRay, d::XMMatrixInverse(nullptr, m_cams.GetCurrentCamera()->GetViewM()));
-
-				//sm::Vector3 normRay(worldRay.x, worldRay.y, worldRay.z);
-
-				//normRay.Normalize();
-
-				//mp_dxrenderer->Click(normRay);
-			}
-		}
+		
 #ifdef _DEBUG
 		if (m_kb.IsKeyDown(m_optionkey))
 			m_window.ShutDown();

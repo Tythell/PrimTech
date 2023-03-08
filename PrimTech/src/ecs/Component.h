@@ -61,8 +61,8 @@ namespace pt
 		sm::Vector3 GetPosition() const;
 		sm::Vector3 GetRotation() const;
 		sm::Vector3 GetScale() const;
-		sm::Matrix GetWorldTransposed();
-		sm::Matrix GetWorld();
+		sm::Matrix GetWorldTransposed() const;
+		sm::Matrix GetWorld() const;
 		sm::Matrix GetWorldInversed();
 		sm::Quaternion GetRotationQuaternion() const;
 	protected:
@@ -84,13 +84,17 @@ namespace pt
 		void SetPerspective(float fovDeg, float aspectRatio, float nearZ, float farZ);
 		void SetOrtographic(float width, float height, float nearZ, float farZ);
 
-		void UpdateView(const sm::Matrix& entTransform);
+		void UpdateView(const pt::TransformComp& entTransform);
 
 		void SetPositionOffset(const sm::Vector3& v);
 		void SetRotationOffset(const sm::Vector3& v);
 
 		sm::Vector3 GetPositionOffset() const { return posOffset; }
 		sm::Vector3 GetRotationOffset() const { return rotateOffset; }
+
+		sm::Vector3 GetForwardV() const { return m_forwardV; };
+		sm::Vector3 Getleft() const { 	return m_leftV; };
+		sm::Vector3 GetUp() const { return m_upV; };
 	private:
 		sm::Matrix m_viewM, m_projM;
 
