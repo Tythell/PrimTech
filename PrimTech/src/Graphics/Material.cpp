@@ -142,6 +142,8 @@ namespace PrimtTech
 		matBuffer.Data().rimColor = m_rimColor;
 		matBuffer.Data().rim = (int)m_selection;
 
+		
+
 
 		for (UINT i = 0; i < eTextureTypeAMOUNT; i++)
 		{

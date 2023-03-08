@@ -9,28 +9,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	pt::PrimTech pt;
 
-	PrimtTech::ResourceHandler::ReserveMeshMemory(10);
+	//PrimtTech::ResourceHandler::ReserveMeshMemory(10);
 	PrimtTech::ResourceHandler::ReserveMaterialMemory(8);
-	pt.Init(L"Editor", hInstance, L"wndc", 1700, 1000);
-	//PrimtTech::ImGuiHandler* gui = pt.GetRenderer()->GetGuiHandlerP();
 
+	d::XMINT2 windowRes(1700, 1000);
+	pt.Init(L"Editor", hInstance, L"wndc", windowRes.x, windowRes.y);
 
-
-
-	int nu = 5;
-	//gui->AddWindowFunc(ImGuiWinTest, (int*)&nu);
-
-	PrimtTech::ResourceHandler::AddMesh("Assets/models/Slime.fbx");
-
-	Scene scene(pt.GetRenderer()->GetGuiHandlerP());
+	Scene scene(pt.GetRenderer()->GetGuiHandlerP(), windowRes);
 
 	double start = 0, deltaTime = 0;
-
 	start = omp_get_wtime();
-
-	bool test = true;
-
-	double timer = 0;
 
 	while (pt.IsOpen())
 	{

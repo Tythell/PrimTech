@@ -33,7 +33,6 @@ namespace PrimtTech
 		void LoadTexture(std::string path, UINT i = 0, TextureType type = eDiffuse);
 		void SetLight(const sm::Vector4& v, const UINT& index);
 		void SetMaterialBuffer(Buffer<hlsl::cbpMaterialBuffer>& cbMaterialBuffer);
-		void DecreaseMeshUsage();
 		//void CreateMaterial();
 		//void AssignMaterial(Material& material);
 

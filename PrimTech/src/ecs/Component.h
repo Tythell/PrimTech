@@ -27,6 +27,7 @@ namespace pt
 
 		PrimtTech::Mesh* GetMeshContainerP() const { return m_pMesh; }
 		uint GetMaterialIndex(const uint& index) const;
+		std::string GetNameOfMesh() const { return m_pMesh->GetName(); }
 	private:
 		std::vector<uint> m_pMaterialindexes;
 		PrimtTech::Mesh* m_pMesh = &PrimtTech::ResourceHandler::GetMesh(0);
@@ -70,6 +71,32 @@ namespace pt
 		sm::Vector3 m_pos, m_rot, m_scale;
 		//sm::Quaternion m_rot;
 		sm::Matrix worldTransposed;
+	};
+
+	class CameraComp : public Component
+	{
+	public:
+		CameraComp(uint entId);
+
+		sm::Matrix GetViewMatrix() const;
+		sm::Matrix GetProjMatrix() const;
+
+		void SetPerspective(float fovDeg, float aspectRatio, float nearZ, float farZ);
+		void SetOrtographic(float width, float height, float nearZ, float farZ);
+
+		void UpdateView(const sm::Matrix& entTransform);
+
+		void SetPositionOffset(const sm::Vector3& v);
+		void SetRotationOffset(const sm::Vector3& v);
+
+		sm::Vector3 GetPositionOffset() const { return posOffset; }
+		sm::Vector3 GetRotationOffset() const { return rotateOffset; }
+	private:
+		sm::Matrix m_viewM, m_projM;
+
+		sm::Vector3 posOffset, rotateOffset;
+
+		sm::Vector3 m_forwardV, m_leftV, m_upV;
 	};
 }
 

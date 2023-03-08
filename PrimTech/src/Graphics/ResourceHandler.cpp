@@ -14,6 +14,11 @@ namespace PrimtTech
 		pDevice = device;
 	}
 
+	void ResourceHandler::LoadPak(std::string path)
+	{
+		THROW_POPUP_ERROR(false, "TODO: FIX PAK-LOADER");
+	}
+
 	void ResourceHandler::ReserveMeshMemory(int num)
 	{
 		m_meshes.reserve(num);
@@ -32,6 +37,7 @@ namespace PrimtTech
 	Mesh* ResourceHandler::AddMesh(std::string path, bool makeLeftHanded)
 	{
 		THROW_POPUP_ERROR(!(m_meshes.size() == m_meshes.capacity()), "not enough memory reserved for new mesh");
+		//uint reserves = m_meshes.capacity();
 		return &m_meshes.emplace_back(path, pDevice, makeLeftHanded);
 	}
 
@@ -135,14 +141,6 @@ namespace PrimtTech
 	ID3D11Device* ResourceHandler::GetDevice()
 	{
 		return pDevice;
-	}
-
-	void ResourceHandler::ResetUses()
-	{
-		for (int i = 0; i < m_meshes.size(); i++)
-		{
-			m_meshes[i].ResetUses();
-		}
 	}
 }
 

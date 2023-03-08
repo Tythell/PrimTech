@@ -22,11 +22,8 @@ namespace sm = DirectX::SimpleMath;
 namespace PrimtTech
 {
 	using Vector2i = DirectX::XMINT2;
-	using ModelList = std::vector<Model*>;
 
 	class Window;
-
-	void RecursiveRead(Sceneheaders& header, ModelList& v, std::ifstream& reader);
 
 	class DX11Renderer
 	{
@@ -41,7 +38,6 @@ namespace PrimtTech
 		void ShutDown();
 		void UpdateScene(const float& deltatime);
 
-		void Click(const sm::Vector3& dir);
 		void SetCanMove(bool b);
 
 		ImGuiHandler* GetGuiHandlerP() { return &m_guiHandler; }
@@ -59,14 +55,10 @@ namespace PrimtTech
 		void ImGuiRender();
 		void ImGuiMenu();
 		void ImGuiEntList();
-		void ImGuizmo();
 		void ImGuTextureDisplay();
-		void ImGuiKeyBinds();
 
-		void ImportScene(std::string path);
+		//void ImportScene(std::string path);
 		void ExportScene(std::string path);
-		void NewScene();
-		void ClearModelList();
 		void SetLightWarp(const std::string& path);
 
 		Window* m_pWin = nullptr;
@@ -106,6 +98,7 @@ namespace PrimtTech
 
 		CameraHandler* mp_camHandler = nullptr;
 		Camera* mp_currentCam = nullptr;
+		uint m_activeCamIndex = 0;
 
 		ImGuiHandler m_guiHandler;
 		ImGuiVars* im = nullptr;
@@ -115,18 +108,11 @@ namespace PrimtTech
 
 		int m_selected = -1;
 		int m_selectedMtrl = -1;
-		Model m_bulb;
-		ViewModel m_viewmdl;
-		Model m_playermodel;
-		Model m_camModel;
-		ModelList m_models;
 		RenderBox m_renderbox;
 		sm::Ray m_ray;
 		int m_fps = 0;
 		RenderLine m_rLine;
 		RenderSphere m_sphere;
-
-		sm::Vector2 mouseClickPos = { 0.f,0.f };
 
 		//unsigned char m_ZAToonExport[255] = {};
 		bool m_isHoveringWindow = false;

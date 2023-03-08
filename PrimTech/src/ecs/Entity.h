@@ -42,7 +42,7 @@ namespace pt
 		}
 
 		template<class T>
-		T* GetComponent(const uint& index = 0)
+		T* GetComponent()
 		{
 			std::vector<T>* ptvec = nullptr;
 			PrimtTech::HasComponent c = PrimtTech::ec_null;
@@ -53,6 +53,17 @@ namespace pt
 				return &ptvec[0][m_compTable[c]];
 
 			return NULL;
+		}
+		template<class T>
+		uint GetComponentIndex()
+		{
+
+			std::vector<T>* dummy = nullptr;
+			PrimtTech::HasComponent c = PrimtTech::ec_null;
+
+			PrimtTech::ComponentHandler::LinkVector<T>(dummy, c);
+
+			return m_compTable[c];
 		}
 
 		pt::TransformComp& Transform()

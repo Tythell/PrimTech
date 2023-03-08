@@ -21,15 +21,13 @@ namespace PrimtTech
 	{
 		bool useVsync = true;
 		float pointLightPos[3] = { 0.f,1.f,0.f };
-		float pointLightColor[3]{ 1.f,1.f,1.f };
 		float pointLightStr = 1.f;
 		float pointLightDistance = 10.f;
-		float offset = 0.f;
+		//float offset = 0.f;
 		float ambient[4] = { 1.f,1.f,1.f,.6f };
 		float direction[3] = { 0.f, 1.f, 0.f };
 		float atten = .5f;
 		int fov = 80;
-		float scale[3]{ 1.f,1.f,1.f };
 		bool enableHandModel = false;
 		bool showDemoWindow = false;
 		bool showShadowMapDepth = false;

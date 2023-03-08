@@ -41,8 +41,6 @@ namespace PrimtTech
 	{
 		m_guiHandler.ImGuiShutDown();
 
-		ClearModelList();
-
 		ResourceHandler::Unload();
 
 		//m_transformBuffer.Release();
@@ -281,15 +279,16 @@ namespace PrimtTech
 		ResourceHandler::AddTexture("ZANormal.png"); // Load LightWarp Texture
 		//ResourceHandler::AddTexture("ZATf2esk.png"); // Load LightWarp Texture
 
+		//ResourceHandler::ReserveMeshMemory(6);
+
 		dc->PSSetShaderResources(0, 1, ResourceHandler::GetTexture(1).GetSRVAdress());
 
 		m_rLine.Init(device, dc);
 		m_sphere.Init(device, dc, 8);
 
 		//ImportScene("Scenes\\multsc.ptscene");
-		NewScene();
 
-		m_playermodel.Init("dirCapsule.obj", ModelType::eUNSPECIFIED, false);
+		/*m_playermodel.Init("dirCapsule.obj", ModelType::eUNSPECIFIED, false);
 		m_playermodel.SetScale(.1f);
 
 		m_camModel.Init("camera.obj", ModelType::eDEBUG, false);
@@ -318,7 +317,7 @@ namespace PrimtTech
 			m_models[i]->SetDCandBuffer(dc, m_transformBuffer);
 		}
 
-		m_shadowmap.InitModel(dc, m_transformBuffer, m_materialBuffer);
+		m_shadowmap.InitModel(dc, m_transformBuffer, m_materialBuffer);*/
 
 		//m_renderbox.Init(device);
 		return true;
@@ -338,10 +337,9 @@ namespace PrimtTech
 	{
 		m_lightbuffer.Data().ambientColor = { im->ambient[0], im->ambient[1], im->ambient[2] };
 		m_lightbuffer.Data().ambientStr = im->ambient[3];
-		m_lightbuffer.Data().pointLightColor = { im->pointLightColor[0], im->pointLightColor[1], im->pointLightColor[2] };
+		m_lightbuffer.Data().pointLightColor = { 0.f, 0.f, 0.f };
 		m_lightbuffer.Data().pointlightStre = im->pointLightStr;
 		m_lightbuffer.Data().cbShadowBias = im->shadowBias;
-
 
 		m_lightbuffer.Data().direction = sm::Vector3(0.f, 1.f, 0.f);
 		m_lightbuffer.Data().pointLightPosition = sm::Vector3(im->pointLightPos[0], im->pointLightPos[1], im->pointLightPos[2]);
@@ -350,156 +348,11 @@ namespace PrimtTech
 		m_lightbuffer.MapBuffer();
 
 
-		m_playermodel.SetRotation(0.f/*-mp_cam->GetRotation().x*/, mp_currentCam->GetRotation().y, 0.f);
-		m_playermodel.Rotate(0.f, d::XM_PI, 0.f);
-		m_playermodel.SetPosition(mp_currentCam->GetPositionNoOffset() + sm::Vector3(0.f, -0.1f, 0.f));
+		//m_playermodel.SetRotation(0.f/*-mp_cam->GetRotation().x*/, mp_currentCam->GetRotation().y, 0.f);
+		//m_playermodel.Rotate(0.f, d::XM_PI, 0.f);
+		//m_playermodel.SetPosition(mp_currentCam->GetPositionNoOffset() + sm::Vector3(0.f, -0.1f, 0.f));
 		//m_shadowmap.SetPos(mp_cam->GetPositionNoOffset());
 		//m_model.Rotate(0.f, 2.f * deltatime, 0.f);
-	}
-
-	void embraceTheDarkness()
-	{
-		ImVec4* colors = ImGui::GetStyle().Colors;
-		colors[ImGuiCol_Text] = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
-		colors[ImGuiCol_TextDisabled] = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
-		colors[ImGuiCol_WindowBg] = ImVec4(0.10f, 0.10f, 0.10f, 1.00f);
-		colors[ImGuiCol_ChildBg] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
-		colors[ImGuiCol_PopupBg] = ImVec4(0.19f, 0.19f, 0.19f, 0.92f);
-		colors[ImGuiCol_Border] = ImVec4(0.19f, 0.19f, 0.19f, 0.29f);
-		colors[ImGuiCol_BorderShadow] = ImVec4(0.00f, 0.00f, 0.00f, 0.24f);
-		colors[ImGuiCol_FrameBg] = ImVec4(0.05f, 0.05f, 0.05f, 0.54f);
-		colors[ImGuiCol_FrameBgHovered] = ImVec4(0.19f, 0.19f, 0.19f, 0.54f);
-		colors[ImGuiCol_FrameBgActive] = ImVec4(0.20f, 0.22f, 0.23f, 1.00f);
-		colors[ImGuiCol_TitleBg] = ImVec4(0.00f, 0.00f, 0.00f, 1.00f);
-		colors[ImGuiCol_TitleBgActive] = ImVec4(0.06f, 0.06f, 0.06f, 1.00f);
-		colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.00f, 0.00f, 0.00f, 1.00f);
-		colors[ImGuiCol_MenuBarBg] = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
-		colors[ImGuiCol_ScrollbarBg] = ImVec4(0.05f, 0.05f, 0.05f, 0.54f);
-		colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.34f, 0.34f, 0.34f, 0.54f);
-		colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.40f, 0.40f, 0.40f, 0.54f);
-		colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.56f, 0.56f, 0.56f, 0.54f);
-		colors[ImGuiCol_CheckMark] = ImVec4(0.33f, 0.67f, 0.86f, 1.00f);
-		colors[ImGuiCol_SliderGrab] = ImVec4(0.34f, 0.34f, 0.34f, 0.54f);
-		colors[ImGuiCol_SliderGrabActive] = ImVec4(0.56f, 0.56f, 0.56f, 0.54f);
-		colors[ImGuiCol_Button] = ImVec4(0.05f, 0.05f, 0.05f, 0.54f);
-		colors[ImGuiCol_ButtonHovered] = ImVec4(0.19f, 0.19f, 0.19f, 0.54f);
-		colors[ImGuiCol_ButtonActive] = ImVec4(0.20f, 0.22f, 0.23f, 1.00f);
-		colors[ImGuiCol_Header] = ImVec4(0.00f, 0.00f, 0.00f, 0.52f);
-		colors[ImGuiCol_HeaderHovered] = ImVec4(0.00f, 0.00f, 0.00f, 0.36f);
-		colors[ImGuiCol_HeaderActive] = ImVec4(0.20f, 0.22f, 0.23f, 0.33f);
-		colors[ImGuiCol_Separator] = ImVec4(0.28f, 0.28f, 0.28f, 0.29f);
-		colors[ImGuiCol_SeparatorHovered] = ImVec4(0.44f, 0.44f, 0.44f, 0.29f);
-		colors[ImGuiCol_SeparatorActive] = ImVec4(0.40f, 0.44f, 0.47f, 1.00f);
-		colors[ImGuiCol_ResizeGrip] = ImVec4(0.28f, 0.28f, 0.28f, 0.29f);
-		colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.44f, 0.44f, 0.44f, 0.29f);
-		colors[ImGuiCol_ResizeGripActive] = ImVec4(0.40f, 0.44f, 0.47f, 1.00f);
-		colors[ImGuiCol_Tab] = ImVec4(0.00f, 0.00f, 0.00f, 0.52f);
-		colors[ImGuiCol_TabHovered] = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
-		colors[ImGuiCol_TabActive] = ImVec4(0.20f, 0.20f, 0.20f, 0.36f);
-		colors[ImGuiCol_TabUnfocused] = ImVec4(0.00f, 0.00f, 0.00f, 0.52f);
-		colors[ImGuiCol_TabUnfocusedActive] = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
-		//colors[ImGuiCol_DockingPreview]         = ImVec4(0.33f, 0.67f, 0.86f, 1.00f);
-		//colors[ImGuiCol_DockingEmptyBg]         = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
-		colors[ImGuiCol_PlotLines] = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
-		colors[ImGuiCol_PlotLinesHovered] = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
-		colors[ImGuiCol_PlotHistogram] = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
-		colors[ImGuiCol_PlotHistogramHovered] = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
-		colors[ImGuiCol_TableHeaderBg] = ImVec4(0.00f, 0.00f, 0.00f, 0.52f);
-		colors[ImGuiCol_TableBorderStrong] = ImVec4(0.00f, 0.00f, 0.00f, 0.52f);
-		colors[ImGuiCol_TableBorderLight] = ImVec4(0.28f, 0.28f, 0.28f, 0.29f);
-		colors[ImGuiCol_TableRowBg] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
-		colors[ImGuiCol_TableRowBgAlt] = ImVec4(1.00f, 1.00f, 1.00f, 0.06f);
-		colors[ImGuiCol_TextSelectedBg] = ImVec4(0.20f, 0.22f, 0.23f, 1.00f);
-		colors[ImGuiCol_DragDropTarget] = ImVec4(0.33f, 0.67f, 0.86f, 1.00f);
-		colors[ImGuiCol_NavHighlight] = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
-		colors[ImGuiCol_NavWindowingHighlight] = ImVec4(1.00f, 0.00f, 0.00f, 0.70f);
-		colors[ImGuiCol_NavWindowingDimBg] = ImVec4(1.00f, 0.00f, 0.00f, 0.20f);
-		colors[ImGuiCol_ModalWindowDimBg] = ImVec4(1.00f, 0.00f, 0.00f, 0.35f);
-
-		ImGuiStyle& style = ImGui::GetStyle();
-		style.WindowPadding = ImVec2(8.00f, 8.00f);
-		style.FramePadding = ImVec2(5.00f, 2.00f);
-		style.CellPadding = ImVec2(6.00f, 6.00f);
-		style.ItemSpacing = ImVec2(6.00f, 6.00f);
-		style.ItemInnerSpacing = ImVec2(6.00f, 6.00f);
-		style.TouchExtraPadding = ImVec2(0.00f, 0.00f);
-		style.IndentSpacing = 25;
-		style.ScrollbarSize = 15;
-		style.GrabMinSize = 10;
-		style.WindowBorderSize = 1;
-		style.ChildBorderSize = 1;
-		style.PopupBorderSize = 1;
-		style.FrameBorderSize = 1;
-		style.TabBorderSize = 1;
-		style.WindowRounding = 7;
-		style.ChildRounding = 4;
-		style.FrameRounding = 3;
-		style.PopupRounding = 4;
-		style.ScrollbarRounding = 9;
-		style.GrabRounding = 3;
-		style.LogSliderDeadzone = 4;
-		style.TabRounding = 4;
-	}
-
-	void SetImGuiTheme()
-	{
-		ImGui::StyleColorsDark();
-		//embraceTheDarkness();
-
-		/*ImVec4* colors = ImGui::GetStyle().Colors;
-		colors[ImGuiCol_Text]                   = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
-		colors[ImGuiCol_TextDisabled]           = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
-		colors[ImGuiCol_WindowBg]               = ImVec4(0.06f, 0.06f, 0.06f, 0.94f);
-		colors[ImGuiCol_ChildBg]                = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
-		colors[ImGuiCol_PopupBg]                = ImVec4(0.08f, 0.08f, 0.08f, 0.94f);
-		colors[ImGuiCol_Border]                 = ImVec4(0.43f, 0.43f, 0.50f, 0.50f);
-		colors[ImGuiCol_BorderShadow]           = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
-		colors[ImGuiCol_FrameBg]                = ImVec4(0.16f, 0.48f, 0.16f, 0.54f);
-		colors[ImGuiCol_FrameBgHovered]         = ImVec4(0.34f, 0.98f, 0.26f, 0.40f);
-		colors[ImGuiCol_FrameBgActive]          = ImVec4(0.48f, 0.98f, 0.26f, 0.67f);
-		colors[ImGuiCol_TitleBg]                = ImVec4(0.17f, 0.52f, 0.10f, 1.00f);
-		colors[ImGuiCol_TitleBgActive]          = ImVec4(0.23f, 0.48f, 0.16f, 1.00f);
-		colors[ImGuiCol_TitleBgCollapsed]       = ImVec4(0.00f, 0.00f, 0.00f, 0.51f);
-		colors[ImGuiCol_MenuBarBg]              = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
-		colors[ImGuiCol_ScrollbarBg]            = ImVec4(0.02f, 0.02f, 0.02f, 0.53f);
-		colors[ImGuiCol_ScrollbarGrab]          = ImVec4(0.31f, 0.31f, 0.31f, 1.00f);
-		colors[ImGuiCol_ScrollbarGrabHovered]   = ImVec4(0.41f, 0.41f, 0.41f, 1.00f);
-		colors[ImGuiCol_ScrollbarGrabActive]    = ImVec4(0.51f, 0.51f, 0.51f, 1.00f);
-		colors[ImGuiCol_CheckMark]              = ImVec4(0.39f, 0.98f, 0.26f, 1.00f);
-		colors[ImGuiCol_SliderGrab]             = ImVec4(0.24f, 0.88f, 0.25f, 1.00f);
-		colors[ImGuiCol_SliderGrabActive]       = ImVec4(0.34f, 0.98f, 0.26f, 1.00f);
-		colors[ImGuiCol_Button]                 = ImVec4(0.36f, 0.98f, 0.26f, 0.40f);
-		colors[ImGuiCol_ButtonHovered]          = ImVec4(0.39f, 0.98f, 0.26f, 1.00f);
-		colors[ImGuiCol_ButtonActive]           = ImVec4(0.06f, 0.98f, 0.23f, 1.00f);
-		colors[ImGuiCol_Header]                 = ImVec4(0.26f, 0.98f, 0.28f, 0.31f);
-		colors[ImGuiCol_HeaderHovered]          = ImVec4(0.26f, 0.98f, 0.30f, 0.80f);
-		colors[ImGuiCol_HeaderActive]           = ImVec4(0.26f, 0.98f, 0.35f, 1.00f);
-		colors[ImGuiCol_Separator]              = ImVec4(0.43f, 0.43f, 0.50f, 0.50f);
-		colors[ImGuiCol_SeparatorHovered]       = ImVec4(0.13f, 0.75f, 0.10f, 0.78f);
-		colors[ImGuiCol_SeparatorActive]        = ImVec4(0.17f, 0.75f, 0.10f, 1.00f);
-		colors[ImGuiCol_ResizeGrip]             = ImVec4(0.26f, 0.98f, 0.44f, 0.20f);
-		colors[ImGuiCol_ResizeGripHovered]      = ImVec4(0.26f, 0.98f, 0.35f, 0.67f);
-		colors[ImGuiCol_ResizeGripActive]       = ImVec4(0.26f, 0.98f, 0.32f, 0.95f);
-		colors[ImGuiCol_Tab]                    = ImVec4(0.20f, 0.58f, 0.18f, 0.86f);
-		colors[ImGuiCol_TabHovered]             = ImVec4(0.26f, 0.98f, 0.30f, 0.80f);
-		colors[ImGuiCol_TabActive]              = ImVec4(0.21f, 0.68f, 0.20f, 1.00f);
-		colors[ImGuiCol_TabUnfocused]           = ImVec4(0.09f, 0.15f, 0.07f, 0.97f);
-		colors[ImGuiCol_TabUnfocusedActive]     = ImVec4(0.17f, 0.42f, 0.14f, 1.00f);
-		colors[ImGuiCol_PlotLines]              = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
-		colors[ImGuiCol_PlotLinesHovered]       = ImVec4(1.00f, 0.43f, 0.35f, 1.00f);
-		colors[ImGuiCol_PlotHistogram]          = ImVec4(0.90f, 0.70f, 0.00f, 1.00f);
-		colors[ImGuiCol_PlotHistogramHovered]   = ImVec4(1.00f, 0.60f, 0.00f, 1.00f);
-		colors[ImGuiCol_TableHeaderBg]          = ImVec4(0.19f, 0.19f, 0.20f, 1.00f);
-		colors[ImGuiCol_TableBorderStrong]      = ImVec4(0.31f, 0.31f, 0.35f, 1.00f);
-		colors[ImGuiCol_TableBorderLight]       = ImVec4(0.23f, 0.23f, 0.25f, 1.00f);
-		colors[ImGuiCol_TableRowBg]             = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
-		colors[ImGuiCol_TableRowBgAlt]          = ImVec4(1.00f, 1.00f, 1.00f, 0.06f);
-		colors[ImGuiCol_TextSelectedBg]         = ImVec4(0.29f, 0.98f, 0.26f, 0.35f);
-		colors[ImGuiCol_DragDropTarget]         = ImVec4(1.00f, 1.00f, 0.00f, 0.90f);
-		colors[ImGuiCol_NavHighlight]           = ImVec4(0.34f, 0.98f, 0.26f, 1.00f);
-		colors[ImGuiCol_NavWindowingHighlight]  = ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
-		colors[ImGuiCol_NavWindowingDimBg]      = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
-		colors[ImGuiCol_ModalWindowDimBg]       = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);*/
 	}
 
 	void DX11Renderer::ImGuiRender()
@@ -509,19 +362,14 @@ namespace PrimtTech
 		ImGui::NewFrame();
 		ImGuizmo::BeginFrame();
 		m_isHoveringWindow = false;
-		ImGuizmo();
 
 		ImGuiMenu();
 		m_guiHandler.ImguiRender();
 
 		if (im->showShadowMapDepth) ImGuTextureDisplay();
-		if (im->showKeybinds) ImGuiKeyBinds();
 
 		//ImGuiGradientWindow();
 		ImGuiEntList();
-
-
-
 
 		ImGui::Render();
 		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
@@ -539,24 +387,23 @@ namespace PrimtTech
 			{
 				if (ImGui::IsWindowHovered())
 					m_isHoveringWindow = true;
+				ImGui::BeginDisabled(true);
 				if (ImGui::MenuItem("New Scene", NULL, false, true))
 				{
-					ResourceHandler::ResetUses();
-					NewScene();
+					//NewScene();
 				}
 				if (ImGui::MenuItem("Open Scene...", NULL, false, true))
 				{
 					std::string diapath = Dialogs::OpenFile("Scene (*.ptscene)\0*.ptscene\0", "Scenes\\");
 					if (diapath != "")
 					{
-						ClearModelList();
-						ResourceHandler::ResetUses();
-						ImportScene(diapath);
-						for (int i = 0; i < m_models.size(); i++)
-						{
-							m_models[i]->SetDCandBuffer(dc, m_transformBuffer);
-							m_models[i]->SetMaterialBuffer(m_materialBuffer);
-						}
+						//ClearModelList();
+						//ImportScene(diapath);
+						//for (int i = 0; i < m_models.size(); i++)
+						//{
+						//	m_models[i]->SetDCandBuffer(dc, m_transformBuffer);
+						//	m_models[i]->SetMaterialBuffer(m_materialBuffer);
+						//}
 					}
 				}
 				if (ImGui::MenuItem("Save scene as..."))
@@ -569,7 +416,6 @@ namespace PrimtTech
 						ExportScene(diapath);
 					}
 				}
-				ImGui::BeginDisabled(true);
 				if (ImGui::MenuItem("Update Materials..."))
 				{
 					std::vector<std::string> diapath = Dialogs::OpenMultifile("Pmaterial (*.pmtrl)\0*.pmtrl\0", "Assets\\pmtrl");
@@ -639,57 +485,55 @@ namespace PrimtTech
 		}
 	}
 
-	int NewModelToV(std::string path, ID3D11DeviceContext*& dc, Buffer<hlsl::cbpWorldTransforms3D>& tbuffer, Buffer<hlsl::cbpMaterialBuffer>& mbuffer,
-		ModelList& modelV)
-	{
-		Entity ent;
+	//int NewModelToV(std::string path, ID3D11DeviceContext*& dc, Buffer<hlsl::cbpWorldTransforms3D>& tbuffer, Buffer<hlsl::cbpMaterialBuffer>& mbuffer,
+	//	ModelList& modelV)
+	//{
+	//	Entity ent;
 
-		path = StringHelper::GetName(path);
-		modelV.emplace_back(new Model);
-		modelV[modelV.size() - 1]->Init(path);
-		modelV[modelV.size() - 1]->SetDCandBuffer(dc, tbuffer);
-		modelV[modelV.size() - 1]->SetMaterialBuffer(mbuffer);
+	//	path = StringHelper::GetName(path);
+	//	modelV.emplace_back(new Model);
+	//	modelV[modelV.size() - 1]->Init(path);
+	//	modelV[modelV.size() - 1]->SetDCandBuffer(dc, tbuffer);
+	//	modelV[modelV.size() - 1]->SetMaterialBuffer(mbuffer);
 
-		return ((int)modelV.size() - 1);
-	}
+	//	return ((int)modelV.size() - 1);
+	//}
 
-	int InterfaceAddModelToVector(ID3D11DeviceContext*& dc, Buffer<hlsl::cbpWorldTransforms3D>& tbuffer, Buffer<hlsl::cbpMaterialBuffer>& mbuffer,
-		ModelList& modelV)
-	{
-		std::string path = Dialogs::OpenFile("Model (*.obj, *.fbx)\0*.obj;*.txt;*.fbx;\0", "Assets\\models\\");
-		if (!path.empty())
-		{
-			path = StringHelper::GetName(path);
-			return NewModelToV(path, dc, tbuffer, mbuffer, modelV);
-		}
-		return -1;
-	}
+	//int InterfaceAddModelToVector(ID3D11DeviceContext*& dc, Buffer<hlsl::cbpWorldTransforms3D>& tbuffer, Buffer<hlsl::cbpMaterialBuffer>& mbuffer,
+	//	ModelList& modelV)
+	//{
+	//	std::string path = Dialogs::OpenFile("Model (*.obj, *.fbx)\0*.obj;*.txt;*.fbx;\0", "Assets\\models\\");
+	//	if (!path.empty())
+	//	{
+	//		path = StringHelper::GetName(path);
+	//		return NewModelToV(path, dc, tbuffer, mbuffer, modelV);
+	//	}
+	//	return -1;
+	//}
 
+	//int CopyModel(ID3D11DeviceContext*& dc, Buffer<hlsl::cbpWorldTransforms3D>& tbuffer, Buffer<hlsl::cbpMaterialBuffer>& mbuffer,
+	//	ModelList& modelV, const UINT& i)
+	//{
+	//	std::string name = modelV[i]->GetName();
+	//	int brackedIndex = -1;
+	//	for (int i = 0; i < name.size() && brackedIndex == -1; i++)
+	//	{
+	//		if (name[i] == ')')
+	//			brackedIndex = i - 1;
+	//	}
+	//	if (brackedIndex != -1)
+	//		name = name.substr(brackedIndex + 2);
+	//	modelV.emplace_back(new Model);
+	//	UINT newIndex = (UINT)modelV.size() - 1;
+	//	modelV[newIndex]->Init(name);
+	//	modelV[newIndex]->SetDCandBuffer(dc, tbuffer);
+	//	modelV[newIndex]->SetMaterialBuffer(mbuffer);
+	//	modelV[newIndex]->SetScale(modelV[i]->GetScale());
+	//	modelV[newIndex]->SetRotation(modelV[i]->GetRotation());
+	//	modelV[newIndex]->SetPosition(modelV[i]->GetPosition());
 
-
-	int CopyModel(ID3D11DeviceContext*& dc, Buffer<hlsl::cbpWorldTransforms3D>& tbuffer, Buffer<hlsl::cbpMaterialBuffer>& mbuffer,
-		ModelList& modelV, const UINT& i)
-	{
-		std::string name = modelV[i]->GetName();
-		int brackedIndex = -1;
-		for (int i = 0; i < name.size() && brackedIndex == -1; i++)
-		{
-			if (name[i] == ')')
-				brackedIndex = i - 1;
-		}
-		if (brackedIndex != -1)
-			name = name.substr(brackedIndex + 2);
-		modelV.emplace_back(new Model);
-		UINT newIndex = (UINT)modelV.size() - 1;
-		modelV[newIndex]->Init(name);
-		modelV[newIndex]->SetDCandBuffer(dc, tbuffer);
-		modelV[newIndex]->SetMaterialBuffer(mbuffer);
-		modelV[newIndex]->SetScale(modelV[i]->GetScale());
-		modelV[newIndex]->SetRotation(modelV[i]->GetRotation());
-		modelV[newIndex]->SetPosition(modelV[i]->GetPosition());
-
-		return (int)newIndex;
-	}
+	//	return (int)newIndex;
+	//}
 
 	void DX11Renderer::ImGuiEntList()
 	{
@@ -700,51 +544,10 @@ namespace PrimtTech
 				m_isHoveringWindow = true;
 			if (ImGui::Button(" + ##Button"))
 				ImGui::OpenPopup("popup##context");
-			if (ImGui::BeginPopup("popup##context"))
-			{
-				if (ImGui::Selectable("Model"))
-				{
-					m_selected = InterfaceAddModelToVector(dc, m_transformBuffer, m_materialBuffer, m_models);
-					m_selected = -1;
-				}
-
-				if (ImGui::Selectable("Camera"))
-				{
-					mp_currentCam = mp_camHandler->CreatePerspectiveCamera("New camera", 80.f, (float)m_width / (float)m_height, 0.1f, 100.f);
-					mp_camHandler->SetCurrentCamera(mp_camHandler->GetNoOfCams() - 1);
-				}
-
-				ImGui::Separator();
-
-				if (ImGui::Selectable("Create Material"))
-				{
-					ResourceHandler::AddMaterial("new material");
-				}
-
-				//if (ImGui::Selectable("Load Material"))
-				//{
-				//	mp_currentCam = mp_camHandler->CreatePerspectiveCamera("New camera", 80.f, (float)m_width / (float)m_height, 0.1f, 100.f);
-				//	mp_camHandler->SetCurrentCamera(mp_camHandler->GetNoOfCams() - 1);
-				//}
-
-
-				ImGui::EndPopup();
-			}
 
 			ImGui::BeginChild("Lefty", ImVec2(150, 350), true);
 			if (ImGui::IsWindowHovered())
 				m_isHoveringWindow = true;
-			for (int i = 0; i < m_models.size(); i++)
-			{
-				if (ImGui::Selectable(m_models[i]->GetName().c_str(), m_selected == i))
-				{
-					m_selected = i;
-					m_selectedMtrl = -1;
-				}
-			}
-
-			if (m_models.size() > 0)
-				ImGui::Separator();
 
 			uint mtrlCount = ResourceHandler::GetMtrlCount();
 
@@ -775,7 +578,7 @@ namespace PrimtTech
 			ImGui::EndChild();
 			ImGui::End();
 
-			if (m_selected != -1)
+			/*if (m_selected != -1)
 			{
 				ImGui::Begin("Properties");
 				Model* pSelectedModel = m_models[m_selected];
@@ -932,21 +735,10 @@ namespace PrimtTech
 
 					}
 				}
-				if (ImGui::CollapsingHeader("Character Light", ImGuiTreeNodeFlags_DefaultOpen))
-				{
-					float light[]{ pSelectedModel->GetCharacterLight(0).x,
-						pSelectedModel->GetCharacterLight(0).y,
-						pSelectedModel->GetCharacterLight(0).z,
-						pSelectedModel->GetCharacterLight(0).w };
 
-					ImGui::DragFloat4("DirLight", light, 0.01f);
-
-					pSelectedModel->SetLight(sm::Vector4(light[0], light[1], light[2], light[3]), 0);
-				}
 				ImGui::EndGroup();
 				if (mp_kb->IsKeyDown(Key::DELETEKEY))
 				{
-					m_models[m_selected]->DecreaseMeshUsage();
 					delete m_models[m_selected];
 					m_models.erase(m_models.begin() + m_selected);
 					m_selected = -1;
@@ -970,6 +762,7 @@ namespace PrimtTech
 			if (m_selected != -1 && im->showSelection)
 				for (UINT m = 0; m < m_models[m_selected]->GetMeshP()->GetNofMeshes(); m++)
 					m_models[m_selected]->GetMaterial(m).SetSelection(true);
+					*/
 
 			if (m_selectedMtrl != -1)
 			{
@@ -1097,31 +890,9 @@ namespace PrimtTech
 		}
 	}
 
-	void DX11Renderer::ImportScene(std::string path)
-	{
-		m_selected = -1;
-		std::ifstream reader(path, std::ios::binary | std::ios::in);
-		if (!reader.is_open())
-			Popup::Error("Failed open scene");
-		Sceneheaders header = Sceneheaders::enull;
-		RecursiveRead(header, m_models, reader);
-		reader.close();
-	}
-
-	int countDigits(int n)
-	{
-		int total = 0;
-
-		while (n > 0) {
-			n = n / 10;
-			total++;
-		}
-		return total;
-	}
-
 	void DX11Renderer::ExportScene(std::string path)
 	{
-		std::ofstream writer(path, std::ios::binary | std::ios::out);
+		/*std::ofstream writer(path, std::ios::binary | std::ios::out);
 
 		Sceneheaders header = Sceneheaders::eMODEL;
 		for (int i = 0; i < m_models.size(); i++)
@@ -1156,59 +927,7 @@ namespace PrimtTech
 		}
 		header = Sceneheaders::enull;
 		writer.write((const char*)&header, 1);
-		writer.close();
-	}
-
-	void DX11Renderer::ImGuizmo()
-	{
-		static ImGuizmo::OPERATION op = ImGuizmo::OPERATION::TRANSLATE;
-		if (!m_canMove)
-		{
-			if (mp_kb->IsKeyDown(Key::W))
-				op = ImGuizmo::OPERATION::TRANSLATE;
-			else if (mp_kb->IsKeyDown(Key::E))
-				op = ImGuizmo::OPERATION::ROTATE;
-			else if (mp_kb->IsKeyDown(Key::R))
-				op = ImGuizmo::OPERATION::SCALE;
-		}
-
-		if (m_selected != -1 && !m_canMove)
-		{
-			if (ImGuizmo::IsOver() || ImGuizmo::IsUsing())
-				m_isHoveringWindow = true;
-			ImGui::SetNextWindowSize(ImVec2((float)m_width, (float)m_height));
-			ImGui::SetNextWindowPos(ImVec2(0, 0));
-			ImGuiWindowFlags flags = ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoInputs;
-			ImGui::Begin("##GizmoWin", 0, flags);
-			ImGuizmo::SetDrawlist();
-			ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, (float)m_width, (float)m_height);
-
-			sm::Matrix camViewM = mp_currentCam->GetViewM();
-			sm::Matrix camProj = mp_currentCam->GetProjM();
-			sm::Matrix world = m_models[m_selected]->GetWorld();
-
-
-			float* model = reinterpret_cast<float*>(&world);
-			const float* proj = reinterpret_cast<const float*>(&camProj);
-			const float* view = reinterpret_cast<const float*>(&camViewM);
-
-			ImGuizmo::Manipulate(view, proj, op, im->transformMode, model);
-
-			if (ImGuizmo::IsUsing())
-			{
-				sm::Vector3 pos;
-				sm::Vector3 scale;
-				sm::Quaternion rot;
-				world.Decompose(scale, rot, pos);
-				//ImGuizmo::DecomposeMatrixToComponents(&world._11, &pos.x, &rot.x, &scale.x);
-
-				m_models[m_selected]->SetScale(scale);
-				m_models[m_selected]->SetRotation(rot);
-				m_models[m_selected]->SetPosition(pos);
-			}
-
-			ImGui::End();
-		}
+		writer.close();*/
 	}
 
 	void DX11Renderer::ImGuTextureDisplay()
@@ -1228,51 +947,6 @@ namespace PrimtTech
 		ImGui::End();
 	}
 	using uchar = unsigned char;
-
-	void threadFunc2(KeyboardHandler* kb, uchar* recordkey)
-	{
-		while (true)
-		{
-			//uchar key = kb->ReadRecordKey(true);
-
-			//if (key != 0)
-			//{
-			//	kb->SetRecording(false);
-			//	*recordkey = key;
-			//}
-		}
-	}
-
-	void DX11Renderer::ImGuiKeyBinds()
-	{
-		ImGui::Begin("Keybinds", &im->showKeybinds);
-
-
-		ImGui::End();
-	}
-
-	void DX11Renderer::NewScene()
-	{
-		m_selected = -1;
-		ClearModelList();
-		m_models.emplace_back(new Model);
-		UINT i = (UINT)m_models.size() - 1;
-		m_models[i]->Init("scaledplane.obj");
-		m_models[i]->SetDCandBuffer(dc, m_transformBuffer);
-		m_models[i]->SetMaterialBuffer(m_materialBuffer);
-		m_models[i]->Scale(10.f);
-		m_models[i]->SetPosition(0.f, -.5f, 0.f);
-		//m_models[i]->LoadTexture("tfground.png");
-	}
-
-	void DX11Renderer::ClearModelList()
-	{
-		for (int i = 0; i < m_models.size(); i++)
-		{
-			delete m_models[i];
-		}
-		m_models.clear();
-	}
 
 	void DX11Renderer::SetLightWarp(const std::string& path)
 	{
@@ -1306,88 +980,6 @@ namespace PrimtTech
 		return value;
 	}
 
-	int ClickFoo(const sm::Ray& ray, ModelList& models)
-	{
-		float maxDistance = 100.f;
-		float t = 0.f;
-		int index = -1;
-
-		d::BoundingSphere transformedSphere;
-		for (int i = 0; i < models.size(); i++)
-		{
-			transformedSphere = models[i]->GetBSphere();
-			sm::Vector3 center = transformedSphere.Center;
-
-			float radius = transformedSphere.Radius;
-
-			radius *= GetHighestValue(models[i]->GetScale());
-
-			sm::Vector3 transformedCenter = d::XMVector3TransformCoord(center, models[i]->GetWorld());
-
-			transformedSphere.Center = transformedCenter;
-			transformedSphere.Radius = radius;
-
-			float dummy = 0.f;
-			if (ray.Intersects(transformedSphere, dummy))
-			{
-				sm::Ray localSpaceRay;
-				sm::Matrix invWorld = models[i]->GetWorldInversed();
-				localSpaceRay.position = d::XMVector3TransformCoord(ray.position, invWorld);
-				localSpaceRay.direction = d::XMVector3TransformNormal(ray.direction, invWorld);
-				localSpaceRay.direction.Normalize();
-				for (UINT k = 0; k < models[i]->GetMeshP()->GetNofMeshes(); k++)
-				{
-					Buffer<Vertex3D>* pVbuffer = &models[i]->GetMeshP()->GetVBuffer();
-					UINT nOTriangles = pVbuffer->GetBufferSize() / 3;
-					for (UINT j = 0; j < nOTriangles; j++)
-					{
-						sm::Vector3 tri0 = pVbuffer->Data((j * 3) + 0).position;
-						sm::Vector3 tri1 = pVbuffer->Data((j * 3) + 1).position;
-						sm::Vector3 tri2 = pVbuffer->Data((j * 3) + 2).position;
-						if (localSpaceRay.Intersects(tri0, tri1, tri2, t))
-						{
-							// Multiply distnace to world space
-							t *= GetAvarageValue(models[i]->GetScale());
-							if (t < maxDistance)
-							{
-								maxDistance = t;
-								index = i;
-							}
-						}
-					}
-				}
-
-				//if (t > maxDistance)
-				//{
-				//	maxDistance = t;
-				//	index = i;
-				//}
-
-			}
-		}
-		return index;
-	}
-
-	void DX11Renderer::Click(const sm::Vector3& dir)
-	{
-		if (!m_isHoveringWindow)
-		{
-			sm::Ray ray;
-			ray.position = mp_currentCam->GetPosition();
-			ray.direction = dir;
-			//#ifdef _DEBUG
-			if (im->drawRayCast)
-			{
-				sm::Vector3 endPos = ray.position + dir;
-				m_rLine.SetLine(ray.position, endPos);
-			}
-			//#endif // _DEBUG
-			int n = ClickFoo(ray, m_models);
-			m_selected = n;
-			m_selectedMtrl = -1;
-		}
-	}
-
 	void DX11Renderer::SetInputP(KeyboardHandler& kb)
 	{
 		mp_kb = &kb;
@@ -1396,7 +988,6 @@ namespace PrimtTech
 	void DX11Renderer::Render(const float& deltatime)
 	{
 		m_guiHandler.CalculateFps(deltatime);
-		int modelAmount = (int)m_models.size();
 		float bgColor[] = { .1f,.1f,.1f,1.f };
 
 		dc->ClearRenderTargetView(m_rtv, bgColor);
@@ -1405,14 +996,15 @@ namespace PrimtTech
 
 		dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		dc->RSSetState(m_rasterizerState);
-		//if (im->shadowMap)
-		//{
-		//	dc->IASetInputLayout(m_3dvs.GetInputLayout());
-		//	dc->VSSetShader(m_3dvs.GetShader(), NULL, 0);
-		//	dc->PSSetShader(NULL, NULL, 0);
-		//	m_transformBuffer.Data().viewProj = d::XMMatrixTranspose(m_shadowmap.GetShadowCam().GetViewM() * m_shadowmap.GetShadowCam().GetProjM());
-		//	m_transformBuffer.Data().lightViewProj = d::XMMatrixTranspose(m_shadowmap.GetShadowCam().GetViewM() * m_shadowmap.GetShadowCam().GetProjM());
-		//	m_shadowmap.Bind(dc, 10);
+		if (im->shadowMap)
+		{
+			dc->IASetInputLayout(m_3dvs.GetInputLayout());
+			dc->VSSetShader(m_3dvs.GetShader(), NULL, 0);
+			dc->PSSetShader(NULL, NULL, 0);
+			m_transformBuffer.Data().viewProj = d::XMMatrixTranspose(m_shadowmap.GetShadowCam().GetViewM() * m_shadowmap.GetShadowCam().GetProjM());
+			m_transformBuffer.Data().lightViewProj = d::XMMatrixTranspose(m_shadowmap.GetShadowCam().GetViewM() * m_shadowmap.GetShadowCam().GetProjM());
+			m_shadowmap.Bind(dc, 10);
+		}
 
 		//	m_playermodel.Draw();
 		//	for (int i = 0; i < modelAmount; i++)
@@ -1427,8 +1019,11 @@ namespace PrimtTech
 		dc->VSSetShader(m_lineVS.GetShader(), NULL, 0);
 		dc->PSSetShader(m_linePS.GetShader(), NULL, 0);
 
+		std::vector<pt::CameraComp>& cc = ComponentHandler::GetComponentArray<pt::CameraComp>();
+
 		if (!im->viewshadowcam)
-			m_transformBuffer.Data().viewProj = d::XMMatrixTranspose(mp_currentCam->GetViewM() * mp_currentCam->GetProjM());
+			m_transformBuffer.Data().viewProj = d::XMMatrixTranspose(cc[0].GetViewMatrix() * cc[0].GetProjMatrix());
+			//m_transformBuffer.Data().viewProj = d::XMMatrixTranspose(mp_currentCam->GetViewM() * mp_currentCam->GetProjM());
 
 		//if (im->drawBCircle && m_selected != -1)
 		//{
@@ -1471,8 +1066,9 @@ namespace PrimtTech
 		//dc->PSSetShader(m_3dps.GetShader(), NULL, 0);
 		dc->PSSetShader(m_toonPS.GetShader(), NULL, 0);
 		//m_shadowmap.BindSRV(dc, 10);
-		if (mp_currentCam->GetOffset().z != 0.f)
-			m_playermodel.Draw();
+
+		//if (mp_currentCam->GetOffset().z != 0.f)
+		//	m_playermodel.Draw();
 
 		m_materialBuffer.Data().flags = 0;
 		m_materialBuffer.MapBuffer();
@@ -1491,12 +1087,7 @@ namespace PrimtTech
 		std::vector<MeshRef>& rMeshrefs = ComponentHandler::GetComponentArray<MeshRef>();
 		std::vector<TransformComp>& rTransforms = ComponentHandler::GetComponentArray<TransformComp>();
 
-
 		uint numMEshRefs = rMeshrefs.size();
-
-		//ImGui_ImplDX11_NewFrame();
-		//ImGui_ImplWin32_NewFrame();
-		//ImGui::NewFrame();
 
 		for (int i = 0; i < numMEshRefs; i++)
 		{
@@ -1516,6 +1107,7 @@ namespace PrimtTech
 				uint matIndex = rMeshrefs[i].GetMaterialIndex(j);
 				Material& rMat = ResourceHandler::GetMaterial(matIndex);
 				rMat.Set(dc, m_materialBuffer);
+				rMat.UpdateTextureScroll(deltatime);
 
 				int v1 = meshPtr->GetMeshOffsfets()[j + 1], v2 = meshPtr->GetMeshOffsfets()[j];
 				dc->Draw(v1 - v2, v2);
@@ -1545,8 +1137,6 @@ namespace PrimtTech
 		//m_transformBuffer.UpdateCB();
 		//m_renderbox.Draw(dc);
 
-
-
 		//if (mp_currentCam->GetOffset().z == 0.f && im->enableHandModel)
 		//{
 		//	dc->RSSetState(m_rasterizerState);
@@ -1557,7 +1147,6 @@ namespace PrimtTech
 
 		ImGuiRender();
 		m_swapChain->Present((UINT)im->useVsync, NULL);
-		//dc->ClearState();
 	}
 
 	ID3D11Device* DX11Renderer::GetDevice() const
@@ -1575,43 +1164,7 @@ namespace PrimtTech
 		DestroyWindow(*m_pHWND);
 	}
 
-	void RecursiveRead(Sceneheaders& header, ModelList& v, std::ifstream& reader)
-	{
-		reader.read((char*)&header, 4);
-		switch (header)
-		{
-		case Sceneheaders::eMODEL:
-		{
-			ModelStruct ms;
-			reader.read((char*)&ms, sizeof(ModelStruct));
-			if (ms.modelname[0] == '(')
-			{
-				std::string strCopy(ms.modelname);
-				strCopy = strCopy.substr(3);
-				sprintf_s(ms.modelname, strCopy.c_str());
-			}
 
-			v.emplace_back(new Model);
-			v[v.size() - 1]->Init(std::string(ms.modelname));
-			v[v.size() - 1]->SetPosition(ms.position);
-			v[v.size() - 1]->SetRotation(ms.rotation);
-			v[v.size() - 1]->SetScale(ms.scale);
-			if (std::string(ms.mtrlname) != "")
-				v[v.size() - 1]->GetMaterial().ImportMaterial(std::string(ms.mtrlname));
-
-			for (UINT i = 1; i < ms.noOfExtraMats + 1 && ms.noOfExtraMats < 100; i++)
-			{
-				reader.read((char*)&ms.mtrlname, 24);
-				if (ms.mtrlname != std::string(""))
-					v[v.size() - 1]->GetMaterial(i).ImportMaterial(std::string(ms.mtrlname));
-			}
-			RecursiveRead(header, v, reader);
-			break;
-		}
-		default:
-			break;
-		}
-	}
 }
 
 

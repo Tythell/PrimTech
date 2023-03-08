@@ -170,6 +170,7 @@ IF EXIST 3rdparty\*.dll ( copy 3rdparty\*.dll x64\Release\ )</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\ecs\CameraC.cpp" />
     <ClCompile Include="src\ecs\ComponentHandler.cpp" />
     <ClCompile Include="src\ecs\Component.cpp" />
     <ClCompile Include="src\ecs\Entity.cpp" />

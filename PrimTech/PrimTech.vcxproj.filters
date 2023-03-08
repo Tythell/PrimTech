@@ -156,6 +156,9 @@
     <ClCompile Include="src\Graphics\3rdParty\ImGuizmo\ImGuizmo.cpp">
       <Filter>Source Files\ImGui</Filter>
     </ClCompile>
+    <ClCompile Include="src\ecs\CameraC.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />

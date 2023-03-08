@@ -29,26 +29,39 @@ namespace PrimtTech
 	{
 	public:
 		Buffer() {}
-		//Buffer(const Buffer& other)
-		//{
-		//	switch (other.m_type)
-		//	{
-		//	case eVERTEX:
-		//	{
-		//		CreateVertexBuffer()
-		//	}
-		//	case eCONSTANT:
-		//	{
+		/*Buffer(const Buffer& other)
+		{
+			switch (other.m_type)
+			{
+			case eVERTEX:
+			{
+				mp_device = other.mp_device;
+				mp_dc = other.mp_dc;
 
-		//	}
-		//	case eINDEX:
-		//	{
+				CreateVertexBuffer(mp_device, other.m_data, other.m_bufferSize, mp_dc);
+				break;
+				
+			}
+			case eCONSTANT:
+			{
+				mp_device = other.mp_device;
+				mp_dc = other.mp_dc;
 
-		//	}
-		//	default:
-		//		THROW_POPUP_ERROR("Failed to copy buffer");
-		//	}
-		//}
+				CreateConstantBuffer(mp_device, mp_dc);
+				break;
+			}
+			case eINDEX:
+			{
+				mp_device = other.mp_device;
+				mp_dc = other.mp_dc;
+
+				CreateVertexBuffer(mp_device, other.m_data, other.m_bufferSize, mp_dc);
+				break;
+			}
+			default:
+				break;
+			}
+		}*/
 		~Buffer()
 		{
 			m_buffer->Release();
@@ -89,6 +102,7 @@ namespace PrimtTech
 		// DeviceContext only needed if buffer is dynamic
 		HRESULT CreateVertexBuffer(ID3D11Device*& device, T* data, UINT bufferSize, ID3D11DeviceContext* dc = NULL, unsigned char flags = 0)
 		{
+			mp_device = device;
 			D3D11_BUFFER_DESC bufferDesc;
 			ZeroMemory(&bufferDesc, sizeof(D3D11_BUFFER_DESC));
 
@@ -258,6 +272,7 @@ namespace PrimtTech
 		T* m_data = nullptr;
 		ID3D11Buffer* m_buffer = nullptr;
 		ID3D11DeviceContext* mp_dc = nullptr;
+		ID3D11Device* mp_device = nullptr;
 		UINT m_stride = sizeof(T);
 		UINT m_bufferSize = 0;
 		BufferUsage m_usage = eDEFAULT;

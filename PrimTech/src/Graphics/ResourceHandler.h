@@ -14,6 +14,7 @@ namespace PrimtTech
 	{
 	public:
 		static void SetDevice(ID3D11Device*& device);
+		static void LoadPak(std::string path);
 		//static Mesh* AddMesh(std::string path, bool makeLeftHanded = true);
 		static void ReserveMeshMemory(int num);
 		static void ReserveTextureMemory(int num);
@@ -22,6 +23,7 @@ namespace PrimtTech
 		static Mesh& GetMesh(unsigned int index);
 		static Mesh* GetMeshAdress(unsigned int index);
 		static std::vector<Mesh>& GetMeshArrayReference() { return m_meshes; };
+		static std::vector<Material>& GetMaterialArrayReference() { return m_materials; };
 		static TextureMap* AddTexture(std::string path, bool flipUV = true);
 		static TextureMap& GetTexture(unsigned int index);
 		static TextureMap* GetTextureAdress(unsigned int index);
@@ -35,7 +37,6 @@ namespace PrimtTech
 		static int CheckTextureNameExists(std::string textureName);
 		static void Unload();
 		static ID3D11Device* GetDevice();
-		static void ResetUses();
 	private:
 		static std::vector<Mesh> m_meshes;
 		static std::vector<TextureMap*> m_textures;

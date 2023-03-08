@@ -23,6 +23,7 @@ namespace pt
 	{
 		// TODO CREATE ASSETLOADER WITH PACKAGING
 		THROW_POPUP_ERROR(false, "asset-pak loading not implemented yet, load assets manually using PrimtTech::ResourceHandler to reserve assets until it's ready");
+		ResourceHandler::LoadPak(path);
 	}
 
 	void PrimTech::Init(LPCWSTR windowName, HINSTANCE hInstance, std::wstring windowClass, unsigned int width, unsigned int height)
@@ -41,12 +42,6 @@ namespace pt
 		mp_dxrenderer = new DX11Renderer(m_window, m_cams);
 		mp_dxrenderer->SetInputP(m_kb);
 
-
-		ResourceHandler::AddMesh("Assets/models/cube.txt");
-		ResourceHandler::AddMesh("Assets/models/gunter.obj");
-		ResourceHandler::AddMesh("Assets/models/scuffball.obj");
-		ResourceHandler::AddMaterial("DefaultMaterial");
-
 		//ComponentHandler::ReserveMemory<MeshRef>(6);
 	}
 
@@ -55,7 +50,7 @@ namespace pt
 		sm::Vector3 move = { 0.f,0.f,0.f };
 		//bool canMove = MouseHandler::GetIsMouseDown(eRIGHTCLICK);
 		static bool canMove = true;
-		if (m_kb.IsKeyDown(Key::A))
+		/*if (m_kb.IsKeyDown(Key::A))
 			move += m_cams.GetCurrentCamera()->GetLeftVector();
 		if (m_kb.IsKeyDown(Key::D))
 			move += -m_cams.GetCurrentCamera()->GetLeftVector();
@@ -68,7 +63,7 @@ namespace pt
 		if (m_kb.IsKeyDown(Key::SHIFT))
 			move += {0.f, -1.f, 0.f};
 		move.Normalize();
-		move *= m_playerSpeed * dt;
+		move *= m_playerSpeed * dt;*/
 
 		static bool isclick = false;
 
@@ -110,28 +105,28 @@ namespace pt
 				m_cams.GetCurrentCamera()->Offset(0.f, 0.f, 0.5f);
 			else if (me.GetType() == MouseEvent::EventType::eLEFTCLICK)
 			{
-				float mouseX = (float)me.GetPosition().x;
-				float mouseY = (float)me.GetPosition().y;
+				//float mouseX = (float)me.GetPosition().x;
+				//float mouseY = (float)me.GetPosition().y;
 
-				float winWidth = m_window.getWinWidth();
-				float winHeight = m_window.getWinHeight();
+				//float winWidth = m_window.getWinWidth();
+				//float winHeight = m_window.getWinHeight();
 
-				float x = (2.f * mouseX) / winWidth - 1.f;
-				float y = 1.f - (2.f * mouseY) / winHeight;
+				//float x = (2.f * mouseX) / winWidth - 1.f;
+				//float y = 1.f - (2.f * mouseY) / winHeight;
 
-				sm::Vector4 clipRay(x, y, -1.f, 1.f);
+				//sm::Vector4 clipRay(x, y, -1.f, 1.f);
 
-				sm::Vector4 eyeRay = XMVector4Transform(clipRay, d::XMMatrixInverse(nullptr, m_cams.GetCurrentCamera()->GetProjM()));
+				//sm::Vector4 eyeRay = XMVector4Transform(clipRay, d::XMMatrixInverse(nullptr, m_cams.GetCurrentCamera()->GetProjM()));
 
-				eyeRay = sm::Vector4(eyeRay.x, eyeRay.y, 1.f, 0.f);
+				//eyeRay = sm::Vector4(eyeRay.x, eyeRay.y, 1.f, 0.f);
 
-				sm::Vector4 worldRay = XMVector4Transform(eyeRay, d::XMMatrixInverse(nullptr, m_cams.GetCurrentCamera()->GetViewM()));
+				//sm::Vector4 worldRay = XMVector4Transform(eyeRay, d::XMMatrixInverse(nullptr, m_cams.GetCurrentCamera()->GetViewM()));
 
-				sm::Vector3 normRay(worldRay.x, worldRay.y, worldRay.z);
+				//sm::Vector3 normRay(worldRay.x, worldRay.y, worldRay.z);
 
-				normRay.Normalize();
+				//normRay.Normalize();
 
-				mp_dxrenderer->Click(normRay);
+				//mp_dxrenderer->Click(normRay);
 			}
 		}
 #ifdef _DEBUG

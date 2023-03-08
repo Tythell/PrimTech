@@ -34,7 +34,7 @@ namespace pt
 		bool m_isOpen = true;
 
 		const unsigned char m_optionkey = Key::ESCAPE;
-		const unsigned char m_camlockKey = Key::Q;
+		const unsigned char m_camlockKey = Key::TAB;
 		d::XMINT2 m_windowPos;
 	};
 };

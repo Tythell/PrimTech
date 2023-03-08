@@ -22,7 +22,6 @@ namespace PrimtTech
 		if (meshIndex != -1)
 		{
 			mp_mesh = ResourceHandler::GetMeshAdress(meshIndex);
-			m_name += "(" + std::to_string(mp_mesh->GetNrOfUses()) + ")";
 		}
 		else
 			mp_mesh = ResourceHandler::AddMesh(fullpath, makeLeftHanded);
@@ -46,8 +45,6 @@ namespace PrimtTech
 
 		for (int i = 0; i < m_nOfMats; i++)
 			m_material[i].SetLeftHanded(makeLeftHanded);
-
-		mp_mesh->IncreaseUses();
 		m_name += mp_mesh->GetName();
 
 		if (e == ModelType::eDEBUG)
@@ -92,11 +89,6 @@ namespace PrimtTech
 	{
 		for (int i = 0; i < m_nOfMats; i++)
 			m_material[i].SetPointers(&cbMaterialBuffer);
-	}
-
-	void Model::DecreaseMeshUsage()
-	{
-		mp_mesh->DecreaseUses();
 	}
 
 	Material& Model::GetMaterial(const UINT& i)

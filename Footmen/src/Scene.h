@@ -2,24 +2,34 @@
 #include "PrimTech.h"
 #include<queue>
 
-enum class SceneCommands
+struct DevConsole
 {
-	eNull,
-	eCreateEntity,
-
+public:
+	std::vector<std::string> history;
+	std::queue<std::string> cmdQ;
+	char m_inputBuffer[256]{""};
+	void AddLog(const char* cmd)
+	{
+		char buf[512]{""};
+		strcpy_s(buf, cmd);
+		history.push_back(buf);
+		cmdQ.push(buf);
+	}
 };
 
-struct EntList
+struct EntListStruct
 {
-	std::queue<SceneCommands> commands;
-	std::vector<pt::Entity> m_ents;
+	DevConsole console;
+	std::vector<pt::Entity> ents;
 	int selected = -1;
+	uint currentCamera;
+	int winWidth, winHeight;
 };
 
 class Scene
 {
 public:
-	Scene(PrimtTech::ImGuiHandler* pGui);
+	Scene(PrimtTech::ImGuiHandler* pGui, d::XMINT2 windowRes);
 	~Scene();
 
 	//void Update
@@ -27,6 +37,7 @@ public:
 	void Update();
 private:
 	PrimtTech::ImGuiHandler* m_pGui = nullptr;
-	EntList m_vars;
-	//GuiVars* pNu = nullptr;
+	EntListStruct m_entlist;
+
+	void execCommand(std::string cmd);
 };
