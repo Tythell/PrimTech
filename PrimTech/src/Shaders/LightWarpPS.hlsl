@@ -164,6 +164,8 @@ float4 main(PSInput input) : SV_Target
     // Uses to calculated value as index on a lookup-table stored in a texture
     //float lightindex = (false) ? saturate(dot(lightVector, normal)) * pointlightStre : 0.f;
     float lightindex = (distance <= lightDistance) ? saturate(dot(lightVector, normal)) * pointlightStre : 0.f;
+    int lightindexi = (distance <= lightDistance) ? saturate(dot(lightVector, normal)) * pointlightStre : 0.f;
+    lightindexi *= 255;
     float3 camToOb = normalize(input.worldPos - camPos.xyz);
    
     float3 specular = 0.f;
@@ -181,10 +183,12 @@ float4 main(PSInput input) : SV_Target
     //lightindex += specular;
     lightindex += charDirLight;
     float3 cellLightStr = ZAToon.Sample(clampSampler, float2(lightindex, .5f)).xyz;
+    //float3 cellLightStri = ZAToon.Load(lightindexi).xyz;
     specular = ZAToon.Sample(clampSampler, float2(specular.z, .5f)).xyz;
     
     //cellLightStr *= shadow;
     
+    //cellLightStri += ambientColor * ambientStr;
     cellLightStr += ambientColor * ambientStr;
     
     //cellLightStr /= distance;

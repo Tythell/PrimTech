@@ -553,6 +553,23 @@ void Gui_MaterialProperties(void* ptr)
 //}
 */
 
+void Gui_menubar(void* ptr)
+{
+	DevConsole* m_console = (DevConsole*)ptr;
+	ImGui::BeginMainMenuBar();
+
+	if (ImGui::BeginMenu("File"))
+	{
+		if (ImGui::MenuItem("New scene")) { m_console->AddLog("new scene"); }
+		if (ImGui::MenuItem("Open scene")) { m_console->AddLog("load scene"); }
+		if (ImGui::MenuItem("Export scene")) { m_console->AddLog("export scene"); }
+		if (ImGui::MenuItem("Exit editor")) { m_console->AddLog("exit"); }
+		ImGui::EndMenu();
+	}
+
+	ImGui::EndMainMenuBar();
+}
+
 Editor::Editor(PrimtTech::ImGuiHandler* pGui, d::XMINT2 windowRes) :m_pGui(pGui)
 {
 	m_pGui->AddWindowFunc(Gui_EntList, &m_entlist);
@@ -560,14 +577,21 @@ Editor::Editor(PrimtTech::ImGuiHandler* pGui, d::XMINT2 windowRes) :m_pGui(pGui)
 	m_pGui->AddWindowFunc(Gui_AssetList, &m_entlist);
 	m_pGui->AddWindowFunc(Gui_Console, &m_entlist.console);
 	m_pGui->AddWindowFunc(Gui_MaterialProperties, &m_entlist.m_selectedMaterial);
+	m_pGui->AddWindowFunc(Gui_menubar, &m_entlist.console);
 
 	//int selected;
+
 
 	m_entlist.winWidth = windowRes.x;
 	m_entlist.winHeight = windowRes.y;
 
 	m_entlist.ents.emplace_back();
-	m_entlist.ents[0].AddComponent<pt::CameraComp>()->SetPerspective(80.f, (float)windowRes.x / (float)windowRes.y, 0.1f, 100.f);
+	m_entlist.ents.emplace_back();
+	pt::CameraComp* devCam = m_entlist.ents[0].AddComponent<pt::CameraComp>();
+	devCam->SetPerspective(80.f, (float)windowRes.x / (float)windowRes.y, 0.1f, 100.f);
+	m_entlist.ents[0].Transform().SetPosition(0.f, 1.f, -2.f);
+	m_entlist.ents[1].Transform().SetScale(10.f);
+	devCam->UpdateView(m_entlist.ents[0].Transform());
 
 	PrimtTech::ResourceHandler::ReserveMeshMemory(15);
 
@@ -575,7 +599,12 @@ Editor::Editor(PrimtTech::ImGuiHandler* pGui, d::XMINT2 windowRes) :m_pGui(pGui)
 	PrimtTech::ResourceHandler::AddMesh("Assets/models/gunter.obj");
 	PrimtTech::ResourceHandler::AddMesh("Assets/models/scuffball.obj");
 	PrimtTech::ResourceHandler::AddMesh("Assets/models/Slime.fbx");
+	PrimtTech::ResourceHandler::AddMesh("Assets/models/scaledplane.obj");
 	PrimtTech::ResourceHandler::AddMaterial("DefaultMaterial");
+
+	//m_entlist.ents[1].AddComponent<pt::MeshRef>()->Init("scaledplane.obj");
+
+	m_entlist.ents[1].Transform().SetPosition(0.f, -0.2f, 0.f);
 
 	//AddEntity();
 }
@@ -629,7 +658,6 @@ void Editor::execCommand(std::string cmd)
 			{
 				m_entlist.ents[entId].AddComponent<pt::MeshRef>();
 			}
-
 		}
 	}
 	else if (argBuffer == "select")
@@ -640,6 +668,18 @@ void Editor::execCommand(std::string cmd)
 			m_entlist.selected = atoi(argBuffer.c_str());
 		}
 		else m_entlist.selected = -1;
+	}
+	else if (argBuffer == "exit")
+	{
+		m_msgQueue.push(Messages::eQuit);
+	}
+	else if (argBuffer == "mouse")
+	{
+		ss >> argBuffer;
+		if (argBuffer == "hide")
+			m_msgQueue.push(Messages::eHideMouse);
+		else if(argBuffer == "show")
+			m_msgQueue.push(Messages::eShowMouse);
 	}
 }
 
@@ -654,10 +694,12 @@ void Editor::Update(float deltatime)
 	}
 
 	sm::Vector3 move = { 0.f,0.f,0.f };
+
 	bool canMove = MouseHandler::GetIsMouseDown(eRIGHTCLICK);
 
 	pt::TransformComp* pDevTransform = &PrimtTech::ComponentHandler::GetComponentByIndex<pt::TransformComp>(0);
 	pt::CameraComp* pDevCam = &PrimtTech::ComponentHandler::GetComponentByIndex<pt::CameraComp>(0);
+
 
 	if (canMove)
 	{
@@ -687,14 +729,14 @@ void Editor::Update(float deltatime)
 		if (me.GetType() == MouseEvent::EventType::RAW_MOVE && canMove)
 		{
 			sm::Vector2 mouseMove = { (float)me.GetPosition().y, (float)me.GetPosition().x };
-			mouseMove *= deltatime * 0.3;
+			mouseMove *= deltatime * 0.3f;
 			pDevTransform->Rotate(mouseMove.x, mouseMove.y, 0.f);
 		}
 		//else if (me.GetType() == MouseEvent::EventType::eSCROLLUP && canMove)
 		//	pDevTransform->Offset(0.f, 0.f, -0.5f);
 		//else if (me.GetType() == MouseEvent::EventType::eSCROLLDOWN && canMove)
 		//	pDevTransform->Offset(0.f, 0.f, 0.5f);
-		else if (me.GetType() == MouseEvent::EventType::eLEFTCLICK)
+		else if (me.GetType() == MouseEvent::EventType::eLEFTCLICKDOWN)
 		{
 			//float mouseX = (float)me.GetPosition().x;
 			//float mouseY = (float)me.GetPosition().y;
@@ -719,5 +761,16 @@ void Editor::Update(float deltatime)
 
 			//mp_dxrenderer->Click(normRay);
 		}
+		else if (me.GetType() == MouseEvent::EventType::eRIGHTCLICKDOWN)
+			m_entlist.console.AddLog("mouse hide");
+		else if (me.GetType() == MouseEvent::EventType::eRIGHTCLICKRELEASE)
+			m_entlist.console.AddLog("mouse show");
 	}
+
+
+
+	#ifdef _DEBUG
+	if (KeyboardHandler::IsKeyDown(m_optionkey))
+		m_entlist.console.AddLog("exit");
+	#endif // _DEBUG
 }

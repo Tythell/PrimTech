@@ -26,6 +26,29 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		pt.Run();
 		scene.Update((float)deltaTime);
 
+		while (!scene.m_msgQueue.empty())
+		{
+			Editor::Messages postMsg = scene.m_msgQueue.front();
+			switch (postMsg)
+			{
+			case Editor::Messages::eQuit:
+				pt.Close();
+				break;
+			case Editor::Messages::eToggleMouse:
+				pt.ToggleMouse();
+				break;
+			case Editor::Messages::eHideMouse:
+				pt.HideCursor();
+				break;
+			case Editor::Messages::eShowMouse:
+				pt.ShowCursor();
+				break;
+			default:
+				break;
+			}
+			scene.m_msgQueue.pop();
+		}
+
 		deltaTime = omp_get_wtime() - start;
 		pt.SetDeltaTime(deltaTime);
 	}

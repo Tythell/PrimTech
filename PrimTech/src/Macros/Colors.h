@@ -3,6 +3,9 @@
 #define BLACK_3F {0.f,0.f,0.f}
 #define BLACK_4F {0.f,0.f,0.f,0.f}
 
+#define GRAY_3F {0.5f, 0.5f, 0.5f}
+#define GRAY_4F {0.4f, 0.4f, 0.4f, 0.f}
+
 #define RED_3F {1.f,0.f,0.f}
 #define RED_4F {1.f,0.f,1.f, 1.f}
 

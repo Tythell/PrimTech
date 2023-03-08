@@ -38,8 +38,6 @@ namespace PrimtTech
 		void ShutDown();
 		void UpdateScene(const float& deltatime);
 
-		void SetCanMove(bool b);
-
 		ImGuiHandler* GetGuiHandlerP() { return &m_guiHandler; }
 
 	private:
@@ -53,7 +51,6 @@ namespace PrimtTech
 		void InitConstantBuffers();
 
 		void ImGuiRender();
-		void ImGuiMenu();
 		void ImGuTextureDisplay();
 
 		//void ImportScene(std::string path);
@@ -95,6 +92,8 @@ namespace PrimtTech
 		Buffer<hlsl::cbpLightBuffer> m_lightbuffer;
 		Buffer<hlsl::cbpMaterialBuffer> m_materialBuffer;
 
+		Buffer<BBVertex> m_grid;
+
 		CameraHandler* mp_camHandler = nullptr;
 		Camera* mp_currentCam = nullptr;
 		uint m_activeCamIndex = 0;
@@ -115,7 +114,6 @@ namespace PrimtTech
 
 		//unsigned char m_ZAToonExport[255] = {};
 		bool m_isHoveringWindow = false;
-		bool m_canMove = true;
 		ShadowMap m_shadowmap;
 	};
 

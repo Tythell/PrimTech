@@ -1,7 +1,7 @@
 #pragma once
 #include <queue>
 #include<vector>
-enum MouseButton {e, eLEFTCLICK, eRIGHTCLICK, eMIDCLICK };
+enum MouseButton {eLEFTCLICK, eRIGHTCLICK, eMIDCLICK };
 
 struct int2
 {
@@ -14,7 +14,8 @@ public:
 	enum EventType
 	{
 		eINVALID,
-		eLEFTCLICK, eRIGHTCLICK, eMIDCLICK,
+		eLEFTCLICKDOWN, eRIGHTCLICKDOWN, eMIDCLICKDOWN,
+		eLEFTCLICKRELEASE, eRIGHTCLICKRELEASE, eMIDCLICKRELEASE,
 		RAW_MOVE, eSCROLLUP, eSCROLLDOWN
 	};
 	MouseEvent(EventType type, const int x, const int y);

@@ -101,7 +101,7 @@ namespace PrimtTech
 			int x = LOWORD(lParam);
 			int y = HIWORD(lParam);
 			MouseHandler::SetMouseButton(eLEFTCLICK, true);
-			MouseEvent e(MouseEvent::EventType::eLEFTCLICK, x, y);
+			MouseEvent e(MouseEvent::EventType::eLEFTCLICKDOWN, x, y);
 			MouseHandler::AddMouseEvent(e);
 			return 0;
 		}
@@ -116,7 +116,7 @@ namespace PrimtTech
 			int x = LOWORD(lParam);
 			int y = HIWORD(lParam);
 			MouseHandler::SetMouseButton(eRIGHTCLICK, true);
-			MouseHandler::AddMouseEvent(MouseEvent(MouseEvent::EventType::eRIGHTCLICK, x, y));
+			MouseHandler::AddMouseEvent(MouseEvent(MouseEvent::EventType::eRIGHTCLICKDOWN, x, y));
 			return 0;
 		}
 		case WM_MBUTTONDOWN:
@@ -124,7 +124,7 @@ namespace PrimtTech
 			int x = LOWORD(lParam);
 			int y = HIWORD(lParam);
 			MouseHandler::SetMouseButton(eMIDCLICK, true);
-			MouseHandler::AddMouseEvent(MouseEvent(MouseEvent::EventType::eMIDCLICK, x, y));
+			MouseHandler::AddMouseEvent(MouseEvent(MouseEvent::EventType::eMIDCLICKDOWN, x, y));
 			return 0;
 		}
 		case WM_LBUTTONUP:
@@ -133,6 +133,7 @@ namespace PrimtTech
 			int y = HIWORD(lParam);
 
 			//m_mouseHandler.SetMouseButton(eLEFTCLICK, false);
+			MouseHandler::AddMouseEvent(MouseEvent(MouseEvent::EventType::eLEFTCLICKRELEASE, x, y));
 			MouseHandler::SetMouseButton(eLEFTCLICK, false);
 			return 0;
 		}
@@ -141,6 +142,7 @@ namespace PrimtTech
 			int x = LOWORD(lParam);
 			int y = HIWORD(lParam);
 			//m_mouseHandler.SetMouseButton(eLEFTCLICK, false);
+			MouseHandler::AddMouseEvent(MouseEvent(MouseEvent::EventType::eRIGHTCLICKRELEASE, x, y));
 			MouseHandler::SetMouseButton(eRIGHTCLICK, false);
 
 			return 0;
@@ -150,6 +152,7 @@ namespace PrimtTech
 			int x = LOWORD(lParam);
 			int y = HIWORD(lParam);
 			//m_mouseHandler.SetMouseButton(eLEFTCLICK, false);
+			MouseHandler::AddMouseEvent(MouseEvent(MouseEvent::EventType::eMIDCLICKRELEASE, x, y));
 			MouseHandler::SetMouseButton(eMIDCLICK, false);
 			return 0;
 		}

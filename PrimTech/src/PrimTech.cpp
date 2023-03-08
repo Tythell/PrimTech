@@ -10,7 +10,7 @@ namespace pt
 	PrimTech::PrimTech() :
 		m_playerSpeed(5.f)
 	{
-		HideCursor();
+		//HideCursor();
 	}
 
 	PrimTech::~PrimTech()
@@ -45,76 +45,37 @@ namespace pt
 		//ComponentHandler::ReserveMemory<MeshRef>(6);
 	}
 
+	void PrimTech::ToggleMouse()
+	{
+		if (m_mouseLocked) ShowCursor();
+		else HideCursor();
+		m_mouseLocked = !m_mouseLocked;
+	}
+
 	void PrimTech::Update(float& dt)
 	{
-		sm::Vector3 move = { 0.f,0.f,0.f };
-		//bool canMove = MouseHandler::GetIsMouseDown(eRIGHTCLICK);
-		static bool canMove = true;
-
-		static bool isclick = false;
-
-		if (canMove && m_window.GetIsFocused())
+		if (m_mouseLocked)
 		{
+			RECT Rect;
+			GetWindowRect(m_window.getHWND(), &Rect);
+
+			Rect.left
+
 			SetCursorPos(m_windowPos.x + (m_window.getWinWidth() / 2), m_windowPos.y + (m_window.getWinHeight() / 2));
 		}
-		m_cams.GetCurrentCamera()->Move(move);
-
-		mp_dxrenderer->SetCanMove(canMove);
-
-		if (!m_kb.IsKeyDown(m_camlockKey))
-			isclick = false;
-		else if (m_kb.IsKeyDown(m_camlockKey) && !isclick)
-		{
-			isclick = true;
-			canMove = !canMove;
-
-			if (!canMove) ShowCursor();
-			else
-			{
-				HideCursor();
-				RECT rec = {};
-				GetWindowRect(m_window.getHWND(), &rec);
-				m_windowPos.x = rec.left;
-				m_windowPos.y = rec.top;
-			}
-		}
-		
-#ifdef _DEBUG
-		if (m_kb.IsKeyDown(m_optionkey))
-			m_window.ShutDown();
-#endif // _DEBUG
-
-
 	}
 
 	void PrimTech::HideCursor()
 	{
+		m_mouseLocked = true;
 		while (::ShowCursor(false) >= 0);
 	}
 
 	void PrimTech::ShowCursor()
 	{
+		m_mouseLocked = false;
 		while (::ShowCursor(true) < 0);
 	}
-
-	//void ThreadFunc(DX11Renderer* dx, bool* running)
-	//{
-	//	double start = 0, deltatime = 0;
-
-	//	while (*running)
-	//	{
-	//		start = omp_get_wtime();
-	//		//float dt = .5f;
-	//		float dt = (float)deltatime;
-	//		dx->CalculateFps(dt);
-	//		dx->UpdateScene(dt);
-	//		
-	//		dx->Render(dt);
-
-	//		deltatime = omp_get_wtime() - start;
-	//	}
-
-	//}
 
 	void PrimTech::Run()
 	{

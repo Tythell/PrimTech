@@ -121,11 +121,6 @@ namespace PrimtTech
 		return true;
 	}
 
-	void DX11Renderer::SetCanMove(bool b)
-	{
-		m_canMove = b;
-	}
-
 	bool DX11Renderer::SetupDSAndVP()
 	{
 		CD3D11_TEXTURE2D_DESC depthStencilTextureDesc(DXGI_FORMAT_D24_UNORM_S8_UINT, m_width, m_height);
@@ -153,7 +148,6 @@ namespace PrimtTech
 
 	bool DX11Renderer::InitRastNSampState()
 	{
-
 		D3D11_RASTERIZER_DESC rastDesc;
 		ZeroMemory(&rastDesc, sizeof(D3D11_RASTERIZER_DESC));
 		rastDesc.FillMode = D3D11_FILL_MODE::D3D11_FILL_SOLID;
@@ -271,6 +265,31 @@ namespace PrimtTech
 		dc->RSSetState(m_rasterizerState);
 		dc->OMSetDepthStencilState(m_dsState, 0);
 
+		std::vector<BBVertex> gridArr;
+
+		uint nLines = 11;
+
+		gridArr.resize(nLines * 4);
+		for (int i = 0; i < nLines; i++)
+		{
+			gridArr[2 * i + 0].m_position = sm::Vector3(i - 5, 0.f, (float)nLines / 2.f);
+			gridArr[2 * i + 1].m_position = sm::Vector3(i - 5, 0.f, -(float)nLines / 2.f);
+			gridArr[2 * i + 0].m_color = GRAY_3F;
+			gridArr[2 * i + 1].m_color = GRAY_3F;
+		}
+		for (int i = 0; i < nLines; i++)
+		{
+			uint index = (nLines * 2) + i * 2;
+			gridArr[index + 0].m_position = sm::Vector3(-(float)nLines / 2.f, 0.f, i - 5);
+			gridArr[index + 1].m_position = sm::Vector3((float)nLines / 2.f, 0.f, i - 5);
+
+			gridArr[index + 0].m_color = GRAY_3F;
+			gridArr[index + 1].m_color = GRAY_3F;
+		}
+
+
+
+		m_grid.CreateVertexBuffer(device, gridArr.data(), gridArr.size());
 
 		dc->OMSetBlendState(m_blendState, NULL, 0xFFFFFFFF);
 
@@ -363,7 +382,6 @@ namespace PrimtTech
 		ImGuizmo::BeginFrame();
 		m_isHoveringWindow = false;
 
-		ImGuiMenu();
 		m_guiHandler.ImguiRender();
 
 		if (im->showShadowMapDepth) ImGuTextureDisplay();
@@ -375,114 +393,6 @@ namespace PrimtTech
 	}
 
 	//#define PRINTER(name) printer(#name, )
-
-	void DX11Renderer::ImGuiMenu()
-	{
-		if (ImGui::BeginMainMenuBar())
-		{
-			if (ImGui::IsWindowHovered())
-				m_isHoveringWindow = true;
-			if (ImGui::BeginMenu("File"))
-			{
-				if (ImGui::IsWindowHovered())
-					m_isHoveringWindow = true;
-				ImGui::BeginDisabled(true);
-				if (ImGui::MenuItem("New Scene", NULL, false, true))
-				{
-					//NewScene();
-				}
-				if (ImGui::MenuItem("Open Scene...", NULL, false, true))
-				{
-					std::string diapath = Dialogs::OpenFile("Scene (*.ptscene)\0*.ptscene\0", "Scenes\\");
-					if (diapath != "")
-					{
-						//ClearModelList();
-						//ImportScene(diapath);
-						//for (int i = 0; i < m_models.size(); i++)
-						//{
-						//	m_models[i]->SetDCandBuffer(dc, m_transformBuffer);
-						//	m_models[i]->SetMaterialBuffer(m_materialBuffer);
-						//}
-					}
-				}
-				if (ImGui::MenuItem("Save scene as..."))
-				{
-					std::string diapath = Dialogs::SaveFile("Scene (*.ptscene)\0*.ptscene\0", "Scenes\\");
-					if (diapath != "")
-					{
-						if (StringHelper::GetExtension(diapath) != "ptscene")
-							diapath += ".ptscene";
-						ExportScene(diapath);
-					}
-				}
-				if (ImGui::MenuItem("Update Materials..."))
-				{
-					std::vector<std::string> diapath = Dialogs::OpenMultifile("Pmaterial (*.pmtrl)\0*.pmtrl\0", "Assets\\pmtrl");
-					if (!diapath.empty())
-					{
-						for (int i = 1; i < diapath.size(); i++)
-						{
-							Material mat;
-							mat.ImportMaterial(diapath[i]);
-							mat.ExportMaterial("Assets/pmtrl/newmats/" + diapath[i]);
-						}
-					}
-				}
-				ImGui::EndDisabled();
-
-				if (ImGui::MenuItem("Exit PrimTech"))
-				{
-					ShutDown();
-				}
-				ImGui::EndMenu();
-			}
-			if (ImGui::BeginMenu("Edit"))
-			{
-				if (ImGui::MenuItem("Z axis up"))
-				{
-					Popup::Error("stfu and die");
-					DestroyWindow(*m_pHWND);
-				}
-				ImGui::BeginDisabled(true);
-				ImGui::MenuItem("Keybinds", NULL, &im->showKeybinds);
-				ImGui::EndDisabled();
-				ImGui::EndMenu();
-			}
-			if (ImGui::BeginMenu("Lighting"))
-			{
-				if (ImGui::MenuItem("Load Lightwarp"))
-				{
-					std::string path = Dialogs::OpenFile("Images (*.png)\0*.png;*.jpg", "Assets\\Textures\\");
-					if (!path.empty()) SetLightWarp(path);
-				}
-				ImTextureID lightwarptex = ResourceHandler::GetTextureAdress(1)->GetSRV();
-				ImGui::Separator();
-				ImGui::Image(lightwarptex, { 255.f, 10.f });
-
-				ImGui::EndMenu();
-			}
-			if (ImGui::BeginMenu("Windows"))
-			{
-				//ImGui::MenuItem("Debug", NULL, &im->showDebugWindow);
-
-				ImGui::MenuItem("ImGui Demo", NULL, &im->showDemoWindow);
-				ImGui::Separator();
-				ImGui::MenuItem("ShadowMapDepth", NULL, &im->showShadowMapDepth);
-
-				ImGui::EndMenu();
-			}
-			if (ImGui::BeginMenu("Utility"))
-			{
-				if (ImGui::MenuItem("TP to spawn", NULL))
-					mp_currentCam->SetPosition(0.f, 1.f, 0.f);
-
-				ImGui::EndMenu();
-			}
-
-
-			ImGui::EndMainMenuBar();
-		}
-	}
 
 	void DX11Renderer::ExportScene(std::string path)
 	{
@@ -617,42 +527,42 @@ namespace PrimtTech
 
 		if (!im->viewshadowcam)
 			m_transformBuffer.Data().viewProj = d::XMMatrixTranspose(cc[0].GetViewMatrix() * cc[0].GetProjMatrix());
-			//m_transformBuffer.Data().viewProj = d::XMMatrixTranspose(mp_currentCam->GetViewM() * mp_currentCam->GetProjM());
+		//m_transformBuffer.Data().viewProj = d::XMMatrixTranspose(mp_currentCam->GetViewM() * mp_currentCam->GetProjM());
 
-		//if (im->drawBCircle && m_selected != -1)
-		//{
-		//	dc->VSSetShader(m_lineVS.GetShader(), NULL, 0);
-		//	dc->PSSetShader(m_linePS.GetShader(), NULL, 0);
-		//	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
-		//	d::BoundingSphere sphere;
-		//	sphere = m_models[m_selected]->GetBSphere();
-		//	sm::Vector3 center = sphere.Center;
-		//	//center = d::XMVector3TransformCoord(center, d::XMMatrixRotationRollPitchYawFromVector(m_models[m_selected].GetRotation()));
+	//if (im->drawBCircle && m_selected != -1)
+	//{
+	//	dc->VSSetShader(m_lineVS.GetShader(), NULL, 0);
+	//	dc->PSSetShader(m_linePS.GetShader(), NULL, 0);
+	//	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
+	//	d::BoundingSphere sphere;
+	//	sphere = m_models[m_selected]->GetBSphere();
+	//	sm::Vector3 center = sphere.Center;
+	//	//center = d::XMVector3TransformCoord(center, d::XMMatrixRotationRollPitchYawFromVector(m_models[m_selected].GetRotation()));
 
-		//	sm::Matrix rotMat = d::XMMatrixRotationRollPitchYawFromVector(m_models[m_selected]->GetRotation());
-		//	sm::Matrix scaleMat = d::XMMatrixScalingFromVector(m_models[m_selected]->GetScale());
-		//	sm::Vector3 transformedCenter = d::XMVector3TransformCoord(center, scaleMat * rotMat);
+	//	sm::Matrix rotMat = d::XMMatrixRotationRollPitchYawFromVector(m_models[m_selected]->GetRotation());
+	//	sm::Matrix scaleMat = d::XMMatrixScalingFromVector(m_models[m_selected]->GetScale());
+	//	sm::Vector3 transformedCenter = d::XMVector3TransformCoord(center, scaleMat * rotMat);
 
-		//	//sm::Vector3 scalar = d::XMVector3TransformCoord(center, d::XMMatrixScalingFromVector(m_models[m_selected].GetScale()));
-		//	center = transformedCenter;
-		//	//center *= d::XMVector3TransformCoord(center, d::XMMatrixRotationRollPitchYawFromVector(m_models[m_selected].GetRotation()));
-		//	sphere.Center = center;
-		//	float radius = sphere.Radius * GetHighestValue(m_models[m_selected]->GetScale());
-		//	radius *= 2.0f;
-		//	//if (extents.y == 0.f) extents.y = 0.01f;
-		//	sm::Vector3 position = m_models[m_selected]->GetPosition() + sphere.Center;
-		//	sm::Matrix boxMatrix = d::XMMatrixTranspose(d::XMMatrixScaling(radius, radius, radius) * d::XMMatrixTranslationFromVector(position));
-		//	m_transformBuffer.Data().world = boxMatrix;
-		//	m_transformBuffer.MapBuffer();
-		//	m_sphere.Draw(dc);
-		//}
-		//if (im->drawRayCast)
-		//{
-		//	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
-		//	m_transformBuffer.Data().world = d::XMMatrixIdentity();
-		//	m_transformBuffer.MapBuffer();
-		//	m_rLine.Draw(dc);
-		//}
+	//	//sm::Vector3 scalar = d::XMVector3TransformCoord(center, d::XMMatrixScalingFromVector(m_models[m_selected].GetScale()));
+	//	center = transformedCenter;
+	//	//center *= d::XMVector3TransformCoord(center, d::XMMatrixRotationRollPitchYawFromVector(m_models[m_selected].GetRotation()));
+	//	sphere.Center = center;
+	//	float radius = sphere.Radius * GetHighestValue(m_models[m_selected]->GetScale());
+	//	radius *= 2.0f;
+	//	//if (extents.y == 0.f) extents.y = 0.01f;
+	//	sm::Vector3 position = m_models[m_selected]->GetPosition() + sphere.Center;
+	//	sm::Matrix boxMatrix = d::XMMatrixTranspose(d::XMMatrixScaling(radius, radius, radius) * d::XMMatrixTranslationFromVector(position));
+	//	m_transformBuffer.Data().world = boxMatrix;
+	//	m_transformBuffer.MapBuffer();
+	//	m_sphere.Draw(dc);
+	//}
+	//if (im->drawRayCast)
+	//{
+	//	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
+	//	m_transformBuffer.Data().world = d::XMMatrixIdentity();
+	//	m_transformBuffer.MapBuffer();
+	//	m_rLine.Draw(dc);
+	//}
 
 		dc->IASetInputLayout(m_3dvs.GetInputLayout());
 		dc->VSSetShader(m_3dvs.GetShader(), NULL, 0);
@@ -682,7 +592,7 @@ namespace PrimtTech
 		std::vector<TransformComp>& rTransforms = ComponentHandler::GetComponentArray<TransformComp>();
 
 		uint numMEshRefs = rMeshrefs.size();
-
+		uint offset = 0;
 		for (int i = 0; i < numMEshRefs; i++)
 		{
 			uint entId = rMeshrefs[i].EntId();
@@ -694,7 +604,7 @@ namespace PrimtTech
 			m_transformBuffer.Data().world = pTransformComp->GetWorldTransposed();
 
 			m_transformBuffer.MapBuffer();
-			uint offset = 0;
+
 			dc->IASetVertexBuffers(0, 1, meshPtr->GetVBuffer().GetReference(), meshPtr->GetVBuffer().GetStrideP(), &offset);
 			for (int j = 0; j < meshPtr->GetNofMeshes(); j++)
 			{
@@ -707,6 +617,16 @@ namespace PrimtTech
 				dc->Draw(v1 - v2, v2);
 			}
 		}
+
+		m_transformBuffer.Data().world = d::XMMatrixIdentity();
+		m_transformBuffer.MapBuffer();
+
+		dc->IASetVertexBuffers(0, 1, m_grid.GetReference(), m_grid.GetStrideP(), &offset);
+		dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_LINELIST);
+		dc->VSSetShader(m_lineVS.GetShader(), NULL, 0);
+		dc->IASetInputLayout(m_lineVS.GetInputLayout());
+		dc->PSSetShader(m_linePS.GetShader(), NULL, 0);
+		dc->Draw(m_grid.GetBufferSize(), 0);
 
 		//for (int i = 0; i < numnCams; i++)
 		//{
@@ -757,8 +677,4 @@ namespace PrimtTech
 	{
 		DestroyWindow(*m_pHWND);
 	}
-
-
 }
-
-
