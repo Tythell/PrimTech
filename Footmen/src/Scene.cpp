@@ -29,7 +29,7 @@ void Gui_EntList(void* test)
 	ImGui::BeginChild("Lefty", ImVec2(150, 400), true);
 	for (int i = 0; i < p->ents.size(); i++)
 	{
-		ImGui::BeginDisabled(false);
+		ImGui::BeginDisabled(i == 0);
 		if (ImGui::Selectable(std::to_string(i).c_str(), p->selected == i))
 			p->selected = i;
 		ImGui::EndDisabled();
