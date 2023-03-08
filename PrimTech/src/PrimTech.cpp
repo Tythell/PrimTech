@@ -59,7 +59,10 @@ namespace pt
 			RECT Rect;
 			GetWindowRect(m_window.getHWND(), &Rect);
 
-			Rect.left
+			RECT rec = {};
+			GetWindowRect(m_window.getHWND(), &rec);
+			m_windowPos.x = rec.left;
+			m_windowPos.y = rec.top;
 
 			SetCursorPos(m_windowPos.x + (m_window.getWinWidth() / 2), m_windowPos.y + (m_window.getWinHeight() / 2));
 		}
