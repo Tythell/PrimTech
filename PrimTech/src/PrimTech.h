@@ -25,8 +25,9 @@ namespace pt
 		void HideCursor();
 		void ShowCursor();
 	private:
-		void Update(float& dt);
+		void Update(float dt);
 		
+		std::wstring m_windowName;
 		PrimtTech::Window m_window;
 		PrimtTech::DX11Renderer* mp_dxrenderer = nullptr;
 		PrimtTech::CameraHandler m_cams;

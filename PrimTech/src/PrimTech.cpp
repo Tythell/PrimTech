@@ -28,6 +28,7 @@ namespace pt
 
 	void PrimTech::Init(LPCWSTR windowName, HINSTANCE hInstance, std::wstring windowClass, unsigned int width, unsigned int height)
 	{
+		m_windowName = windowName;
 		m_window.init(windowName, hInstance, windowClass, width, height);
 		m_window.SetInputP(m_kb);
 
@@ -52,8 +53,19 @@ namespace pt
 		m_mouseLocked = !m_mouseLocked;
 	}
 
-	void PrimTech::Update(float& dt)
+	void PrimTech::Update(float dt)
 	{
+		static float timer = 0.f;
+		timer += dt;
+		if (timer >= 1.f)
+		{
+			timer = 0.f;
+			int fps = 1.f / dt;
+			std::wstring extendedWinName = m_windowName + L"  -  FPS: " + std::to_wstring(fps);
+
+			::SetWindowTextW(m_window.getHWND(), extendedWinName.c_str());
+		}
+
 		if (m_mouseLocked)
 		{
 			RECT Rect;

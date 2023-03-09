@@ -380,7 +380,7 @@ namespace PrimtTech
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
 		ImGuizmo::BeginFrame();
-		m_isHoveringWindow = false;
+		//m_isHoveringWindow = false;
 
 		m_guiHandler.ImguiRender();
 
@@ -445,8 +445,8 @@ namespace PrimtTech
 
 		ImTextureID tex = m_shadowmap.GetSRV();
 		ImGui::Image(tex, { winSize.x, winSize.x });
-		if (ImGui::IsWindowHovered())
-			m_isHoveringWindow = true;
+		//if (ImGui::IsWindowHovered())
+			//m_isHoveringWindow = true;
 
 		ImGui::End();
 	}
@@ -491,7 +491,7 @@ namespace PrimtTech
 
 	void DX11Renderer::Render(const float& deltatime)
 	{
-		m_guiHandler.CalculateFps(deltatime);
+		//m_guiHandler.CalculateFps(deltatime);
 		float bgColor[] = { .1f,.1f,.1f,1.f };
 
 		dc->ClearRenderTargetView(m_rtv, bgColor);
@@ -575,7 +575,7 @@ namespace PrimtTech
 		//	m_playermodel.Draw();
 
 		m_materialBuffer.Data().flags = 0;
-		m_materialBuffer.MapBuffer();
+		//m_materialBuffer.MapBuffer();
 
 		//for (int i = 0; i < modelAmount; i++)
 		//{
@@ -593,6 +593,8 @@ namespace PrimtTech
 
 		uint numMEshRefs = rMeshrefs.size();
 		uint offset = 0;
+
+		// iterate through meshrefs
 		for (int i = 0; i < numMEshRefs; i++)
 		{
 			uint entId = rMeshrefs[i].EntId();
@@ -618,6 +620,7 @@ namespace PrimtTech
 			}
 		}
 
+		// Draw grid
 		m_transformBuffer.Data().world = d::XMMatrixIdentity();
 		m_transformBuffer.MapBuffer();
 
@@ -628,18 +631,15 @@ namespace PrimtTech
 		dc->PSSetShader(m_linePS.GetShader(), NULL, 0);
 		dc->Draw(m_grid.GetBufferSize(), 0);
 
-		//for (int i = 0; i < numnCams; i++)
+		//for (int i = 1; i < cc.size(); i++)
 		//{
-		//	if (i != mp_camHandler->GetCurrentCamIndex())
-		//	{
-		//		m_camModel.SetPosition(mp_camHandler->GetCameraAdress(i)->GetPositionNoOffset());
-		//		sm::Vector3 rotation = mp_camHandler->GetCameraAdress(i)->GetRotation();
-		//		m_camModel.SetRotation(rotation.x, rotation.y, 0.f);
-		//		m_camModel.Rotate(d::XM_PI, 0.f, 0.f);
-		//		m_camModel.Draw();
-		//	}
+		//	m_camModel.SetPosition(mp_camHandler->GetCameraAdress(i)->GetPositionNoOffset());
+		//	sm::Vector3 rotation = mp_camHandler->GetCameraAdress(i)->GetRotation();
+		//	m_camModel.SetRotation(rotation.x, rotation.y, 0.f);
+		//	m_camModel.Rotate(d::XM_PI, 0.f, 0.f);
+		//	m_camModel.Draw();
 		//}
-		//// Render debug
+		// Render debug
 		//m_bulb.Draw();
 		//m_spotlight.Draw();
 		//m_spotlight.SetPosition(im->sl.position[0], im->sl.position[1], im->sl.position[2]);

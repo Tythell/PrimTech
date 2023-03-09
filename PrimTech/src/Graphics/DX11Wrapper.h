@@ -40,6 +40,7 @@ namespace PrimtTech
 
 		ImGuiHandler* GetGuiHandlerP() { return &m_guiHandler; }
 
+		void SetLightWarp(const std::string& path);
 	private:
 		bool initSwapChain();
 		bool initRTV();
@@ -55,7 +56,6 @@ namespace PrimtTech
 
 		//void ImportScene(std::string path);
 		void ExportScene(std::string path);
-		void SetLightWarp(const std::string& path);
 
 		Window* m_pWin = nullptr;
 
@@ -112,11 +112,6 @@ namespace PrimtTech
 		RenderLine m_rLine;
 		RenderSphere m_sphere;
 
-		//unsigned char m_ZAToonExport[255] = {};
-		bool m_isHoveringWindow = false;
 		ShadowMap m_shadowmap;
 	};
-
-
 }
-
