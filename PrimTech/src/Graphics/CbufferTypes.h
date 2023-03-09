@@ -78,7 +78,6 @@ namespace PrimtTech {
 			float textureScale;
 			int rim; // bool
 
-			float4 characterLight[2];
 			float3 rimColor;
 			float textureScaleDist;
 		};

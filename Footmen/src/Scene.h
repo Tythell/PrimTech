@@ -10,9 +10,10 @@ struct DevConsole
 	};
 public:
 	
-	std::vector<std::pair<std::string, MsgType>> history;
+	std::deque<std::pair<std::string, MsgType>> history;
 	std::queue<std::string> cmdQ;
 	char m_inputBuffer[256]{""};
+	uint nHistory = 0;
 	void AddLog(const char* cmd, MsgType type = MsgType(0))
 	{
 		char buf[512]{""};
@@ -30,6 +31,7 @@ struct EntListStruct
 	uint currentCamera;
 	int winWidth, winHeight;
 	int m_selectedMaterial = -1;
+	
 };
 
 using uchar = unsigned char;

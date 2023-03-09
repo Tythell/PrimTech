@@ -244,8 +244,8 @@ void Gui_AssetList(void* ptr)
 			ImGui::EndTabBar();
 		}
 
-		ImGui::End();
 	}
+	ImGui::End();
 
 
 }
@@ -256,11 +256,21 @@ void Gui_Console(void* ptr)
 
 	ImGui::Begin("Command console");
 	const float footer_height_to_reserve = ImGui::GetStyle().ItemSpacing.y + ImGui::GetFrameHeightWithSpacing();
-	ImGui::BeginChild("hej barn", ImVec2(0, -footer_height_to_reserve), false, ImGuiWindowFlags_HorizontalScrollbar);
 	if (ImGui::Button("Clear"))
 	{
+		pCon->nHistory = 0;
 		pCon->history.resize(0);
+	} ImGui::SameLine(); 
+	static bool echo = false;
+	ImGui::Checkbox("echo", &echo);
+	ImGui::BeginChild("hej barn", ImVec2(0, -footer_height_to_reserve), true, ImGuiWindowFlags_HorizontalScrollbar);
+
+	if (pCon->history.size() > 50)
+	{
+		pCon->history.pop_front();
 	}
+
+
 
 	for (int i = 0; i < pCon->history.size(); i++)
 	{
@@ -270,14 +280,24 @@ void Gui_Console(void* ptr)
 			ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(100, 100, 100, 255));
 			break;
 		case 1:
-			ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(100, 100, 100, 255));
+			ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 255, 255, 255));
 			break;
 		default:
 			break;
 		}
-		
-		ImGui::TextWrapped(pCon->history[i].first.c_str());
+		if (pCon->history[i].second >= (int)!echo)
+		{
+			ImGui::TextWrapped(pCon->history[i].first.c_str());
+
+		}
+
 		ImGui::PopStyleColor();
+	}
+
+	while (pCon->nHistory < pCon->history.size())
+	{
+		pCon->nHistory++;
+		ImGui::SetScrollHereY(0.f);
 	}
 
 	ImGui::EndChild();
@@ -289,7 +309,7 @@ void Gui_Console(void* ptr)
 	ImGuiInputTextFlags input_text_flags = ImGuiInputTextFlags_EnterReturnsTrue /*| ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory*/;
 	if (ImGui::InputText("Input", pCon->m_inputBuffer, ARRAYSIZE(pCon->m_inputBuffer), input_text_flags))
 	{
-		pCon->AddLog(pCon->m_inputBuffer);
+		pCon->AddLog(pCon->m_inputBuffer, DevConsole::white);
 		strcpy_s(pCon->m_inputBuffer, "");
 	}
 
@@ -716,6 +736,7 @@ void Editor::execCommand(std::string cmd)
 		else if(argBuffer == "show")
 			m_msgQueue.push(Messages::eShowMouse);
 	}
+	
 }
 
 void Editor::Update(float deltatime)

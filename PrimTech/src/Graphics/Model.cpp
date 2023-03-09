@@ -62,7 +62,6 @@ namespace PrimtTech
 		dc->IASetVertexBuffers(0, 1, mp_mesh->GetVBuffer().GetReference(), mp_mesh->GetVBuffer().GetStrideP(), &offset);
 		for (int i = 0; i < mp_mesh->GetNofMeshes(); i++)
 		{
-			m_material[i].GetBuffer()->Data().characterLight[0] = m_characterLight[0];
 			m_material[i].Set(dc);
 			int v1 = mp_mesh->GetMeshOffsfets()[i + 1], v2 = mp_mesh->GetMeshOffsfets()[i];
 			dc->Draw(v1 - v2, v2);

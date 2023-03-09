@@ -355,10 +355,12 @@ namespace PrimtTech
 	void DX11Renderer::UpdateScene(const float& deltatime)
 	{
 		m_lightbuffer.Data().ambientColor = { im->ambient[0], im->ambient[1], im->ambient[2] };
+		//m_lightbuffer.Data().ambientStr = 1.f;
 		m_lightbuffer.Data().ambientStr = im->ambient[3];
-		m_lightbuffer.Data().pointLightColor = { 0.f, 0.f, 0.f };
+		m_lightbuffer.Data().pointLightColor = { 1.f, 1.f, 1.f };
 		m_lightbuffer.Data().pointlightStre = im->pointLightStr;
 		m_lightbuffer.Data().cbShadowBias = im->shadowBias;
+		m_lightbuffer.Data().pointLightDistance = 10.f;
 
 		m_lightbuffer.Data().direction = sm::Vector3(0.f, 1.f, 0.f);
 		m_lightbuffer.Data().pointLightPosition = sm::Vector3(im->pointLightPos[0], im->pointLightPos[1], im->pointLightPos[2]);
