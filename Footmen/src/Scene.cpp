@@ -134,6 +134,8 @@ void Gui_EntList(void* test)
 		//if (ImGuizmo::IsOver() || ImGuizmo::IsUsing())
 		//	m_isHoveringWindow = true;
 
+
+
 		ImGui::SetNextWindowSize(ImVec2((float)p->winWidth, (float)p->winHeight));
 		ImGui::SetNextWindowPos(ImVec2(0, 0));
 		ImGuiWindowFlags flags = ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoInputs;
@@ -153,7 +155,15 @@ void Gui_EntList(void* test)
 		const float* view = reinterpret_cast<const float*>(&camViewM);
 
 		static ImGuizmo::OPERATION op = ImGuizmo::OPERATION::TRANSLATE;
-		
+
+		if (KeyboardHandler::IsKeyDown('Q'))
+			op = ImGuizmo::OPERATION::BOUNDS;
+		if (KeyboardHandler::IsKeyDown('W'))
+			op = ImGuizmo::OPERATION::TRANSLATE;
+		else if (KeyboardHandler::IsKeyDown('E'))
+			op = ImGuizmo::OPERATION::ROTATE;
+		else if (KeyboardHandler::IsKeyDown('R'))
+			op = ImGuizmo::OPERATION::SCALE;
 
 		ImGuizmo::Manipulate(view, proj, op, ImGuizmo::MODE::LOCAL, model);
 
@@ -214,6 +224,10 @@ void Gui_AssetList(void* ptr)
 				if (ImGui::Button(" + ##addMaterial"))
 				{
 					p->console.AddLog("create material");
+				} ImGui::SameLine();
+				if (ImGui::Button("Deselect"))
+				{
+					p->m_selectedMaterial = -1;
 				}
 				ImGui::Separator();
 				std::vector<PrimtTech::Material>& meshArr = PrimtTech::ResourceHandler::GetMaterialArrayReference();
@@ -250,7 +264,20 @@ void Gui_Console(void* ptr)
 
 	for (int i = 0; i < pCon->history.size(); i++)
 	{
-		ImGui::TextWrapped(pCon->history[i].c_str());
+		switch (pCon->history[i].second)
+		{
+		case 0:
+			ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(100, 100, 100, 255));
+			break;
+		case 1:
+			ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(100, 100, 100, 255));
+			break;
+		default:
+			break;
+		}
+		
+		ImGui::TextWrapped(pCon->history[i].first.c_str());
+		ImGui::PopStyleColor();
 	}
 
 	ImGui::EndChild();
@@ -566,6 +593,14 @@ void Gui_menubar(void* ptr)
 		if (ImGui::MenuItem("Exit editor")) { m_console->AddLog("exit"); }
 		ImGui::EndMenu();
 	}
+	if (ImGui::BeginMenu("Windows"))
+	{
+		if (ImGui::MenuItem("New scene")) { m_console->AddLog("new scene"); }
+		if (ImGui::MenuItem("Open scene")) { m_console->AddLog("load scene"); }
+		if (ImGui::MenuItem("Export scene")) { m_console->AddLog("export scene"); }
+		if (ImGui::MenuItem("Exit editor")) { m_console->AddLog("exit"); }
+		ImGui::EndMenu();
+	}
 
 	ImGui::EndMainMenuBar();
 }
@@ -580,7 +615,7 @@ Editor::Editor(PrimtTech::ImGuiHandler* pGui, d::XMINT2 windowRes) :m_pGui(pGui)
 	m_pGui->AddWindowFunc(Gui_menubar, &m_entlist.console);
 
 	//int selected;
-
+	
 
 	m_entlist.winWidth = windowRes.x;
 	m_entlist.winHeight = windowRes.y;
@@ -590,7 +625,7 @@ Editor::Editor(PrimtTech::ImGuiHandler* pGui, d::XMINT2 windowRes) :m_pGui(pGui)
 	pt::CameraComp* devCam = m_entlist.ents[0].AddComponent<pt::CameraComp>();
 	devCam->SetPerspective(80.f, (float)windowRes.x / (float)windowRes.y, 0.1f, 100.f);
 	m_entlist.ents[0].Transform().SetPosition(0.f, 1.f, -2.f);
-	m_entlist.ents[1].Transform().SetScale(10.f);
+	//m_entlist.ents[1].Transform().SetScale(1.f);
 	devCam->UpdateView(m_entlist.ents[0].Transform());
 
 	PrimtTech::ResourceHandler::ReserveMeshMemory(15);

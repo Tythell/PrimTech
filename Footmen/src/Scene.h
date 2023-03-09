@@ -4,15 +4,20 @@
 
 struct DevConsole
 {
+	enum MsgType
+	{
+		gray, white,
+	};
 public:
-	std::vector<std::string> history;
+	
+	std::vector<std::pair<std::string, MsgType>> history;
 	std::queue<std::string> cmdQ;
 	char m_inputBuffer[256]{""};
-	void AddLog(const char* cmd)
+	void AddLog(const char* cmd, MsgType type = MsgType(0))
 	{
 		char buf[512]{""};
 		strcpy_s(buf, cmd);
-		history.push_back(buf);
+		history.push_back({ buf, type });
 		cmdQ.push(buf);
 	}
 };
