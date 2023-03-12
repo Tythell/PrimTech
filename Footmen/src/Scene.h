@@ -39,12 +39,12 @@ using uchar = unsigned char;
 class Editor
 {
 public:
-	Editor(PrimtTech::ImGuiHandler* pGui, d::XMINT2 windowRes);
+	Editor(PrimtTech::DX11Renderer* renderer, d::XMINT2 windowRes);
 	~Editor();
 
 	void Update(float deltatime);
 
-	bool GetIsExit() const { return m_exit; };
+	//bool GetIsExit() const { return m_exit; };
 
 	enum class Messages
 	{
@@ -61,7 +61,9 @@ private:
 
 	void execCommand(std::string cmd);
 
-	bool m_exit = false;
+	PrimtTech::DX11Renderer* m_renderer = nullptr;;
+
+	//bool m_exit = false;
 
 	uchar m_keyForward = 'W';
 	uchar m_keyBack = 'S';
@@ -70,4 +72,6 @@ private:
 	uchar m_keyUp = Key::SPACE;
 	uchar m_keyDown = Key::LSHIFT;
 	uchar m_optionkey = Key::ESCAPE;
+
+	bool m_imGuiDemo = false;
 };

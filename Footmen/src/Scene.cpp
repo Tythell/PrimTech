@@ -11,12 +11,12 @@ std::string AddComp(const uint& entId, std::string compType)
 	return cmd;
 }
 
-void Gui_EntList(void* test)
+void Gui_EntList(void* test, bool* show)
 {
 	EntListStruct* p = (EntListStruct*)test;
 
 	ImGui::SetNextWindowSize(ImVec2(450, 400), ImGuiCond_Once);
-	ImGui::Begin("Entity list##ecs");
+	ImGui::Begin("Entity list##ecs", show);
 
 	if (ImGui::Button(" + ##Buton"))
 	{
@@ -184,12 +184,12 @@ void Gui_EntList(void* test)
 	}
 }
 
-void Gui_AssetList(void* ptr)
+void Gui_AssetList(void* ptr, bool* show)
 {
 	EntListStruct* p = (EntListStruct*)ptr;
 
 	ImGui::SetNextWindowSize(ImVec2(450, 400), ImGuiCond_Once);
-	if (ImGui::Begin("Loaded Assets"))
+	if (ImGui::Begin("Loaded Assets", show))
 	{
 		if (ImGui::BeginTabBar("tabs", ImGuiTabBarFlags_None))
 		{
@@ -248,11 +248,11 @@ void Gui_AssetList(void* ptr)
 	ImGui::End();
 }
 
-void Gui_Console(void* ptr)
+void Gui_Console(void* ptr, bool* show)
 {
 	DevConsole* pCon = (DevConsole*)ptr;
 
-	ImGui::Begin("Command console");
+	ImGui::Begin("Command console", show);
 	const float footer_height_to_reserve = ImGui::GetStyle().ItemSpacing.y + ImGui::GetFrameHeightWithSpacing();
 	if (ImGui::Button("Clear"))
 	{
@@ -350,12 +350,12 @@ void LoadButton(PrimtTech::Material* pMaterial, std::string name, unsigned int e
 	}
 }
 
-void Gui_MaterialProperties(void* ptr)
+void Gui_MaterialProperties(void* ptr, bool* show)
 {
 	int selectedMAt = *(int*)ptr;
 	if (selectedMAt != -1)
 	{
-		ImGui::Begin("Properties");
+		ImGui::Begin("Properties", show);
 
 		PrimtTech::Material* pMaterial = PrimtTech::ResourceHandler::GetMaterialAdress(selectedMAt);
 		std::string matName = pMaterial->GetFileName();
@@ -596,7 +596,7 @@ void Gui_MaterialProperties(void* ptr)
 //}
 */
 
-void Gui_menubar(void* ptr)
+void Gui_menubar(void* ptr, bool* show)
 {
 	DevConsole* m_console = (DevConsole*)ptr;
 	ImGui::BeginMainMenuBar();
@@ -611,6 +611,15 @@ void Gui_menubar(void* ptr)
 	}
 	if (ImGui::BeginMenu("Windows"))
 	{
+		if (ImGui::MenuItem("Load Lightwarp"))
+		{
+			std::string path = Dialogs::OpenFile("Images (*.png)\0*.png;*.jpg", "Assets\\Textures\\");
+			std::string cmd = "create lwtex " + path;
+			if (!path.empty()) m_console->AddLog(cmd.c_str());
+		}
+		ImTextureID lightwarptex = PrimtTech::ResourceHandler::GetTextureAdress(1)->GetSRV();
+		ImGui::Separator();
+		ImGui::Image(lightwarptex, { 255.f, 10.f });
 	//ImGui::
 		ImGui::EndMenu();
 	}
@@ -618,14 +627,14 @@ void Gui_menubar(void* ptr)
 	ImGui::EndMainMenuBar();
 }
 
-Editor::Editor(PrimtTech::ImGuiHandler* pGui, d::XMINT2 windowRes) :m_pGui(pGui)
+Editor::Editor(PrimtTech::DX11Renderer* pRenderer, d::XMINT2 windowRes) :m_pGui(pRenderer->GetGuiHandlerP()), m_renderer(pRenderer)
 {
 	m_pGui->AddWindowFunc(Gui_EntList, &m_entlist);
 	//m_pGui->AddWindowFunc(Gui_EntList, &m_console);
-	m_pGui->AddWindowFunc(Gui_AssetList, &m_entlist);
-	m_pGui->AddWindowFunc(Gui_Console, &m_entlist.console);
-	m_pGui->AddWindowFunc(Gui_MaterialProperties, &m_entlist.m_selectedMaterial);
-	m_pGui->AddWindowFunc(Gui_menubar, &m_entlist.console);
+	m_pGui->AddWindowFunc(Gui_AssetList, &m_entlist, (bool*)0);
+	m_pGui->AddWindowFunc(Gui_Console, &m_entlist.console, (bool*)0);
+	m_pGui->AddWindowFunc(Gui_MaterialProperties, &m_entlist.m_selectedMaterial, (bool*)0);
+	m_pGui->AddWindowFunc(Gui_menubar, &m_entlist.console, (bool*)0);
 
 	//int selected;
 	
@@ -680,7 +689,6 @@ void Editor::execCommand(std::string cmd)
 		else if (argBuffer == "material")
 		{
 			PrimtTech::ResourceHandler::AddMaterial("new material");
-			
 		}
 		else if (argBuffer == "mesh")
 		{
@@ -689,6 +697,16 @@ void Editor::execCommand(std::string cmd)
 			{
 				PrimtTech::ResourceHandler::AddMesh(path);
 			}
+		}
+		else if (argBuffer == "lwtex")
+		{
+			ss >> argBuffer;
+			m_renderer->SetLightWarp(argBuffer);
+			//if (argBuffer == "load")
+			//{
+			//	ss >> argBuffer;
+			//	
+			//}
 		}
 	}
 	else if (argBuffer == "comp")
@@ -729,7 +747,14 @@ void Editor::execCommand(std::string cmd)
 		else if(argBuffer == "show")
 			m_msgQueue.push(Messages::eShowMouse);
 	}
-	
+	else if (argBuffer == "show")
+	{
+		ss >> argBuffer;
+		if (argBuffer == "imguidemo")
+		{
+			
+		}
+	}
 }
 
 void Editor::Update(float deltatime)

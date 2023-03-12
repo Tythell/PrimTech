@@ -56,7 +56,7 @@ namespace PrimtTech
 		CameraHandler* mp_camHandler = nullptr;
 	};
 
-	typedef void(*ImGuiWindowFunc)(void*);
+	typedef void(*ImGuiWindowFunc)(void*, bool*);
 
 	class ImGuiHandler
 	{
@@ -74,7 +74,7 @@ namespace PrimtTech
 		void CalculateFps(float deltatime);
 		ImGuiVars* GetVarPtrs() { return &im; };
 
-		void AddWindowFunc(ImGuiWindowFunc func, void* pVars);
+		void AddWindowFunc(ImGuiWindowFunc func, void* pVars, bool* showWin = (bool*)0);
 	private:
 		ImGuiVars im;
 		Buffer<hlsl::cbpLightBuffer>* m_pLightBuffer;
@@ -83,6 +83,7 @@ namespace PrimtTech
 		CameraHandler* m_pcamHandler;
 		std::vector<ImGuiWindowFunc> m_windows;
 		std::vector<void*> m_funcVars;
+		std::vector<bool*> m_showWin;
 	};
 }
 

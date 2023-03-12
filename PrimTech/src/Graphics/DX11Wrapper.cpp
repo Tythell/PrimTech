@@ -456,14 +456,14 @@ namespace PrimtTech
 
 	void DX11Renderer::SetLightWarp(const std::string& path)
 	{
-		//int textureIndex = ResourceHandler::CheckTextureNameExists(StringHelper::GetName(path));
-		//if (textureIndex != -1)
-		//	dc->PSSetShaderResources(0, 1, ResourceHandler::GetTexture(textureIndex).GetSRVAdress());
-		//else
-		//{
-		//	TextureMap* tex = ResourceHandler::AddTexture(path);
-		//	dc->PSSetShaderResources(0, 1, tex->GetSRVAdress());
-		//}
+		int textureIndex = ResourceHandler::CheckTextureNameExists(StringHelper::GetName(path));
+		if (textureIndex != -1)
+			dc->PSSetShaderResources(0, 1, ResourceHandler::GetTexture(textureIndex).GetSRVAdress());
+		else
+		{
+			TextureMap* tex = ResourceHandler::AddTexture(path);
+			dc->PSSetShaderResources(0, 1, tex->GetSRVAdress());
+		}
 		ResourceHandler::GetTextureAdress(1)->CreateFromFile(path.c_str(), device);
 		dc->PSSetShaderResources(0, 1, ResourceHandler::GetTexture(1).GetSRVAdress());
 	}

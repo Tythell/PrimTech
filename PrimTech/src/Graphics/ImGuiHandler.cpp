@@ -190,7 +190,7 @@ namespace PrimtTech
 
 		for (int i = 0; i < m_windows.size(); i++)
 		{
-			m_windows[i](m_funcVars[i]);
+			m_windows[i](m_funcVars[i], m_showWin[i]);
 		}
 	}
 
@@ -329,10 +329,11 @@ namespace PrimtTech
 		}
 	}
 
-	void PrimtTech::ImGuiHandler::AddWindowFunc(ImGuiWindowFunc func, void* pVars)
+	void PrimtTech::ImGuiHandler::AddWindowFunc(ImGuiWindowFunc func, void* pVars, bool* showWin)
 	{
 		m_windows.emplace_back(func);
 		m_funcVars.emplace_back(pVars);
+		m_showWin.emplace_back(showWin);
 	}
 
 }

@@ -15,7 +15,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	d::XMINT2 windowRes(1700, 1000);
 	pt.Init(L"Editor", hInstance, L"wndc", windowRes.x, windowRes.y);
 
-	Editor scene(pt.GetRenderer()->GetGuiHandlerP(), windowRes);
+	Editor scene(pt.GetRenderer(), windowRes);
 
 	double start = 0, deltaTime = 0;
 	start = omp_get_wtime();
