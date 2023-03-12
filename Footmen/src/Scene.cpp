@@ -627,8 +627,14 @@ void Gui_menubar(void* ptr, bool* show)
 	ImGui::EndMainMenuBar();
 }
 
+void Gui_ImGuiDemo(void* ptr, bool* show)
+{
+	ImGui::ShowDemoWindow(show);
+}
+
 Editor::Editor(PrimtTech::DX11Renderer* pRenderer, d::XMINT2 windowRes) :m_pGui(pRenderer->GetGuiHandlerP()), m_renderer(pRenderer)
 {
+	m_pGui->AddWindowFunc(Gui_ImGuiDemo, NULL, &m_imGuiDemo);
 	m_pGui->AddWindowFunc(Gui_EntList, &m_entlist);
 	//m_pGui->AddWindowFunc(Gui_EntList, &m_console);
 	m_pGui->AddWindowFunc(Gui_AssetList, &m_entlist, (bool*)0);
@@ -752,7 +758,7 @@ void Editor::execCommand(std::string cmd)
 		ss >> argBuffer;
 		if (argBuffer == "imguidemo")
 		{
-			
+			m_imGuiDemo = !m_imGuiDemo;
 		}
 	}
 }

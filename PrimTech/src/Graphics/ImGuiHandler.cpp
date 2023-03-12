@@ -190,7 +190,7 @@ namespace PrimtTech
 
 		for (int i = 0; i < m_windows.size(); i++)
 		{
-			m_windows[i](m_funcVars[i], m_showWin[i]);
+			if (!m_showWin[i] || (m_showWin[i] && *m_showWin[i])) m_windows[i](m_funcVars[i], m_showWin[i]);
 		}
 	}
 
@@ -310,24 +310,24 @@ namespace PrimtTech
 		//ImGui::End();
 	//}
 
-	void ImGuiHandler::CalculateFps(float deltatime)
-	{
-		static float fpsTimer = 0.f;
-		//static int fpsCounter = 0;
-		fpsTimer += deltatime;
-		//fpsCounter++;
-		//if (fpsTimer >= 1.f)
-		//{
-		//	m_fps = fpsCounter;
-		//	fpsCounter = 0;
-		//	fpsTimer = 0.f;
-		//}
-		if (fpsTimer >= 1.f)
-		{
-			fpsTimer = 0.f;
-			im.m_fps = (uint)(1.f / deltatime);
-		}
-	}
+	//void ImGuiHandler::CalculateFps(float deltatime)
+	//{
+	//	static float fpsTimer = 0.f;
+	//	//static int fpsCounter = 0;
+	//	fpsTimer += deltatime;
+	//	//fpsCounter++;
+	//	//if (fpsTimer >= 1.f)
+	//	//{
+	//	//	m_fps = fpsCounter;
+	//	//	fpsCounter = 0;
+	//	//	fpsTimer = 0.f;
+	//	//}
+	//	if (fpsTimer >= 1.f)
+	//	{
+	//		fpsTimer = 0.f;
+	//		im.m_fps = (uint)(1.f / deltatime);
+	//	}
+	//}
 
 	void PrimtTech::ImGuiHandler::AddWindowFunc(ImGuiWindowFunc func, void* pVars, bool* showWin)
 	{
