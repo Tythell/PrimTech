@@ -529,42 +529,6 @@ namespace PrimtTech
 
 		if (!im->viewshadowcam)
 			m_transformBuffer.Data().viewProj = d::XMMatrixTranspose(cc[0].GetViewMatrix() * cc[0].GetProjMatrix());
-		//m_transformBuffer.Data().viewProj = d::XMMatrixTranspose(mp_currentCam->GetViewM() * mp_currentCam->GetProjM());
-
-	//if (im->drawBCircle && m_selected != -1)
-	//{
-	//	dc->VSSetShader(m_lineVS.GetShader(), NULL, 0);
-	//	dc->PSSetShader(m_linePS.GetShader(), NULL, 0);
-	//	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
-	//	d::BoundingSphere sphere;
-	//	sphere = m_models[m_selected]->GetBSphere();
-	//	sm::Vector3 center = sphere.Center;
-	//	//center = d::XMVector3TransformCoord(center, d::XMMatrixRotationRollPitchYawFromVector(m_models[m_selected].GetRotation()));
-
-	//	sm::Matrix rotMat = d::XMMatrixRotationRollPitchYawFromVector(m_models[m_selected]->GetRotation());
-	//	sm::Matrix scaleMat = d::XMMatrixScalingFromVector(m_models[m_selected]->GetScale());
-	//	sm::Vector3 transformedCenter = d::XMVector3TransformCoord(center, scaleMat * rotMat);
-
-	//	//sm::Vector3 scalar = d::XMVector3TransformCoord(center, d::XMMatrixScalingFromVector(m_models[m_selected].GetScale()));
-	//	center = transformedCenter;
-	//	//center *= d::XMVector3TransformCoord(center, d::XMMatrixRotationRollPitchYawFromVector(m_models[m_selected].GetRotation()));
-	//	sphere.Center = center;
-	//	float radius = sphere.Radius * GetHighestValue(m_models[m_selected]->GetScale());
-	//	radius *= 2.0f;
-	//	//if (extents.y == 0.f) extents.y = 0.01f;
-	//	sm::Vector3 position = m_models[m_selected]->GetPosition() + sphere.Center;
-	//	sm::Matrix boxMatrix = d::XMMatrixTranspose(d::XMMatrixScaling(radius, radius, radius) * d::XMMatrixTranslationFromVector(position));
-	//	m_transformBuffer.Data().world = boxMatrix;
-	//	m_transformBuffer.MapBuffer();
-	//	m_sphere.Draw(dc);
-	//}
-	//if (im->drawRayCast)
-	//{
-	//	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
-	//	m_transformBuffer.Data().world = d::XMMatrixIdentity();
-	//	m_transformBuffer.MapBuffer();
-	//	m_rLine.Draw(dc);
-	//}
 
 		dc->IASetInputLayout(m_3dvs.GetInputLayout());
 		dc->VSSetShader(m_3dvs.GetShader(), NULL, 0);
@@ -572,9 +536,6 @@ namespace PrimtTech
 		//dc->PSSetShader(m_3dps.GetShader(), NULL, 0);
 		dc->PSSetShader(m_toonPS.GetShader(), NULL, 0);
 		//m_shadowmap.BindSRV(dc, 10);
-
-		//if (mp_currentCam->GetOffset().z != 0.f)
-		//	m_playermodel.Draw();
 
 		m_materialBuffer.Data().flags = 0;
 		//m_materialBuffer.MapBuffer();

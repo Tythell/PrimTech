@@ -18,8 +18,6 @@ namespace PrimtTech
 		void SetPos(const sm::Vector3& v);
 
 		Camera& GetShadowCam();
-		void InitModel(ID3D11DeviceContext*& dc, Buffer<hlsl::cbpWorldTransforms3D>& transformbuffer, Buffer<hlsl::cbpMaterialBuffer>& matbuffer);
-		void DrawModel();
 
 		ID3D11ShaderResourceView* GetSRV();
 	private:
@@ -31,9 +29,6 @@ namespace PrimtTech
 		CD3D11_VIEWPORT m_viewPort;
 		Camera m_shadowCam;
 		Camera* mp_playerCam = nullptr;
-
-		Model m_shadowCamModel;
-
 	};
 }
 

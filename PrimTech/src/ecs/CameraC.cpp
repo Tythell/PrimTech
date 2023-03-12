@@ -19,7 +19,7 @@ namespace pt
 	}
 	void CameraComp::SetPerspective(float fovDeg, float aspectRatio, float nearZ, float farZ)
 	{
-		float fovRad = (fovDeg / 360) * d::XM_2PI;
+		float fovRad = (fovDeg / 360.f) * d::XM_2PI;
 		m_projM = d::XMMatrixPerspectiveFovLH(fovRad, aspectRatio, nearZ, farZ);
 	}
 
@@ -29,19 +29,17 @@ namespace pt
 	}
 	void CameraComp::UpdateView(const pt::TransformComp& entTransform)
 	{
-		//d::XMMATRIX camRot = d::XMMatrixRotationRollPitchYawFromVector(entTransform.GetRotation());
+		d::XMMATRIX camRot = d::XMMatrixRotationRollPitchYawFromVector(entTransform.GetRotation() + m_rotateOffset);
 
-		//d::XMVECTOR camTarget = d::XMVector3TransformCoord(sm::Vector4(0.f, 0.f, 1.f, 0.f), camRot);
-		////camTarget += entTransform.GetPosition();
+		d::XMVECTOR camTarget = d::XMVector3TransformCoord(sm::Vector4(0.f, 0.f, 1.f, 0.f), camRot);
+		camTarget += entTransform.GetPosition();
 		//camTarget += posOffset;
 
-		//d::XMVECTOR upDir = d::XMVector2TransformCoord(sm::Vector4(0.f, 1.f, 0.f, 0.f), camRot);
+		d::XMVECTOR upDir = d::XMVector2TransformCoord(sm::Vector4(0.f, 1.f, 0.f, 0.f), camRot);
 
-		//m_viewM = entTransform.GetWorld().Invert() * d::XMMatrixLookAtLH(posOffset, camTarget, upDir);
+		m_viewM = d::XMMatrixLookAtLH(entTransform.GetPosition(), camTarget, upDir);
 
-		m_viewM = entTransform.GetWorld().Invert();
-		sm::Matrix camRot = sm::Matrix::CreateFromYawPitchRoll(entTransform.GetRotation());
-
+		m_viewM *= d::XMMatrixTranslationFromVector(m_posOffset);
 
 		m_forwardV = d::XMVector3TransformCoord({ 0,0,1 }, camRot);
 		m_leftV = d::XMVector3TransformCoord({ -1,0,0 }, camRot);
@@ -49,10 +47,10 @@ namespace pt
 	}
 	void CameraComp::SetPositionOffset(const sm::Vector3& v)
 	{
-		posOffset = v;
+		m_posOffset = v;
 	}
 	void CameraComp::SetRotationOffset(const sm::Vector3& v)
 	{
-		rotateOffset = v;
+		m_rotateOffset = v;
 	}
 }

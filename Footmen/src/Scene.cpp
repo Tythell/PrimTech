@@ -246,8 +246,6 @@ void Gui_AssetList(void* ptr)
 
 	}
 	ImGui::End();
-
-
 }
 
 void Gui_Console(void* ptr)
@@ -269,8 +267,6 @@ void Gui_Console(void* ptr)
 	{
 		pCon->history.pop_front();
 	}
-
-
 
 	for (int i = 0; i < pCon->history.size(); i++)
 	{
@@ -615,10 +611,7 @@ void Gui_menubar(void* ptr)
 	}
 	if (ImGui::BeginMenu("Windows"))
 	{
-		if (ImGui::MenuItem("New scene")) { m_console->AddLog("new scene"); }
-		if (ImGui::MenuItem("Open scene")) { m_console->AddLog("load scene"); }
-		if (ImGui::MenuItem("Export scene")) { m_console->AddLog("export scene"); }
-		if (ImGui::MenuItem("Exit editor")) { m_console->AddLog("exit"); }
+	//ImGui::
 		ImGui::EndMenu();
 	}
 

@@ -89,8 +89,8 @@ namespace pt
 		void SetPositionOffset(const sm::Vector3& v);
 		void SetRotationOffset(const sm::Vector3& v);
 
-		sm::Vector3 GetPositionOffset() const { return posOffset; }
-		sm::Vector3 GetRotationOffset() const { return rotateOffset; }
+		sm::Vector3 GetPositionOffset() const { return m_posOffset; }
+		sm::Vector3 GetRotationOffset() const { return m_rotateOffset; }
 
 		sm::Vector3 GetForwardV() const { return m_forwardV; };
 		sm::Vector3 Getleft() const { 	return m_leftV; };
@@ -98,7 +98,7 @@ namespace pt
 	private:
 		sm::Matrix m_viewM, m_projM;
 
-		sm::Vector3 posOffset, rotateOffset;
+		sm::Vector3 m_posOffset, m_rotateOffset;
 
 		sm::Vector3 m_forwardV, m_leftV, m_upV;
 	};

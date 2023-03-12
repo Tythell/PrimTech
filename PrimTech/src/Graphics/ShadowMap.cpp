@@ -80,23 +80,6 @@ namespace PrimtTech
 		return m_shadowCam;
 	}
 
-	void ShadowMap::InitModel(ID3D11DeviceContext*& dc, Buffer<hlsl::cbpWorldTransforms3D>& transformbuffer, Buffer<hlsl::cbpMaterialBuffer>& matbuffer)
-	{
-		m_shadowCamModel.Init("bulb.obj", ModelType::eDEBUG);
-		m_shadowCamModel.SetScale(1.2f);
-		m_shadowCamModel.SetMaterialBuffer(matbuffer);
-		m_shadowCamModel.SetDCandBuffer(dc, transformbuffer);
-		m_shadowCamModel.GetMaterial().SetRimColor(MAGENTA_3F);
-		m_shadowCamModel.GetMaterial().SetTransparency(.5f);
-	}
-	void ShadowMap::DrawModel()
-	{
-		m_shadowCamModel.SetPosition(m_shadowCam.GetPosition());
-		m_shadowCamModel.SetRotation(m_shadowCam.GetRotation());
-		m_shadowCamModel.Rotate(d::XM_PIDIV2, 0.f, 0.f);
-		m_shadowCamModel.Draw();
-	}
-
 	ID3D11ShaderResourceView* ShadowMap::GetSRV()
 	{
 		return m_depthmapSRV;
