@@ -27,19 +27,15 @@ namespace PrimtTech
 
 		InitShaders();
 		InitConstantBuffers();
-		m_guiHandler.SetBufferPtrs(m_lightbuffer, m_materialBuffer);
-		im = m_guiHandler.GetVarPtrs();
-		im->width = m_width;
-		im->height = m_height;
-		m_guiHandler.SetPtrs(mp_camHandler);
+
+
 		InitScene();
 		m_renderbox.Init(device, dc);
-		m_guiHandler.ImGuiInit(window.getHWND(), device, dc);
 	}
 
 	DX11Renderer::~DX11Renderer()
 	{
-		m_guiHandler.ImGuiShutDown();
+		m_guiHandler->ImGuiShutDown();
 
 		ResourceHandler::Unload();
 
@@ -60,6 +56,17 @@ namespace PrimtTech
 		m_clampSampler->Release();
 		m_blendState->Release();
 		m_wireFrameState->Release();
+	}
+
+	void DX11Renderer::SetImGuiHandler(ImGuiHandler& gui)
+	{
+		m_guiHandler = &gui;
+		im = m_guiHandler->GetVarPtrs();
+		im->width = m_width;
+		im->height = m_height;
+		m_guiHandler->SetBufferPtrs(m_lightbuffer, m_materialBuffer);
+		m_guiHandler->SetPtrs(mp_camHandler);
+		m_guiHandler->ImGuiInit(m_pWin->getHWND(), device, dc);
 	}
 
 	bool DX11Renderer::initSwapChain()
@@ -378,20 +385,23 @@ namespace PrimtTech
 
 	void DX11Renderer::ImGuiRender()
 	{
-		ImGui_ImplDX11_NewFrame();
-		ImGui_ImplWin32_NewFrame();
-		ImGui::NewFrame();
-		ImGuizmo::BeginFrame();
-		//m_isHoveringWindow = false;
+		if (m_guiHandler)
+		{
+			ImGui_ImplDX11_NewFrame();
+			ImGui_ImplWin32_NewFrame();
+			ImGui::NewFrame();
+			ImGuizmo::BeginFrame();
+			//m_isHoveringWindow = false;
 
-		m_guiHandler.ImguiRender();
+			m_guiHandler->ImguiRender();
 
-		if (im->showShadowMapDepth) ImGuTextureDisplay();
+			if (im->showShadowMapDepth) ImGuTextureDisplay();
 
-		//ImGuiGradientWindow();
+			//ImGuiGradientWindow();
 
-		ImGui::Render();
-		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+			ImGui::Render();
+			ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+		}
 	}
 
 	//#define PRINTER(name) printer(#name, )
@@ -527,8 +537,7 @@ namespace PrimtTech
 
 		std::vector<pt::CameraComp>& cc = ComponentHandler::GetComponentArray<pt::CameraComp>();
 
-		if (!im->viewshadowcam)
-			m_transformBuffer.Data().viewProj = d::XMMatrixTranspose(cc[0].GetViewMatrix() * cc[0].GetProjMatrix());
+		m_transformBuffer.Data().viewProj = d::XMMatrixTranspose(cc[0].GetViewMatrix() * cc[0].GetProjMatrix());
 
 		dc->IASetInputLayout(m_3dvs.GetInputLayout());
 		dc->VSSetShader(m_3dvs.GetShader(), NULL, 0);

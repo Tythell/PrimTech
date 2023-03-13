@@ -29,7 +29,6 @@ namespace PrimtTech
 		//Mesh(const Mesh& other);
 		Buffer<Vertex3D>& GetVBuffer();
 		std::string GetName() const;
-		d::BoundingSphere GetBSphere() const;
 		const uint GetNofMeshes() const;
 		std::vector<Mtl> GetMtl() const;
 		std::vector<int> GetMtlIndex() const;
@@ -43,7 +42,6 @@ namespace PrimtTech
 		std::vector<int> m_offsets;
 		std::string m_name = "unloaded";
 		uint m_nofMeshes = 0;
-		d::BoundingSphere m_bsphere;
 		Shape m_shape;
 	};
 }

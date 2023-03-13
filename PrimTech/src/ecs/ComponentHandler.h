@@ -7,8 +7,8 @@ namespace PrimtTech {
 	enum HasComponent
 	{
 		ec_null = 0,
-		ec_meshRef = 0x1,
-		ec_transform = 0x2,
+		ec_transform = 0x1,
+		ec_meshRef = 0x2,
 		ec_cam = 0x4,
 		ec_pling = 0x6,
 		ec_ring = 0x10,

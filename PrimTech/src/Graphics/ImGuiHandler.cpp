@@ -186,11 +186,9 @@ namespace PrimtTech
 
 	void ImGuiHandler::ImguiRender()
 	{
-		if (im.showDemoWindow) ImGui::ShowDemoWindow(&im.showDemoWindow);
-
 		for (int i = 0; i < m_windows.size(); i++)
 		{
-			if (!m_showWin[i] || (m_showWin[i] && *m_showWin[i])) m_windows[i](m_funcVars[i], m_showWin[i]);
+			if (!m_showWin[i] || (*m_showWin[i])) m_windows[i](m_funcVars[i], m_showWin[i]);
 		}
 	}
 

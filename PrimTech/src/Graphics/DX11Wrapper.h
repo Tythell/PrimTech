@@ -30,6 +30,7 @@ namespace PrimtTech
 	public:
 		DX11Renderer(Window& window, CameraHandler& camera);
 		~DX11Renderer();
+		void SetImGuiHandler(ImGuiHandler& gui);
 
 		void SetInputP(KeyboardHandler& kb);
 		void Render(const float& deltatime);
@@ -38,7 +39,7 @@ namespace PrimtTech
 		void ShutDown();
 		void UpdateScene(const float& deltatime);
 
-		ImGuiHandler* GetGuiHandlerP() { return &m_guiHandler; }
+		ImGuiHandler* GetGuiHandlerP() { return m_guiHandler; }
 
 		void SetLightWarp(const std::string& path);
 	private:
@@ -98,7 +99,7 @@ namespace PrimtTech
 		Camera* mp_currentCam = nullptr;
 		uint m_activeCamIndex = 0;
 
-		ImGuiHandler m_guiHandler;
+		ImGuiHandler* m_guiHandler = nullptr;
 		ImGuiVars* im = nullptr;
 		GuiPtrs m_ptrs;
 

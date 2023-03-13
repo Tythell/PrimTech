@@ -609,7 +609,7 @@ void Gui_menubar(void* ptr, bool* show)
 		if (ImGui::MenuItem("Exit editor")) { m_console->AddLog("exit"); }
 		ImGui::EndMenu();
 	}
-	if (ImGui::BeginMenu("Windows"))
+	if (ImGui::BeginMenu("Edit"))
 	{
 		if (ImGui::MenuItem("Load Lightwarp"))
 		{
@@ -623,6 +623,15 @@ void Gui_menubar(void* ptr, bool* show)
 	//ImGui::
 		ImGui::EndMenu();
 	}
+	if (ImGui::BeginMenu("Windows"))
+	{
+		uint numWindows = m_console->m_showWin.size();
+		for (int i = 0; i < numWindows; i++)
+		{
+			ImGui::MenuItem(m_console->m_showWin[i].second.c_str(), NULL, &m_console->m_showWin[i].first);
+		}
+		ImGui::EndMenu();
+	}
 
 	ImGui::EndMainMenuBar();
 }
@@ -632,15 +641,32 @@ void Gui_ImGuiDemo(void* ptr, bool* show)
 	ImGui::ShowDemoWindow(show);
 }
 
-Editor::Editor(PrimtTech::DX11Renderer* pRenderer, d::XMINT2 windowRes) :m_pGui(pRenderer->GetGuiHandlerP()), m_renderer(pRenderer)
+Editor::Editor(PrimtTech::DX11Renderer* pRenderer, d::XMINT2 windowRes) : m_renderer(pRenderer)
 {
-	m_pGui->AddWindowFunc(Gui_ImGuiDemo, NULL, &m_imGuiDemo);
-	m_pGui->AddWindowFunc(Gui_EntList, &m_entlist);
-	//m_pGui->AddWindowFunc(Gui_EntList, &m_console);
-	m_pGui->AddWindowFunc(Gui_AssetList, &m_entlist, (bool*)0);
-	m_pGui->AddWindowFunc(Gui_Console, &m_entlist.console, (bool*)0);
-	m_pGui->AddWindowFunc(Gui_MaterialProperties, &m_entlist.m_selectedMaterial, (bool*)0);
-	m_pGui->AddWindowFunc(Gui_menubar, &m_entlist.console, (bool*)0);
+	m_renderer->SetImGuiHandler(m_pGui);
+
+	for (int i = 1; i < m_entlist.console.m_showWin.size(); i++)
+	{
+		m_entlist.console.m_showWin[i].first = true;
+	}
+
+	uint u = 0;
+	m_entlist.console.m_showWin.resize(6, {true, ""});
+	m_pGui.AddWindowFunc(Gui_ImGuiDemo, NULL, &m_entlist.console.m_showWin[u].first);
+	m_entlist.console.m_showWin[u].second = "imguiDemo";
+	m_entlist.console.m_showWin[u++].first = false;
+	m_pGui.AddWindowFunc(Gui_EntList, &m_entlist, &m_entlist.console.m_showWin[u].first);
+	m_entlist.console.m_showWin[u++].second = "entlist";
+	m_pGui.AddWindowFunc(Gui_AssetList, &m_entlist, &m_entlist.console.m_showWin[u].first);
+	m_entlist.console.m_showWin[u++].second = "assetlist";
+	m_pGui.AddWindowFunc(Gui_Console, &m_entlist.console, &m_entlist.console.m_showWin[u].first);
+	m_entlist.console.m_showWin[u++].second = "console";
+	m_pGui.AddWindowFunc(Gui_MaterialProperties, &m_entlist.m_selectedMaterial, &m_entlist.console.m_showWin[u].first);
+	m_entlist.console.m_showWin[u++].second = "mtrlpropers";
+
+
+	m_pGui.AddWindowFunc(Gui_menubar, &m_entlist.console, &m_entlist.console.m_showWin[u].first);
+	m_entlist.console.m_showWin[u++].second = "Menu_Bar";
 
 	//int selected;
 	
@@ -661,8 +687,8 @@ Editor::Editor(PrimtTech::DX11Renderer* pRenderer, d::XMINT2 windowRes) :m_pGui(
 	PrimtTech::ResourceHandler::AddMesh("Assets/models/cube.txt");
 	PrimtTech::ResourceHandler::AddMesh("Assets/models/gunter.obj");
 	PrimtTech::ResourceHandler::AddMesh("Assets/models/scuffball.obj");
-	PrimtTech::ResourceHandler::AddMesh("Assets/models/Slime.fbx");
-	PrimtTech::ResourceHandler::AddMesh("Assets/models/scaledplane.obj");
+	//PrimtTech::ResourceHandler::AddMesh("Assets/models/Slime.fbx");
+	//PrimtTech::ResourceHandler::AddMesh("Assets/models/scaledplane.obj");
 	PrimtTech::ResourceHandler::AddMaterial("DefaultMaterial");
 
 	//m_entlist.ents[1].AddComponent<pt::MeshRef>()->Init("scaledplane.obj");
@@ -753,13 +779,25 @@ void Editor::execCommand(std::string cmd)
 		else if(argBuffer == "show")
 			m_msgQueue.push(Messages::eShowMouse);
 	}
-	else if (argBuffer == "show")
+	else if (argBuffer == "showwin")
 	{
 		ss >> argBuffer;
-		if (argBuffer == "imguidemo")
+		if (StringHelper::IsNumber(argBuffer))
 		{
-			m_imGuiDemo = !m_imGuiDemo;
+			uint num = atoi(argBuffer.c_str());
+			m_entlist.console.m_showWin[num].first = !m_entlist.console.m_showWin[num].first;
 		}
+		else
+		{
+			for (int i = 0; i < m_entlist.console.m_showWin.size(); i++)
+			{
+				if (m_entlist.console.m_showWin[i].second == argBuffer)
+				{
+					m_entlist.console.m_showWin[i].first = !m_entlist.console.m_showWin[i].first;
+				}
+			}
+		}
+		
 	}
 }
 

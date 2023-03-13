@@ -71,7 +71,6 @@ namespace PrimtTech
 		void LoadButton(Material* pMaterial, std::string name, unsigned int e, const unsigned int& i = 0);
 		void ImGuiShutDown();
 		void ImguiRender();
-		void CalculateFps(float deltatime);
 		ImGuiVars* GetVarPtrs() { return &im; };
 
 		void AddWindowFunc(ImGuiWindowFunc func, void* pVars, bool* showWin = (bool*)0);

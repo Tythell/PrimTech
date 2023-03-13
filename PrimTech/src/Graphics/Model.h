@@ -41,7 +41,7 @@ namespace PrimtTech
 		std::string GetName() const;
 		void SetDCandBuffer(ID3D11DeviceContext*& pdc, Buffer<hlsl::cbpWorldTransforms3D>& pCbuffer);
 		ModelType GetModelType() const;
-		d::BoundingSphere GetBSphere() const;
+		//d::BoundingSphere GetBSphere() const;
 		const sm::Vector4 GetCharacterLight(int i) const;
 	private:
 		std::string m_name = "";

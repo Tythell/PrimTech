@@ -1,6 +1,7 @@
 #pragma once
 #include "PrimTech.h"
 #include<queue>
+#include <bitset>
 
 struct DevConsole
 {
@@ -21,6 +22,7 @@ public:
 		history.push_back({ buf, type });
 		cmdQ.push(buf);
 	}
+	std::vector<std::pair<bool, std::string>> m_showWin;
 };
 
 struct EntListStruct
@@ -56,7 +58,7 @@ public:
 	};
 	std::queue<Messages> m_msgQueue;
 private:
-	PrimtTech::ImGuiHandler* m_pGui = nullptr;
+	PrimtTech::ImGuiHandler m_pGui;
 	EntListStruct m_entlist;
 
 	void execCommand(std::string cmd);
@@ -72,6 +74,4 @@ private:
 	uchar m_keyUp = Key::SPACE;
 	uchar m_keyDown = Key::LSHIFT;
 	uchar m_optionkey = Key::ESCAPE;
-
-	bool m_imGuiDemo = false;
 };

@@ -116,10 +116,10 @@ namespace PrimtTech
 		return m_type;
 	}
 
-	d::BoundingSphere Model::GetBSphere() const
-	{
-		return mp_mesh->GetBSphere();
-	}
+	//d::BoundingSphere Model::GetBSphere() const
+	//{
+	//	return mp_mesh->GetBSphere();
+	//}
 
 	const sm::Vector4 Model::GetCharacterLight(int i) const
 	{

@@ -29,39 +29,46 @@ namespace PrimtTech
 	{
 	public:
 		Buffer() {}
-		/*Buffer(const Buffer& other)
-		{
-			switch (other.m_type)
-			{
-			case eVERTEX:
-			{
-				mp_device = other.mp_device;
-				mp_dc = other.mp_dc;
+		//Buffer(const Buffer& other) = delete;
+		//{
+			//m_type = other.m_type;
+			//m_bufferSize = other.m_bufferSize;
+			//m_data = other.m_data;
+			//m_stride = other.m_stride;
+			//m_usage = other.m_usage;
 
-				CreateVertexBuffer(mp_device, other.m_data, other.m_bufferSize, mp_dc);
-				break;
-				
-			}
-			case eCONSTANT:
-			{
-				mp_device = other.mp_device;
-				mp_dc = other.mp_dc;
 
-				CreateConstantBuffer(mp_device, mp_dc);
-				break;
-			}
-			case eINDEX:
-			{
-				mp_device = other.mp_device;
-				mp_dc = other.mp_dc;
+			//switch (m_type)
+			//{
+			//case eVERTEX:
+			//{
+			//	mp_device = other.mp_device;
+			//	mp_dc = other.mp_dc;
 
-				CreateVertexBuffer(mp_device, other.m_data, other.m_bufferSize, mp_dc);
-				break;
-			}
-			default:
-				break;
-			}
-		}*/
+			//	CreateVertexBuffer(mp_device, other.m_data, other.m_bufferSize, mp_dc);
+			//	break;
+			//	
+			//}
+			//case eCONSTANT:
+			//{
+			//	mp_device = other.mp_device;
+			//	mp_dc = other.mp_dc;
+
+			//	CreateConstantBuffer(mp_device, mp_dc);
+			//	break;
+			//}
+			//case eINDEX:
+			//{
+			//	mp_device = other.mp_device;
+			//	mp_dc = other.mp_dc;
+
+			//	CreateVertexBuffer(mp_device, other.m_data, other.m_bufferSize, mp_dc);
+			//	break;
+			//}
+			//default:
+			//	break;
+			//}
+		//}
 		~Buffer()
 		{
 			m_buffer->Release();
@@ -114,9 +121,7 @@ namespace PrimtTech
 				THROW_POPUP_ERROR((m_buffer == nullptr), "Buffer created twice");
 			m_type = eVERTEX;
 
-			DWORD
-
-				m_usage = eIMMULATBLE;
+			m_usage = eIMMULATBLE;
 			bufferDesc.CPUAccessFlags = 0;
 			//m_data = new T[bufferSize];
 			//for (int i = 0; i < bufferSize; i++)
@@ -146,7 +151,9 @@ namespace PrimtTech
 			ZeroMemory(&bufferData, sizeof(D3D11_SUBRESOURCE_DATA));
 			bufferData.pSysMem = data;
 
-			return HRESULT(device->CreateBuffer(&bufferDesc, &bufferData, &m_buffer));
+			HRESULT hr = device->CreateBuffer(&bufferDesc, &bufferData, &m_buffer);
+
+			return hr;
 		}
 
 		HRESULT CreateConstantBuffer(ID3D11Device*& device, ID3D11DeviceContext*& dc)

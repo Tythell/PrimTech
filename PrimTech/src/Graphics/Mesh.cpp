@@ -317,9 +317,6 @@ namespace PrimtTech
 			}
 		}
 		UINT bsize = m_shape.verts.size();
-		d::BoundingBox box;
-		d::BoundingBox::CreateFromPoints(box, positionArray.size(), positionArray.data(), sizeof(sm::Vector3));
-		d::BoundingSphere::CreateFromBoundingBox(m_bsphere, box);
 
 		HRESULT hr = m_vbuffer.CreateVertexBuffer(device, m_shape.verts.data(), bsize);
 		COM_ERROR(hr, "Failed to load vertex buffer");
@@ -341,11 +338,6 @@ namespace PrimtTech
 	std::string Mesh::GetName() const
 	{
 		return m_name;
-	}
-
-	d::BoundingSphere Mesh::GetBSphere() const
-	{
-		return m_bsphere;
 	}
 
 	const UINT Mesh::GetNofMeshes() const
