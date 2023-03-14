@@ -51,11 +51,6 @@ namespace PrimtTech
 		uint m_fps = 0;
 	};
 
-	struct GuiPtrs
-	{
-		CameraHandler* mp_camHandler = nullptr;
-	};
-
 	typedef void(*ImGuiWindowFunc)(void*, bool*);
 
 	class ImGuiHandler
@@ -67,7 +62,6 @@ namespace PrimtTech
 			m_pLightBuffer = &lightBuffer;
 			m_pMatBuffer = &materialBuffer;
 		}
-		void SetPtrs(CameraHandler* cam) { m_pcamHandler = cam; };
 		void LoadButton(Material* pMaterial, std::string name, unsigned int e, const unsigned int& i = 0);
 		void ImGuiShutDown();
 		void ImguiRender();
@@ -79,7 +73,6 @@ namespace PrimtTech
 		Buffer<hlsl::cbpLightBuffer>* m_pLightBuffer;
 		Buffer<hlsl::cbpMaterialBuffer>* m_pMatBuffer;
 
-		CameraHandler* m_pcamHandler;
 		std::vector<ImGuiWindowFunc> m_windows;
 		std::vector<void*> m_funcVars;
 		std::vector<bool*> m_showWin;

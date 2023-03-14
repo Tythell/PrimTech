@@ -205,14 +205,12 @@ IF EXIST 3rdparty\*.dll ( copy 3rdparty\*.dll x64\Release\ )</Command>
     <ClCompile Include="src\Graphics\Mesh.cpp" />
     <ClCompile Include="src\Graphics\RenderShapes.cpp" />
     <ClCompile Include="src\Graphics\ShadowMap.cpp" />
-    <ClCompile Include="src\Graphics\ViewModel.cpp" />
     <ClCompile Include="src\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\Serializer\Serializer.cpp" />
     <ClCompile Include="src\Utility\CommonDialogs.cpp" />
     <ClCompile Include="src\Macros\Defines.cpp" />
-    <ClCompile Include="src\Graphics\Camera.cpp" />
     <ClCompile Include="src\Graphics\DX11Wrapper.cpp" />
     <ClCompile Include="src\Graphics\Shader.cpp" />
     <ClCompile Include="src\Graphics\Texture.cpp" />
@@ -313,7 +311,6 @@ IF EXIST 3rdparty\*.dll ( copy 3rdparty\*.dll x64\Release\ )</Command>
     <ClInclude Include="src\Graphics\Mesh.h" />
     <ClInclude Include="src\Graphics\RenderShapes.h" />
     <ClInclude Include="src\Graphics\ShadowMap.h" />
-    <ClInclude Include="src\Graphics\ViewModel.h" />
     <ClInclude Include="src\pch.h" />
     <ClInclude Include="src\Serializer\Serializer.h" />
     <ClInclude Include="src\Utility\CommonDialogs.h" />
@@ -327,7 +324,6 @@ IF EXIST 3rdparty\*.dll ( copy 3rdparty\*.dll x64\Release\ )</Command>
     <ClInclude Include="src\Graphics\3rdParty\imgui\imstb_rectpack.h" />
     <ClInclude Include="src\Graphics\3rdParty\imgui\imstb_textedit.h" />
     <ClInclude Include="src\Graphics\3rdParty\imgui\imstb_truetype.h" />
-    <ClInclude Include="src\Graphics\Camera.h" />
     <ClInclude Include="src\Graphics\CbufferTypes.h" />
     <ClInclude Include="src\Graphics\Texture.h" />
     <ClInclude Include="src\Graphics\Vertex.h" />

@@ -9,6 +9,20 @@ namespace sm = DirectX::SimpleMath;
 namespace d = DirectX;
 
 using uint = unsigned int;
+using uint2 = d::XMUINT2;
+using uint3 = d::XMUINT3;
+using uint4 = d::XMUINT4;
+
+using float2 = sm::Vector2;
+using float3 = sm::Vector3;
+using float4 = sm::Vector4;
+
+using float4x4 = sm::Matrix;
+using matrix = sm::Matrix;
+
+using int2 = d::XMINT2;
+using int3 = d::XMINT3;
+using int4 = d::XMINT4;
 
 namespace ptm
 {

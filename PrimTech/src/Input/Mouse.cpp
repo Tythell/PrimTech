@@ -12,7 +12,7 @@ MouseEvent::EventType MouseEvent::GetType() const
 	return m_type;
 }
 
-int2 MouseEvent::GetPosition() const
+vec2i MouseEvent::GetPosition() const
 {
 	return {m_xPos, m_yPos};
 }

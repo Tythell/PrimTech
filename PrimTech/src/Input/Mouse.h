@@ -3,7 +3,7 @@
 #include<vector>
 enum MouseButton {eLEFTCLICK, eRIGHTCLICK, eMIDCLICK };
 
-struct int2
+struct vec2i
 {
 	int x = 0, y = 0;
 };
@@ -20,7 +20,7 @@ public:
 	};
 	MouseEvent(EventType type, const int x, const int y);
 	EventType GetType() const;
-	int2 GetPosition() const;
+	vec2i GetPosition() const;
 private:
 	EventType m_type;
 	int m_xPos, m_yPos;

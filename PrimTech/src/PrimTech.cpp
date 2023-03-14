@@ -32,15 +32,7 @@ namespace pt
 		m_window.init(windowName, hInstance, windowClass, width, height);
 		m_window.SetInputP(m_kb);
 
-		//m_cellCam.SetPosition(0.f, 0.f, -1.f);
-		//m_cam3d.SetPerspective(80, (float)width / (float)height, 0.1f, 100.f);
-		//m_cam3d.SetPosition(2.f, 0, -3.f);
-		//m_camera.SetOrtographic(width, height, 0, 1);
-
-		m_cams.Init({ (int)width, (int)height }, NULL);
-
-		m_cams.GetCameraAdress(0)->SetRotationSpeed(0.001f);
-		mp_dxrenderer = new DX11Renderer(m_window, m_cams);
+		mp_dxrenderer = new DX11Renderer(m_window);
 		mp_dxrenderer->SetInputP(m_kb);
 
 		//ComponentHandler::ReserveMemory<MeshRef>(6);

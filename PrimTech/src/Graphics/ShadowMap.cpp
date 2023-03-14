@@ -4,14 +4,14 @@
 
 namespace PrimtTech
 {
-	ShadowMap::ShadowMap(const UINT& width, const UINT& height, Camera* pcam) :
+	ShadowMap::ShadowMap(const UINT& width, const UINT& height) :
 		m_viewPort(0.f, 0.f, width, height), m_width(width), m_height(height),
-		mp_playerCam(pcam), resoulution(20.f)
+		resoulution(20.f)
 	{
-		m_shadowCam.SetOrtographic(resoulution, resoulution, .1f, 25.f);
+		//m_shadowCam.SetOrtographic(resoulution, resoulution, .1f, 25.f);
 		//m_shadowCam.SetPerspective(80.f, 1.f, 1.f, 1000.f);
-		m_shadowCam.SetPosition(0.f, 5.f, 0.f);
-		m_shadowCam.SetRotation(d::XM_PIDIV2, 0.f, 0.f);
+		//m_shadowCam.SetPosition(0.f, 5.f, 0.f);
+		//m_shadowCam.SetRotation(d::XM_PIDIV2, 0.f, 0.f);
 	}
 
 	ShadowMap::~ShadowMap()
@@ -52,32 +52,11 @@ namespace PrimtTech
 		dc->PSSetShaderResources(slot, 1, nullsrv);
 		dc->OMSetRenderTargets(1, nulltarget, m_depthMapDSV);
 		dc->ClearDepthStencilView(m_depthMapDSV, D3D11_CLEAR_DEPTH, 1.f, 0);
-
-		if (mp_playerCam)
-		{
-			m_shadowCam.SetRotation(d::XM_PIDIV2, mp_playerCam->GetRotation().y + d::XM_PIDIV4, 0.f);
-			m_shadowCam.SetPosition(mp_playerCam->GetPositionXZ());
-			m_shadowCam.SetOffset(8.f, -8.f, 0.f);
-			//m_shadowCam.SetOffset(0.f, 0.f, -resoulution / 2);
-			sm::Vector3 upVec = mp_playerCam->GetForwardVectorNoY() * ((resoulution / 2) - .6f);
-			m_shadowCam.Move(0.f, 10.f, 0.f);
-			//m_shadowCam.Move(-(resoulution / 4),0.f, (resoulution / 4));
-		}
 	}
 
 	void ShadowMap::BindSRV(ID3D11DeviceContext*& dc, const UINT& slot)
 	{
 		dc->PSSetShaderResources(slot, 1, &m_depthmapSRV);
-	}
-
-	void ShadowMap::SetPos(const sm::Vector3& v)
-	{
-		m_shadowCam.SetPosition(v);
-	}
-
-	Camera& ShadowMap::GetShadowCam()
-	{
-		return m_shadowCam;
 	}
 
 	ID3D11ShaderResourceView* ShadowMap::GetSRV()

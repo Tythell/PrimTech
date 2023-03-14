@@ -157,8 +157,6 @@ float4 main(PSInput input) : SV_Target
     // Normalized
     lightVector /= distance;
     
-    
-    
     // Uses to calculated value as index on a lookup-table stored in a texture
     //float lightindex = (false) ? saturate(dot(lightVector, normal)) * pointlightStre : 0.f;
     float lightindex = (distance <= lightDistance) ? saturate(dot(lightVector, normal)) * pointlightStre : 0.f;

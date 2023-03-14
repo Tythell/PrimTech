@@ -66,9 +66,6 @@
     <ClCompile Include="src\Graphics\Shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Graphics\Camera.cpp">
-      <Filter>Source Files\Graphics</Filter>
-    </ClCompile>
     <ClCompile Include="src\Graphics\DX11Wrapper.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
@@ -121,9 +118,6 @@
       <Filter>Source Files\ecs</Filter>
     </ClCompile>
     <ClCompile Include="src\ecs\TransformC.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Graphics\ViewModel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Graphics\ImGuiHandler.cpp">
@@ -221,9 +215,6 @@
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\CbufferTypes.h">
-      <Filter>Header Files\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\Camera.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\imgui\imconfig.h">
@@ -528,9 +519,6 @@
     </ClInclude>
     <ClInclude Include="src\ecs\ComponentHandler.h">
       <Filter>Header Files\ecs</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\ViewModel.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\ImGuiHandler.h">
       <Filter>Header Files</Filter>

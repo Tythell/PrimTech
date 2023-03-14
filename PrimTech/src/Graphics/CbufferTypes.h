@@ -1,5 +1,5 @@
 #pragma once
-#include "Camera.h"
+#include "Math/Math.h"
 
 namespace PrimtTech {
 	namespace hlsl {
@@ -11,21 +11,6 @@ namespace PrimtTech {
 			MaterialFlag_eNormal = (1 << 2),
 			MaterialFlag_eOpacity = (1 << 3),
 		};
-
-		using float2 = sm::Vector2;
-		using float3 = sm::Vector3;
-		using float4 = sm::Vector4;
-		using float4x4 = sm::Matrix;
-		using matrix = sm::Matrix;
-
-		using int2 = d::XMINT2;
-		using int3 = d::XMINT3;
-		using int4 = d::XMINT4;
-
-		using uint = UINT;
-		using uint2 = d::XMUINT2;
-		using uint3 = d::XMUINT3;
-		using uint4 = d::XMUINT4;
 
 		//struct bool2 { bool x; bool y; };
 		//struct bool3 { bool x; bool y; bool z; };

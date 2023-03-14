@@ -1,6 +1,6 @@
 #include"pch.h"
 #include "ResourceHandler.h"
-#include "Model.h"
+#include "Mesh.h"
 
 namespace PrimtTech
 {

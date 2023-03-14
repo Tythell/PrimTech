@@ -7,7 +7,6 @@
 #include"Texture.h"
 #include"../Input/Mouse.h"
 #include"../Input/Keyboard.h"
-#include"ViewModel.h"
 #include "../ecs/Entity.h"
 
 #pragma warning(push)
@@ -28,7 +27,7 @@ namespace PrimtTech
 	class DX11Renderer
 	{
 	public:
-		DX11Renderer(Window& window, CameraHandler& camera);
+		DX11Renderer(Window& window);
 		~DX11Renderer();
 		void SetImGuiHandler(ImGuiHandler& gui);
 
@@ -95,24 +94,21 @@ namespace PrimtTech
 
 		Buffer<BBVertex> m_grid;
 
-		CameraHandler* mp_camHandler = nullptr;
-		Camera* mp_currentCam = nullptr;
 		uint m_activeCamIndex = 0;
 
 		ImGuiHandler* m_guiHandler = nullptr;
 		ImGuiVars* im = nullptr;
-		GuiPtrs m_ptrs;
 
 		KeyboardHandler* mp_kb = nullptr;
 
 		int m_selected = -1;
 		int m_selectedMtrl = -1;
-		RenderBox m_renderbox;
+		//RenderBox m_renderbox;
 		sm::Ray m_ray;
 		int m_fps = 0;
-		RenderLine m_rLine;
-		RenderSphere m_sphere;
+		//RenderLine m_rLine;
+		//RenderSphere m_sphere;
 
-		ShadowMap m_shadowmap;
+		//ShadowMap m_shadowmap;
 	};
 }

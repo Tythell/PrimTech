@@ -1,22 +1,17 @@
 #pragma once
 #include"Buffer.h"
-#include "Camera.h"
 
 namespace PrimtTech
 {
 	class ShadowMap
 	{
 	public:
-		ShadowMap(const UINT& width, const UINT& height, Camera* pcam = nullptr);
+		ShadowMap(const UINT& width, const UINT& height);
 		~ShadowMap();
 
 		void Init(ID3D11Device*& device);
 		void Bind(ID3D11DeviceContext*& dc, const UINT& slot);
 		void BindSRV(ID3D11DeviceContext*& dc, const UINT& slot);
-
-		void SetPos(const sm::Vector3& v);
-
-		Camera& GetShadowCam();
 
 		ID3D11ShaderResourceView* GetSRV();
 	private:
@@ -26,8 +21,6 @@ namespace PrimtTech
 		ID3D11DepthStencilView* m_depthMapDSV = nullptr;
 
 		CD3D11_VIEWPORT m_viewPort;
-		Camera m_shadowCam;
-		Camera* mp_playerCam = nullptr;
 	};
 }
 

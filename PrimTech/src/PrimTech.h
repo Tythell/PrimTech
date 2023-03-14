@@ -30,7 +30,6 @@ namespace pt
 		std::wstring m_windowName;
 		PrimtTech::Window m_window;
 		PrimtTech::DX11Renderer* mp_dxrenderer = nullptr;
-		PrimtTech::CameraHandler m_cams;
 
 		KeyboardHandler m_kb;
 		float m_playerSpeed;

@@ -8,20 +8,20 @@ using namespace pt;
 
 namespace PrimtTech
 {
-	DX11Renderer::DX11Renderer(Window& window, CameraHandler& camera) :
+	DX11Renderer::DX11Renderer(Window& window) :
 		m_width(window.getWinWidth()), m_height(window.getWinHeight()), m_pHWND(&window.getHWND()),
-		m_shadowmap(1024 * shadowQuality, 1024 * shadowQuality, camera.GetCurrentCamera()), m_viewport(0.f, 0.f, (float)m_width, (float)m_height)
+		/*m_shadowmap(1024 * shadowQuality, 1024 * shadowQuality, camera.GetCurrentCamera()),*/ m_viewport(0.f, 0.f, (float)m_width, (float)m_height)
 	{
 		m_pWin = &window;
-		mp_currentCam = camera.GetCurrentCamera();
-		mp_camHandler = &camera;
+		//mp_currentCam = camera.GetCurrentCamera();
+		//mp_camHandler = &camera;
 
 		initSwapChain();
 		initRTV();
 		SetupDSAndVP();
 		InitRastNSampState();
 		InitBlendState();
-		m_shadowmap.Init(device);
+		//m_shadowmap.Init(device);
 
 		ResourceHandler::SetDevice(device);
 
@@ -30,7 +30,7 @@ namespace PrimtTech
 
 
 		InitScene();
-		m_renderbox.Init(device, dc);
+		//m_renderbox.Init(device, dc);
 	}
 
 	DX11Renderer::~DX11Renderer()
@@ -65,7 +65,7 @@ namespace PrimtTech
 		im->width = m_width;
 		im->height = m_height;
 		m_guiHandler->SetBufferPtrs(m_lightbuffer, m_materialBuffer);
-		m_guiHandler->SetPtrs(mp_camHandler);
+		//m_guiHandler->SetPtrs(mp_camHandler);
 		m_guiHandler->ImGuiInit(m_pWin->getHWND(), device, dc);
 	}
 
@@ -309,8 +309,8 @@ namespace PrimtTech
 
 		dc->PSSetShaderResources(0, 1, ResourceHandler::GetTexture(1).GetSRVAdress());
 
-		m_rLine.Init(device, dc);
-		m_sphere.Init(device, dc, 8);
+		//m_rLine.Init(device, dc);
+		//m_sphere.Init(device, dc, 8);
 
 		//ImportScene("Scenes\\multsc.ptscene");
 
@@ -372,7 +372,7 @@ namespace PrimtTech
 		m_lightbuffer.Data().direction = sm::Vector3(0.f, 1.f, 0.f);
 		m_lightbuffer.Data().pointLightPosition = sm::Vector3(im->pointLightPos[0], im->pointLightPos[1], im->pointLightPos[2]);
 		//m_lightbuffer.Data().forwardDir = mp_cam->GetForwardVector();
-		m_lightbuffer.Data().camPos = { mp_currentCam->GetPosition().x, mp_currentCam->GetPosition().y, mp_currentCam->GetPosition().z, 1.f };
+		m_lightbuffer.Data().camPos = { 0.f,0.f,0.f,1.f/*mp_currentCam->GetPosition().x, mp_currentCam->GetPosition().y, mp_currentCam->GetPosition().z, 1.f*/ };
 		m_lightbuffer.MapBuffer();
 
 
@@ -452,11 +452,10 @@ namespace PrimtTech
 		float offset = 35;
 		ImVec2 winSize(winvar, winvar + offset);
 		ImGui::SetNextWindowSize(winSize);
-
 		ImGui::Begin("Texture Display", &im->showShadowMapDepth, ImGuiWindowFlags_NoResize);
 
-		ImTextureID tex = m_shadowmap.GetSRV();
-		ImGui::Image(tex, { winSize.x, winSize.x });
+		//ImTextureID tex = m_shadowmap.GetSRV();
+		//ImGui::Image(tex, { winSize.x, winSize.x });
 		//if (ImGui::IsWindowHovered())
 			//m_isHoveringWindow = true;
 
@@ -512,15 +511,15 @@ namespace PrimtTech
 
 		dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		dc->RSSetState(m_rasterizerState);
-		if (im->shadowMap)
-		{
-			dc->IASetInputLayout(m_3dvs.GetInputLayout());
-			dc->VSSetShader(m_3dvs.GetShader(), NULL, 0);
-			dc->PSSetShader(NULL, NULL, 0);
-			m_transformBuffer.Data().viewProj = d::XMMatrixTranspose(m_shadowmap.GetShadowCam().GetViewM() * m_shadowmap.GetShadowCam().GetProjM());
-			m_transformBuffer.Data().lightViewProj = d::XMMatrixTranspose(m_shadowmap.GetShadowCam().GetViewM() * m_shadowmap.GetShadowCam().GetProjM());
-			m_shadowmap.Bind(dc, 10);
-		}
+		//if (im->shadowMap)
+		//{
+		//	dc->IASetInputLayout(m_3dvs.GetInputLayout());
+		//	dc->VSSetShader(m_3dvs.GetShader(), NULL, 0);
+		//	dc->PSSetShader(NULL, NULL, 0);
+		//	m_transformBuffer.Data().viewProj = d::XMMatrixTranspose(m_shadowmap.GetShadowCam().GetViewM() * m_shadowmap.GetShadowCam().GetProjM());
+		//	m_transformBuffer.Data().lightViewProj = d::XMMatrixTranspose(m_shadowmap.GetShadowCam().GetViewM() * m_shadowmap.GetShadowCam().GetProjM());
+		//	m_shadowmap.Bind(dc, 10);
+		//}
 
 		//	m_playermodel.Draw();
 		//	for (int i = 0; i < modelAmount; i++)
@@ -556,7 +555,7 @@ namespace PrimtTech
 		//}
 		//dc->PSSetShader(m_3dnoLightps.GetShader(), NULL, 0);
 
-		uint numnCams = mp_camHandler->GetNoOfCams();
+
 		//dc->RSSetState(m_wireFrameState);
 
 
