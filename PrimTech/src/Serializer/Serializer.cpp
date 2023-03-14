@@ -92,7 +92,7 @@ namespace PrimtTech
 			}
 		}
 		WRITE_enter;
-		std::vector<pt::CameraComp>& cams = ComponentHandler::GetComponentArray<pt::CameraComp>();
+		std::vector<pt::Camera>& cams = ComponentHandler::GetComponentArray<pt::Camera>();
 		numComps = cams.size();
 		WRITE_asci(numComps);
 		for (int i = 0; i < numComps; i++)
@@ -191,7 +191,7 @@ namespace PrimtTech
 			}
 		}
 		// ------------------ cams ------------------
-		std::vector<pt::CameraComp>& cams = ComponentHandler::GetComponentArray<pt::CameraComp>();
+		std::vector<pt::Camera>& cams = ComponentHandler::GetComponentArray<pt::Camera>();
 		numComps = cams.size();
 		WRITEA(numComps);
 		for (int i = 0; i < numComps; i++)
@@ -298,7 +298,7 @@ namespace PrimtTech
 			}
 		}
 
-		std::vector<pt::CameraComp>& cams = ComponentHandler::GetComponentArray<pt::CameraComp>();
+		std::vector<pt::Camera>& cams = ComponentHandler::GetComponentArray<pt::Camera>();
 		numComps = 0;
 		READA(numComps);
 		cams.reserve(numComps);

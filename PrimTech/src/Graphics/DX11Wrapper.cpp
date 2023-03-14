@@ -490,19 +490,11 @@ namespace PrimtTech
 
 	float GetAvarageValue(const sm::Vector3& v)
 	{
-		float value = (v.x + v.y + v.z) / 3;
-
-		return value;
-	}
-
-	void DX11Renderer::SetInputP(KeyboardHandler& kb)
-	{
-		mp_kb = &kb;
+		return (v.x + v.y + v.z) / 3;
 	}
 
 	void DX11Renderer::Render(const float& deltatime)
 	{
-		//m_guiHandler.CalculateFps(deltatime);
 		float bgColor[] = { .1f,.1f,.1f,1.f };
 
 		dc->ClearRenderTargetView(m_rtv, bgColor);
@@ -511,21 +503,8 @@ namespace PrimtTech
 
 		dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		dc->RSSetState(m_rasterizerState);
-		//if (im->shadowMap)
-		//{
-		//	dc->IASetInputLayout(m_3dvs.GetInputLayout());
-		//	dc->VSSetShader(m_3dvs.GetShader(), NULL, 0);
-		//	dc->PSSetShader(NULL, NULL, 0);
-		//	m_transformBuffer.Data().viewProj = d::XMMatrixTranspose(m_shadowmap.GetShadowCam().GetViewM() * m_shadowmap.GetShadowCam().GetProjM());
-		//	m_transformBuffer.Data().lightViewProj = d::XMMatrixTranspose(m_shadowmap.GetShadowCam().GetViewM() * m_shadowmap.GetShadowCam().GetProjM());
-		//	m_shadowmap.Bind(dc, 10);
-		//}
-
-		//	m_playermodel.Draw();
-		//	for (int i = 0; i < modelAmount; i++)
-		//		m_models[i]->Draw();
-		//	//dc->OMSetRenderTargets(1, NULL, NULL);
-		//}
+		
+		// shadow code here
 
 		dc->OMSetRenderTargets(1, &m_rtv, m_dsView);
 		dc->RSSetViewports(1, &m_viewport);
@@ -534,30 +513,17 @@ namespace PrimtTech
 		dc->VSSetShader(m_lineVS.GetShader(), NULL, 0);
 		dc->PSSetShader(m_linePS.GetShader(), NULL, 0);
 
-		std::vector<pt::CameraComp>& cc = ComponentHandler::GetComponentArray<pt::CameraComp>();
-
-		m_transformBuffer.Data().viewProj = d::XMMatrixTranspose(cc[0].GetViewMatrix() * cc[0].GetProjMatrix());
+		pt::Camera& cc = ComponentHandler::GetComponentByIndex<pt::Camera>(m_activeCamIndex);
+		
+		m_transformBuffer.Data().viewProj = d::XMMatrixTranspose(cc.GetViewMatrix() * cc.GetProjMatrix());
 
 		dc->IASetInputLayout(m_3dvs.GetInputLayout());
 		dc->VSSetShader(m_3dvs.GetShader(), NULL, 0);
 		dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		//dc->PSSetShader(m_3dps.GetShader(), NULL, 0);
+		
 		dc->PSSetShader(m_toonPS.GetShader(), NULL, 0);
-		//m_shadowmap.BindSRV(dc, 10);
 
 		m_materialBuffer.Data().flags = 0;
-		//m_materialBuffer.MapBuffer();
-
-		//for (int i = 0; i < modelAmount; i++)
-		//{
-		//	m_models[i]->UpdateTextureScroll(deltatime);
-		//	m_models[i]->Draw();
-		//}
-		//dc->PSSetShader(m_3dnoLightps.GetShader(), NULL, 0);
-
-
-		//dc->RSSetState(m_wireFrameState);
-
 
 		std::vector<MeshRef>& rMeshrefs = ComponentHandler::GetComponentArray<MeshRef>();
 		std::vector<TransformComp>& rTransforms = ComponentHandler::GetComponentArray<TransformComp>();
@@ -575,7 +541,6 @@ namespace PrimtTech
 			TransformComp* pTransformComp = &rTransforms[entId];
 
 			m_transformBuffer.Data().world = pTransformComp->GetWorldTransposed();
-
 			m_transformBuffer.MapBuffer();
 
 			dc->IASetVertexBuffers(0, 1, meshPtr->GetVBuffer().GetReference(), meshPtr->GetVBuffer().GetStrideP(), &offset);
@@ -601,21 +566,6 @@ namespace PrimtTech
 		dc->IASetInputLayout(m_lineVS.GetInputLayout());
 		dc->PSSetShader(m_linePS.GetShader(), NULL, 0);
 		dc->Draw(m_grid.GetBufferSize(), 0);
-
-		//for (int i = 1; i < cc.size(); i++)
-		//{
-		//	m_camModel.SetPosition(mp_camHandler->GetCameraAdress(i)->GetPositionNoOffset());
-		//	sm::Vector3 rotation = mp_camHandler->GetCameraAdress(i)->GetRotation();
-		//	m_camModel.SetRotation(rotation.x, rotation.y, 0.f);
-		//	m_camModel.Rotate(d::XM_PI, 0.f, 0.f);
-		//	m_camModel.Draw();
-		//}
-		// Render debug
-		//m_bulb.Draw();
-		//m_spotlight.Draw();
-		//m_spotlight.SetPosition(im->sl.position[0], im->sl.position[1], im->sl.position[2]);
-		//m_spotlight.SetRotation(im->sl.rotation[0], im->sl.rotation[1], im->sl.rotation[2]);
-		//m_shadowmap.DrawModel();
 
 		//// Renderbox
 		//m_transformBuffer.Data().world = d::XMMatrixTranspose(d::XMMatrixTranslation(0.f, 0.f, 1.f));

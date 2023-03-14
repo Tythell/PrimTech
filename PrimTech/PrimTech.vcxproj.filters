@@ -72,9 +72,6 @@
     <ClCompile Include="src\Graphics\Texture.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="src\Graphics\Transform.cpp">
-      <Filter>Source Files\Graphics</Filter>
-    </ClCompile>
     <ClCompile Include="src\Input\Mouse.cpp">
       <Filter>Source Files\Input</Filter>
     </ClCompile>
@@ -198,9 +195,6 @@
     </ClInclude>
     <ClInclude Include="src\Utility\StringHelper.h">
       <Filter>Header Files\Utility</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\Transform.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\Shader.h">
       <Filter>Header Files\Graphics</Filter>

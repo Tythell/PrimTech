@@ -26,7 +26,7 @@ namespace PrimtTech {
 #define COMPONENT_LIST(STAT, AFTER) \
 COMP_TYPE(pt::MeshRef, s_meshrefs, STAT, AFTER) \
 COMP_TYPE(pt::TransformComp, s_transforms, STAT, AFTER) \
-COMP_TYPE(pt::CameraComp, s_cams, STAT, AFTER) \
+COMP_TYPE(pt::Camera, s_cams, STAT, AFTER) \
 
 #define LINK_TYPE_VEC(ELSE,cTYPE, NAME, ENUM) \
 ELSE if constexpr (std::is_same_v<T, cTYPE>) { \
@@ -37,7 +37,7 @@ ELSE if constexpr (std::is_same_v<T, cTYPE>) { \
 #define LINK_LIST \
 LINK_TYPE_VEC(##, pt::MeshRef, s_meshrefs, ec_meshRef) \
 LINK_TYPE_VEC(else, pt::TransformComp, s_transforms, ec_transform) \
-LINK_TYPE_VEC(else, pt::CameraComp, s_cams, ec_cam) \
+LINK_TYPE_VEC(else, pt::Camera, s_cams, ec_cam) \
 
 	class ComponentHandler
 	{

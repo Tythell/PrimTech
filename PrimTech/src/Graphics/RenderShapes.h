@@ -3,7 +3,7 @@
 
 namespace PrimtTech
 {
-	class RenderShape : public Transform
+	class RenderShape
 	{
 	public:
 		virtual void Draw(ID3D11DeviceContext*& dc);

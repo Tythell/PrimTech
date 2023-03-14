@@ -3,31 +3,28 @@
 
 namespace pt
 {
-	pt::CameraComp::CameraComp(uint entId) : Component(entId)
-	{
+	pt::Camera::Camera(uint entId) : Component(entId) {}
 
-	}
-
-	sm::Matrix pt::CameraComp::GetViewMatrix() const
+	sm::Matrix pt::Camera::GetViewMatrix() const
 	{
 		return m_viewM;
 	}
 
-	sm::Matrix pt::CameraComp::GetProjMatrix() const
+	sm::Matrix pt::Camera::GetProjMatrix() const
 	{
 		return m_projM;
 	}
-	void CameraComp::SetPerspective(float fovDeg, float aspectRatio, float nearZ, float farZ)
+	void Camera::SetPerspective(float fovDeg, float aspectRatio, float nearZ, float farZ)
 	{
 		float fovRad = (fovDeg / 360.f) * d::XM_2PI;
 		m_projM = d::XMMatrixPerspectiveFovLH(fovRad, aspectRatio, nearZ, farZ);
 	}
 
-	void CameraComp::SetOrtographic(float width, float height, float nearZ, float farZ)
+	void Camera::SetOrtographic(float width, float height, float nearZ, float farZ)
 	{
 		m_projM = d::XMMatrixOrthographicLH(width, height, nearZ, farZ);
 	}
-	void CameraComp::UpdateView(const pt::TransformComp& entTransform)
+	void Camera::UpdateView(const pt::TransformComp& entTransform)
 	{
 		d::XMMATRIX camRot = d::XMMatrixRotationRollPitchYawFromVector(entTransform.GetRotation() + m_rotateOffset);
 
@@ -45,19 +42,19 @@ namespace pt
 		m_leftV = d::XMVector3TransformCoord({ -1,0,0 }, camRot);
 		m_upV = d::XMVector3TransformCoord({ 0.f,1.f,0.f }, camRot);
 	}
-	void CameraComp::SetPositionOffset(const sm::Vector3& v)
+	void Camera::SetPositionOffset(const sm::Vector3& v)
 	{
 		m_posOffset = v;
 	}
-	void CameraComp::SetPositionOffset(float x, float y, float z)
+	void Camera::SetPositionOffset(float x, float y, float z)
 	{
 		SetPositionOffset(sm::Vector3(x, y, z));
 	}
-	void CameraComp::SetRotationOffset(const sm::Vector3& v)
+	void Camera::SetRotationOffset(const sm::Vector3& v)
 	{
 		m_rotateOffset = v;
 	}
-	void CameraComp::SetRotationOffset(float x, float y, float z)
+	void Camera::SetRotationOffset(float x, float y, float z)
 	{
 		SetRotationOffset(sm::Vector3(x, y, z));
 	}

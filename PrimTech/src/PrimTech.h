@@ -31,7 +31,6 @@ namespace pt
 		PrimtTech::Window m_window;
 		PrimtTech::DX11Renderer* mp_dxrenderer = nullptr;
 
-		KeyboardHandler m_kb;
 		float m_playerSpeed;
 		double m_deltaTime = 0.0;
 		bool m_isOpen = true;

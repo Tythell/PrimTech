@@ -222,11 +222,6 @@ namespace PrimtTech
 		return m_hwnd;
 	}
 
-	void Window::SetInputP(KeyboardHandler& pkb)
-	{
-		mp_kb = &pkb;
-	}
-
 	uint16_t Window::getWinWidth() const
 	{
 		return m_windowWidth;

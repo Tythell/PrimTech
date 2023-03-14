@@ -99,7 +99,7 @@ void Gui_EntList(void* test, bool* show)
 		{
 			if (ImGui::CollapsingHeader("Camera", ImGuiTreeNodeFlags_DefaultOpen))
 			{
-				pt::CameraComp* mr = p->ents[p->selected].GetComponent<pt::CameraComp>();
+				pt::Camera* mr = p->ents[p->selected].GetComponent<pt::Camera>();
 
 				sm::Vector3 pos = mr->GetPositionOffset();
 				sm::Vector3 rot = mr->GetRotationOffset();
@@ -144,7 +144,7 @@ void Gui_EntList(void* test, bool* show)
 		ImGuizmo::SetDrawlist();
 		ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, (float)p->winWidth, (float)p->winHeight);
 
-		pt::CameraComp& pCam = PrimtTech::ComponentHandler::GetComponentByIndex<pt::CameraComp>(p->currentCamera);
+		pt::Camera& pCam = PrimtTech::ComponentHandler::GetComponentByIndex<pt::Camera>(p->currentCamera);
 		pt::TransformComp& rTr = PrimtTech::ComponentHandler::GetComponentByIndex<pt::TransformComp>(p->selected);
 
 		sm::Matrix camViewM = pCam.GetViewMatrix();
@@ -556,7 +556,7 @@ Editor::Editor(PrimtTech::DX11Renderer* pRenderer, d::XMINT2 windowRes) : m_rend
 
 	m_entlist.ents.emplace_back();
 	m_entlist.ents.emplace_back();
-	pt::CameraComp* devCam = m_entlist.ents[0].AddComponent<pt::CameraComp>();
+	pt::Camera* devCam = m_entlist.ents[0].AddComponent<pt::Camera>();
 	devCam->SetPerspective(80.f, (float)windowRes.x / (float)windowRes.y, 0.1f, 100.f);
 	m_entlist.ents[0].Transform().SetPosition(0.f, 1.f, -2.f);
 	//m_entlist.ents[1].Transform().SetScale(1.f);
@@ -630,7 +630,7 @@ void Editor::execCommand(std::string cmd)
 			ss >> argBuffer;
 			if (argBuffer == "cam")
 			{
-				m_entlist.ents[entId].AddComponent<pt::CameraComp>();
+				m_entlist.ents[entId].AddComponent<pt::Camera>();
 			}
 			else if (argBuffer == "meshref")
 			{
@@ -689,7 +689,7 @@ void Editor::execCommand(std::string cmd)
 			{
 				m_entlist.selected = -1;
 				m_entlist.ents.resize(1, 0);
-				m_entlist.ents[0].AddComponent<pt::CameraComp>()->SetPerspective(80.f, ((float)m_entlist.winWidth / (float)m_entlist.winHeight), 0.1f, 100.f);
+				m_entlist.ents[0].AddComponent<pt::Camera>()->SetPerspective(80.f, ((float)m_entlist.winWidth / (float)m_entlist.winHeight), 0.1f, 100.f);
 				PrimtTech::Import(path, m_entlist.ents);
 			}
 		}
@@ -707,7 +707,7 @@ void Editor::execCommand(std::string cmd)
 		{
 			m_entlist.selected = -1;
 			m_entlist.ents.resize(1, 0);
-			m_entlist.ents[0].AddComponent<pt::CameraComp>()->SetPerspective(80.f, ((float)m_entlist.winWidth / (float)m_entlist.winHeight), 0.1f, 100.f);
+			m_entlist.ents[0].AddComponent<pt::Camera>()->SetPerspective(80.f, ((float)m_entlist.winWidth / (float)m_entlist.winHeight), 0.1f, 100.f);
 		}
 	}
 }
@@ -727,7 +727,7 @@ void Editor::Update(float deltatime)
 	bool canMove = MouseHandler::GetIsMouseDown(eRIGHTCLICK);
 
 	pt::TransformComp* pDevTransform = &PrimtTech::ComponentHandler::GetComponentByIndex<pt::TransformComp>(0);
-	pt::CameraComp* pDevCam = &PrimtTech::ComponentHandler::GetComponentByIndex<pt::CameraComp>(0);
+	pt::Camera* pDevCam = &PrimtTech::ComponentHandler::GetComponentByIndex<pt::Camera>(0);
 
 
 	if (canMove)

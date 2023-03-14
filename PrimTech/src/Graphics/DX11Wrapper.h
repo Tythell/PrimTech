@@ -99,8 +99,6 @@ namespace PrimtTech
 		ImGuiHandler* m_guiHandler = nullptr;
 		ImGuiVars* im = nullptr;
 
-		KeyboardHandler* mp_kb = nullptr;
-
 		int m_selected = -1;
 		int m_selectedMtrl = -1;
 		//RenderBox m_renderbox;

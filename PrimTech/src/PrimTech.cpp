@@ -30,10 +30,8 @@ namespace pt
 	{
 		m_windowName = windowName;
 		m_window.init(windowName, hInstance, windowClass, width, height);
-		m_window.SetInputP(m_kb);
 
 		mp_dxrenderer = new DX11Renderer(m_window);
-		mp_dxrenderer->SetInputP(m_kb);
 
 		//ComponentHandler::ReserveMemory<MeshRef>(6);
 	}

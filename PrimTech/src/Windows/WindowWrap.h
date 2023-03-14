@@ -17,7 +17,6 @@ namespace PrimtTech
 		LRESULT WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 		std::wstring getWinName() const;
 		HWND& getHWND();
-		void SetInputP(KeyboardHandler& pkb);
 
 		uint16_t getWinWidth() const;
 		uint16_t getWinHeight() const;
@@ -29,7 +28,7 @@ namespace PrimtTech
 		HWND m_hwnd = NULL;
 		HINSTANCE m_hInstance = NULL;
 		std::wstring m_wndClass;
-		KeyboardHandler* mp_kb = nullptr;
+
 		bool m_isFocused = true;
 	};
 

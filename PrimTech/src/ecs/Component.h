@@ -74,10 +74,10 @@ namespace pt
 		sm::Matrix worldTransposed;
 	};
 
-	class CameraComp : public Component
+	class Camera : public Component
 	{
 	public:
-		CameraComp(uint entId);
+		Camera(uint entId);
 
 		sm::Matrix GetViewMatrix() const;
 		sm::Matrix GetProjMatrix() const;
@@ -100,10 +100,17 @@ namespace pt
 		sm::Vector3 GetUp() const { return m_upV; };
 	private:
 		sm::Matrix m_viewM, m_projM;
-
 		sm::Vector3 m_posOffset, m_rotateOffset;
-
 		sm::Vector3 m_forwardV, m_leftV, m_upV;
 	};
-}
 
+	//class AABBComp : public Component
+	//{
+	//public:
+	//	AABBComp(uint entId);
+
+	//	
+	//private:
+	//	d::BoundingBox m_aabb;
+	//};
+}

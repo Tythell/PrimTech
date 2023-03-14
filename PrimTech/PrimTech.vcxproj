@@ -214,7 +214,6 @@ IF EXIST 3rdparty\*.dll ( copy 3rdparty\*.dll x64\Release\ )</Command>
     <ClCompile Include="src\Graphics\DX11Wrapper.cpp" />
     <ClCompile Include="src\Graphics\Shader.cpp" />
     <ClCompile Include="src\Graphics\Texture.cpp" />
-    <ClCompile Include="src\Graphics\Transform.cpp" />
     <ClCompile Include="src\Input\Keyboard.cpp" />
     <ClCompile Include="src\Input\Mouse.cpp" />
     <ClCompile Include="src\Old\Model.cpp" />
@@ -328,7 +327,6 @@ IF EXIST 3rdparty\*.dll ( copy 3rdparty\*.dll x64\Release\ )</Command>
     <ClInclude Include="src\Graphics\Texture.h" />
     <ClInclude Include="src\Graphics\Vertex.h" />
     <ClInclude Include="src\Graphics\Shader.h" />
-    <ClInclude Include="src\Graphics\Transform.h" />
     <ClInclude Include="src\Input\Keyboard.h" />
     <ClInclude Include="src\Graphics\Material.h" />
     <ClInclude Include="src\Math\Math.h" />
