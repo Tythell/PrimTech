@@ -1,7 +1,6 @@
 #pragma once
 #include"Buffer.h"
 #include "Camera.h"
-#include "Model.h"
 
 namespace PrimtTech
 {

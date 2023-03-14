@@ -8,8 +8,8 @@ namespace PrimtTech
 	enum BufferType : int
 	{
 		eVERTEX = D3D11_BIND_VERTEX_BUFFER,
-		eCONSTANT = D3D11_BIND_INDEX_BUFFER,
-		eINDEX = D3D11_BIND_CONSTANT_BUFFER
+		eCONSTANT = D3D11_BIND_CONSTANT_BUFFER,
+		eINDEX = D3D11_BIND_INDEX_BUFFER
 	};
 	enum BufferUsage
 	{
@@ -182,6 +182,33 @@ namespace PrimtTech
 
 			return HRESULT(device->CreateBuffer(&bufferDesc, NULL, &m_buffer));
 		}
+		//HRESULT CreateStructuredBuffer(ID3D11Device*& device, T* data, uint bufferSize, ID3D11DeviceContext*& dc, ID3D11ShaderResourceView*& srv)
+		//{
+		//	m_type = e;
+		//	m_usage = eDYNAMIC;
+		//	if (m_buffer)
+		//	{
+		//		Popup::Error("Buffer created twice");
+		//		throw;
+		//	}
+		//	//m_type = BufferType::eCONSTANT;
+
+		//	mp_dc = dc;
+		//	m_data = new T;
+		//	m_bufferSize = bufferSize;
+		//	m_stride = sizeof(T);
+
+		//	D3D11_BUFFER_DESC bufferDesc;
+		//	ZeroMemory(&bufferDesc, sizeof(D3D11_BUFFER_DESC));
+		//	bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+		//	bufferDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+		//	bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		//	bufferDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+		//	bufferDesc.ByteWidth = static_cast<UINT>(sizeof(T) + (16 - sizeof(T) % 16)) * m_bufferSize;
+		//	bufferDesc.StructureByteStride = m_stride;
+
+		//	return HRESULT(device->CreateBuffer(&bufferDesc, NULL, &m_buffer));
+		//}
 		// DeviceContext only needed if buffer will be changed
 		HRESULT CreateIndexBuffer(ID3D11Device*& device, T* indexData, UINT numIndices, ID3D11DeviceContext* dc = NULL, unsigned char flags = 0x0)
 		{

@@ -1,5 +1,5 @@
 #pragma once
-#include"Mesh.h"
+#include"Graphics/Mesh.h"
 
 //bool LoadObjToBuffer(std::string path, Shape& shape, bool makeLeftHanded = true);
 

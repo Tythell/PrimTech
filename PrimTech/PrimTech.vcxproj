@@ -209,6 +209,7 @@ IF EXIST 3rdparty\*.dll ( copy 3rdparty\*.dll x64\Release\ )</Command>
     <ClCompile Include="src\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\Serializer\Serializer.cpp" />
     <ClCompile Include="src\Utility\CommonDialogs.cpp" />
     <ClCompile Include="src\Macros\Defines.cpp" />
     <ClCompile Include="src\Graphics\Camera.cpp" />
@@ -218,7 +219,7 @@ IF EXIST 3rdparty\*.dll ( copy 3rdparty\*.dll x64\Release\ )</Command>
     <ClCompile Include="src\Graphics\Transform.cpp" />
     <ClCompile Include="src\Input\Keyboard.cpp" />
     <ClCompile Include="src\Input\Mouse.cpp" />
-    <ClCompile Include="src\Graphics\Model.cpp" />
+    <ClCompile Include="src\Old\Model.cpp" />
     <ClCompile Include="src\Graphics\Material.cpp" />
     <ClCompile Include="src\PrimTech.cpp" />
     <ClCompile Include="src\Graphics\ResourceHandler.cpp" />
@@ -314,6 +315,7 @@ IF EXIST 3rdparty\*.dll ( copy 3rdparty\*.dll x64\Release\ )</Command>
     <ClInclude Include="src\Graphics\ShadowMap.h" />
     <ClInclude Include="src\Graphics\ViewModel.h" />
     <ClInclude Include="src\pch.h" />
+    <ClInclude Include="src\Serializer\Serializer.h" />
     <ClInclude Include="src\Utility\CommonDialogs.h" />
     <ClInclude Include="src\Graphics\Buffer.h" />
     <ClInclude Include="src\Macros\Colors.h" />
@@ -335,7 +337,7 @@ IF EXIST 3rdparty\*.dll ( copy 3rdparty\*.dll x64\Release\ )</Command>
     <ClInclude Include="src\Graphics\Material.h" />
     <ClInclude Include="src\Math\Math.h" />
     <ClInclude Include="src\Input\Mouse.h" />
-    <ClInclude Include="src\Graphics\Model.h" />
+    <ClInclude Include="src\Old\Model.h" />
     <ClInclude Include="src\Graphics\Paths.h" />
     <ClInclude Include="src\PrimTech.h" />
     <ClInclude Include="resource.h" />

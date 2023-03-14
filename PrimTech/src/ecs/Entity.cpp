@@ -13,6 +13,11 @@ namespace pt
 			return true;
 		return false;
 	}
+	void Entity::InsertTable(uint key, uint val)
+	{
+		m_hasComponents &= key;
+		m_compTable.emplace(key, val);
+	}
 }
 
 

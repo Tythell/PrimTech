@@ -35,7 +35,7 @@ namespace pt
 
 			m_compTable.emplace(c, (uint)ptvec->size() - 1);
 
-			m_hasComponents |= c;
+			m_hasComponents |= (uint)c;
 			return &ptvec[0][(uint)ptvec->size() - 1];
 
 			return NULL;
@@ -73,6 +73,21 @@ namespace pt
 
 		bool HasComponentType(uint comp) const;
 
+		int CalculateNrOfComponents() const
+		{
+			int num = 0;
+			for (int i = 0; i < NUM_COMPONENT_TYPES; i++)
+			{
+				if (HasComponentType(1 << i))
+				{
+					num++;
+				}
+			}
+			return num;
+		};
+		std::map<uint, uint> GetCompTable() { return m_compTable; };
+
+		void InsertTable(uint key, uint val);
 	private:
 		uint m_id = 0xffffffff;
 		uint m_hasComponents = 0;

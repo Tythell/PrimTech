@@ -18,6 +18,8 @@ namespace PrimtTech {
 		//ec_10 = 0x100, 
 	};
 
+#define NUM_COMPONENT_TYPES 3
+
 #define COMP_TYPE(cTYPE, NAME, STAT, MID) STAT std::vector<cTYPE> MID## NAME;
 
 

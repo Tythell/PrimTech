@@ -1,4 +1,5 @@
 #include "Scene.h"
+#include "Serializer/Serializer.h"
 #include <sstream>
 
 namespace ig = ImGui;
@@ -475,127 +476,6 @@ void Gui_MaterialProperties(void* ptr, bool* show)
 	
 }
 
-/*//int ClickFoo(const sm::Ray& ray, ModelList& models)
-	//{
-	//	float maxDistance = 100.f;
-	//	float t = 0.f;
-	//	int index = -1;
-
-	//	d::BoundingSphere transformedSphere;
-	//	for (int i = 0; i < models.size(); i++)
-	//	{
-	//		transformedSphere = models[i]->GetBSphere();
-	//		sm::Vector3 center = transformedSphere.Center;
-
-	//		float radius = transformedSphere.Radius;
-
-	//		radius *= GetHighestValue(models[i]->GetScale());
-
-	//		sm::Vector3 transformedCenter = d::XMVector3TransformCoord(center, models[i]->GetWorld());
-
-	//		transformedSphere.Center = transformedCenter;
-	//		transformedSphere.Radius = radius;
-
-	//		float dummy = 0.f;
-	//		if (ray.Intersects(transformedSphere, dummy))
-	//		{
-	//			sm::Ray localSpaceRay;
-	//			sm::Matrix invWorld = models[i]->GetWorldInversed();
-	//			localSpaceRay.position = d::XMVector3TransformCoord(ray.position, invWorld);
-	//			localSpaceRay.direction = d::XMVector3TransformNormal(ray.direction, invWorld);
-	//			localSpaceRay.direction.Normalize();
-	//			for (UINT k = 0; k < models[i]->GetMeshP()->GetNofMeshes(); k++)
-	//			{
-	//				Buffer<Vertex3D>* pVbuffer = &models[i]->GetMeshP()->GetVBuffer();
-	//				UINT nOTriangles = pVbuffer->GetBufferSize() / 3;
-	//				for (UINT j = 0; j < nOTriangles; j++)
-	//				{
-	//					sm::Vector3 tri0 = pVbuffer->Data((j * 3) + 0).position;
-	//					sm::Vector3 tri1 = pVbuffer->Data((j * 3) + 1).position;
-	//					sm::Vector3 tri2 = pVbuffer->Data((j * 3) + 2).position;
-	//					if (localSpaceRay.Intersects(tri0, tri1, tri2, t))
-	//					{
-	//						// Multiply distnace to world space
-	//						t *= GetAvarageValue(models[i]->GetScale());
-	//						if (t < maxDistance)
-	//						{
-	//							maxDistance = t;
-	//							index = i;
-	//						}
-	//					}
-	//				}
-	//			}
-
-	//			//if (t > maxDistance)
-	//			//{
-	//			//	maxDistance = t;
-	//			//	index = i;
-	//			//}
-
-	//		}
-	//	}
-	//	return index;
-	//}
-	*/
-/*//void Click(const sm::Vector3& dir)
-//{
-	//if (!m_isHoveringWindow)
-	//{
-	//	sm::Ray ray;
-	//	ray.position = mp_currentCam->GetPosition();
-	//	ray.direction = dir;
-	//	//#ifdef _DEBUG
-	//	if (im->drawRayCast)
-	//	{
-	//		sm::Vector3 endPos = ray.position + dir;
-	//		m_rLine.SetLine(ray.position, endPos);
-	//	}
-	//	//#endif // _DEBUG
-	//	int n = ClickFoo(ray, m_models);
-	//	m_selected = n;
-	//	m_selectedMtrl = -1;
-	//}
-//}
-
-//void RecursiveRead(Sceneheaders& header, ModelList& v, std::ifstream& reader)
-//{
-//	reader.read((char*)&header, 4);
-//	switch (header)
-//	{
-//	case Sceneheaders::eMODEL:
-//	{
-//		ModelStruct ms;
-//		reader.read((char*)&ms, sizeof(ModelStruct));
-//		if (ms.modelname[0] == '(')
-//		{
-//			std::string strCopy(ms.modelname);
-//			strCopy = strCopy.substr(3);
-//			sprintf_s(ms.modelname, strCopy.c_str());
-//		}
-
-//		v.emplace_back(new Model);
-//		v[v.size() - 1]->Init(std::string(ms.modelname));
-//		v[v.size() - 1]->SetPosition(ms.position);
-//		v[v.size() - 1]->SetRotation(ms.rotation);
-//		v[v.size() - 1]->SetScale(ms.scale);
-//		if (std::string(ms.mtrlname) != "")
-//			v[v.size() - 1]->GetMaterial().ImportMaterial(std::string(ms.mtrlname));
-
-//		for (UINT i = 1; i < ms.noOfExtraMats + 1 && ms.noOfExtraMats < 100; i++)
-//		{
-//			reader.read((char*)&ms.mtrlname, 24);
-//			if (ms.mtrlname != std::string(""))
-//				v[v.size() - 1]->GetMaterial(i).ImportMaterial(std::string(ms.mtrlname));
-//		}
-//		RecursiveRead(header, v, reader);
-//		break;
-//	}
-//	default:
-//		break;
-//	}
-//}
-*/
-
 void Gui_menubar(void* ptr, bool* show)
 {
 	DevConsole* m_console = (DevConsole*)ptr;
@@ -603,10 +483,10 @@ void Gui_menubar(void* ptr, bool* show)
 
 	if (ImGui::BeginMenu("File"))
 	{
-		if (ImGui::MenuItem("New scene")) { m_console->AddLog("new scene"); }
-		if (ImGui::MenuItem("Open scene")) { m_console->AddLog("load scene"); }
-		if (ImGui::MenuItem("Export scene")) { m_console->AddLog("export scene"); }
-		if (ImGui::MenuItem("Exit editor")) { m_console->AddLog("exit"); }
+		if (ImGui::MenuItem("New scene"))		{ m_console->AddLog("scene new"); }
+		if (ImGui::MenuItem("Open scene"))		{ m_console->AddLog("scene load"); }
+		if (ImGui::MenuItem("Export scene"))	{ m_console->AddLog("scene export"); }
+		if (ImGui::MenuItem("Exit editor"))		{ m_console->AddLog("exit"); }
 		ImGui::EndMenu();
 	}
 	if (ImGui::BeginMenu("Edit"))
@@ -798,6 +678,37 @@ void Editor::execCommand(std::string cmd)
 			}
 		}
 		
+	}
+	else if (argBuffer == "scene")
+	{
+		ss >> argBuffer;
+		if (argBuffer == "load")
+		{
+			std::string path = Dialogs::OpenFile("Scene (*.ptsc)\0*.ptsc;\0", "Scenes\\");
+			if (!path.empty())
+			{
+				m_entlist.selected = -1;
+				m_entlist.ents.resize(1, 0);
+				m_entlist.ents[0].AddComponent<pt::CameraComp>()->SetPerspective(80.f, ((float)m_entlist.winWidth / (float)m_entlist.winHeight), 0.1f, 100.f);
+				PrimtTech::Import(path, m_entlist.ents);
+			}
+		}
+		else if (argBuffer == "export")
+		{
+			std::string path = Dialogs::SaveFile("Scene (*.ptsc)\0*.ptsc;\0", "Scenes\\");
+			if (!path.empty())
+			{
+				if (StringHelper::GetExtension(path) != "ptsc")
+					path += ".ptsc";
+				PrimtTech::Export(path, m_entlist.ents);
+			}
+		}
+		else if (argBuffer == "new")
+		{
+			m_entlist.selected = -1;
+			m_entlist.ents.resize(1, 0);
+			m_entlist.ents[0].AddComponent<pt::CameraComp>()->SetPerspective(80.f, ((float)m_entlist.winWidth / (float)m_entlist.winHeight), 0.1f, 100.f);
+		}
 	}
 }
 

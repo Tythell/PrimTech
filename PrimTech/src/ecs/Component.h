@@ -27,6 +27,7 @@ namespace pt
 
 		PrimtTech::Mesh* GetMeshContainerP() const { return m_pMesh; }
 		uint GetMaterialIndex(const uint& index) const;
+		uint GetNumMaterials() const { return (uint)m_pMaterialindexes.size(); };
 		std::string GetNameOfMesh() const { return m_pMesh->GetName(); }
 	private:
 		std::vector<uint> m_pMaterialindexes;
@@ -87,7 +88,9 @@ namespace pt
 		void UpdateView(const pt::TransformComp& entTransform);
 
 		void SetPositionOffset(const sm::Vector3& v);
+		void SetPositionOffset(float x, float y, float z);
 		void SetRotationOffset(const sm::Vector3& v);
+		void SetRotationOffset(float x, float y, float z);
 
 		sm::Vector3 GetPositionOffset() const { return m_posOffset; }
 		sm::Vector3 GetRotationOffset() const { return m_rotateOffset; }

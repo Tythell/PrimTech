@@ -49,8 +49,16 @@ namespace pt
 	{
 		m_posOffset = v;
 	}
+	void CameraComp::SetPositionOffset(float x, float y, float z)
+	{
+		SetPositionOffset(sm::Vector3(x, y, z));
+	}
 	void CameraComp::SetRotationOffset(const sm::Vector3& v)
 	{
 		m_rotateOffset = v;
+	}
+	void CameraComp::SetRotationOffset(float x, float y, float z)
+	{
+		SetRotationOffset(sm::Vector3(x, y, z));
 	}
 }
