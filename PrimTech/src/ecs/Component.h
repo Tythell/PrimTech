@@ -19,21 +19,18 @@ namespace pt
 	{
 	public:
 		MeshRef(uint entId, std::string meshName = "");
-		//MeshRef(const MeshRef& other);
 
 		void Init(std::string path);
 		void SetMaterial(uint materialIndex, uint slot = 0);
 		void SetMaterial(std::string materialName, uint slot = 0);
 
-		PrimtTech::Mesh* GetMeshContainerP() const { return m_pMesh; }
+		PrimtTech::Mesh* GetMeshContainerP() const { return PrimtTech::ResourceHandler::GetMeshAdress(m_meshIndex); }
 		uint GetMaterialIndex(const uint& index) const;
 		uint GetNumMaterials() const { return (uint)m_pMaterialindexes.size(); };
-		std::string GetNameOfMesh() const { return m_pMesh->GetName(); }
+		std::string GetNameOfMesh() const { return PrimtTech::ResourceHandler::GetMeshAdress(m_meshIndex)->GetName(); }
 	private:
+		uint m_meshIndex = 0;
 		std::vector<uint> m_pMaterialindexes;
-		PrimtTech::Mesh* m_pMesh = &PrimtTech::ResourceHandler::GetMesh(0);
-
-		//friend class PrimtTech::DX11Renderer;
 	};
 
 
@@ -104,13 +101,48 @@ namespace pt
 		sm::Vector3 m_forwardV, m_leftV, m_upV;
 	};
 
-	//class AABBComp : public Component
-	//{
-	//public:
-	//	AABBComp(uint entId);
+	class AABBComp : public Component
+	{
+	public:
+		AABBComp(uint entId);
 
-	//	
-	//private:
-	//	d::BoundingBox m_aabb;
-	//};
+		void Update(pt::TransformComp& transform);
+		void SetExtends(const sm::Vector3& extends);
+		void SetPositionOffset(const sm::Vector3& pos);
+		sm::Vector3 GetPositionOffset() const;
+
+		bool Intersects(AABBComp& box);
+		void CreateFromMesh(const pt::MeshRef& mr);
+
+		bool IsIntersecting() const { return m_isIntersecting; }
+		void SetIsIntersecting(bool b) { m_isIntersecting = b; }
+
+		d::BoundingBox GetBox() const { return m_aabb; };
+	private:
+		d::BoundingBox m_aabb;
+		sm::Vector3 m_posOffset;
+		bool m_isIntersecting = false;
+	};
+
+	class OBBComp : public Component
+	{
+	public:
+		OBBComp(uint entId);
+
+		void Update(const pt::TransformComp& transform);
+		void SetExtends(const sm::Vector3& extends);
+	private:
+		d::BoundingOrientedBox m_obb;
+	};
+
+	class BSphereComp : public Component
+	{
+	public:
+		BSphereComp(uint entId);
+
+		void Update(const pt::TransformComp& transform);
+		void SetRadius(float r);
+	private:
+		d::BoundingSphere m_bsphere;
+	};
 }

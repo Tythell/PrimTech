@@ -61,7 +61,7 @@ namespace PrimtTech {
 
 			float2 texCoordoffsetDist;
 			float textureScale;
-			int rim; // bool
+			int pad;
 
 			float3 rimColor;
 			float textureScaleDist;

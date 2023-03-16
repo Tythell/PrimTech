@@ -81,9 +81,6 @@
     <ClCompile Include="src\Input\Keyboard.cpp">
       <Filter>Source Files\Input</Filter>
     </ClCompile>
-    <ClCompile Include="src\Old\Model.cpp">
-      <Filter>Source Files\Graphics</Filter>
-    </ClCompile>
     <ClCompile Include="src\Graphics\ResourceHandler.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
@@ -113,9 +110,6 @@
     </ClCompile>
     <ClCompile Include="src\ecs\ComponentHandler.cpp">
       <Filter>Source Files\ecs</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ecs\TransformC.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Graphics\ImGuiHandler.cpp">
       <Filter>Source Files</Filter>
@@ -147,11 +141,17 @@
     <ClCompile Include="src\Graphics\3rdParty\ImGuizmo\ImGuizmo.cpp">
       <Filter>Source Files\ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="src\ecs\CameraC.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Serializer\Serializer.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ecs\TransformC.cpp">
+      <Filter>Source Files\ecs</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ecs\CameraC.cpp">
+      <Filter>Source Files\ecs</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ecs\BoundShapeC.cpp">
+      <Filter>Source Files\ecs</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -270,9 +270,6 @@
     </ClInclude>
     <ClInclude Include="src\Graphics\ShadowMap.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Old\Model.h">
-      <Filter>Header Files\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\aabb.h">
       <Filter>Header Files\assimp</Filter>

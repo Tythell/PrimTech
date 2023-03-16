@@ -8,6 +8,7 @@
 #include"../Input/Mouse.h"
 #include"../Input/Keyboard.h"
 #include "../ecs/Entity.h"
+#include "RenderShapes.h"
 
 #pragma warning(push)
 #pragma warning(disable : 26812)
@@ -20,8 +21,6 @@ namespace sm = DirectX::SimpleMath;
 
 namespace PrimtTech
 {
-	using Vector2i = DirectX::XMINT2;
-
 	class Window;
 
 	class DX11Renderer
@@ -31,7 +30,6 @@ namespace PrimtTech
 		~DX11Renderer();
 		void SetImGuiHandler(ImGuiHandler& gui);
 
-		void SetInputP(KeyboardHandler& kb);
 		void Render(const float& deltatime);
 		ID3D11Device* GetDevice() const;
 		ID3D11DeviceContext* GetDeviceContext() const;
@@ -101,12 +99,15 @@ namespace PrimtTech
 
 		int m_selected = -1;
 		int m_selectedMtrl = -1;
-		//RenderBox m_renderbox;
+		RenderBox m_renderbox;
 		sm::Ray m_ray;
 		int m_fps = 0;
 		//RenderLine m_rLine;
 		//RenderSphere m_sphere;
 
-		//ShadowMap m_shadowmap;
+		ShadowMap m_shadowmap;
+		sm::Matrix m_shadowView;
+
+		pt::Camera m_shadowCam;
 	};
 }

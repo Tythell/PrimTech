@@ -10,12 +10,12 @@ namespace PrimtTech {
 		ec_transform = 0x1,
 		ec_meshRef = 0x2,
 		ec_cam = 0x4,
-		ec_pling = 0x6,
-		ec_ring = 0x10,
-		ec_07 = 0x20,
-		ec_08 = 0x40,
-		//ec_09 = 0x80,
-		//ec_10 = 0x100, 
+		ec_aabb = 0x8,
+		ec_obb = 0x10,
+		ec_bsphere = 0x20,
+		//ec_07 = 0x40,
+		//ec_08 = 0x80,
+		//ec_09 = 0x100, 
 	};
 
 #define NUM_COMPONENT_TYPES 3
@@ -27,6 +27,9 @@ namespace PrimtTech {
 COMP_TYPE(pt::MeshRef, s_meshrefs, STAT, AFTER) \
 COMP_TYPE(pt::TransformComp, s_transforms, STAT, AFTER) \
 COMP_TYPE(pt::Camera, s_cams, STAT, AFTER) \
+COMP_TYPE(pt::AABBComp, s_aabbs, STAT, AFTER) \
+COMP_TYPE(pt::OBBComp, s_obbs, STAT, AFTER) \
+COMP_TYPE(pt::BSphereComp, s_bspheres, STAT, AFTER) \
 
 #define LINK_TYPE_VEC(ELSE,cTYPE, NAME, ENUM) \
 ELSE if constexpr (std::is_same_v<T, cTYPE>) { \
@@ -38,6 +41,9 @@ ELSE if constexpr (std::is_same_v<T, cTYPE>) { \
 LINK_TYPE_VEC(##, pt::MeshRef, s_meshrefs, ec_meshRef) \
 LINK_TYPE_VEC(else, pt::TransformComp, s_transforms, ec_transform) \
 LINK_TYPE_VEC(else, pt::Camera, s_cams, ec_cam) \
+LINK_TYPE_VEC(else, pt::AABBComp, s_aabbs, ec_aabb) \
+LINK_TYPE_VEC(else, pt::OBBComp, s_obbs, ec_obb) \
+LINK_TYPE_VEC(else, pt::BSphereComp, s_bspheres, ec_bsphere) \
 
 	class ComponentHandler
 	{

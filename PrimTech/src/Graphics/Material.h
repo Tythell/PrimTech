@@ -44,7 +44,6 @@ namespace PrimtTech
 		void UpdateTextureScroll(const float& deltatime);
 		void SetDiffuseScrollSpeed(float x, float y);
 		void SetDistortionScrollSpeed(float x, float y);
-		void Set(ID3D11DeviceContext*& dc);
 		void Set(ID3D11DeviceContext*& dc, Buffer<hlsl::cbpMaterialBuffer>& mp_matBuffer);
 		void SetTransparency(float f);
 		void SetTextureScale(float f);
@@ -55,7 +54,7 @@ namespace PrimtTech
 		void SetDistortionDivider(const float& f);
 		float GetDistortionDivider() const;
 		float GetTransparancy() const;
-		void SetLeftHanded(bool b);
+		
 		bool ExportMaterial(std::string path);
 		void ImportMaterial(std::string path);
 		void RemoveTexture(const TextureType e);
@@ -63,7 +62,6 @@ namespace PrimtTech
 		void SetDiffuseClr(float r, float g, float b);
 		void SetName(std::string name);
 
-		//std::string GetMaterialName() const;
 		std::string GetMapName(const TextureType& e) const;
 		std::string GetFileName() const;
 		sm::Vector2 GetDiffuseScrollSpeed() const;
@@ -72,10 +70,8 @@ namespace PrimtTech
 		float GetTextureScaleDist() const;
 		sm::Vector3 GetDiffuseClr() const;
 
-		Buffer<hlsl::cbpMaterialBuffer>* GetBuffer();
 		bool HasTexture(const TextureType& e) const;
-		bool HasTexture(const UINT& e) const;
-		void SetPointers(Buffer<hlsl::cbpMaterialBuffer>* cbMaterialBuffer);
+		bool HasTexture(UINT e) const;
 	private:
 		void ReadRecursion(eMaterialHeaders& header, std::ifstream& reader);
 		void ClearMaterial();
@@ -83,17 +79,14 @@ namespace PrimtTech
 		TextureMap* mp_textures[eTextureTypeAMOUNT] = { nullptr };
 		float m_textureScale = 1.f;
 		float m_textureScaleDist = 1.f;
-		bool m_selection = false;
+		
 		sm::Vector3 m_rimColor = GOLD_3F;
 		float m_distDivider = 1.f;
-		bool m_lefthanded = true;
 		sm::Vector3 m_diffuseClr = WHITE_3F;
 
 		sm::Vector2 m_diffuseOffsetValue, m_distortionValue;
 		sm::Vector2 m_diffuseOffsetSpeed, m_distortionOffsetSpeed;
 		float m_transparency = 1.f;
-
-		Buffer<hlsl::cbpMaterialBuffer>* mp_matBuffer;
 	};
 }
 

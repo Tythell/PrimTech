@@ -14,16 +14,13 @@ struct VSInput
 struct VSOutput
 {
 	float4 position : SV_POSITION;
-	float3 worldPos : WORLD_POS;
 	float3 color : COLOR;
 };
-
 
 VSOutput main(VSInput input)
 {
 	VSOutput output;
 	output.position = mul(float4(input.position, 1.f), mul(world, viewProj));
-    output.worldPos = mul(float4(input.position, 1.f), world).xyz;
     output.color = input.color;
 	return output;
 }

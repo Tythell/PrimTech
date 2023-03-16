@@ -170,6 +170,7 @@ IF EXIST 3rdparty\*.dll ( copy 3rdparty\*.dll x64\Release\ )</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\ecs\BoundShapeC.cpp" />
     <ClCompile Include="src\ecs\CameraC.cpp" />
     <ClCompile Include="src\ecs\ComponentHandler.cpp" />
     <ClCompile Include="src\ecs\Component.cpp" />
@@ -216,7 +217,6 @@ IF EXIST 3rdparty\*.dll ( copy 3rdparty\*.dll x64\Release\ )</Command>
     <ClCompile Include="src\Graphics\Texture.cpp" />
     <ClCompile Include="src\Input\Keyboard.cpp" />
     <ClCompile Include="src\Input\Mouse.cpp" />
-    <ClCompile Include="src\Old\Model.cpp" />
     <ClCompile Include="src\Graphics\Material.cpp" />
     <ClCompile Include="src\PrimTech.cpp" />
     <ClCompile Include="src\Graphics\ResourceHandler.cpp" />
@@ -331,7 +331,6 @@ IF EXIST 3rdparty\*.dll ( copy 3rdparty\*.dll x64\Release\ )</Command>
     <ClInclude Include="src\Graphics\Material.h" />
     <ClInclude Include="src\Math\Math.h" />
     <ClInclude Include="src\Input\Mouse.h" />
-    <ClInclude Include="src\Old\Model.h" />
     <ClInclude Include="src\Graphics\Paths.h" />
     <ClInclude Include="src\PrimTech.h" />
     <ClInclude Include="resource.h" />

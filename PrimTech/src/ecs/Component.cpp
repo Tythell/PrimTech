@@ -27,19 +27,14 @@ namespace pt
 		{
 			return;
 		}
-		std::vector<PrimtTech::Mesh>& meshArr = PrimtTech::ResourceHandler::GetMeshArrayReference();
+		//std::vector<PrimtTech::Mesh>& meshArr = PrimtTech::ResourceHandler::GetMeshArrayReference();
 
-		for (int i = 0; i < meshArr.size(); i++)
-		{
-			if (meshArr[i].GetName() == name)
-			{
-				m_pMesh = &meshArr[i];
-				m_pMaterialindexes.resize(m_pMesh->GetNofMeshes());
-				return;
-			}
-		}
-		m_pMaterialindexes.emplace_back(0u);
-		m_pMesh = &meshArr[0];
+		int meshIndex = PrimtTech::ResourceHandler::CheckMeshNameExists(name);
+
+		m_meshIndex = (meshIndex == -1) ? 0 : meshIndex;
+
+		m_pMaterialindexes.resize(PrimtTech::ResourceHandler::GetMeshAdress(m_meshIndex)->GetNofMeshes(), 0);
+
 	}
 
 	void MeshRef::SetMaterial(uint materialIndex, uint slot)

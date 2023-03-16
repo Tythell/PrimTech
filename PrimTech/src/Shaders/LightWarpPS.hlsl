@@ -5,7 +5,17 @@ Texture2D diffuseMap : DIFFUSEMAP : register(t1);
 Texture2D distortionMap : DISTORTIONMAP : register(t2);
 Texture2D normalMap : NORMALMAP : register(t3);
 Texture2D opacityMap : NORMALMAP : register(t4);
+
 Texture2D shadowMap : SHADOWMAP : register(t10);
+
+
+struct Light
+{
+    float4 position;
+    float4 color;
+};
+
+StructuredBuffer<Light> mySb;
 
 SamplerState wrapSampler : SAMPLER : register(s0);
 SamplerState clampSampler : CLAMPSAMPLER : register(s1);
@@ -38,14 +48,17 @@ cbuffer LightBuffer : register(b0)
 #define MaterialFlag_eHasOpacity		(1 << 3)
 cbuffer MaterialBuffer : register(b1)
 {
-    float3 diffuseColor;
+    float3 diffuseColor = { 1.f, 1.f, 1.f };
     uint flags;
+
     float2 texCoordOffset;
-    float transparency;
+    float transparency = 1.f;
     int distDiv;
+
     float2 texCoordoffsetDist;
     float textureScale;
-    int rim; // bool
+    int pad;
+
     float3 rimColor;
     float textureScaleDist;
 }
@@ -107,7 +120,7 @@ float calcShadow(in float4 clipspace, in float3 normal)
 }
 
 float4 main(PSInput input) : SV_Target
-{
+{   
     float2 distortion = 0.f;
     float opacity = 1.f;
     
@@ -185,15 +198,15 @@ float4 main(PSInput input) : SV_Target
     //cellLightStr /= distance;
     
 
-    float rimDot = 0;
-    if (rim == 1)
-        rimDot = 1 - dot(-camToOb, normal);
+    //float rimDot = 0;
+    //if (rim == 1)
+    //    rimDot = 1 - dot(-camToOb, normal);
     
-    float rimamount = 0.85f;
+    //float rimamount = 0.85f;
     
-    float rimIntesnity = smoothstep(rimamount - 0.06, rimamount + 0.06f, rimDot);
+    //float rimIntesnity = smoothstep(rimamount - 0.06, rimamount + 0.06f, rimDot);
     
-    float3 final = diffuse.xyz * (cellLightStr) + (rimDot.xxx * rimColor) + specular;
+    float3 final = diffuse.xyz * (cellLightStr) /*+ (rimDot.xxx * rimColor)*/ + specular;
 
     //return float4(input.worldPos, 1.f);
     //return float4(normal, 1.f);

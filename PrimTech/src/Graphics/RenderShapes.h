@@ -1,5 +1,5 @@
 #pragma once
-#include "../old/Model.h"
+#include "Mesh.h"
 
 namespace PrimtTech
 {
@@ -7,10 +7,18 @@ namespace PrimtTech
 	{
 	public:
 		virtual void Draw(ID3D11DeviceContext*& dc);
-		//virtual void Init(ID3D11Device*& device, ID3D11DeviceContext*& dc) = 0;
+		void DrawShape(ID3D11DeviceContext*& dc) { dc->DrawIndexed(m_ibuffer.GetBufferSize(), 0, 0); }
+		void SetColor(sm::Vector3 color);
+		void SetBuffer(ID3D11DeviceContext*& dc)
+		{
+			uint offset = 0;
+			dc->IASetVertexBuffers(0, 1, m_vbuffer.GetReference(), m_vbuffer.GetStrideP(), &offset);
+			dc->IASetIndexBuffer(m_ibuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+		}
 	protected:
 		Buffer<BBVertex> m_vbuffer;
 		Buffer<unsigned int> m_ibuffer;
+		std::vector<BBVertex> m_shape;
 	};
 
 	class RenderSphere : public RenderShape

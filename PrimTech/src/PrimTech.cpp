@@ -55,6 +55,26 @@ namespace pt
 
 			::SetWindowTextW(m_window.getHWND(), extendedWinName.c_str());
 		}
+		std::vector<pt::AABBComp>& aabbs = ComponentHandler::GetComponentArray<pt::AABBComp>();
+
+		for (int i = 0; i < aabbs.size(); i++)
+		{
+			pt::AABBComp& comp = aabbs[i];
+			aabbs[i].EntId();
+			pt::TransformComp& transform = ComponentHandler::GetComponentByIndex<pt::TransformComp>(aabbs[i].EntId());
+
+			aabbs[i].Update(transform);
+		}
+
+		// FIXME naive and slow solution, has to be optimised in the future
+		for (int i = 0; i < aabbs.size(); i++)
+			for (int j = 0; j < aabbs.size(); j++)
+				if (i != j && aabbs[i].Intersects(aabbs[j]))
+				{
+					aabbs[i].SetIsIntersecting(true);
+					aabbs[j].SetIsIntersecting(true);
+				}
+
 
 		if (m_mouseLocked)
 		{

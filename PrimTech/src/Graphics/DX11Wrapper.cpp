@@ -10,27 +10,27 @@ namespace PrimtTech
 {
 	DX11Renderer::DX11Renderer(Window& window) :
 		m_width(window.getWinWidth()), m_height(window.getWinHeight()), m_pHWND(&window.getHWND()),
-		/*m_shadowmap(1024 * shadowQuality, 1024 * shadowQuality, camera.GetCurrentCamera()),*/ m_viewport(0.f, 0.f, (float)m_width, (float)m_height)
+		m_shadowmap(1024 * shadowQuality, 1024 * shadowQuality), m_viewport(0.f, 0.f, (float)m_width, (float)m_height),
+		m_shadowCam(0xffffffff)
 	{
 		m_pWin = &window;
-		//mp_currentCam = camera.GetCurrentCamera();
-		//mp_camHandler = &camera;
 
 		initSwapChain();
 		initRTV();
 		SetupDSAndVP();
 		InitRastNSampState();
 		InitBlendState();
-		//m_shadowmap.Init(device);
+		m_shadowmap.Init(device);
 
 		ResourceHandler::SetDevice(device);
 
 		InitShaders();
 		InitConstantBuffers();
 
+		m_shadowCam.SetOrtographic(1024 * shadowQuality, 1024 * shadowQuality, .1f, 25.f);
 
 		InitScene();
-		//m_renderbox.Init(device, dc);
+		m_renderbox.Init(device, dc);
 	}
 
 	DX11Renderer::~DX11Renderer()
@@ -274,8 +274,8 @@ namespace PrimtTech
 
 		std::vector<BBVertex> gridArr;
 
+		// grid
 		uint nLines = 11;
-
 		gridArr.resize(nLines * 4);
 		for (int i = 0; i < nLines; i++)
 		{
@@ -404,8 +404,6 @@ namespace PrimtTech
 		}
 	}
 
-	//#define PRINTER(name) printer(#name, )
-
 	void DX11Renderer::ExportScene(std::string path)
 	{
 		/*std::ofstream writer(path, std::ios::binary | std::ios::out);
@@ -477,22 +475,6 @@ namespace PrimtTech
 		dc->PSSetShaderResources(0, 1, ResourceHandler::GetTexture(1).GetSRVAdress());
 	}
 
-	float GetHighestValue(const sm::Vector3& v)
-	{
-		float arr[3] = { v.x, v.y, v.z };
-		float value = -999999;
-		for (int i = 0; i < 3; i++)
-		{
-			if (arr[i] > value) value = arr[i];
-		}
-		return value;
-	}
-
-	float GetAvarageValue(const sm::Vector3& v)
-	{
-		return (v.x + v.y + v.z) / 3;
-	}
-
 	void DX11Renderer::Render(const float& deltatime)
 	{
 		float bgColor[] = { .1f,.1f,.1f,1.f };
@@ -503,8 +485,42 @@ namespace PrimtTech
 
 		dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		dc->RSSetState(m_rasterizerState);
+
+		std::vector<MeshRef>& rMeshrefs = ComponentHandler::GetComponentArray<MeshRef>();
+		std::vector<TransformComp>& rTransforms = ComponentHandler::GetComponentArray<TransformComp>();
 		
 		// shadow code here
+		m_shadowmap.Bind(dc, 10);
+		m_shadowmap.BindSRV(dc, 10);
+		dc->PSSetShader(NULL, NULL, 0);
+
+		uint numMEshRefs = (uint)rMeshrefs.size();
+		uint offset = 0;
+
+		for (int i = 0; i < numMEshRefs; i++)
+		{
+			uint entId = rMeshrefs[i].EntId();
+			Mesh* meshPtr = rMeshrefs[i].GetMeshContainerP();
+
+			//TransformComp* pTransformComp = &Entity::s_ents[entId]->Transform();
+			TransformComp* pTransformComp = &rTransforms[entId];
+
+			m_transformBuffer.Data().world = pTransformComp->GetWorldTransposed();
+			m_transformBuffer.MapBuffer();
+
+			dc->IASetVertexBuffers(0, 1, meshPtr->GetVBuffer().GetReference(), meshPtr->GetVBuffer().GetStrideP(), &offset);
+			for (int j = 0; j < meshPtr->GetNofMeshes(); j++)
+			{
+				uint matIndex = rMeshrefs[i].GetMaterialIndex(j);
+				Material& rMat = ResourceHandler::GetMaterial(matIndex);
+				rMat.Set(dc, m_materialBuffer);
+				rMat.UpdateTextureScroll(deltatime);
+
+				int v1 = meshPtr->GetMeshOffsfets()[j + 1], v2 = meshPtr->GetMeshOffsfets()[j];
+				dc->Draw(v1 - v2, v2);
+			}
+		}
+
 
 		dc->OMSetRenderTargets(1, &m_rtv, m_dsView);
 		dc->RSSetViewports(1, &m_viewport);
@@ -525,11 +541,9 @@ namespace PrimtTech
 
 		m_materialBuffer.Data().flags = 0;
 
-		std::vector<MeshRef>& rMeshrefs = ComponentHandler::GetComponentArray<MeshRef>();
-		std::vector<TransformComp>& rTransforms = ComponentHandler::GetComponentArray<TransformComp>();
+		
 
-		uint numMEshRefs = rMeshrefs.size();
-		uint offset = 0;
+		
 
 		// iterate through meshrefs
 		for (int i = 0; i < numMEshRefs; i++)
@@ -567,18 +581,29 @@ namespace PrimtTech
 		dc->PSSetShader(m_linePS.GetShader(), NULL, 0);
 		dc->Draw(m_grid.GetBufferSize(), 0);
 
-		//// Renderbox
-		//m_transformBuffer.Data().world = d::XMMatrixTranspose(d::XMMatrixTranslation(0.f, 0.f, 1.f));
-		//m_transformBuffer.UpdateCB();
-		//m_renderbox.Draw(dc);
+		std::vector<AABBComp>& rAabbs = ComponentHandler::GetComponentArray<AABBComp>();
+		uint numAabbs = (uint)rAabbs.size();
+		m_renderbox.SetBuffer(dc);
+		for (int i = 0; i < numAabbs; i++)
+		{
+			uint entId = rAabbs[i].EntId();
+			TransformComp& pTransformComp = rTransforms[entId];
 
-		//if (mp_currentCam->GetOffset().z == 0.f && im->enableHandModel)
-		//{
-		//	dc->RSSetState(m_rasterizerState);
-		//	dc->ClearDepthStencilView(m_dsView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.f, 0);
-		//	m_transformBuffer.Data().viewProj = d::XMMatrixTranspose(mp_currentCam->GetProjM());
-		//	m_viewmdl.Draw();
-		//}
+			sm::Vector3 scaling = rAabbs[i].GetBox().Extents;
+
+			d::XMMATRIX world = d::XMMatrixScalingFromVector(scaling) *
+				d::XMMatrixTranslationFromVector(sm::Vector3(rAabbs[i].GetBox().Center));
+
+			bool intersecting = rAabbs[i].IsIntersecting();
+			if (intersecting) m_renderbox.SetColor(GREEN_3F);
+			else m_renderbox.SetColor(WHITE_3F);
+				
+			
+
+			m_transformBuffer.Data().world = d::XMMatrixTranspose(world);
+			m_transformBuffer.MapBuffer();
+			m_renderbox.DrawShape(dc);
+		}
 
 		ImGuiRender();
 		m_swapChain->Present((UINT)im->useVsync, NULL);

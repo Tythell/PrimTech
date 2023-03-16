@@ -5,17 +5,18 @@ namespace PrimtTech
 {
 	void RenderBox::Init(ID3D11Device*& device, ID3D11DeviceContext*& dc)
 	{
-		BBVertex vertex[]
-		{
-			{{-0.5f, 0.5f, -0.5f }, WHITE_3F}, //F TL	 0
-			{{0.5f, 0.5f, -0.5f }, WHITE_3F}, //F TR	 1
-			{{-0.5f, -0.5f, -0.5f }, WHITE_3F}, //F BL 2
-			{{0.5f, -0.5f, -0.5f }, WHITE_3F}, //F BR	 3
-			{{-0.5f, 0.5f, 0.5f }, WHITE_3F}, //B TL	 4
-			{{0.5f, 0.5f, 0.5f }, WHITE_3F}, //B TR	 5
-			{{-0.5f, -0.5f, 0.5f }, WHITE_3F}, //B BL	 6
-			{{0.5f, -0.5f, 0.5f }, WHITE_3F}, //B BR	 7
-		};
+		float distance = 1.f;
+
+
+		m_shape.reserve(8);
+		m_shape.emplace_back(-distance, distance, -distance);
+		m_shape.emplace_back(distance, distance, -distance);
+		m_shape.emplace_back(-distance, -distance, -distance);
+		m_shape.emplace_back(distance, -distance, -distance);
+		m_shape.emplace_back(-distance, distance, distance);
+		m_shape.emplace_back(distance, distance, distance);
+		m_shape.emplace_back(-distance, -distance, distance);
+		m_shape.emplace_back(distance, -distance, distance);
 
 		unsigned int indexes[]
 		{
@@ -24,22 +25,23 @@ namespace PrimtTech
 			0, 4, 1, 5, 2, 6, 3, 7, // connectors
 		};
 
-		m_vbuffer.CreateVertexBuffer(device, vertex, ARRAYSIZE(vertex));
+		
+		m_vbuffer.CreateVertexBuffer(device, m_shape.data(), m_shape.size(), dc);
 		m_ibuffer.CreateIndexBuffer(device, indexes, ARRAYSIZE(indexes));
 	}
 
 	void RenderLine::Init(ID3D11Device*& device, ID3D11DeviceContext*& dc)
 	{
-		BBVertex line[]
-		{
-			{{0.f, 0.f, -.5f}, WHITE_3F},
-			{{0.f, 0.f, .5f}, BLUE_3F},
-		};
+		m_shape.emplace_back(0.f, 0.f, -.5f);
+		m_shape.emplace_back(0.f, 0.f, .5f);
+
+		m_shape[1] = BLUE_3F;
+
 		unsigned int index[]
 		{
 			0,1
 		};
-		m_vbuffer.CreateVertexBuffer(device, line, ARRAYSIZE(line), dc);
+		m_vbuffer.CreateVertexBuffer(device, m_shape.data(), m_shape.size(), dc);
 		m_ibuffer.CreateIndexBuffer(device, index, ARRAYSIZE(index));
 	}
 
@@ -60,7 +62,15 @@ namespace PrimtTech
 		dc->DrawIndexed(m_ibuffer.GetBufferSize(), 0, 0);
 	}
 
-#define DEG(r) r * d::XM_PI / 180
+	void RenderShape::SetColor(sm::Vector3 color)
+	{
+		uint size = m_vbuffer.GetBufferSize();
+		for (int i = 0; i < size; i++)
+		{
+			m_vbuffer.Data(i).m_color = color;
+		}
+		m_vbuffer.MapBuffer();
+	}
 
 	void RenderSphere::Init(ID3D11Device*& device, ID3D11DeviceContext*& dc, int points)
 	{
@@ -72,7 +82,7 @@ namespace PrimtTech
 		const float degreeIncrease = 360.f / (float)points;
 		const float radius = .5f;
 
-		std::vector<BBVertex> vbuffer;
+		//std::vector<BBVertex> vbuffer;
 
 		for (UINT16 i = 0; i < points; i++) // 3 dimensions
 		{
@@ -84,15 +94,15 @@ namespace PrimtTech
 				{
 					float degree = DEG(degreeIncrease * (float)(j + points / 4));
 					vert.m_position = { radius * sin(degree), 0.f, radius * cos(degree) };
-					vbuffer.push_back(vert);
+					m_shape.push_back(vert);
 				}
 			}
 			float degree = DEG(degreeIncrease * (float)(i + points / 4));
 			vert.m_position = { radius * cos(degree) , radius * sin(degree), 0.f };
 			//vert.m_color = { float(i % 2), float(i % 2), float(i % 2) };
-			vbuffer.push_back(vert);
+			m_shape.push_back(vert);
 		}
-		vbuffer.push_back(vbuffer[0]);
+		m_shape.push_back(m_shape[0]);
 
 		for (UINT16 i = 0; i < points; i++) // 3 dimensions
 		{
@@ -101,10 +111,10 @@ namespace PrimtTech
 			float degree = DEG(degreeIncrease * (float)(i + points / 4));
 			vert.m_position = { 0.f , radius * sin(degree), radius * cos(degree) };
 			//vert.m_color = { float(i % 2), float(i % 2), float(i % 2) };
-			vbuffer.push_back(vert);
+			m_shape.push_back(vert);
 		}
-		vbuffer[0].m_color = { 0.f, 1.f, 0.f };
-		vbuffer.push_back(vbuffer[0]);
+		m_shape[0].m_color = { 0.f, 1.f, 0.f };
+		m_shape.push_back(m_shape[0]);
 
 
 		//BBVertex circles[]
@@ -131,7 +141,7 @@ namespace PrimtTech
 		//	{{corner, 0.f, -corner}, color}, // 17
 		//};
 		//m_vbuffer.CreateVertexBuffer(device, circles, ARRAYSIZE(circles));
-		m_vbuffer.CreateVertexBuffer(device, vbuffer.data(), vbuffer.size(), NULL, eBufferFlags_IgnoreCreateTwice);
+		m_vbuffer.CreateVertexBuffer(device, m_shape.data(), m_shape.size(), NULL, eBufferFlags_IgnoreCreateTwice);
 		//unsigned int circleIndexes[]
 		//{
 		//	0, 1, 2, 3, 4, 5, 6, 7, 0,
@@ -140,7 +150,7 @@ namespace PrimtTech
 		//	9, 0,
 		//};
 		std::vector<unsigned int> circleIndexes;
-		for (UINT16 i = 0; i < vbuffer.size(); i++)
+		for (UINT16 i = 0; i < m_shape.size(); i++)
 		{
 			circleIndexes.push_back(i);
 		}

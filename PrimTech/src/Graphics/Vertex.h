@@ -15,7 +15,14 @@ namespace PrimtTech
 
 	struct BBVertex
 	{
-		sm::Vector3 m_position;
+		BBVertex(){}
+		BBVertex(float x, float y, float z)
+		{
+			m_position.x = x;
+			m_position.y = y;
+			m_position.z = z;
+		}
+		sm::Vector3 m_position = { 0.f,0.f,0.f };
 		sm::Vector3 m_color = { 1.f,1.f,1.f };
 	};
 

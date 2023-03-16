@@ -53,6 +53,10 @@ void Gui_EntList(void* test, bool* show)
 			{
 				p->console.AddLog(AddComp(p->selected, "cam").c_str());
 			}
+			if (ImGui::Selectable("AABB"))
+			{
+				p->console.AddLog(AddComp(p->selected, "aabb").c_str());
+			}
 			ImGui::EndPopup();
 		}
 		sm::Vector3 transform = pEnt->Transform().GetPosition();
@@ -88,6 +92,7 @@ void Gui_EntList(void* test, bool* show)
 				for (int i = 0; i < matSize; i++)
 				{
 					std::string s = "material " + std::to_string(i);
+					strcpy_s(charbuffer, std::to_string(mr->GetMaterialIndex(i)).c_str());
 					if (ImGui::InputText(s.c_str(), charbuffer, 16, ImGuiInputTextFlags_EnterReturnsTrue))
 					{
 						mr->SetMaterial(std::string(charbuffer), i);
@@ -116,11 +121,23 @@ void Gui_EntList(void* test, bool* show)
 				ImGui::Text(displaytext.c_str());
 				displaytext = "UpVec: " + ptm::GetVectorAsString(mr->GetUp());
 				ImGui::Text(displaytext.c_str());
-				
+			}
+		}
+		if (p->ents[p->selected].HasComponentType(PrimtTech::ec_aabb))
+		{
+			if (ImGui::CollapsingHeader("Bounding box", ImGuiTreeNodeFlags_DefaultOpen))
+			{
+				pt::AABBComp* mr = p->ents[p->selected].GetComponent<pt::AABBComp>();
 
-				//mr->UpdateView(pEnt->Transform());
+				sm::Vector3 v = mr->GetBox().Extents;
+				ImGui::DragFloat3("size", reinterpret_cast<float*>(&v), 0.02f);
+				mr->SetExtends(v);
 
-				//im->
+				v = mr->GetPositionOffset();
+				ImGui::DragFloat3("Position Offset", reinterpret_cast<float*>(&v), 0.02f);
+				mr->SetPositionOffset(v);
+
+				//ImGui::Text(ptm::GetVectorAsString(mr->GetBox().Center).c_str());
 			}
 		}
 	}
@@ -364,7 +381,7 @@ void Gui_MaterialProperties(void* ptr, bool* show)
 		{
 			char* nameBuffer = new char[16];
 			strcpy_s(nameBuffer, 16, matName.c_str());
-			if (ImGui::InputText("##MaterialName", nameBuffer, 16))
+			if (ImGui::InputText("##MaterialName", nameBuffer, 16, ImGuiInputTextFlags_EnterReturnsTrue))
 			{
 				pMaterial->SetName(nameBuffer);
 			}
@@ -574,6 +591,7 @@ Editor::Editor(PrimtTech::DX11Renderer* pRenderer, d::XMINT2 windowRes) : m_rend
 	//m_entlist.ents[1].AddComponent<pt::MeshRef>()->Init("scaledplane.obj");
 
 	m_entlist.ents[1].Transform().SetPosition(0.f, -0.2f, 0.f);
+	m_entlist.ents[1].AddComponent<pt::AABBComp>();
 
 	//AddEntity();
 }
@@ -635,6 +653,10 @@ void Editor::execCommand(std::string cmd)
 			else if (argBuffer == "meshref")
 			{
 				m_entlist.ents[entId].AddComponent<pt::MeshRef>();
+			}
+			else if (argBuffer == "aabb")
+			{
+				m_entlist.ents[entId].AddComponent<pt::AABBComp>();
 			}
 		}
 	}

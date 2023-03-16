@@ -12,7 +12,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	//PrimtTech::ResourceHandler::ReserveMeshMemory(10);
 	PrimtTech::ResourceHandler::ReserveMaterialMemory(8);
 
-	d::XMINT2 windowRes(1700, 1000);
+	d::XMINT2 windowRes(1700, 900);
 	pt.Init(L"Editor", hInstance, L"wndc", windowRes.x, windowRes.y);
 
 	Editor scene(pt.GetRenderer(), windowRes);

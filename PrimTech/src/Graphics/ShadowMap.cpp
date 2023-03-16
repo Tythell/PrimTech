@@ -7,12 +7,7 @@ namespace PrimtTech
 	ShadowMap::ShadowMap(const UINT& width, const UINT& height) :
 		m_viewPort(0.f, 0.f, width, height), m_width(width), m_height(height),
 		resoulution(20.f)
-	{
-		//m_shadowCam.SetOrtographic(resoulution, resoulution, .1f, 25.f);
-		//m_shadowCam.SetPerspective(80.f, 1.f, 1.f, 1000.f);
-		//m_shadowCam.SetPosition(0.f, 5.f, 0.f);
-		//m_shadowCam.SetRotation(d::XM_PIDIV2, 0.f, 0.f);
-	}
+	{}
 
 	ShadowMap::~ShadowMap()
 	{

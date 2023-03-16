@@ -1,6 +1,6 @@
 #include"pch.h"
 #include "Material.h"
-#include "old/Model.h"
+#include "Mesh.h"
 
 namespace PrimtTech
 {
@@ -110,11 +110,6 @@ namespace PrimtTech
 		m_distortionOffsetSpeed = sm::Vector2(x, y);
 	}
 
-	void Material::Set(ID3D11DeviceContext*& dc)
-	{
-		Set(dc, *mp_matBuffer);
-	}
-
 	void Material::Set(ID3D11DeviceContext*& dc, Buffer<hlsl::cbpMaterialBuffer>& matBuffer)
 	{
 		if (mp_textures[eDiffuse])
@@ -140,11 +135,8 @@ namespace PrimtTech
 		matBuffer.Data().transparency = m_transparency;
 		matBuffer.Data().textureScale = m_textureScale;
 		matBuffer.Data().rimColor = m_rimColor;
-		matBuffer.Data().rim = (int)m_selection;
 
 		
-
-
 		for (UINT i = 0; i < eTextureTypeAMOUNT; i++)
 		{
 			UINT bitFlag = (1 << i);
@@ -171,11 +163,6 @@ namespace PrimtTech
 		m_textureScaleDist = f;
 	}
 
-	void Material::SetSelection(bool b)
-	{
-		m_selection = b;
-	}
-
 	void Material::SetRimColor(sm::Vector3 rgb)
 	{
 		m_rimColor = rgb;
@@ -200,11 +187,6 @@ namespace PrimtTech
 	float Material::GetTransparancy() const
 	{
 		return m_transparency;
-	}
-
-	void Material::SetLeftHanded(bool b)
-	{
-		m_lefthanded = b;
 	}
 
 	bool Material::ExportMaterial(std::string path)
@@ -391,23 +373,13 @@ namespace PrimtTech
 		return m_textureScaleDist;
 	}
 
-	Buffer<hlsl::cbpMaterialBuffer>* Material::GetBuffer()
-	{
-		return mp_matBuffer;
-	}
-
 	bool Material::HasTexture(const TextureType& e) const
 	{
 		return (mp_textures[e] != nullptr);
 	}
-	bool Material::HasTexture(const UINT& e) const
+	bool Material::HasTexture(UINT e) const
 	{
 		return (mp_textures[e] != nullptr);
-	}
-
-	void Material::SetPointers(Buffer<hlsl::cbpMaterialBuffer>* cbMaterialBuffer)
-	{
-		mp_matBuffer = cbMaterialBuffer;
 	}
 }
 

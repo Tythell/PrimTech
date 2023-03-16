@@ -24,6 +24,8 @@ using int2 = d::XMINT2;
 using int3 = d::XMINT3;
 using int4 = d::XMINT4;
 
+#define DEG(r) r * d::XM_PI / 180
+
 namespace ptm
 {
 	inline std::string GetVectorAsString(sm::Vector3 v)
@@ -89,20 +91,41 @@ namespace ptm
 		z = v.z;
 	}
 
+	inline float GetHighestValue(const sm::Vector3& v)
+	{
+		float arr[3] = { v.x, v.y, v.z };
+		float value = -999999;
+		for (int i = 0; i < 3; i++)
+		{
+			if (arr[i] > value) value = arr[i];
+		}
+		return value;
+	}
 
+	inline float GetAvarageValue(const sm::Vector3& v)
+	{
+		return (v.x + v.y + v.z) / 3;
+	}
 
+	inline int RandomNum(int n1, int n2)
+	{
+		if (n2 < n1)
+		{
+			int temp = n2;
+			n2 = n1;
+			n1 = temp;
+		}
+		
+		return rand() % n2 + n1;;
+	}
 
-	//inline unsigned int RandomNum(int n1, int n2)
-	//{
-	//	if (n2 < n1)
-	//	{
-	//		int temp = n2;
-	//		n2 = n1;
-	//		n1 = temp;
-	//	}
-	//	
-	//	return rand() % n2 + n1;;
-	//}
+	inline float RandomFloat(int n1, int n2, int decimals)
+	{
+		if (n2 < n1)
+			std::swap(n1, n2);
+
+		return (rand() % n2 + n1) / pow(10, decimals);
+	}
 }
 
 
