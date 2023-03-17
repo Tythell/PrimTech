@@ -28,6 +28,13 @@ namespace PrimtTech
 		InitConstantBuffers();
 
 		m_shadowCam.SetOrtographic(1024 * shadowQuality, 1024 * shadowQuality, .1f, 25.f);
+		m_shadowCam.SetPositionOffset(0.f, 4.f, 0.f);
+		m_shadowCam.SetRotationOffset(1.15f, 0.f, 0.f);
+		
+
+		TransformComp dummy(0xffffffff);
+
+		m_shadowCam.UpdateView(dummy);
 
 		InitScene();
 		m_renderbox.Init(device, dc);
@@ -38,10 +45,6 @@ namespace PrimtTech
 		m_guiHandler->ImGuiShutDown();
 
 		ResourceHandler::Unload();
-
-		//m_transformBuffer.Release();
-		//m_lightbuffer.Release();
-		//m_materialBuffer.Release();
 
 		device->Release();
 		dc->Release();
@@ -395,7 +398,7 @@ namespace PrimtTech
 
 			m_guiHandler->ImguiRender();
 
-			if (im->showShadowMapDepth) ImGuTextureDisplay();
+			if (true) ImGuTextureDisplay();
 
 			//ImGuiGradientWindow();
 
@@ -452,10 +455,10 @@ namespace PrimtTech
 		ImGui::SetNextWindowSize(winSize);
 		ImGui::Begin("Texture Display", &im->showShadowMapDepth, ImGuiWindowFlags_NoResize);
 
-		//ImTextureID tex = m_shadowmap.GetSRV();
-		//ImGui::Image(tex, { winSize.x, winSize.x });
+		ImTextureID tex = m_shadowmap.GetSRV();
+		ImGui::Image(tex, { winSize.x, winSize.x });
 		//if (ImGui::IsWindowHovered())
-			//m_isHoveringWindow = true;
+		//	m_isHoveringWindow = true;
 
 		ImGui::End();
 	}
@@ -490,9 +493,12 @@ namespace PrimtTech
 		std::vector<TransformComp>& rTransforms = ComponentHandler::GetComponentArray<TransformComp>();
 		
 		// shadow code here
-		m_shadowmap.Bind(dc, 10);
-		m_shadowmap.BindSRV(dc, 10);
+		dc->VSSetShader(m_3dvs.GetShader(), NULL, 0);
 		dc->PSSetShader(NULL, NULL, 0);
+		dc->IASetInputLayout(m_3dvs.GetInputLayout());
+		m_transformBuffer.Data().viewProj = d::XMMatrixTranspose(m_shadowCam.GetViewMatrix() * m_shadowCam.GetProjMatrix());
+		m_transformBuffer.Data().lightViewProj = d::XMMatrixTranspose(m_shadowCam.GetViewMatrix() * m_shadowCam.GetProjMatrix());
+		m_shadowmap.Bind(dc, 10);
 
 		uint numMEshRefs = (uint)rMeshrefs.size();
 		uint offset = 0;
