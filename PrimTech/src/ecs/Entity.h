@@ -9,15 +9,10 @@ namespace pt
 	public:
 		static std::vector<Entity> s_ents;
 
-		Entity(bool createdFromFunc = false)
+		Entity(bool createdWithFunc = false)
 		{
-			if (!createdFromFunc)
-			{
-				throw;
-			}
 			m_id = nrOfEntities++;
-			//s_ents.emplace_back(this);
-
+			THROW_POPUP_ERROR(createdWithFunc, "MANNEN ANVÄND pt::Entity::Create() ISTÄLLET");
 			AddComponent<pt::TransformComp>();
 		}
 
