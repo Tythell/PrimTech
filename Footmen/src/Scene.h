@@ -28,7 +28,7 @@ public:
 struct EntListStruct
 {
 	DevConsole console;
-	std::vector<pt::Entity> ents;
+	//std::vector<pt::Entity> ents;
 	int selected = -1;
 	uint currentCamera;
 	int winWidth, winHeight;

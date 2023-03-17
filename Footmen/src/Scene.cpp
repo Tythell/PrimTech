@@ -28,7 +28,10 @@ void Gui_EntList(void* test, bool* show)
 		p->console.AddLog("select -1");
 	}
 	ImGui::BeginChild("Lefty", ImVec2(150, 400), true);
-	for (int i = 0; i < p->ents.size(); i++)
+
+	uint numEnts = pt::Entity::NumEnts();
+
+	for (int i = 0; i < numEnts; i++)
 	{
 		ImGui::BeginDisabled(i == 0);
 		if (ImGui::Selectable(std::to_string(i).c_str(), p->selected == i))
@@ -40,14 +43,14 @@ void Gui_EntList(void* test, bool* show)
 	ImGui::BeginChild("Righty", ImVec2(300, 350), false);
 	if (p->selected != -1)
 	{
-		pt::Entity* pEnt = &p->ents[p->selected];
+		pt::Entity* pEnt = pt::Entity::GetEntityP((uint)p->selected);
 		if (ImGui::Button("Add Component"))
 			ImGui::OpenPopup("cmpList");
 		if (ImGui::BeginPopup("cmpList"))
 		{
 			if (ImGui::Selectable("MeshRef"))
 			{
-				p->ents[p->selected].AddComponent<pt::MeshRef>()->Init("cube.txt");
+				pEnt->AddComponent<pt::MeshRef>()->Init("cube.txt");
 			}
 			if (ImGui::Selectable("Camera"))
 			{
@@ -73,11 +76,11 @@ void Gui_EntList(void* test, bool* show)
 		pEnt->Transform().SetScale(transform);
 		ImGui::EndDisabled();
 
-		if (p->ents[p->selected].HasComponentType(PrimtTech::ec_meshRef))
+		if (pEnt->HasComponentType(PrimtTech::ec_meshRef))
 		{
 			if (ImGui::CollapsingHeader("MeshRef", ImGuiTreeNodeFlags_DefaultOpen))
 			{
-				pt::MeshRef* mr = p->ents[p->selected].GetComponent<pt::MeshRef>();
+				pt::MeshRef* mr = pEnt->GetComponent<pt::MeshRef>();
 				ImGui::Text(mr->GetNameOfMesh().c_str());
 				ImGui::Separator();
 
@@ -100,11 +103,11 @@ void Gui_EntList(void* test, bool* show)
 				}
 			}
 		}
-		if (p->ents[p->selected].HasComponentType(PrimtTech::ec_cam))
+		if (pEnt->HasComponentType(PrimtTech::ec_cam))
 		{
 			if (ImGui::CollapsingHeader("Camera", ImGuiTreeNodeFlags_DefaultOpen))
 			{
-				pt::Camera* mr = p->ents[p->selected].GetComponent<pt::Camera>();
+				pt::Camera* mr = pEnt->GetComponent<pt::Camera>();
 
 				sm::Vector3 pos = mr->GetPositionOffset();
 				sm::Vector3 rot = mr->GetRotationOffset();
@@ -123,11 +126,11 @@ void Gui_EntList(void* test, bool* show)
 				ImGui::Text(displaytext.c_str());
 			}
 		}
-		if (p->ents[p->selected].HasComponentType(PrimtTech::ec_aabb))
+		if (pEnt->HasComponentType(PrimtTech::ec_aabb))
 		{
 			if (ImGui::CollapsingHeader("Bounding box", ImGuiTreeNodeFlags_DefaultOpen))
 			{
-				pt::AABBComp* mr = p->ents[p->selected].GetComponent<pt::AABBComp>();
+				pt::AABBComp* mr = pEnt->GetComponent<pt::AABBComp>();
 
 				sm::Vector3 v = mr->GetBox().Extents;
 				ImGui::DragFloat3("size", reinterpret_cast<float*>(&v), 0.02f);
@@ -565,19 +568,20 @@ Editor::Editor(PrimtTech::DX11Renderer* pRenderer, d::XMINT2 windowRes) : m_rend
 	m_pGui.AddWindowFunc(Gui_menubar, &m_entlist.console, &m_entlist.console.m_showWin[u].first);
 	m_entlist.console.m_showWin[u++].second = "Menu_Bar";
 
-	//int selected;
-	
+	pt::Entity::ReserveEnts(5);
 
 	m_entlist.winWidth = windowRes.x;
 	m_entlist.winHeight = windowRes.y;
 
-	m_entlist.ents.emplace_back();
-	m_entlist.ents.emplace_back();
-	pt::Camera* devCam = m_entlist.ents[0].AddComponent<pt::Camera>();
+	pt::Entity& ent0 = pt::Entity::Create();
+	pt::Entity& ent1 = pt::Entity::Create();
+	
+
+	pt::Camera* devCam = ent0.AddComponent<pt::Camera>();
 	devCam->SetPerspective(80.f, (float)windowRes.x / (float)windowRes.y, 0.1f, 100.f);
-	m_entlist.ents[0].Transform().SetPosition(0.f, 1.f, -2.f);
+	ent0.Transform().SetPosition(0.f, 1.f, -2.f);
 	//m_entlist.ents[1].Transform().SetScale(1.f);
-	devCam->UpdateView(m_entlist.ents[0].Transform());
+	devCam->UpdateView(ent0.Transform());
 
 	PrimtTech::ResourceHandler::ReserveMeshMemory(15);
 
@@ -589,9 +593,8 @@ Editor::Editor(PrimtTech::DX11Renderer* pRenderer, d::XMINT2 windowRes) : m_rend
 	PrimtTech::ResourceHandler::AddMaterial("DefaultMaterial");
 
 	//m_entlist.ents[1].AddComponent<pt::MeshRef>()->Init("scaledplane.obj");
-
-	m_entlist.ents[1].Transform().SetPosition(0.f, -0.2f, 0.f);
-	m_entlist.ents[1].AddComponent<pt::AABBComp>();
+	ent1.Transform().SetPosition(0.f, -0.2f, 0.f);
+	ent1.AddComponent<pt::AABBComp>();
 
 	//AddEntity();
 }
@@ -614,7 +617,7 @@ void Editor::execCommand(std::string cmd)
 		ss >> argBuffer;
 		if (argBuffer == "ent")
 		{
-			m_entlist.ents.emplace_back();
+			pt::Entity::Create();
 		}
 		else if (argBuffer == "material")
 		{
@@ -648,15 +651,15 @@ void Editor::execCommand(std::string cmd)
 			ss >> argBuffer;
 			if (argBuffer == "cam")
 			{
-				m_entlist.ents[entId].AddComponent<pt::Camera>();
+				pt::Entity::GetEntity(entId).AddComponent<pt::Camera>();
 			}
 			else if (argBuffer == "meshref")
 			{
-				m_entlist.ents[entId].AddComponent<pt::MeshRef>();
+				pt::Entity::GetEntity(entId).AddComponent<pt::MeshRef>();
 			}
 			else if (argBuffer == "aabb")
 			{
-				m_entlist.ents[entId].AddComponent<pt::AABBComp>();
+				pt::Entity::GetEntity(entId).AddComponent<pt::AABBComp>();
 			}
 		}
 	}
@@ -710,9 +713,10 @@ void Editor::execCommand(std::string cmd)
 			if (!path.empty())
 			{
 				m_entlist.selected = -1;
-				m_entlist.ents.resize(1, 0);
-				m_entlist.ents[0].AddComponent<pt::Camera>()->SetPerspective(80.f, ((float)m_entlist.winWidth / (float)m_entlist.winHeight), 0.1f, 100.f);
-				PrimtTech::Import(path, m_entlist.ents);
+				pt::Entity::Clear(1);
+				
+				pt::Entity::GetEntity(0).AddComponent<pt::Camera>()->SetPerspective(80.f, ((float)m_entlist.winWidth / (float)m_entlist.winHeight), 0.1f, 100.f);
+				PrimtTech::Import(path, pt::Entity::GetAllEnts());
 			}
 		}
 		else if (argBuffer == "export")
@@ -722,14 +726,14 @@ void Editor::execCommand(std::string cmd)
 			{
 				if (StringHelper::GetExtension(path) != "ptsc")
 					path += ".ptsc";
-				PrimtTech::Export(path, m_entlist.ents);
+				PrimtTech::Export(path, pt::Entity::GetAllEnts());
 			}
 		}
 		else if (argBuffer == "new")
 		{
 			m_entlist.selected = -1;
-			m_entlist.ents.resize(1, 0);
-			m_entlist.ents[0].AddComponent<pt::Camera>()->SetPerspective(80.f, ((float)m_entlist.winWidth / (float)m_entlist.winHeight), 0.1f, 100.f);
+			pt::Entity::Clear(1);
+			pt::Entity::GetEntity(0).AddComponent<pt::Camera>()->SetPerspective(80.f, ((float)m_entlist.winWidth / (float)m_entlist.winHeight), 0.1f, 100.f);
 		}
 	}
 }

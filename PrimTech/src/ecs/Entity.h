@@ -7,18 +7,27 @@ namespace pt
 	class Entity
 	{
 	public:
-		static std::vector<Entity*> s_ents;
+		static std::vector<Entity> s_ents;
 
-		Entity(unsigned char flags = 0)
+		Entity(bool createdFromFunc = false)
 		{
+			if (!createdFromFunc)
+			{
+				throw;
+			}
 			m_id = nrOfEntities++;
-
-
-
-			s_ents.emplace_back(this);
+			//s_ents.emplace_back(this);
 
 			AddComponent<pt::TransformComp>();
 		}
+
+		static Entity& Create();
+		static const uint NumEnts();
+		static Entity& GetEntity(uint index);
+		static Entity* GetEntityP(uint index);
+		static void Clear(uint until = 0);
+		static std::vector<Entity>& GetAllEnts();
+		static void ReserveEnts(size_t size);
 
 		template<class T>
 		T* AddComponent()
