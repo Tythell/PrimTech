@@ -114,7 +114,6 @@ namespace pt
 	{
 		float dtf = (float)m_deltaTime;
 		Update(dtf);
-		mp_dxrenderer->UpdateScene((m_deltaTime));
 		mp_dxrenderer->Render((float)m_deltaTime);
 		m_isOpen = m_window.processMsg();
 	}

@@ -36,8 +36,6 @@ struct EntListStruct
 	
 };
 
-using uchar = unsigned char;
-
 class Editor
 {
 public:

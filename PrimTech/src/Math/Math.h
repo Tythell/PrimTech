@@ -24,6 +24,8 @@ using int2 = d::XMINT2;
 using int3 = d::XMINT3;
 using int4 = d::XMINT4;
 
+using uchar = unsigned char;
+
 #define DEG(r) r * d::XM_PI / 180
 
 namespace ptm

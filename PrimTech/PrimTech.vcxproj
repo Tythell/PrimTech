@@ -175,6 +175,7 @@ IF EXIST 3rdparty\*.dll ( copy 3rdparty\*.dll x64\Release\ )</Command>
     <ClCompile Include="src\ecs\ComponentHandler.cpp" />
     <ClCompile Include="src\ecs\Component.cpp" />
     <ClCompile Include="src\ecs\Entity.cpp" />
+    <ClCompile Include="src\ecs\Light.cpp" />
     <ClCompile Include="src\ecs\TransformC.cpp" />
     <ClCompile Include="src\Graphics\3rdParty\ImGuizmo\ImGuizmo.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>

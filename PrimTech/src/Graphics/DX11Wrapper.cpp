@@ -38,6 +38,12 @@ namespace PrimtTech
 
 		InitScene();
 		m_renderbox.Init(device, dc);
+
+		m_lightVector.emplace_back();
+		m_lightVector.emplace_back();
+		m_multiLightBuffer.CreateStructuredBuffer(device, m_lightVector.data(), m_lightVector.size(), dc);
+
+		m_multiLightBuffer.BindSRV(11);
 	}
 
 	DX11Renderer::~DX11Renderer()
@@ -87,6 +93,8 @@ namespace PrimtTech
 		swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 		swapChainDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 		swapChainDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
+
+		
 
 		swapChainDesc.SampleDesc.Count = 1;
 		swapChainDesc.SampleDesc.Quality = 0;
@@ -295,8 +303,6 @@ namespace PrimtTech
 			gridArr[index + 1].m_color = GRAY_3F;
 		}
 
-
-
 		m_grid.CreateVertexBuffer(device, gridArr.data(), gridArr.size());
 
 		dc->OMSetBlendState(m_blendState, NULL, 0xFFFFFFFF);
@@ -306,47 +312,7 @@ namespace PrimtTech
 		ResourceHandler::AddTexture("ZANormal.png"); // Load LightWarp Texture
 		//ResourceHandler::AddTexture("ZATf2esk.png"); // Load LightWarp Texture
 
-		//ResourceHandler::ReserveMeshMemory(6);
-
 		dc->PSSetShaderResources(0, 1, ResourceHandler::GetTexture(1).GetSRVAdress());
-
-		//m_rLine.Init(device, dc);
-		//m_sphere.Init(device, dc, 8);
-
-		//ImportScene("Scenes\\multsc.ptscene");
-
-		/*m_playermodel.Init("dirCapsule.obj", ModelType::eUNSPECIFIED, false);
-		m_playermodel.SetScale(.1f);
-
-		m_camModel.Init("camera.obj", ModelType::eDEBUG, false);
-		m_camModel.SetMaterialBuffer(m_materialBuffer);
-		m_camModel.SetDCandBuffer(dc, m_transformBuffer);
-		m_camModel.GetMaterial().SetTransparency(1.f);
-
-		m_bulb.Init("bulb.obj", ModelType::eDEBUG);
-		m_bulb.SetScale(1.2f);
-		m_bulb.GetMaterial().SetTransparency(1.f);
-
-		m_viewmdl.Init("handmodel2.obj", mp_camHandler);
-		m_bulb.SetMaterialBuffer(m_materialBuffer);
-		m_playermodel.SetMaterialBuffer(m_materialBuffer);
-		m_playermodel.SetDCandBuffer(dc, m_transformBuffer);
-		m_viewmdl.m_model.SetDCandBuffer(dc, m_transformBuffer);
-		m_viewmdl.m_model.SetMaterialBuffer(m_materialBuffer);
-		m_bulb.SetDCandBuffer(dc, m_transformBuffer);
-		m_bulb.SetMaterialBuffer(m_materialBuffer);
-
-		dc->VSSetConstantBuffers(0, 1, m_transformBuffer.GetReference());
-
-		for (int i = 0; i < m_models.size(); i++)
-		{
-			m_models[i]->SetMaterialBuffer(m_materialBuffer);
-			m_models[i]->SetDCandBuffer(dc, m_transformBuffer);
-		}
-
-		m_shadowmap.InitModel(dc, m_transformBuffer, m_materialBuffer);*/
-
-		//m_renderbox.Init(device);
 		return true;
 	}
 
@@ -358,30 +324,6 @@ namespace PrimtTech
 		dc->PSSetConstantBuffers(0, 1, m_lightbuffer.GetReference());
 		m_materialBuffer.CreateConstantBuffer(device, dc);
 		dc->PSSetConstantBuffers(1, 1, m_materialBuffer.GetReference());
-	}
-
-	void DX11Renderer::UpdateScene(const float& deltatime)
-	{
-		m_lightbuffer.Data().ambientColor = { im->ambient[0], im->ambient[1], im->ambient[2] };
-		//m_lightbuffer.Data().ambientStr = 1.f;
-		m_lightbuffer.Data().ambientStr = im->ambient[3];
-		m_lightbuffer.Data().pointLightColor = { 1.f, 1.f, 1.f };
-		m_lightbuffer.Data().pointlightStre = im->pointLightStr;
-		m_lightbuffer.Data().cbShadowBias = im->shadowBias;
-		m_lightbuffer.Data().pointLightDistance = 10.f;
-
-		m_lightbuffer.Data().direction = sm::Vector3(0.f, 1.f, 0.f);
-		m_lightbuffer.Data().pointLightPosition = sm::Vector3(im->pointLightPos[0], im->pointLightPos[1], im->pointLightPos[2]);
-		//m_lightbuffer.Data().forwardDir = mp_cam->GetForwardVector();
-		m_lightbuffer.Data().camPos = { 0.f,0.f,0.f,1.f/*mp_currentCam->GetPosition().x, mp_currentCam->GetPosition().y, mp_currentCam->GetPosition().z, 1.f*/ };
-		m_lightbuffer.MapBuffer();
-
-
-		//m_playermodel.SetRotation(0.f/*-mp_cam->GetRotation().x*/, mp_currentCam->GetRotation().y, 0.f);
-		//m_playermodel.Rotate(0.f, d::XM_PI, 0.f);
-		//m_playermodel.SetPosition(mp_currentCam->GetPositionNoOffset() + sm::Vector3(0.f, -0.1f, 0.f));
-		//m_shadowmap.SetPos(mp_cam->GetPositionNoOffset());
-		//m_model.Rotate(0.f, 2.f * deltatime, 0.f);
 	}
 
 	void DX11Renderer::ImGuiRender()
@@ -396,7 +338,27 @@ namespace PrimtTech
 
 			m_guiHandler->ImguiRender();
 
-			ImGuTextureDisplay();
+			//ImGuTextureDisplay();
+
+			ImGui::Begin("LightHandler");
+
+			static float imLightPos[3]{ 0.f };
+			static float imLightpos1[3]{ 0.f };
+			static float imLightclr[3]{ 1.f,1.f,1.f };
+			static float imLightclr1[3]{ 1.f,1.f,1.f };
+
+			ImGui::DragFloat3("pos", imLightPos, 0.02f);
+			ImGui::DragFloat3("pos1", imLightpos1, 0.02f);
+			ImGui::DragFloat3("color", imLightclr, 0.02f);
+			ImGui::DragFloat3("color1", imLightclr1, 0.02f);
+
+			m_multiLightBuffer.Data().pos = { imLightPos[0], imLightPos[1], imLightPos[2]};
+			m_multiLightBuffer.Data(1).pos = { imLightpos1[0], imLightpos1[1], imLightpos1[2]};
+			m_multiLightBuffer.Data().clr = { imLightclr[0], imLightclr[1], imLightclr[2]};
+			m_multiLightBuffer.Data(1).clr = { imLightclr1[0], imLightclr1[1], imLightclr1[2] };
+			m_multiLightBuffer.MapBuffer();
+
+			ImGui::End();
 
 			//ImGuiGradientWindow();
 
@@ -455,8 +417,6 @@ namespace PrimtTech
 
 		ImTextureID tex = m_shadowmap.GetSRV();
 		ImGui::Image(tex, { winSize.x, winSize.x });
-		//if (ImGui::IsWindowHovered())
-		//	m_isHoveringWindow = true;
 
 		ImGui::End();
 	}
@@ -476,6 +436,46 @@ namespace PrimtTech
 		dc->PSSetShaderResources(0, 1, ResourceHandler::GetTexture(1).GetSRVAdress());
 	}
 
+	void drawMeshes(std::vector<MeshRef>& rMeshrefs, std::vector<TransformComp>& rTransforms,
+		Buffer<hlsl::cbpWorldTransforms3D>& transformBuffer, Buffer<hlsl::cbpMaterialBuffer>* pMAtBuffer, ID3D11DeviceContext*& dc, float deltatime)
+	{
+		uint numMEshRefs = (uint)rMeshrefs.size();
+		uint offset = 0;
+		for (int i = 0; i < numMEshRefs; i++)
+		{
+			uint entId = rMeshrefs[i].EntId();
+			Mesh* meshPtr = rMeshrefs[i].GetMeshContainerP();
+
+			TransformComp* pTransformComp = &rTransforms[entId];
+
+			transformBuffer.Data().world = pTransformComp->GetWorldTransposed();
+			transformBuffer.MapBuffer();
+
+			dc->IASetVertexBuffers(0, 1, meshPtr->GetVBuffer().GetReference(), meshPtr->GetVBuffer().GetStrideP(), &offset);
+			
+			uint numMeshes = meshPtr->GetNofMeshes();
+
+			// more materials = more draw calls so if they are unececary we can draw the emsh in one call
+			if (!pMAtBuffer)
+			{
+				uint vCount = meshPtr->GetMeshOffsfets()[numMeshes];
+				dc->Draw(vCount, 0);
+				continue;
+			}
+
+			for (int j = 0; j < meshPtr->GetNofMeshes(); j++)
+			{
+				uint matIndex = rMeshrefs[i].GetMaterialIndex(j);
+				Material& rMat = ResourceHandler::GetMaterial(matIndex);
+				rMat.Set(dc, *pMAtBuffer);
+				rMat.UpdateTextureScroll(deltatime);
+
+				int v1 = meshPtr->GetMeshOffsfets()[j + 1], v2 = meshPtr->GetMeshOffsfets()[j];
+				dc->Draw(v1 - v2, v2);
+			}
+		}
+	}
+
 	void DX11Renderer::Render(const float& deltatime)
 	{
 		float bgColor[] = { .1f,.1f,.1f,1.f };
@@ -491,11 +491,30 @@ namespace PrimtTech
 		std::vector<TransformComp>& rTransforms = ComponentHandler::GetComponentArray<TransformComp>();
 		
 		// shadow code here
+
 		dc->VSSetShader(m_3dvs.GetShader(), NULL, 0);
 		dc->PSSetShader(NULL, NULL, 0);
 		dc->IASetInputLayout(m_3dvs.GetInputLayout());
 
 		Camera& scam = ComponentHandler::GetComponentByIndex<Camera>(m_shadowCamIndex);
+
+		m_lightbuffer.Data().ambientColor = { 1.f, 1.f, 1.f };
+		m_lightbuffer.Data().ambientStr = 0.6f;
+		m_lightbuffer.Data().pointLightColor = { 1.f, 1.f, 1.f };
+		m_lightbuffer.Data().pointlightStre = im->pointLightStr;
+		m_lightbuffer.Data().cbShadowBias = im->shadowBias;
+		//m_lightbuffer.Data().pointLightDistance = 10.f;
+		m_lightbuffer.Data().shadowDir = scam.GetForwardV();
+
+
+		m_lightbuffer.Data().direction = sm::Vector3(0.f, -1.f, 0.f);
+		m_lightbuffer.Data().pointLightPosition = sm::Vector3(im->pointLightPos[0], im->pointLightPos[1], im->pointLightPos[2]);
+		//m_lightbuffer.Data().forwardDir = mp_cam->GetForwardVector();
+		pt::Camera& cc = ComponentHandler::GetComponentByIndex<pt::Camera>(m_activeCamIndex);
+		pt::TransformComp& camTransform = ComponentHandler::GetComponentByIndex<pt::TransformComp>(m_activeCamIndex);
+		m_lightbuffer.Data().camPos = { camTransform.GetPosition().x, camTransform.GetPosition().y, camTransform.GetPosition().z, 1.f};
+		m_lightbuffer.MapBuffer();
+
 
 		m_transformBuffer.Data().viewProj = d::XMMatrixTranspose(scam.GetViewMatrix() * scam.GetProjMatrix());
 		m_transformBuffer.Data().lightViewProj = d::XMMatrixTranspose(scam.GetViewMatrix() * scam.GetProjMatrix());
@@ -504,41 +523,14 @@ namespace PrimtTech
 		uint numMEshRefs = (uint)rMeshrefs.size();
 		uint offset = 0;
 
-		for (int i = 0; i < numMEshRefs; i++)
-		{
-			uint entId = rMeshrefs[i].EntId();
-			Mesh* meshPtr = rMeshrefs[i].GetMeshContainerP();
+		drawMeshes(rMeshrefs, rTransforms, m_transformBuffer, NULL, dc, deltatime);
 
-			//TransformComp* pTransformComp = &Entity::s_ents[entId]->Transform();
-			TransformComp* pTransformComp = &rTransforms[entId];
-
-			m_transformBuffer.Data().world = pTransformComp->GetWorldTransposed();
-			m_transformBuffer.MapBuffer();
-
-			dc->IASetVertexBuffers(0, 1, meshPtr->GetVBuffer().GetReference(), meshPtr->GetVBuffer().GetStrideP(), &offset);
-			for (int j = 0; j < meshPtr->GetNofMeshes(); j++)
-			{
-				uint matIndex = rMeshrefs[i].GetMaterialIndex(j);
-				Material& rMat = ResourceHandler::GetMaterial(matIndex);
-				rMat.Set(dc, m_materialBuffer);
-				rMat.UpdateTextureScroll(deltatime);
-
-				int v1 = meshPtr->GetMeshOffsfets()[j + 1], v2 = meshPtr->GetMeshOffsfets()[j];
-				dc->Draw(v1 - v2, v2);
-			}
-		}
-
-
+		// --------------------------End of shadw pass-----------------------------------------------
 		dc->OMSetRenderTargets(1, &m_rtv, m_dsView);
 		dc->RSSetViewports(1, &m_viewport);
-
-		dc->IASetInputLayout(m_lineVS.GetInputLayout());
-		dc->VSSetShader(m_lineVS.GetShader(), NULL, 0);
-		dc->PSSetShader(m_linePS.GetShader(), NULL, 0);
-
-		pt::Camera& cc = ComponentHandler::GetComponentByIndex<pt::Camera>(m_activeCamIndex);
-		
+	
 		m_transformBuffer.Data().viewProj = d::XMMatrixTranspose(cc.GetViewMatrix() * cc.GetProjMatrix());
+
 
 		dc->IASetInputLayout(m_3dvs.GetInputLayout());
 		dc->VSSetShader(m_3dvs.GetShader(), NULL, 0);
@@ -547,32 +539,9 @@ namespace PrimtTech
 		dc->PSSetShader(m_toonPS.GetShader(), NULL, 0);
 
 		m_materialBuffer.Data().flags = 0;
-
-
+		m_shadowmap.BindSRV(dc, 10);
 		// iterate through meshrefs
-		for (int i = 0; i < numMEshRefs; i++)
-		{
-			uint entId = rMeshrefs[i].EntId();
-			Mesh* meshPtr = rMeshrefs[i].GetMeshContainerP();
-
-			//TransformComp* pTransformComp = &Entity::s_ents[entId]->Transform();
-			TransformComp* pTransformComp = &rTransforms[entId];
-
-			m_transformBuffer.Data().world = pTransformComp->GetWorldTransposed();
-			m_transformBuffer.MapBuffer();
-
-			dc->IASetVertexBuffers(0, 1, meshPtr->GetVBuffer().GetReference(), meshPtr->GetVBuffer().GetStrideP(), &offset);
-			for (int j = 0; j < meshPtr->GetNofMeshes(); j++)
-			{
-				uint matIndex = rMeshrefs[i].GetMaterialIndex(j);
-				Material& rMat = ResourceHandler::GetMaterial(matIndex);
-				rMat.Set(dc, m_materialBuffer);
-				rMat.UpdateTextureScroll(deltatime);
-
-				int v1 = meshPtr->GetMeshOffsfets()[j + 1], v2 = meshPtr->GetMeshOffsfets()[j];
-				dc->Draw(v1 - v2, v2);
-			}
-		}
+		drawMeshes(rMeshrefs, rTransforms, m_transformBuffer, &m_materialBuffer, dc, deltatime);
 
 		// Draw grid
 		m_transformBuffer.Data().world = d::XMMatrixIdentity();

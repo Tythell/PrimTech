@@ -21,7 +21,7 @@ namespace PrimtTech
 	enum BufferFlags
 	{
 		eBufferFlags_IgnoreCreateTwice = 0x1,
-
+		eBufferFlags_Borrowoingdata,
 	};
 
 	template<class T>
@@ -29,7 +29,7 @@ namespace PrimtTech
 	{
 	public:
 		Buffer() {}
-		//Buffer(const Buffer& other) = delete;
+		/*//Buffer(const Buffer& other) = delete;
 		//{
 			//m_type = other.m_type;
 			//m_bufferSize = other.m_bufferSize;
@@ -68,11 +68,13 @@ namespace PrimtTech
 			//default:
 			//	break;
 			//}
-		//}
+		//}*/
 		~Buffer()
 		{
 			m_buffer->Release();
-			if (m_data && m_type != eVERTEX)
+			if (m_srv)
+				m_srv->Release();
+			if (!(m_flags & eBufferFlags_Borrowoingdata) && (m_data && (m_type != eVERTEX)))
 				delete m_data;
 		}
 
@@ -182,33 +184,59 @@ namespace PrimtTech
 
 			return HRESULT(device->CreateBuffer(&bufferDesc, NULL, &m_buffer));
 		}
-		//HRESULT CreateStructuredBuffer(ID3D11Device*& device, T* data, uint bufferSize, ID3D11DeviceContext*& dc, ID3D11ShaderResourceView*& srv)
-		//{
-		//	m_type = e;
-		//	m_usage = eDYNAMIC;
-		//	if (m_buffer)
-		//	{
-		//		Popup::Error("Buffer created twice");
-		//		throw;
-		//	}
-		//	//m_type = BufferType::eCONSTANT;
+		HRESULT CreateStructuredBuffer(ID3D11Device*& device, T* data, uint bufferSize, ID3D11DeviceContext*& dc)
+		{
+			m_flags |= eBufferFlags_Borrowoingdata;
+			m_usage = eDYNAMIC;
+			if (m_buffer)
+			{
+				Popup::Error("Buffer created twice");
+				throw;
+			}
+			//m_type = BufferType::eCONSTANT;
 
-		//	mp_dc = dc;
-		//	m_data = new T;
-		//	m_bufferSize = bufferSize;
-		//	m_stride = sizeof(T);
+			mp_dc = dc;
+			m_data = data;
+			m_bufferSize = bufferSize;
+			m_stride = sizeof(T);
 
-		//	D3D11_BUFFER_DESC bufferDesc;
-		//	ZeroMemory(&bufferDesc, sizeof(D3D11_BUFFER_DESC));
-		//	bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-		//	bufferDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-		//	bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-		//	bufferDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
-		//	bufferDesc.ByteWidth = static_cast<UINT>(sizeof(T) + (16 - sizeof(T) % 16)) * m_bufferSize;
-		//	bufferDesc.StructureByteStride = m_stride;
+			UINT mod = sizeof(T) % 16u;
+			UINT byteSize = (mod == 0) ? static_cast<UINT>(sizeof(T)) : static_cast<UINT>(sizeof(T) + (16u - mod));
 
-		//	return HRESULT(device->CreateBuffer(&bufferDesc, NULL, &m_buffer));
-		//}
+			D3D11_BUFFER_DESC bufferDesc;
+			ZeroMemory(&bufferDesc, sizeof(D3D11_BUFFER_DESC));
+
+			bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+			bufferDesc.ByteWidth = byteSize * m_bufferSize;
+			bufferDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+			bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+			bufferDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+			bufferDesc.StructureByteStride = byteSize;
+
+
+			HRESULT hr = device->CreateBuffer(&bufferDesc, NULL, &m_buffer);
+			COM_ERROR(hr, "failed to setup sbuffer");
+
+			D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+			ZeroMemory(&srvDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
+
+			srvDesc.Format = DXGI_FORMAT_UNKNOWN;
+			srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
+			srvDesc.Buffer.FirstElement = 0;
+			srvDesc.Buffer.NumElements = m_bufferSize;
+
+			hr = device->CreateShaderResourceView(m_buffer, &srvDesc, &m_srv);
+
+			COM_ERROR(hr, "failed to setup srv");
+
+			return SUCCEEDED(hr);
+		}
+
+		void BindSRV(uint slot)
+		{
+			mp_dc->PSSetShaderResources(slot, 1, &m_srv);
+		}
+
 		// DeviceContext only needed if buffer will be changed
 		HRESULT CreateIndexBuffer(ID3D11Device*& device, T* indexData, UINT numIndices, ID3D11DeviceContext* dc = NULL, unsigned char flags = 0x0)
 		{
@@ -311,6 +339,8 @@ namespace PrimtTech
 		UINT m_bufferSize = 0;
 		BufferUsage m_usage = eDEFAULT;
 		BufferType m_type = BufferType(0);
+		uchar m_flags = 0;
+		ID3D11ShaderResourceView* m_srv = nullptr;
 	};
 }
 

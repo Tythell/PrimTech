@@ -34,7 +34,6 @@ namespace PrimtTech
 		ID3D11Device* GetDevice() const;
 		ID3D11DeviceContext* GetDeviceContext() const;
 		void ShutDown();
-		void UpdateScene(const float& deltatime);
 
 		ImGuiHandler* GetGuiHandlerP() { return m_guiHandler; }
 
@@ -89,6 +88,9 @@ namespace PrimtTech
 		Buffer<hlsl::cbpWorldTransforms3D> m_transformBuffer;
 		Buffer<hlsl::cbpLightBuffer> m_lightbuffer;
 		Buffer<hlsl::cbpMaterialBuffer> m_materialBuffer;
+
+		std::vector<hlsl::Light> m_lightVector;
+		Buffer<hlsl::Light> m_multiLightBuffer;
 
 		Buffer<BBVertex> m_grid;
 

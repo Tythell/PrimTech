@@ -1,6 +1,7 @@
 #pragma once
 #include "../Graphics/Mesh.h"
 #include "../Graphics/Material.h"
+#include "Graphics/CbufferTypes.h"
 #include<string>
 
 namespace pt
@@ -149,5 +150,13 @@ namespace pt
 		void SetRadius(float r);
 	private:
 		d::BoundingSphere m_bsphere;
+	};
+
+	class Light : public Component
+	{
+	public:
+		Light(uint entId);
+
+		PrimtTech::hlsl::Light m_lightData;
 	};
 }

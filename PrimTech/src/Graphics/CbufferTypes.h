@@ -30,6 +30,12 @@ namespace PrimtTech {
 			float4x4 lightViewProj;
 		};
 
+		struct Light
+		{
+			float4 pos;
+			float4 clr;
+		};
+
 		struct cbpLightBuffer
 		{
 			float3 direction;
@@ -41,7 +47,7 @@ namespace PrimtTech {
 			float3 pointLightColor;
 			float pointlightStre;
 			float3 camPos;
-			float pointLightDistance;
+			float lightDistance;
 			float3 shadowDir;
 			float cbShadowBias;
 			float3 spotLightPos;

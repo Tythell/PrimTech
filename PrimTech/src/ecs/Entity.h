@@ -84,18 +84,20 @@ namespace pt
 			for (int i = 0; i < NUM_COMPONENT_TYPES; i++)
 			{
 				if (HasComponentType(1 << i))
-				{
 					num++;
-				}
 			}
 			return num;
 		};
 		std::map<uint, uint> GetCompTable() { return m_compTable; };
 
 		void InsertTable(uint key, uint val);
+
+		void SetName(const std::string& name) { m_displayName = name; }
+		std::string GetName() const { return m_displayName; };
 	private:
 		uint m_id = 0xffffffff;
 		uint m_hasComponents = 0;
+		std::string m_displayName = "";
 
 		static uint nrOfEntities;
 		std::/*unordered_*/map<uint, uint> m_compTable;

@@ -11,11 +11,11 @@ Texture2D shadowMap : SHADOWMAP : register(t10);
 
 struct Light
 {
-    float4 position;
+    float4 pos;
     float4 color;
 };
 
-StructuredBuffer<Light> mySb;
+StructuredBuffer<Light> mySb : LIGHTSBUFFER : register(t11);
 
 SamplerState wrapSampler : SAMPLER : register(s0);
 SamplerState clampSampler : CLAMPSAMPLER : register(s1);
@@ -94,12 +94,7 @@ float calcShadow(in float4 clipspace, in float3 normal)
     float2 ndc = ((clipspace.xy) * .5f + .5f);
     float2 projTexCoord = float2(ndc.x, 1.f - ndc.y);
     
-    
-    //float depth = shadowMap.Sample(shadowSampler, projTexCoord).r;
-    
     float bias = cbShadowBias;
-    //float4 shadow = ((depth > input.clipSpace.z - shadowBias) /*&& dot(shadowDir, normal) <= 0.11f*/) ? 1 : 0;
-    //float shadowBias = max(.01f * (1.f - dot(normalize(shadowDir), normal)), .005f);
     float shadowBias = max(bias * (1.f - dot(normalize(shadowDir), direction)), .005f);
     
     // pcf
@@ -158,20 +153,39 @@ float4 main(PSInput input) : SV_Target
     float distance = length(lightVector);
     attenuation = max(0, 1.f - (distance / lightDistance.x));
     
-    // spotlight
-    float3 spotLightVector = spotLightPos - input.worldPos;
-    float sldistance = length(spotLightVector);
-    spotLightVector /= sldistance;
+    //// spotlight
+    //float3 spotLightVector = spotLightPos - input.worldPos;
+    //float sldistance = length(spotLightVector);
+    //spotLightVector /= sldistance;
     
-    float3 L2 = spotLightAngle;
-    float rho = dot(-spotLightVector, L2);
-    attenuation *= saturate((rho - spotLightAngle.y) / (spotLightAngle.x - spotLightAngle.y));
+    //float3 L2 = spotLightAngle;
+    //float rho = dot(-spotLightVector, L2);
+    //attenuation *= saturate((rho - spotLightAngle.y) / (spotLightAngle.x - spotLightAngle.y));
     
     // Normalized
     lightVector /= distance;
     
+    
+    
     // Uses to calculated value as index on a lookup-table stored in a texture
     //float lightindex = (false) ? saturate(dot(lightVector, normal)) * pointlightStre : 0.f;
+    
+    uint numLights;
+    uint lightStride;
+    mySb.GetDimensions(numLights, lightStride);
+    
+    float3 lightValue = 0.f;
+    
+    for (int i = 0; i < numLights; i++)
+    {
+        float3 lightVec = mySb[i].pos.xyz - input.worldPos;
+        float d = length(lightVec);
+        attenuation = max(0, 1.f - (d / lightDistance.x));
+        lightVec /= d;
+        
+        lightValue += saturate(dot(lightVec, normal)) * mySb[i].color.rgb;
+    }
+    
     float lightindex = (distance <= lightDistance) ? saturate(dot(lightVector, normal)) * pointlightStre : 0.f;
     float3 camToOb = normalize(input.worldPos - camPos.xyz);
    
@@ -198,17 +212,18 @@ float4 main(PSInput input) : SV_Target
     //cellLightStr /= distance;
     
 
-    //float rimDot = 0;
+    float rimDot = 0;
     //if (rim == 1)
     //    rimDot = 1 - dot(-camToOb, normal);
     
-    //float rimamount = 0.85f;
+    float rimamount = 0.85f;
     
-    //float rimIntesnity = smoothstep(rimamount - 0.06, rimamount + 0.06f, rimDot);
+    float rimIntesnity = smoothstep(rimamount - 0.06, rimamount + 0.06f, rimDot);
     
-    float3 final = diffuse.xyz * (cellLightStr) /*+ (rimDot.xxx * rimColor)*/ + specular;
+    //float3 final = warpedSpecular;
+    float3 final = diffuse.xyz * lightValue;
+    //float3 final = diffuse.xyz * (cellLightStr) + (rimDot.xxx * rimColor) + specular;
 
-    //return float4(input.worldPos, 1.f);
     //return float4(normal, 1.f);
     return float4(final, opacity * transparency);
 }
