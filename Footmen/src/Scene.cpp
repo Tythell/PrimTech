@@ -31,7 +31,7 @@ void Gui_EntList(void* test, bool* show)
 
 	uint numEnts = pt::Entity::NumEnts();
 
-	for (int i = 0; i < numEnts; i++)
+	for (uint i = 0; i < numEnts; i++)
 	{
 		ImGui::BeginDisabled(i == 0);
 		if (ImGui::Selectable(std::to_string(i).c_str(), p->selected == i))
@@ -91,7 +91,7 @@ void Gui_EntList(void* test, bool* show)
 				{
 					mr->Init(std::string(charbuffer));
 				}
-				uint matSize = mr->GetMeshContainerP()->GetMtl().size();
+				uint matSize = (uint)mr->GetMeshContainerP()->GetMtl().size();
 				for (int i = 0; i < matSize; i++)
 				{
 					std::string s = "material " + std::to_string(i);
@@ -124,6 +124,27 @@ void Gui_EntList(void* test, bool* show)
 				ImGui::Text(displaytext.c_str());
 				displaytext = "UpVec: " + ptm::GetVectorAsString(mr->GetUp());
 				ImGui::Text(displaytext.c_str());
+
+				const char* items[] = { "Perspective", "Orthographic" };
+				int item_current = (int)mr->IsOrthograpgic();
+
+				
+				if (ImGui::Combo("##combo", &item_current, items, IM_ARRAYSIZE(items)))
+				{
+					switch (item_current)
+					{
+					case 0:
+						mr->SetPerspective(80.f, (float)p->winWidth / (float)p->winHeight, 0.1f, 100.f);
+						break;
+					case 1:
+						mr->SetOrtographic(20.f, 20.f, 0.1f, 10.f);
+						break;
+					default:
+						break;
+					}
+				}
+
+				mr->UpdateView(pEnt->Transform());
 			}
 		}
 		if (pEnt->HasComponentType(PrimtTech::ec_aabb))
@@ -231,6 +252,15 @@ void Gui_AssetList(void* ptr, bool* show)
 				{
 					std::string name = meshArr[i].GetName();
 					ImGui::Text(name.c_str());
+					if (ImGui::IsItemHovered())
+					{
+						//ImGui::BeginTooltip();
+
+						//ImGui::Text("joe mama");
+
+						//ImGui::EndTooltip();
+						ImGui::SetTooltip("am tooltip");
+					}
 				}
 
 				ImGui::EndTabItem();
@@ -435,10 +465,10 @@ void Gui_MaterialProperties(void* ptr, bool* show)
 
 			if (hasDistMap)
 			{
-				int distDivider = pMaterial->GetDistortionDivider();
+				float distDivider = pMaterial->GetDistortionDivider();
 				title = "Dist divider##";
-				ImGui::SliderInt(title.c_str(), &distDivider, 1, 20);
-				pMaterial->SetDistortionDivider(distDivider);
+				ImGui::SliderInt(title.c_str(), (int*)&distDivider, 1, 20);
+				pMaterial->SetDistortionDivider((float)distDivider);
 			}
 
 			float transparancy = pMaterial->GetTransparancy();
@@ -573,15 +603,12 @@ Editor::Editor(PrimtTech::DX11Renderer* pRenderer, d::XMINT2 windowRes) : m_rend
 	m_entlist.winWidth = windowRes.x;
 	m_entlist.winHeight = windowRes.y;
 
-	pt::Entity& ent0 = pt::Entity::Create();
-	pt::Entity& ent1 = pt::Entity::Create();
-	
 
-	pt::Camera* devCam = ent0.AddComponent<pt::Camera>();
-	devCam->SetPerspective(80.f, (float)windowRes.x / (float)windowRes.y, 0.1f, 100.f);
-	ent0.Transform().SetPosition(0.f, 1.f, -2.f);
+	pt::Entity& ent1 = pt::Entity::Create();
+	pt::Entity& ent0 = pt::Entity::Create();
+	ent0.AddComponent<pt::MeshRef>();
+	ent0.Transform().SetPosition(0.f, 2.f, 0.f);
 	//m_entlist.ents[1].Transform().SetScale(1.f);
-	devCam->UpdateView(ent0.Transform());
 
 	PrimtTech::ResourceHandler::ReserveMeshMemory(15);
 
@@ -589,14 +616,15 @@ Editor::Editor(PrimtTech::DX11Renderer* pRenderer, d::XMINT2 windowRes) : m_rend
 	PrimtTech::ResourceHandler::AddMesh("Assets/models/gunter.obj");
 	PrimtTech::ResourceHandler::AddMesh("Assets/models/scuffball.obj");
 	//PrimtTech::ResourceHandler::AddMesh("Assets/models/Slime.fbx");
-	//PrimtTech::ResourceHandler::AddMesh("Assets/models/scaledplane.obj");
+	PrimtTech::ResourceHandler::AddMesh("Assets/models/scaledplane.obj");
 	PrimtTech::ResourceHandler::AddMaterial("DefaultMaterial");
 
-	//m_entlist.ents[1].AddComponent<pt::MeshRef>()->Init("scaledplane.obj");
 	ent1.Transform().SetPosition(0.f, -0.2f, 0.f);
-	ent1.AddComponent<pt::AABBComp>();
+	ent1.Transform().SetScale(10.f, 1.f, 10.f);
+	ent1.AddComponent<pt::MeshRef>()->Init("scaledplane.obj");
+	;
 
-	//AddEntity();
+	//PrimtTech::Import("Scenes/shadowTesting.ptsc", pt::Entity::GetAllEnts());
 }
 
 Editor::~Editor()
@@ -683,6 +711,11 @@ void Editor::execCommand(std::string cmd)
 			m_msgQueue.push(Messages::eHideMouse);
 		else if(argBuffer == "show")
 			m_msgQueue.push(Messages::eShowMouse);
+		else if (argBuffer == "sense")
+		{
+			ss >> argBuffer;
+			m_mouseSense = atof(argBuffer.c_str()) / 100.f;
+		}
 	}
 	else if (argBuffer == "showwin")
 	{
@@ -772,10 +805,10 @@ void Editor::Update(float deltatime)
 			move += {0.f, -1.f, 0.f};
 		move.Normalize();
 
-		move *= 10.f * deltatime;
+		move *= 10.f;
 
-		pDevTransform->Move(move);
-		pDevCam->UpdateView(*pDevTransform);
+		pDevTransform->Move(move * deltatime);
+		
 	}
 	
 	while (!MouseHandler::BufferIsEmpty())
@@ -784,8 +817,9 @@ void Editor::Update(float deltatime)
 		if (me.GetType() == MouseEvent::EventType::RAW_MOVE && canMove)
 		{
 			sm::Vector2 mouseMove = { (float)me.GetPosition().y, (float)me.GetPosition().x };
-			mouseMove *= deltatime * 0.3f;
+			mouseMove *= m_mouseSense;
 			pDevTransform->Rotate(mouseMove.x, mouseMove.y, 0.f);
+			//pDevCam->UpdateView(*pDevTransform);
 		}
 		//else if (me.GetType() == MouseEvent::EventType::eSCROLLUP && canMove)
 		//	pDevTransform->Offset(0.f, 0.f, -0.5f);
@@ -822,7 +856,7 @@ void Editor::Update(float deltatime)
 			m_entlist.console.AddLog("mouse show");
 	}
 
-
+	pDevCam->UpdateView(*pDevTransform);
 
 	#ifdef _DEBUG
 	if (KeyboardHandler::IsKeyDown(m_optionkey))

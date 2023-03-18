@@ -143,8 +143,8 @@ namespace PrimtTech
 			std::map<uint, uint> compTable = entList[i].GetCompTable();
 			for (auto const& [key, val] : compTable) // might be slow but works for now and probably ever
 			{
-				WRITEA(key);
-				WRITEA(val);
+				exporter.write((const char*)&key, sizeof(uint));
+				exporter.write((const char*)&val, sizeof(uint));
 			}
 		}
 		// ------------------------------------------- export components -------------------------------------------
@@ -236,20 +236,20 @@ namespace PrimtTech
 		int numEnts = 0;
 		READA(numEnts);
 
-		entList.resize(numEnts);
-		int numComponents = 0;
-		uint key = 0, val = 0;
+		entList.resize(numEnts, true); // to bypass the func check
+		
 
 		// exporting entity component tables
 		for (int i = 0; i < numEnts; i++)
 		{
-			numComponents = 0;
+			int numComponents = 0;
 			READA(numComponents);
 
 			for (int j = 0; j < numComponents; j++) // might be slow but works for now and probably ever
 			{
-				key = 0; val = 0;
-				READA(key); READA(val);
+				uint key = 0, val = 0;
+				READA(key);
+				READA(val);
 				entList[i].InsertTable(key, val);
 			}
 		}

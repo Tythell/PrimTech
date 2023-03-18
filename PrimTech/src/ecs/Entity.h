@@ -16,6 +16,7 @@ namespace pt
 			AddComponent<pt::TransformComp>();
 		}
 
+		
 		static Entity& Create();
 		static const uint NumEnts();
 		static Entity& GetEntity(uint index);

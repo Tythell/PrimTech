@@ -106,8 +106,6 @@ namespace PrimtTech
 		//RenderSphere m_sphere;
 
 		ShadowMap m_shadowmap;
-		sm::Matrix m_shadowView;
-
-		pt::Camera m_shadowCam;
+		uint m_shadowCamIndex = 0xffffffff;
 	};
 }

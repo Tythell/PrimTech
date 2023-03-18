@@ -18,11 +18,13 @@ namespace pt
 	{
 		float fovRad = (fovDeg / 360.f) * d::XM_2PI;
 		m_projM = d::XMMatrixPerspectiveFovLH(fovRad, aspectRatio, nearZ, farZ);
+		m_isOrthographic = false;
 	}
 
 	void Camera::SetOrtographic(float width, float height, float nearZ, float farZ)
 	{
 		m_projM = d::XMMatrixOrthographicLH(width, height, nearZ, farZ);
+		m_isOrthographic = true;
 	}
 	void Camera::UpdateView(const pt::TransformComp& entTransform)
 	{

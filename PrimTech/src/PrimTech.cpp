@@ -31,6 +31,14 @@ namespace pt
 		m_windowName = windowName;
 		m_window.init(windowName, hInstance, windowClass, width, height);
 
+		pt::Entity& ent0 = pt::Entity::Create();
+
+
+		pt::Camera* devCam = ent0.AddComponent<pt::Camera>();
+		devCam->UpdateView(ent0.Transform());
+		devCam->SetPerspective(80.f, (float)width / (float)height, 0.1f, 100.f);
+		ent0.Transform().SetPosition(0.f, 1.f, -2.f);
+
 		mp_dxrenderer = new DX11Renderer(m_window);
 
 		//ComponentHandler::ReserveMemory<MeshRef>(6);

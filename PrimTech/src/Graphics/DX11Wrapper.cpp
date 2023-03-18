@@ -10,8 +10,7 @@ namespace PrimtTech
 {
 	DX11Renderer::DX11Renderer(Window& window) :
 		m_width(window.getWinWidth()), m_height(window.getWinHeight()), m_pHWND(&window.getHWND()),
-		m_shadowmap(1024 * shadowQuality, 1024 * shadowQuality), m_viewport(0.f, 0.f, (float)m_width, (float)m_height),
-		m_shadowCam(0xffffffff)
+		m_shadowmap(1024 * shadowQuality, 1024 * shadowQuality), m_viewport(0.f, 0.f, (float)m_width, (float)m_height)
 	{
 		m_pWin = &window;
 
@@ -27,14 +26,15 @@ namespace PrimtTech
 		InitShaders();
 		InitConstantBuffers();
 
-		m_shadowCam.SetOrtographic(1024 * shadowQuality, 1024 * shadowQuality, .1f, 25.f);
-		m_shadowCam.SetPositionOffset(0.f, 4.f, 0.f);
-		m_shadowCam.SetRotationOffset(1.15f, 0.f, 0.f);
-		
+		pt::Entity& shadowEnt = pt::Entity::Create();
+		pt::Camera* pScam = shadowEnt.AddComponent<pt::Camera>();
+		pScam->SetOrtographic(20.f, 20.f, .1f, 10.f);
+		//pScam->SetRotationOffset(1.58f, 0.f, 0.f);
+		m_shadowCamIndex = shadowEnt.GetComponentIndex<Camera>();
 
-		TransformComp dummy(0xffffffff);
-
-		m_shadowCam.UpdateView(dummy);
+		shadowEnt.Transform().SetPosition(0.f, 4.f, 0.f);
+		shadowEnt.Transform().SetRotation(1.58f, 0.f, 0.f);
+		pScam->UpdateView(shadowEnt.Transform());
 
 		InitScene();
 		m_renderbox.Init(device, dc);
@@ -67,8 +67,6 @@ namespace PrimtTech
 		im = m_guiHandler->GetVarPtrs();
 		im->width = m_width;
 		im->height = m_height;
-		m_guiHandler->SetBufferPtrs(m_lightbuffer, m_materialBuffer);
-		//m_guiHandler->SetPtrs(mp_camHandler);
 		m_guiHandler->ImGuiInit(m_pWin->getHWND(), device, dc);
 	}
 
@@ -398,7 +396,7 @@ namespace PrimtTech
 
 			m_guiHandler->ImguiRender();
 
-			if (true) ImGuTextureDisplay();
+			ImGuTextureDisplay();
 
 			//ImGuiGradientWindow();
 
@@ -453,7 +451,7 @@ namespace PrimtTech
 		float offset = 35;
 		ImVec2 winSize(winvar, winvar + offset);
 		ImGui::SetNextWindowSize(winSize);
-		ImGui::Begin("Texture Display", &im->showShadowMapDepth, ImGuiWindowFlags_NoResize);
+		ImGui::Begin("Texture Display", NULL, ImGuiWindowFlags_NoResize);
 
 		ImTextureID tex = m_shadowmap.GetSRV();
 		ImGui::Image(tex, { winSize.x, winSize.x });
@@ -496,8 +494,11 @@ namespace PrimtTech
 		dc->VSSetShader(m_3dvs.GetShader(), NULL, 0);
 		dc->PSSetShader(NULL, NULL, 0);
 		dc->IASetInputLayout(m_3dvs.GetInputLayout());
-		m_transformBuffer.Data().viewProj = d::XMMatrixTranspose(m_shadowCam.GetViewMatrix() * m_shadowCam.GetProjMatrix());
-		m_transformBuffer.Data().lightViewProj = d::XMMatrixTranspose(m_shadowCam.GetViewMatrix() * m_shadowCam.GetProjMatrix());
+
+		Camera& scam = ComponentHandler::GetComponentByIndex<Camera>(m_shadowCamIndex);
+
+		m_transformBuffer.Data().viewProj = d::XMMatrixTranspose(scam.GetViewMatrix() * scam.GetProjMatrix());
+		m_transformBuffer.Data().lightViewProj = d::XMMatrixTranspose(scam.GetViewMatrix() * scam.GetProjMatrix());
 		m_shadowmap.Bind(dc, 10);
 
 		uint numMEshRefs = (uint)rMeshrefs.size();
@@ -547,9 +548,6 @@ namespace PrimtTech
 
 		m_materialBuffer.Data().flags = 0;
 
-		
-
-		
 
 		// iterate through meshrefs
 		for (int i = 0; i < numMEshRefs; i++)
@@ -603,8 +601,6 @@ namespace PrimtTech
 			bool intersecting = rAabbs[i].IsIntersecting();
 			if (intersecting) m_renderbox.SetColor(GREEN_3F);
 			else m_renderbox.SetColor(WHITE_3F);
-				
-			
 
 			m_transformBuffer.Data().world = d::XMMatrixTranspose(world);
 			m_transformBuffer.MapBuffer();

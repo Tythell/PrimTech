@@ -99,6 +99,11 @@ namespace pt
 		sm::Matrix m_viewM, m_projM;
 		sm::Vector3 m_posOffset, m_rotateOffset;
 		sm::Vector3 m_forwardV, m_leftV, m_upV;
+
+		bool m_isOrthographic = false;
+
+	public:
+		bool IsOrthograpgic() const { return m_isOrthographic; };
 	};
 
 	class AABBComp : public Component

@@ -60,6 +60,7 @@ public:
 private:
 	PrimtTech::ImGuiHandler m_pGui;
 	EntListStruct m_entlist;
+	float m_mouseSense = 0.005f;
 
 	void execCommand(std::string cmd);
 

@@ -124,7 +124,7 @@ namespace ptm
 		if (n2 < n1)
 			std::swap(n1, n2);
 
-		return (rand() % n2 + n1) / pow(10, decimals);
+		return (float)(rand() % n2 + n1) / pow(10, decimals);
 	}
 }
 

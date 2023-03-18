@@ -9,7 +9,7 @@ namespace pt
 
 	Entity& Entity::Create()
 	{
-		return s_ents.emplace_back(true);
+		return s_ents.emplace_back(true); // Don't question it
 	}
 
 	const uint Entity::NumEnts()
