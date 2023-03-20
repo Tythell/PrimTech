@@ -12,10 +12,11 @@ Texture2D shadowMap : SHADOWMAP : register(t10);
 struct Light
 {
     float4 pos;
-    float4 color;
+    float4 clr;
+    float4 dire;
 };
 
-StructuredBuffer<Light> mySb : LIGHTSBUFFER : register(t11);
+StructuredBuffer<Light> mySb : LIGHTS : register(t11);
 
 SamplerState wrapSampler : SAMPLER : register(s0);
 SamplerState clampSampler : CLAMPSAMPLER : register(s1);
@@ -26,8 +27,8 @@ cbuffer LightBuffer : register(b0)
     float3 direction;
     float specularInstensity;
     float3 pointLightPosition;
-    float ambientStr;
-    float3 ambientColor;
+    //float ambientStr;
+    //float3 ambientColor;
     float atten;
     float3 pointLightColor;
     float pointlightStre;
@@ -36,7 +37,7 @@ cbuffer LightBuffer : register(b0)
     float3 shadowDir;
     float cbShadowBias;
     float3 spotLightPos;
-    float pad1;
+    uint numLights;
     float3 spotLightAngle;
     float pad2;
 };
@@ -106,16 +107,15 @@ float calcShadow(in float4 clipspace, in float3 normal)
     for (int x = -1; x <= 1; x++)
         for (int y = -1; y <= 1; y++)
         {
-            float depth = shadowMap.Sample(shadowSampler, projTexCoord + int2(x,y) * texelSize).r;
+            float depth = shadowMap.Sample(shadowSampler, projTexCoord + int2(x, y) * texelSize).r;
             shadow += (depth + bias < clipspace.z ? 0.0f : 1.0f);
-
         }
     
     return shadow / 9.f;
 }
 
 float4 main(PSInput input) : SV_Target
-{   
+{
     float2 distortion = 0.f;
     float opacity = 1.f;
     
@@ -131,7 +131,7 @@ float4 main(PSInput input) : SV_Target
     
     float3x3 tbnMatr = 0;
     float3 normal = calcNormal(texCoord + distortion, input.normal, input.tangent, input.bitangent);
-    float4 shadow = calcShadow(input.clipSpace, normal);
+    float shadow = calcShadow(input.clipSpace, normal);
     
     float4 diffuse;
     if (flags & MaterialFlag_eHasDiffuse)
@@ -169,22 +169,41 @@ float4 main(PSInput input) : SV_Target
     
     // Uses to calculated value as index on a lookup-table stored in a texture
     //float lightindex = (false) ? saturate(dot(lightVector, normal)) * pointlightStre : 0.f;
-    
-    uint numLights;
-    uint lightStride;
-    mySb.GetDimensions(numLights, lightStride);
+   
     
     float3 lightValue = 0.f;
+    float3 amb = float3(0.f,0.f,0.f);
     
-    for (int i = 0; i < numLights; i++)
+    uint numOfLights = numLights;
+    for (int i = 0; i < numOfLights; i++)
     {
-        float3 lightVec = mySb[i].pos.xyz - input.worldPos;
-        float d = length(lightVec);
-        attenuation = max(0, 1.f - (d / lightDistance.x));
-        lightVec /= d;
+        Light light = mySb[i];
+        if (light.pos.w == 1.f)
+        {
+            float3 lightVec = light.pos.xyz - input.worldPos;
+            float d = length(lightVec);
+            attenuation = max(0, 1.f - (d / lightDistance.x));
+            lightVec /= d;
         
-        lightValue += saturate(dot(lightVec, normal)) * mySb[i].color.rgb;
+            float3 ligVal = saturate(dot(lightVec, normal)) * light.clr.rgb;
+        
+            lightValue += ligVal / d /* * shadow*/;
+        }
+        else if (light.dire.w == 1)
+        {
+            float3 direct = normalize(mySb[i].dire.xyz);
+            float3 lightVecc = dot(direct, normal) * shadow;
+            lightValue += lightVecc;
+        }
+        else
+        {
+            amb = light.clr.xyz * light.clr.w;
+        }
+        
     }
+    
+    
+    lightValue += amb;
     
     float lightindex = (distance <= lightDistance) ? saturate(dot(lightVector, normal)) * pointlightStre : 0.f;
     float3 camToOb = normalize(input.worldPos - camPos.xyz);
@@ -205,9 +224,9 @@ float4 main(PSInput input) : SV_Target
     float3 cellLightStr = ZAToon.Sample(clampSampler, float2(lightindex, .5f)).xyz;
     specular = ZAToon.Sample(clampSampler, float2(specular.z, .5f)).xyz;
     
-    cellLightStr *= shadow;
+    //cellLightStr *= shadow;
     
-    cellLightStr += ambientColor * ambientStr;
+    //cellLightStr += ambientColor * ambientStr;
     
     //cellLightStr /= distance;
     

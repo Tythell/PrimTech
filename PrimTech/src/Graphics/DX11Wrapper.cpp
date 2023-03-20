@@ -39,8 +39,8 @@ namespace PrimtTech
 		InitScene();
 		m_renderbox.Init(device, dc);
 
-		m_lightVector.emplace_back();
-		m_lightVector.emplace_back();
+		m_lightVector.resize(32);
+
 		m_multiLightBuffer.CreateStructuredBuffer(device, m_lightVector.data(), m_lightVector.size(), dc);
 
 		m_multiLightBuffer.BindSRV(11);
@@ -340,26 +340,6 @@ namespace PrimtTech
 
 			//ImGuTextureDisplay();
 
-			ImGui::Begin("LightHandler");
-
-			static float imLightPos[3]{ 0.f };
-			static float imLightpos1[3]{ 0.f };
-			static float imLightclr[3]{ 1.f,1.f,1.f };
-			static float imLightclr1[3]{ 1.f,1.f,1.f };
-
-			ImGui::DragFloat3("pos", imLightPos, 0.02f);
-			ImGui::DragFloat3("pos1", imLightpos1, 0.02f);
-			ImGui::DragFloat3("color", imLightclr, 0.02f);
-			ImGui::DragFloat3("color1", imLightclr1, 0.02f);
-
-			m_multiLightBuffer.Data().pos = { imLightPos[0], imLightPos[1], imLightPos[2]};
-			m_multiLightBuffer.Data(1).pos = { imLightpos1[0], imLightpos1[1], imLightpos1[2]};
-			m_multiLightBuffer.Data().clr = { imLightclr[0], imLightclr[1], imLightclr[2]};
-			m_multiLightBuffer.Data(1).clr = { imLightclr1[0], imLightclr1[1], imLightclr1[2] };
-			m_multiLightBuffer.MapBuffer();
-
-			ImGui::End();
-
 			//ImGuiGradientWindow();
 
 			ImGui::Render();
@@ -498,14 +478,23 @@ namespace PrimtTech
 
 		Camera& scam = ComponentHandler::GetComponentByIndex<Camera>(m_shadowCamIndex);
 
-		m_lightbuffer.Data().ambientColor = { 1.f, 1.f, 1.f };
-		m_lightbuffer.Data().ambientStr = 0.6f;
 		m_lightbuffer.Data().pointLightColor = { 1.f, 1.f, 1.f };
 		m_lightbuffer.Data().pointlightStre = im->pointLightStr;
 		m_lightbuffer.Data().cbShadowBias = im->shadowBias;
 		//m_lightbuffer.Data().pointLightDistance = 10.f;
 		m_lightbuffer.Data().shadowDir = scam.GetForwardV();
 
+		std::vector<pt::Light>& r_lights = ComponentHandler::GetComponentArray<pt::Light>();
+		uint numLights = (uint)r_lights.size();
+		m_lightbuffer.Data().numLights = numLights;
+
+		for (int i = 0; i < numLights; i++)
+		{
+			m_multiLightBuffer.Data(i).clr = r_lights[i].GetLightData().clr;
+			m_multiLightBuffer.Data(i).pos = r_lights[i].GetLightData().pos;
+			m_multiLightBuffer.Data(i).dire = r_lights[i].GetLightData().dire;
+		}
+		m_multiLightBuffer.MapBuffer();
 
 		m_lightbuffer.Data().direction = sm::Vector3(0.f, -1.f, 0.f);
 		m_lightbuffer.Data().pointLightPosition = sm::Vector3(im->pointLightPos[0], im->pointLightPos[1], im->pointLightPos[2]);

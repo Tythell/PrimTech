@@ -25,6 +25,7 @@ namespace pt
 	{
 		if (name == "")
 		{
+			m_pMaterialindexes.resize(1, 0);
 			return;
 		}
 		//std::vector<PrimtTech::Mesh>& meshArr = PrimtTech::ResourceHandler::GetMeshArrayReference();
@@ -33,7 +34,8 @@ namespace pt
 
 		m_meshIndex = (meshIndex == -1) ? 0 : meshIndex;
 
-		m_pMaterialindexes.resize(PrimtTech::ResourceHandler::GetMeshAdress(m_meshIndex)->GetNofMeshes(), 0);
+		uint u = PrimtTech::ResourceHandler::GetMeshAdress(m_meshIndex)->GetNofMeshes();
+		m_pMaterialindexes.resize(u, 0);
 
 	}
 

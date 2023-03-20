@@ -27,11 +27,14 @@ void Gui_EntList(void* test, bool* show)
 	{
 		p->console.AddLog("select -1");
 	}
+	ImGui::SameLine();
+	static bool s_imShowDents = true;
+	ImGui::Checkbox("Show Dev Ents", &s_imShowDents);
 	ImGui::BeginChild("Lefty", ImVec2(150, 400), true);
 
 	uint numEnts = pt::Entity::NumEnts();
 
-	for (uint i = 0; i < numEnts; i++)
+	for (uint i = 3 * (int)!s_imShowDents; i < numEnts; i++)
 	{
 		ImGui::BeginDisabled(i == 0);
 		if (ImGui::Selectable(std::to_string(i).c_str(), p->selected == i))
@@ -59,6 +62,10 @@ void Gui_EntList(void* test, bool* show)
 			if (ImGui::Selectable("AABB"))
 			{
 				p->console.AddLog(AddComp(p->selected, "aabb").c_str());
+			}
+			if (ImGui::Selectable("Light"))
+			{
+				p->console.AddLog(AddComp(p->selected, "light").c_str());
 			}
 			ImGui::EndPopup();
 		}
@@ -162,6 +169,35 @@ void Gui_EntList(void* test, bool* show)
 				mr->SetPositionOffset(v);
 
 				//ImGui::Text(ptm::GetVectorAsString(mr->GetBox().Center).c_str());
+			}
+		}
+		if (pEnt->HasComponentType(PrimtTech::ec_light))
+		{
+			if (ImGui::CollapsingHeader("Light", ImGuiTreeNodeFlags_DefaultOpen))
+			{
+				pt::Light* mr = pEnt->GetComponent<pt::Light>();
+
+				sm::Vector4 v = mr->GetPositionOffset();
+
+				ImGui::DragFloat3("Posiiton", reinterpret_cast<float*>(&v), 0.02f);
+				mr->SetOffsetPosition(v);
+
+				v = mr->GetLightData().clr;
+				ImGui::DragFloat3("##Color", reinterpret_cast<float*>(&v), 0.02f, 0.f, 1.f);
+				
+				ImGui::PushItemWidth(ImGui::GetItemRectSize().x / 3);
+				ImGui::SameLine(); ImGui::DragFloat("Color", &v.w, 0.02, 0.f, 10.f);
+				mr->SetColor(v);
+				ImGui::PopItemWidth();
+				v = mr->GetDirectionOffset();
+				ImGui::DragFloat3("Direction", reinterpret_cast<float*>(&v), 0.02f, -1.f, 1.f);
+				mr->SetDirectionOffset(v);
+
+				const char* items[] = { "Point", "Direction", "Ambient"};
+				int item_current = (int)mr->GetType();
+
+				if (ImGui::Combo("##lightcombo", &item_current, items, IM_ARRAYSIZE(items)))
+					mr->SetType((uchar)item_current);
 			}
 		}
 	}
@@ -573,6 +609,15 @@ void Gui_ImGuiDemo(void* ptr, bool* show)
 
 Editor::Editor(PrimtTech::DX11Renderer* pRenderer, d::XMINT2 windowRes) : m_renderer(pRenderer)
 {
+	PrimtTech::ResourceHandler::ReserveMeshMemory(15);
+
+	PrimtTech::ResourceHandler::AddMesh("Assets/models/cube.txt");
+	PrimtTech::ResourceHandler::AddMesh("Assets/models/gunter.obj");
+	PrimtTech::ResourceHandler::AddMesh("Assets/models/scuffball.obj");
+	//PrimtTech::ResourceHandler::AddMesh("Assets/models/Slime.fbx");
+	PrimtTech::ResourceHandler::AddMesh("Assets/models/scaledplane.obj");
+	PrimtTech::ResourceHandler::AddMaterial("DefaultMaterial");
+
 	m_renderer->SetImGuiHandler(m_pGui);
 
 	for (int i = 1; i < m_entlist.console.m_showWin.size(); i++)
@@ -581,7 +626,7 @@ Editor::Editor(PrimtTech::DX11Renderer* pRenderer, d::XMINT2 windowRes) : m_rend
 	}
 
 	uint u = 0;
-	m_entlist.console.m_showWin.resize(6, {true, ""});
+	m_entlist.console.m_showWin.resize(6, { true, "" });
 	m_pGui.AddWindowFunc(Gui_ImGuiDemo, NULL, &m_entlist.console.m_showWin[u].first);
 	m_entlist.console.m_showWin[u].second = "imguiDemo";
 	m_entlist.console.m_showWin[u++].first = false;
@@ -598,31 +643,33 @@ Editor::Editor(PrimtTech::DX11Renderer* pRenderer, d::XMINT2 windowRes) : m_rend
 	m_pGui.AddWindowFunc(Gui_menubar, &m_entlist.console, &m_entlist.console.m_showWin[u].first);
 	m_entlist.console.m_showWin[u++].second = "Menu_Bar";
 
-	pt::Entity::ReserveEnts(5);
+	pt::Entity::ReserveEnts(10);
 
 	m_entlist.winWidth = windowRes.x;
 	m_entlist.winHeight = windowRes.y;
 
+	pt::Light* pLight = pt::Entity::Create().AddComponent<pt::Light>();
+	pLight->SetType(2);
+	pLight->SetColor({1.f, 1.f, 1.f, .2f});
 
-	pt::Entity& ent1 = pt::Entity::Create();
+	pLight = pt::Entity::Create().AddComponent<pt::Light>();
+	pLight->SetType(1);
+	pLight->SetDirectionOffset({0.f, 1.f, 1.f, 1.f});
+	pLight->SetColor({ 1.f, 1.f, 1.f, 1.f });
+
 	pt::Entity& ent0 = pt::Entity::Create();
 	ent0.AddComponent<pt::MeshRef>();
 	ent0.Transform().SetPosition(0.f, 2.f, 0.f);
-	//m_entlist.ents[1].Transform().SetScale(1.f);
-
-	PrimtTech::ResourceHandler::ReserveMeshMemory(15);
-
-	PrimtTech::ResourceHandler::AddMesh("Assets/models/cube.txt");
-	PrimtTech::ResourceHandler::AddMesh("Assets/models/gunter.obj");
-	PrimtTech::ResourceHandler::AddMesh("Assets/models/scuffball.obj");
-	//PrimtTech::ResourceHandler::AddMesh("Assets/models/Slime.fbx");
-	PrimtTech::ResourceHandler::AddMesh("Assets/models/scaledplane.obj");
-	PrimtTech::ResourceHandler::AddMaterial("DefaultMaterial");
-
+	pt::Entity& ent1 = pt::Entity::Create();
 	ent1.Transform().SetPosition(0.f, -0.2f, 0.f);
 	ent1.Transform().SetScale(10.f, 1.f, 10.f);
 	ent1.AddComponent<pt::MeshRef>()->Init("scaledplane.obj");
-	;
+	
+	//m_entlist.ents[1].Transform().SetScale(1.f);
+
+
+
+	
 
 	//PrimtTech::Import("Scenes/shadowTesting.ptsc", pt::Entity::GetAllEnts());
 }
@@ -688,6 +735,10 @@ void Editor::execCommand(std::string cmd)
 			else if (argBuffer == "aabb")
 			{
 				pt::Entity::GetEntity(entId).AddComponent<pt::AABBComp>();
+			}
+			else if (argBuffer == "light")
+			{
+				pt::Entity::GetEntity(entId).AddComponent<pt::Light>();
 			}
 		}
 	}

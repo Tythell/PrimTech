@@ -96,6 +96,13 @@ namespace pt
 
 			SetCursorPos(m_windowPos.x + (m_window.getWinWidth() / 2), m_windowPos.y + (m_window.getWinHeight() / 2));
 		}
+
+		std::vector<pt::Light>& r_lights = ComponentHandler::GetComponentArray<pt::Light>();
+		uint numLights = (uint)r_lights.size();
+		for (int i = 0; i < numLights; i++)
+		{
+			r_lights[i].Update(pt::Entity::GetEntity(r_lights[i].EntId()).Transform());
+		}
 	}
 
 	void PrimTech::HideCursor()

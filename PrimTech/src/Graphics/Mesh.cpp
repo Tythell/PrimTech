@@ -302,7 +302,7 @@ namespace PrimtTech
 			m_offsets.emplace_back(lastSize);
 		}
 
-		std::vector<d::XMFLOAT3> positionArray;
+
 		//Shape fullshape;
 		UINT totalVertCount = 0;
 		for (int i = 0; i < m_nofMeshes; i++)
@@ -310,7 +310,7 @@ namespace PrimtTech
 			for (int j = 0; j < mesh[i].verts.size(); j++)
 			{
 				sm::Vector3 pos = mesh[i].verts[j].position;
-				positionArray.emplace_back(pos);
+
 				mesh[i].verts[j].color = sm::Vector3(1.f, 1.f, 1.f);
 				mesh[i].verts[j].color = sm::Vector3(float(rand() % 10 + 1) / 10, float(rand() % 10 + 1) / 10, float(rand() % 10 + 1) / 10);
 				m_shape.verts.emplace_back(mesh[i].verts[j]);
