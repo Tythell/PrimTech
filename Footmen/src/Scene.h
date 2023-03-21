@@ -33,7 +33,6 @@ struct EntListStruct
 	uint currentCamera;
 	int winWidth, winHeight;
 	int m_selectedMaterial = -1;
-	
 };
 
 class Editor

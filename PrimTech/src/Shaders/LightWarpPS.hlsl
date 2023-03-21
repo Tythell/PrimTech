@@ -173,7 +173,7 @@ float4 main(PSInput input) : SV_Target
             //attenuation = max(0, 1.f - (d / lightDistance.x));
             lightVec /= d;
         
-            float3 ligVal = saturate(dot(lightVec, normal)) * light.clr.rgb;
+            float3 ligVal = saturate(dot(lightVec, normal)) * light.clr.rgb * light.clr.w;
         
             lightValue += (ligVal / d) * shadow;
         }

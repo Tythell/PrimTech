@@ -125,11 +125,6 @@ namespace PrimtTech
 
 			m_usage = eIMMULATBLE;
 			bufferDesc.CPUAccessFlags = 0;
-			//m_data = new T[bufferSize];
-			//for (int i = 0; i < bufferSize; i++)
-			//{
-			//	m_data[i] = data[i];
-			//}
 			m_data = data;
 			if (dc)
 			{
@@ -198,7 +193,6 @@ namespace PrimtTech
 			mp_dc = dc;
 			m_data = data;
 			m_bufferSize = bufferSize;
-			m_stride = sizeof(T);
 
 			UINT mod = sizeof(T) % 16u;
 			UINT byteSize = (mod == 0) ? static_cast<UINT>(sizeof(T)) : static_cast<UINT>(sizeof(T) + (16u - mod));
