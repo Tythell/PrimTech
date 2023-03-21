@@ -79,7 +79,7 @@ namespace PrimtTech
 		CD3D11_VIEWPORT m_viewport;
 
 		VertexShader m_3dvs;
-		PixelShader m_3dnoLightps;
+		//PixelShader m_3dnoLightps;
 		PixelShader m_toonPS;
 
 		PixelShader m_linePS;

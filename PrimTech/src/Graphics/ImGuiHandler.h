@@ -20,8 +20,6 @@ namespace PrimtTech
 	struct ImGuiVars
 	{
 		bool useVsync = true;
-		float pointLightPos[3] = { 0.f,1.f,0.f };
-		float pointLightStr = 1.f;
 		float pointLightDistance = 10.f;
 		float ambient[4] = { 1.f,1.f,1.f,.6f };
 		float direction[3] = { 0.f, 1.f, 0.f };

@@ -39,22 +39,10 @@ namespace PrimtTech {
 
 		struct cbpLightBuffer
 		{
-			float3 direction;
-			float specularInstensity;
-			float3 pointLightPosition;
-			//float ambientStr;
-			//float3 ambientColor;
-			float atten;
-			float3 pointLightColor;
-			float pointlightStre;
 			float3 camPos;
-			float lightDistance;
+			uint numLights;
 			float3 shadowDir;
 			float cbShadowBias;
-			float3 spotLightPos;
-			uint numLights;
-			float3 spotLightAngle;
-			float pad2;
 		};
 
 		struct cbpMaterialBuffer

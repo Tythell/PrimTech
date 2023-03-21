@@ -263,7 +263,6 @@ namespace PrimtTech
 
 		m_3dvs.Init(device, "vertexshader.cso");
 		m_3dvs.InitInputLayout(device, layout3D, ARRAYSIZE(layout3D));
-		m_3dnoLightps.Init(device, "NoLightPs.cso");
 		m_toonPS.Init(device, "LightWarpPS.cso");
 
 		m_linePS.Init(device, "QuadPS.cso");
@@ -478,8 +477,6 @@ namespace PrimtTech
 
 		Camera& scam = ComponentHandler::GetComponentByIndex<Camera>(m_shadowCamIndex);
 
-		m_lightbuffer.Data().pointLightColor = { 1.f, 1.f, 1.f };
-		m_lightbuffer.Data().pointlightStre = im->pointLightStr;
 		m_lightbuffer.Data().cbShadowBias = im->shadowBias;
 		//m_lightbuffer.Data().pointLightDistance = 10.f;
 		m_lightbuffer.Data().shadowDir = scam.GetForwardV();
@@ -496,8 +493,7 @@ namespace PrimtTech
 		}
 		m_multiLightBuffer.MapBuffer();
 
-		m_lightbuffer.Data().direction = sm::Vector3(0.f, -1.f, 0.f);
-		m_lightbuffer.Data().pointLightPosition = sm::Vector3(im->pointLightPos[0], im->pointLightPos[1], im->pointLightPos[2]);
+		//m_lightbuffer.Data().direction = sm::Vector3(0.f, 1.f, 0.f);
 		//m_lightbuffer.Data().forwardDir = mp_cam->GetForwardVector();
 		pt::Camera& cc = ComponentHandler::GetComponentByIndex<pt::Camera>(m_activeCamIndex);
 		pt::TransformComp& camTransform = ComponentHandler::GetComponentByIndex<pt::TransformComp>(m_activeCamIndex);

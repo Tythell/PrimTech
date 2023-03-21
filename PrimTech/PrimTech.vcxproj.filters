@@ -534,10 +534,10 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="src\Shaders\QuadVS.hlsl">
+    <FxCompile Include="src\Shaders\LineVS.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
-    <FxCompile Include="src\Shaders\QuadPS.hlsl">
+    <FxCompile Include="src\Shaders\LinePS.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
     <FxCompile Include="src\Shaders\vertexshader.hlsl">

@@ -28,13 +28,13 @@ void Gui_EntList(void* test, bool* show)
 		p->console.AddLog("select -1");
 	}
 	ImGui::SameLine();
-	static bool s_imShowDents = true;
+	static bool s_imShowDents = false;
 	ImGui::Checkbox("Show Dev Ents", &s_imShowDents);
 	ImGui::BeginChild("Lefty", ImVec2(150, 400), true);
 
 	uint numEnts = pt::Entity::NumEnts();
 
-	for (uint i = 3 * (int)!s_imShowDents; i < numEnts; i++)
+	for (uint i = 4 * (int)!s_imShowDents; i < numEnts; i++)
 	{
 		ImGui::BeginDisabled(i == 0);
 		if (ImGui::Selectable(std::to_string(i).c_str(), p->selected == i))

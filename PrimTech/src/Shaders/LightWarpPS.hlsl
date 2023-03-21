@@ -24,22 +24,10 @@ SamplerState shadowSampler : SHADOWSAMPLER : register(s2);
 
 cbuffer LightBuffer : register(b0)
 {
-    float3 direction;
-    float specularInstensity;
-    float3 pointLightPosition;
-    //float ambientStr;
-    //float3 ambientColor;
-    float atten;
-    float3 pointLightColor;
-    float pointlightStre;
     float3 camPos;
-    float lightDistance;
+    uint numLights;
     float3 shadowDir;
     float cbShadowBias;
-    float3 spotLightPos;
-    uint numLights;
-    float3 spotLightAngle;
-    float pad2;
 };
 
 // Material flags
@@ -96,7 +84,7 @@ float calcShadow(in float4 clipspace, in float3 normal)
     float2 projTexCoord = float2(ndc.x, 1.f - ndc.y);
     
     float bias = cbShadowBias;
-    float shadowBias = max(bias * (1.f - dot(normalize(shadowDir), direction)), .005f);
+    float shadowBias = max(.04f * (1.f - dot(normalize(shadowDir), normal)), .005f);
     
     // pcf
     float shadow = 0.f;
@@ -108,7 +96,7 @@ float calcShadow(in float4 clipspace, in float3 normal)
         for (int y = -1; y <= 1; y++)
         {
             float depth = shadowMap.Sample(shadowSampler, projTexCoord + int2(x, y) * texelSize).r;
-            shadow += (depth + bias < clipspace.z ? 0.0f : 1.0f);
+            shadow += (depth > clipspace.z - shadowBias ? 1.0f : 0.0f);
         }
     
     return shadow / 9.f;
@@ -121,7 +109,7 @@ float4 main(PSInput input) : SV_Target
     
     float2 texCoord = input.texCoord * textureScale;
     float2 distTexCoord = input.texCoord * textureScaleDist;
-    float3 lightPos = pointLightPosition;
+    float3 lightPos = float3(0.f,0.f,0.f); // TODO: REMOVE LATER
     
     if (flags & MaterialFlag_eHasDistortion)
         distortion = (distortionMap.Sample(wrapSampler, distTexCoord + texCoordoffsetDist).xy - 0.5f) / distDiv;
@@ -151,7 +139,7 @@ float4 main(PSInput input) : SV_Target
     
     float3 lightVector = lightPos.xyz - input.worldPos;
     float distance = length(lightVector);
-    attenuation = max(0, 1.f - (distance / lightDistance.x));
+    //attenuation = max(0, 1.f - (distance / lightDistance.x));
     
     //// spotlight
     //float3 spotLightVector = spotLightPos - input.worldPos;
@@ -182,17 +170,17 @@ float4 main(PSInput input) : SV_Target
         {
             float3 lightVec = light.pos.xyz - input.worldPos;
             float d = length(lightVec);
-            attenuation = max(0, 1.f - (d / lightDistance.x));
+            //attenuation = max(0, 1.f - (d / lightDistance.x));
             lightVec /= d;
         
             float3 ligVal = saturate(dot(lightVec, normal)) * light.clr.rgb;
         
-            lightValue += ligVal / d /* * shadow*/;
+            lightValue += (ligVal / d) * shadow;
         }
         else if (light.dire.w == 1)
         {
             float3 direct = normalize(mySb[i].dire.xyz);
-            float3 lightVecc = dot(direct, normal) * shadow;
+            float3 lightVecc = (dot(direct, normal) * light.clr.w) * shadow;
             lightValue += lightVecc;
         }
         else
@@ -202,42 +190,35 @@ float4 main(PSInput input) : SV_Target
         
     }
     
-    
     lightValue += amb;
     
-    float lightindex = (distance <= lightDistance) ? saturate(dot(lightVector, normal)) * pointlightStre : 0.f;
-    float3 camToOb = normalize(input.worldPos - camPos.xyz);
+    //float lightindex = (distance <= lightDistance) ? saturate(dot(lightVector, normal)) : 0.f;
+    //float3 camToOb = normalize(input.worldPos - camPos.xyz);
    
-    float3 specular = 0.f;
-    float specDot = dot(camToOb, -reflect(-lightVector, normal));
-    if (specDot > 0.f)
-        specular = pow(specDot, specularInstensity);
+    //float3 specular = 0.f;
+    //float specDot = dot(camToOb, -reflect(-lightVector, normal));
+    //if (specDot > 0.f)
+    //    specular = pow(specDot, specularInstensity);
     
-    float att = 1.f / dot(atten.xxx, float3(1.f, distance, distance));
+    //float att = 1.f / dot(atten.xxx, float3(1.f, distance, distance));
     //float att = 1.f / dot(atten.xxx, float3(1.f, distance, distance));
     
-    specular *= atten;
+    //specular *= atten;
     //diffuse *= att;
     
-    lightindex /= distance;
+    //lightindex /= distance;
     //lightindex += specular;
-    float3 cellLightStr = ZAToon.Sample(clampSampler, float2(lightindex, .5f)).xyz;
-    specular = ZAToon.Sample(clampSampler, float2(specular.z, .5f)).xyz;
-    
-    //cellLightStr *= shadow;
-    
-    //cellLightStr += ambientColor * ambientStr;
-    
-    //cellLightStr /= distance;
+    //float3 cellLightStr = ZAToon.Sample(clampSampler, float2(lightindex, .5f)).xyz;
+    //specular = ZAToon.Sample(clampSampler, float2(specular.z, .5f)).xyz;
     
 
-    float rimDot = 0;
+    //float rimDot = 0;
     //if (rim == 1)
     //    rimDot = 1 - dot(-camToOb, normal);
     
-    float rimamount = 0.85f;
+    //float rimamount = 0.85f;
     
-    float rimIntesnity = smoothstep(rimamount - 0.06, rimamount + 0.06f, rimDot);
+    //float rimIntesnity = smoothstep(rimamount - 0.06, rimamount + 0.06f, rimDot);
     
     //float3 final = warpedSpecular;
     float3 final = diffuse.xyz * lightValue;
