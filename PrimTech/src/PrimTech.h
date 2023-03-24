@@ -2,6 +2,9 @@
 #include "Windows/WindowWrap.h"
 #include <omp.h>
 #include <thread>
+#include"Physics/PhysicsHandler.h"
+
+
 
 namespace pt
 {
@@ -24,6 +27,7 @@ namespace pt
 		void ToggleMouse();
 		void HideCursor();
 		void ShowCursor();
+		PrimtTech::PhysicsHandler m_physHandler;
 	private:
 		void Update(float dt);
 		
@@ -31,13 +35,13 @@ namespace pt
 		PrimtTech::Window m_window;
 		PrimtTech::DX11Renderer* mp_dxrenderer = nullptr;
 
+
 		float m_playerSpeed;
 		double m_deltaTime = 0.0;
 		bool m_isOpen = true;
 
 		bool m_mouseLocked = false;
 
-		//const unsigned char m_optionkey = Key::ESCAPE;
 		d::XMINT2 m_windowPos;
 	};
 };

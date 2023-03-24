@@ -2,7 +2,12 @@
 #include "../Graphics/Mesh.h"
 #include "../Graphics/Material.h"
 #include "Graphics/CbufferTypes.h"
+#undef max;
+#undef min;
+#include <reactphysics3d/reactphysics3d.h>
 #include<string>
+
+namespace rp = reactphysics3d;
 
 namespace pt
 {
@@ -11,7 +16,6 @@ namespace pt
 	public:
 		Component(const uint id);
 		const uint EntId() const;
-
 	private:
 		const uint m_entId;
 	};
@@ -179,5 +183,20 @@ namespace pt
 		//	eLightType_Directional,
 		//	eLightType_Ambient,
 		//};
+	};
+
+	class PhysicsBody : public Component
+	{
+	public:
+		PhysicsBody(uint id);
+
+		//void AddColider(rp::, const pt::TransformComp& transform);
+		void Init(rp::RigidBody* pRigidBody);
+		void UpdateTransform(pt::TransformComp& transform);
+
+		rp::BodyType GetType() const { return mp_rigidBody->getType(); }
+		void SetType(rp::BodyType bodyType);
+	private:
+		reactphysics3d::RigidBody* mp_rigidBody = nullptr;
 	};
 }

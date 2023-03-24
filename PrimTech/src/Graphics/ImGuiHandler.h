@@ -10,22 +10,16 @@
 
 namespace PrimtTech
 {
-	class Material;
-
-	struct SpotLight
-	{
-		float position[3]{ 0.f, 0.f, 0.f };
-		float rotation[3]{ 0.f, -1.f, 0.f };
-	};
 	struct ImGuiVars
 	{
-		bool useVsync = true;
+		bool showDebugWindow = true;
+		bool useVsync = false;
 		float pointLightDistance = 10.f;
-		float ambient[4] = { 1.f,1.f,1.f,.6f };
 		float direction[3] = { 0.f, 1.f, 0.f };
 		float shadowBias = 0.005f;
 		uint width, height;
 		bool m_isHoveringWindow = false;
+		bool m_drawGrid = true;
 	};
 
 	typedef void(*ImGuiWindowFunc)(void*, bool*);
@@ -34,7 +28,6 @@ namespace PrimtTech
 	{
 	public:
 		void ImGuiInit(HWND& hwnd, ID3D11Device*& device, ID3D11DeviceContext*& dc);
-		void LoadButton(Material* pMaterial, std::string name, unsigned int e, const unsigned int& i = 0);
 		void ImGuiShutDown();
 		void ImguiRender();
 		ImGuiVars* GetVarPtrs() { return &im; };

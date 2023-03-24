@@ -10,6 +10,11 @@ namespace pt
 	PrimTech::PrimTech() :
 		m_playerSpeed(5.f)
 	{
+
+		
+
+
+
 		//HideCursor();
 	}
 
@@ -17,6 +22,8 @@ namespace pt
 	{
 		if (mp_dxrenderer)
 			delete mp_dxrenderer;
+
+		//m_physics.destroyPhysicsWorld(m_pworld);
 	}
 
 	void PrimTech::LoadPak(std::string path)
@@ -53,6 +60,8 @@ namespace pt
 
 	void PrimTech::Update(float dt)
 	{
+		m_physHandler.Update(dt);
+
 		static float timer = 0.f;
 		timer += dt;
 		if (timer >= 1.f)

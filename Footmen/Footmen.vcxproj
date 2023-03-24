@@ -117,7 +117,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)PrimTech/src/Graphics/3rdParty/imgui/;$(SolutionDir)PrimTech/src/Graphics/3rdParty/ImGuizmo/;$(SolutionDir)PrimTech/src/Graphics/3rdParty/;$(SolutionDir)PrimTech/src/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)PrimTech/src/Graphics/3rdParty/imgui/;$(SolutionDir)PrimTech/src/Graphics/3rdParty/ImGuizmo/;$(SolutionDir)PrimTech/src/Graphics/3rdParty/;$(SolutionDir)PrimTech/src/;$(SolutionDir)PrimTech\src\thirdParty\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -148,6 +148,7 @@
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Scene.cpp" />
+    <ClCompile Include="src\WindowFuncs.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PrimTech\PrimTech.vcxproj">
@@ -156,6 +157,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Scene.h" />
+    <ClInclude Include="src\WindowFuncs.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

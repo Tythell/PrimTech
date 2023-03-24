@@ -24,6 +24,7 @@ namespace PrimtTech
 		static Mesh* GetMeshAdress(unsigned int index);
 		static std::vector<Mesh>& GetMeshArrayReference() { return m_meshes; };
 		static std::vector<Material>& GetMaterialArrayReference() { return m_materials; };
+		static std::vector<TextureMap*>& GetTextureArrayReference() { return m_textures; };
 		static TextureMap* AddTexture(std::string path, bool flipUV = true);
 		static TextureMap& GetTexture(unsigned int index);
 		static TextureMap* GetTextureAdress(unsigned int index);

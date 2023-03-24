@@ -38,10 +38,11 @@ struct EntListStruct
 class Editor
 {
 public:
-	Editor(PrimtTech::DX11Renderer* renderer, d::XMINT2 windowRes);
+	Editor(d::XMINT2 windowRes, HINSTANCE hInstance);
 	~Editor();
 
 	void Update(float deltatime);
+	void Run();
 
 	//bool GetIsExit() const { return m_exit; };
 
@@ -53,15 +54,17 @@ public:
 		eShowMouse,
 		eToggleMouse,
 	};
-	std::queue<Messages> m_msgQueue;
 private:
+	std::queue<Messages> m_msgQueue;
 	PrimtTech::ImGuiHandler m_pGui;
 	EntListStruct m_entlist;
 	float m_mouseSense = 0.005f;
 
 	void execCommand(std::string cmd);
 
-	PrimtTech::DX11Renderer* m_renderer = nullptr;;
+	PrimtTech::DX11Renderer* m_renderer = nullptr;
+
+	pt::PrimTech m_primtech;
 
 	//bool m_exit = false;
 

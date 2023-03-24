@@ -25,9 +25,6 @@
     <Filter Include="Header Files\Graphics">
       <UniqueIdentifier>{5cdb3501-31e7-4e83-97ca-1dd37ef16590}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\ImGui">
-      <UniqueIdentifier>{6074b742-45c8-441a-8474-d967f195eea0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\ImGui">
       <UniqueIdentifier>{80df9a67-c832-4992-a954-5e61db1fca2d}</UniqueIdentifier>
     </Filter>
@@ -37,20 +34,29 @@
     <Filter Include="Source Files\Input">
       <UniqueIdentifier>{da403211-6c81-4690-81f0-0ab3a18a06e8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\ImGui\ImGuizmo">
-      <UniqueIdentifier>{44df7968-43f1-4480-8d3d-b358dd0d483b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\ImGui\imguizmo">
       <UniqueIdentifier>{a7bc2e06-1e97-41b9-9164-2b1215daed7d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\assimp">
-      <UniqueIdentifier>{09ada969-beab-4b0e-8604-c6d9b1635eff}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\ecs">
       <UniqueIdentifier>{60dc5657-5f5c-4eea-8838-033bbf5bea61}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\ecs">
       <UniqueIdentifier>{0c79486c-3cf6-419e-ab58-6ffcaa79c0ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\vendor">
+      <UniqueIdentifier>{421781da-9d43-4944-bd89-10df52bb11ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\vendor\react">
+      <UniqueIdentifier>{379fd806-0076-4788-941e-a3a1c9d38079}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\vendor\assimp">
+      <UniqueIdentifier>{09ada969-beab-4b0e-8604-c6d9b1635eff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\vendor\ImGui">
+      <UniqueIdentifier>{6074b742-45c8-441a-8474-d967f195eea0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\vendor\ImGui\ImGuizmo">
+      <UniqueIdentifier>{44df7968-43f1-4480-8d3d-b358dd0d483b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -156,34 +162,37 @@
     <ClCompile Include="src\ecs\Light.cpp">
       <Filter>Source Files\ecs</Filter>
     </ClCompile>
+    <ClCompile Include="src\Physics\PhysicsHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
     <None Include="src\Graphics\3rdParty\assimp\.editorconfig" />
     <None Include="src\Graphics\3rdParty\assimp\config.h.in" />
     <None Include="src\Graphics\3rdParty\assimp\color4.inl">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </None>
     <None Include="src\Graphics\3rdParty\assimp\material.inl">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </None>
     <None Include="src\Graphics\3rdParty\assimp\matrix3x3.inl">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </None>
     <None Include="src\Graphics\3rdParty\assimp\matrix4x4.inl">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </None>
     <None Include="src\Graphics\3rdParty\assimp\vector3.inl">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </None>
     <None Include="src\Graphics\3rdParty\assimp\vector2.inl">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </None>
     <None Include="src\Graphics\3rdParty\assimp\SmoothingGroups.inl">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </None>
     <None Include="src\Graphics\3rdParty\assimp\quaternion.inl">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -221,22 +230,22 @@
       <Filter>Source Files\ImGui</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\imgui\imgui.h">
-      <Filter>Header Files\ImGui</Filter>
+      <Filter>Header Files\vendor\ImGui</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\imgui\imgui_impl_dx11.h">
-      <Filter>Header Files\ImGui</Filter>
+      <Filter>Header Files\vendor\ImGui</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\imgui\imgui_internal.h">
-      <Filter>Header Files\ImGui</Filter>
+      <Filter>Header Files\vendor\ImGui</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\imgui\imstb_rectpack.h">
-      <Filter>Header Files\ImGui</Filter>
+      <Filter>Header Files\vendor\ImGui</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\imgui\imstb_textedit.h">
-      <Filter>Header Files\ImGui</Filter>
+      <Filter>Header Files\vendor\ImGui</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\imgui\imstb_truetype.h">
-      <Filter>Header Files\ImGui</Filter>
+      <Filter>Header Files\vendor\ImGui</Filter>
     </ClInclude>
     <ClInclude Include="src\Macros\Colors.h">
       <Filter>Header Files\Graphics</Filter>
@@ -275,232 +284,232 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\aabb.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\ai_assert.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\anim.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\Base64.hpp">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\BaseImporter.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\Bitmap.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\BlobIOSystem.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\ByteSwapper.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\camera.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\cexport.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\cfileio.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\cimport.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\ColladaMetaData.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\color4.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\commonMetaData.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\config.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\CreateAnimMesh.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\DefaultIOStream.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\DefaultIOSystem.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\DefaultLogger.hpp">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\defs.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\Exceptional.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\Exporter.hpp">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\fast_atof.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\GenericProperty.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\GltfMaterial.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\Hash.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\Importer.hpp">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\importerdesc.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\IOStream.hpp">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\IOStreamBuffer.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\IOSystem.hpp">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\light.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\LineSplitter.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\LogAux.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\Logger.hpp">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\LogStream.hpp">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\material.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\MathFunctions.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\matrix3x3.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\matrix4x4.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\MemoryIOWrapper.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\mesh.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\metadata.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\NullLogger.hpp">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\ObjMaterial.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\ParsingUtils.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\pbrmaterial.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\postprocess.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\scene.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\Profiler.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\ZipArchiveIOSystem.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\XMLTools.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\XmlParser.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\version.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\vector3.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\vector2.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\types.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\TinyFormatter.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\texture.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\Subdivision.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\StringUtils.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\StreamReader.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\StandardShapes.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\SpatialSort.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\SmoothingGroups.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\SkeletonMeshBuilder.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\SmallVector.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\SGSpatialSort.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\SceneCombiner.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\StringComparison.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\ProgressHandler.hpp">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\qnan.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\quaternion.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\RemoveComments.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\StreamWriter.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\Mesh.h">
       <Filter>Header Files\Graphics</Filter>
@@ -521,15 +530,336 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\ImGuizmo\ImGuizmo.h">
-      <Filter>Header Files\ImGui\ImGuizmo</Filter>
+      <Filter>Header Files\vendor\ImGui\ImGuizmo</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\3rdParty\assimp\Vertex.h">
-      <Filter>Header Files\assimp</Filter>
+      <Filter>Header Files\vendor\assimp</Filter>
     </ClInclude>
     <ClInclude Include="src\Math\Math.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Serializer\Serializer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\collision\shapes\AABB.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\containers\Array.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\constraint\BallAndSocketJoint.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\components\BallAndSocketJointComponents.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\collision\shapes\BoxShape.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\systems\BroadPhaseSystem.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\collision\shapes\CapsuleShape.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\collision\narrowphase\CapsuleVsCapsuleAlgorithm.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\collision\narrowphase\CapsuleVsConvexPolyhedronAlgorithm.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\collision\Collider.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\components\ColliderComponents.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\body\CollisionBody.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\components\CollisionBodyComponents.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\collision\CollisionCallback.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\systems\CollisionDetectionSystem.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\collision\narrowphase\CollisionDispatch.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\collision\shapes\CollisionShape.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\components\Components.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\collision\shapes\ConcaveMeshShape.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\collision\shapes\ConcaveShape.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\configuration.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\systems\ConstraintSolverSystem.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\collision\ContactManifold.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\collision\ContactManifoldInfo.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\collision\ContactPair.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\constraint\ContactPoint.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\collision\ContactPointInfo.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\systems\ContactSolverSystem.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\containers\containers_common.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\collision\shapes\ConvexMeshShape.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\collision\shapes\ConvexPolyhedronShape.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\collision\narrowphase\ConvexPolyhedronVsConvexPolyhedronAlgorithm.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\collision\shapes\ConvexShape.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\utils\DebugRenderer.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\decimal.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\memory\DefaultAllocator.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\utils\DefaultLogger.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\containers\Deque.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\collision\broadphase\DynamicAABBTree.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\systems\DynamicsSystem.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\engine\Entity.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\engine\EntityManager.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\engine\EventListener.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\constraint\FixedJoint.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\components\FixedJointComponents.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\collision\narrowphase\GJK\GJKAlgorithm.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\collision\HalfEdgeStructure.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\memory\HeapAllocator.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\collision\shapes\HeightFieldShape.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\constraint\HingeJoint.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\components\HingeJointComponents.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\engine\Island.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\engine\Islands.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\constraint\Joint.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\components\JointComponents.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\containers\LinkedList.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\utils\Logger.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\containers\Map.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\engine\Material.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\collision\narrowphase\GJK\VoronoiSimplex.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\memory\SingleFrameAllocator.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\constraint\SliderJoint.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\components\SliderJointComponents.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\systems\SolveBallAndSocketJointSystem.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\systems\SolveFixedJointSystem.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\systems\SolveHingeJointSystem.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\systems\SolveSliderJointSystem.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\collision\shapes\SphereShape.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\collision\narrowphase\SphereVsCapsuleAlgorithm.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\collision\narrowphase\SphereVsConvexPolyhedronAlgorithm.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\collision\narrowphase\SphereVsSphereAlgorithm.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\containers\Stack.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\mathematics\Transform.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\components\TransformComponents.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\collision\TriangleMesh.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\collision\shapes\TriangleShape.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\collision\TriangleVertexArray.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\mathematics\Vector2.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\mathematics\Vector3.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\containers\Set.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\collision\narrowphase\SAT\SATAlgorithm.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\components\RigidBodyComponents.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\body\RigidBody.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\reactphysics3d.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\collision\RaycastInfo.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\mathematics\Ray.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\mathematics\Quaternion.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\utils\Profiler.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\memory\PoolAllocator.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\collision\PolyhedronMesh.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\collision\PolygonVertexArray.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\engine\PhysicsWorld.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\engine\PhysicsCommon.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\containers\Pair.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\engine\OverlappingPairs.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\collision\OverlapCallback.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\collision\narrowphase\NarrowPhaseInput.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\collision\narrowphase\NarrowPhaseInfoBatch.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\collision\narrowphase\NarrowPhaseAlgorithm.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\memory\MemoryManager.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\memory\MemoryAllocator.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\mathematics\Matrix3x3.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\mathematics\Matrix2x2.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\mathematics\mathematics_functions.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\mathematics\mathematics_common.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\reactphysics3d\mathematics\mathematics.h">
+      <Filter>Header Files\vendor\react</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Physics\PhysicsHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

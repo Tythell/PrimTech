@@ -468,8 +468,16 @@ namespace PrimtTech
 
 		std::vector<MeshRef>& rMeshrefs = ComponentHandler::GetComponentArray<MeshRef>();
 		std::vector<TransformComp>& rTransforms = ComponentHandler::GetComponentArray<TransformComp>();
-		
-		// shadow code here
+
+		// -------------------------------------- Update transforms with rigidbodies ---------------------------------------------------
+		std::vector<PhysicsBody>& rRigidBodies = ComponentHandler::GetComponentArray<PhysicsBody>();
+		uint numRigidBodies = rRigidBodies.size();
+		for (int i = 0; i < numRigidBodies; i++)
+		{
+			uint entId = rRigidBodies[i].EntId();
+			rRigidBodies[i].UpdateTransform(rTransforms[entId]);
+		}
+
 
 		dc->VSSetShader(m_3dvs.GetShader(), NULL, 0);
 		dc->PSSetShader(NULL, NULL, 0);
@@ -480,6 +488,8 @@ namespace PrimtTech
 		m_lightbuffer.Data().cbShadowBias = im->shadowBias;
 		//m_lightbuffer.Data().pointLightDistance = 10.f;
 		m_lightbuffer.Data().shadowDir = scam.GetForwardV();
+
+		// -------------------------------------- Lights ---------------------------------------------------
 
 		std::vector<pt::Light>& r_lights = ComponentHandler::GetComponentArray<pt::Light>();
 		uint numLights = (uint)r_lights.size();
@@ -493,13 +503,10 @@ namespace PrimtTech
 		}
 		m_multiLightBuffer.MapBuffer();
 
-		//m_lightbuffer.Data().direction = sm::Vector3(0.f, 1.f, 0.f);
-		//m_lightbuffer.Data().forwardDir = mp_cam->GetForwardVector();
 		pt::Camera& cc = ComponentHandler::GetComponentByIndex<pt::Camera>(m_activeCamIndex);
 		pt::TransformComp& camTransform = ComponentHandler::GetComponentByIndex<pt::TransformComp>(m_activeCamIndex);
 		m_lightbuffer.Data().camPos = { camTransform.GetPosition().x, camTransform.GetPosition().y, camTransform.GetPosition().z, 1.f};
 		m_lightbuffer.MapBuffer();
-
 
 		m_transformBuffer.Data().viewProj = d::XMMatrixTranspose(scam.GetViewMatrix() * scam.GetProjMatrix());
 		m_transformBuffer.Data().lightViewProj = d::XMMatrixTranspose(scam.GetViewMatrix() * scam.GetProjMatrix());
@@ -528,7 +535,7 @@ namespace PrimtTech
 		// iterate through meshrefs
 		drawMeshes(rMeshrefs, rTransforms, m_transformBuffer, &m_materialBuffer, dc, deltatime);
 
-		// Draw grid
+		// --------------------------- Draw grid ---------------------------
 		m_transformBuffer.Data().world = d::XMMatrixIdentity();
 		m_transformBuffer.MapBuffer();
 

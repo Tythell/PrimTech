@@ -1,615 +1,18 @@
 #include "Scene.h"
 #include "Serializer/Serializer.h"
+#include"WindowFuncs.h"
 #include <sstream>
 
 namespace ig = ImGui;
 
-std::string AddComp(const uint& entId, std::string compType)
-{
-	std::string cmd = "comp ";
-	cmd += std::to_string(entId) + " ";
-	cmd += compType;
-	return cmd;
-}
-
-void Gui_EntList(void* test, bool* show)
-{
-	EntListStruct* p = (EntListStruct*)test;
-
-	ImGui::SetNextWindowSize(ImVec2(450, 400), ImGuiCond_Once);
-	ImGui::Begin("Entity list##ecs", show);
-
-	if (ImGui::Button(" + ##Buton"))
-	{
-		p->console.AddLog("create ent");
-	} ImGui::SameLine();
-	if (ImGui::Button("Deselect"))
-	{
-		p->console.AddLog("select -1");
-	}
-	ImGui::SameLine();
-	static bool s_imShowDents = false;
-	ImGui::Checkbox("Show Dev Ents", &s_imShowDents);
-	ImGui::BeginChild("Lefty", ImVec2(150, 400), true);
-
-	uint numEnts = pt::Entity::NumEnts();
-
-	for (uint i = 4 * (int)!s_imShowDents; i < numEnts; i++)
-	{
-		ImGui::BeginDisabled(i == 0);
-		if (ImGui::Selectable(std::to_string(i).c_str(), p->selected == i))
-			p->selected = i;
-		ImGui::EndDisabled();
-	}
-	ImGui::EndChild();
-	ImGui::SameLine();
-	ImGui::BeginChild("Righty", ImVec2(300, 350), false);
-	if (p->selected != -1)
-	{
-		pt::Entity* pEnt = pt::Entity::GetEntityP((uint)p->selected);
-		if (ImGui::Button("Add Component"))
-			ImGui::OpenPopup("cmpList");
-		if (ImGui::BeginPopup("cmpList"))
-		{
-			if (ImGui::Selectable("MeshRef"))
-			{
-				pEnt->AddComponent<pt::MeshRef>()->Init("cube.txt");
-			}
-			if (ImGui::Selectable("Camera"))
-			{
-				p->console.AddLog(AddComp(p->selected, "cam").c_str());
-			}
-			if (ImGui::Selectable("AABB"))
-			{
-				p->console.AddLog(AddComp(p->selected, "aabb").c_str());
-			}
-			if (ImGui::Selectable("Light"))
-			{
-				p->console.AddLog(AddComp(p->selected, "light").c_str());
-			}
-			ImGui::EndPopup();
-		}
-		sm::Vector3 transform = pEnt->Transform().GetPosition();
-		ImGui::BeginDisabled(p->selected == 0);
-		ImGui::DragFloat3("Translate", reinterpret_cast<float*>(&transform), 0.02f);
-		pEnt->Transform().SetPosition(transform);
-
-		transform = pEnt->Transform().GetRotation();
-		ImGui::DragFloat3("Rotate", reinterpret_cast<float*>(&transform), 0.02f);
-		pEnt->Transform().SetRotation(transform);
-
-		transform = pEnt->Transform().GetScale();
-		ImGui::DragFloat3("Scale", reinterpret_cast<float*>(&transform), 0.02f);
-		pEnt->Transform().SetScale(transform);
-		ImGui::EndDisabled();
-
-		if (pEnt->HasComponentType(PrimtTech::ec_meshRef))
-		{
-			if (ImGui::CollapsingHeader("MeshRef", ImGuiTreeNodeFlags_DefaultOpen))
-			{
-				pt::MeshRef* mr = pEnt->GetComponent<pt::MeshRef>();
-				ImGui::Text(mr->GetNameOfMesh().c_str());
-				ImGui::Separator();
-
-				char charbuffer[16]{ "" };
-				strcpy_s(charbuffer, mr->GetNameOfMesh().c_str());
-
-				if (ImGui::InputText("mesh", charbuffer, 16, ImGuiInputTextFlags_EnterReturnsTrue))
-				{
-					mr->Init(std::string(charbuffer));
-				}
-				uint matSize = (uint)mr->GetMeshContainerP()->GetMtl().size();
-				for (int i = 0; i < matSize; i++)
-				{
-					std::string s = "material " + std::to_string(i);
-					strcpy_s(charbuffer, std::to_string(mr->GetMaterialIndex(i)).c_str());
-					if (ImGui::InputText(s.c_str(), charbuffer, 16, ImGuiInputTextFlags_EnterReturnsTrue))
-					{
-						mr->SetMaterial(std::string(charbuffer), i);
-					}
-				}
-			}
-		}
-		if (pEnt->HasComponentType(PrimtTech::ec_cam))
-		{
-			if (ImGui::CollapsingHeader("Camera", ImGuiTreeNodeFlags_DefaultOpen))
-			{
-				pt::Camera* mr = pEnt->GetComponent<pt::Camera>();
-
-				sm::Vector3 pos = mr->GetPositionOffset();
-				sm::Vector3 rot = mr->GetRotationOffset();
-
-				ImGui::DragFloat3("Translate##cam", reinterpret_cast<float*>(&pos), 0.02f);
-				ImGui::DragFloat3("Rotation##cam", reinterpret_cast<float*>(&rot), 0.02f);
-
-				mr->SetPositionOffset(pos);
-				mr->SetRotationOffset(rot);
-
-				std::string displaytext = "ForwardVec: " + ptm::GetVectorAsString(mr->GetForwardV());
-				ImGui::Text(displaytext.c_str());
-				displaytext = "LeftVec: " + ptm::GetVectorAsString(mr->Getleft());
-				ImGui::Text(displaytext.c_str());
-				displaytext = "UpVec: " + ptm::GetVectorAsString(mr->GetUp());
-				ImGui::Text(displaytext.c_str());
-
-				const char* items[] = { "Perspective", "Orthographic" };
-				int item_current = (int)mr->IsOrthograpgic();
-
-				
-				if (ImGui::Combo("##combo", &item_current, items, IM_ARRAYSIZE(items)))
-				{
-					switch (item_current)
-					{
-					case 0:
-						mr->SetPerspective(80.f, (float)p->winWidth / (float)p->winHeight, 0.1f, 100.f);
-						break;
-					case 1:
-						mr->SetOrtographic(20.f, 20.f, 0.1f, 10.f);
-						break;
-					default:
-						break;
-					}
-				}
-
-				mr->UpdateView(pEnt->Transform());
-			}
-		}
-		if (pEnt->HasComponentType(PrimtTech::ec_aabb))
-		{
-			if (ImGui::CollapsingHeader("Bounding box", ImGuiTreeNodeFlags_DefaultOpen))
-			{
-				pt::AABBComp* mr = pEnt->GetComponent<pt::AABBComp>();
-
-				sm::Vector3 v = mr->GetBox().Extents;
-				ImGui::DragFloat3("size", reinterpret_cast<float*>(&v), 0.02f);
-				mr->SetExtends(v);
-
-				v = mr->GetPositionOffset();
-				ImGui::DragFloat3("Position Offset", reinterpret_cast<float*>(&v), 0.02f);
-				mr->SetPositionOffset(v);
-
-				//ImGui::Text(ptm::GetVectorAsString(mr->GetBox().Center).c_str());
-			}
-		}
-		if (pEnt->HasComponentType(PrimtTech::ec_light))
-		{
-			if (ImGui::CollapsingHeader("Light", ImGuiTreeNodeFlags_DefaultOpen))
-			{
-				pt::Light* mr = pEnt->GetComponent<pt::Light>();
-
-				sm::Vector4 v = mr->GetPositionOffset();
-
-				ImGui::DragFloat3("Posiiton", reinterpret_cast<float*>(&v), 0.02f);
-				mr->SetOffsetPosition(v);
-
-				v = mr->GetLightData().clr;
-				ImGui::DragFloat3("##Color", reinterpret_cast<float*>(&v), 0.02f, 0.f, 1.f);
-				
-				ImGui::PushItemWidth(ImGui::GetItemRectSize().x / 3);
-				ImGui::SameLine(); ImGui::DragFloat("Color", &v.w, 0.02, 0.f, 10.f);
-				mr->SetColor(v);
-				ImGui::PopItemWidth();
-				v = mr->GetDirectionOffset();
-				ImGui::DragFloat3("Direction", reinterpret_cast<float*>(&v), 0.02f, -1.f, 1.f);
-				mr->SetDirectionOffset(v);
-
-				const char* items[] = { "Point", "Direction", "Ambient"};
-				int item_current = (int)mr->GetType();
-
-				if (ImGui::Combo("##lightcombo", &item_current, items, IM_ARRAYSIZE(items)))
-					mr->SetType((uchar)item_current);
-			}
-		}
-	}
-
-	ImGui::EndChild();
-
-	ImGui::End();
-
-	// Gizmo
-	if (p->selected != -1)
-	{
-		//if (ImGuizmo::IsOver() || ImGuizmo::IsUsing())
-		//	m_isHoveringWindow = true;
-
-
-
-		ImGui::SetNextWindowSize(ImVec2((float)p->winWidth, (float)p->winHeight));
-		ImGui::SetNextWindowPos(ImVec2(0, 0));
-		ImGuiWindowFlags flags = ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoInputs;
-		ImGui::Begin("##GizmoWin", 0, flags);
-		ImGuizmo::SetDrawlist();
-		ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, (float)p->winWidth, (float)p->winHeight);
-
-		pt::Camera& pCam = PrimtTech::ComponentHandler::GetComponentByIndex<pt::Camera>(p->currentCamera);
-		pt::TransformComp& rTr = PrimtTech::ComponentHandler::GetComponentByIndex<pt::TransformComp>(p->selected);
-
-		sm::Matrix camViewM = pCam.GetViewMatrix();
-		sm::Matrix camProj = pCam.GetProjMatrix();
-		sm::Matrix world = rTr.GetWorld();
-
-		float* model = reinterpret_cast<float*>(&world);
-		const float* proj = reinterpret_cast<const float*>(&camProj);
-		const float* view = reinterpret_cast<const float*>(&camViewM);
-
-		static ImGuizmo::OPERATION op = ImGuizmo::OPERATION::TRANSLATE;
-
-		if (KeyboardHandler::IsKeyDown('Q'))
-			op = ImGuizmo::OPERATION::BOUNDS;
-		if (KeyboardHandler::IsKeyDown('W'))
-			op = ImGuizmo::OPERATION::TRANSLATE;
-		else if (KeyboardHandler::IsKeyDown('E'))
-			op = ImGuizmo::OPERATION::ROTATE;
-		else if (KeyboardHandler::IsKeyDown('R'))
-			op = ImGuizmo::OPERATION::SCALE;
-
-		ImGuizmo::Manipulate(view, proj, op, ImGuizmo::MODE::LOCAL, model);
-
-		if (ImGuizmo::IsUsing())
-		{
-			sm::Vector3 pos;
-			sm::Vector3 scale;
-			sm::Quaternion rot;
-			world.Decompose(scale, rot, pos);
-			//ImGuizmo::DecomposeMatrixToComponents(&world._11, &pos.x, &rot.x, &scale.x);
-
-			rTr.SetScale(scale);
-			rTr.SetRotation(rot);
-			rTr.SetPosition(pos);
-		}
-
-		ImGui::End();
-	}
-}
-
-void Gui_AssetList(void* ptr, bool* show)
-{
-	EntListStruct* p = (EntListStruct*)ptr;
-
-	ImGui::SetNextWindowSize(ImVec2(450, 400), ImGuiCond_Once);
-	if (ImGui::Begin("Loaded Assets", show))
-	{
-		if (ImGui::BeginTabBar("tabs", ImGuiTabBarFlags_None))
-		{
-			if (ImGui::BeginTabItem("Meshes"))
-			{
-				std::vector<PrimtTech::Mesh>& arr = PrimtTech::ResourceHandler::GetMeshArrayReference();
-				std::string displayText = "Meshes: ";
-				displayText += std::to_string(arr.size()) + "/";
-				displayText += std::to_string(arr.capacity());
-				ImGui::Text(displayText.c_str()); ImGui::SameLine();
-				if (ImGui::Button(" + ##addMesh"))
-				{
-					p->console.AddLog("create mesh");
-				}
-				ImGui::Separator();
-				std::vector<PrimtTech::Mesh>& meshArr = PrimtTech::ResourceHandler::GetMeshArrayReference();
-				for (int i = 0; i < meshArr.size(); i++)
-				{
-					std::string name = meshArr[i].GetName();
-					ImGui::Text(name.c_str());
-					if (ImGui::IsItemHovered())
-					{
-						//ImGui::BeginTooltip();
-
-						//ImGui::Text("joe mama");
-
-						//ImGui::EndTooltip();
-						ImGui::SetTooltip("am tooltip");
-					}
-				}
-
-				ImGui::EndTabItem();
-			}
-			if (ImGui::BeginTabItem("Materials"))
-			{
-				std::vector<PrimtTech::Material>& arr = PrimtTech::ResourceHandler::GetMaterialArrayReference();
-				std::string displayText = "Materials: ";
-				displayText += std::to_string(arr.size()) + "/";
-				displayText += std::to_string(arr.capacity());
-				ImGui::Text(displayText.c_str()); ImGui::SameLine();
-				if (ImGui::Button(" + ##addMaterial"))
-				{
-					p->console.AddLog("create material");
-				} ImGui::SameLine();
-				if (ImGui::Button("Deselect"))
-				{
-					p->m_selectedMaterial = -1;
-				}
-				ImGui::Separator();
-				std::vector<PrimtTech::Material>& meshArr = PrimtTech::ResourceHandler::GetMaterialArrayReference();
-				for (int i = 0; i < meshArr.size(); i++)
-				{
-					std::string name = meshArr[i].GetFileName();
-					if (ImGui::Selectable(name.c_str(), p->m_selectedMaterial == i))
-						p->m_selectedMaterial = i;
-				}
-
-				ImGui::EndTabItem();
-			}
-
-			ImGui::EndTabBar();
-		}
-
-	}
-	ImGui::End();
-}
-
-void Gui_Console(void* ptr, bool* show)
-{
-	DevConsole* pCon = (DevConsole*)ptr;
-
-	ImGui::Begin("Command console", show);
-	const float footer_height_to_reserve = ImGui::GetStyle().ItemSpacing.y + ImGui::GetFrameHeightWithSpacing();
-	if (ImGui::Button("Clear"))
-	{
-		pCon->nHistory = 0;
-		pCon->history.resize(0);
-	} ImGui::SameLine(); 
-	static bool echo = false;
-	ImGui::Checkbox("echo", &echo);
-	ImGui::BeginChild("hej barn", ImVec2(0, -footer_height_to_reserve), true, ImGuiWindowFlags_HorizontalScrollbar);
-
-	if (pCon->history.size() > 50)
-	{
-		pCon->history.pop_front();
-	}
-
-	for (int i = 0; i < pCon->history.size(); i++)
-	{
-		switch (pCon->history[i].second)
-		{
-		case 0:
-			ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(100, 100, 100, 255));
-			break;
-		case 1:
-			ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 255, 255, 255));
-			break;
-		default:
-			break;
-		}
-		if (pCon->history[i].second >= (int)!echo)
-		{
-			ImGui::TextWrapped(pCon->history[i].first.c_str());
-
-		}
-
-		ImGui::PopStyleColor();
-	}
-
-	while (pCon->nHistory < pCon->history.size())
-	{
-		pCon->nHistory++;
-		ImGui::SetScrollHereY(0.f);
-	}
-
-	ImGui::EndChild();
-
-	//ig::ShowDemoWindow
-
-	ImGui::Separator();
-
-	ImGuiInputTextFlags input_text_flags = ImGuiInputTextFlags_EnterReturnsTrue /*| ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory*/;
-	if (ImGui::InputText("Input", pCon->m_inputBuffer, ARRAYSIZE(pCon->m_inputBuffer), input_text_flags))
-	{
-		pCon->AddLog(pCon->m_inputBuffer, DevConsole::white);
-		strcpy_s(pCon->m_inputBuffer, "");
-	}
-
-	ImGui::End();
-}
-
-void LoadButton(PrimtTech::Material* pMaterial, std::string name, unsigned int e, const unsigned int& i)
-{
-	using namespace PrimtTech;
-	bool diffExpept = (e == 0 && !pMaterial->HasTexture(eDiffuse));
-	if (!diffExpept)
-		name += pMaterial->GetMapName((TextureType)e);
-
-	ImGui::Text(name.c_str());
-	if (diffExpept)
-	{
-		float diff[3]{ pMaterial->GetDiffuseClr().x, pMaterial->GetDiffuseClr().y, pMaterial->GetDiffuseClr().z };
-		ImGui::SameLine();
-		std::string nem = "##diffusefloat3" + std::to_string(i);
-		ImGui::DragFloat3(nem.c_str(), diff, 0.01f, 0.f, 1.f);
-		pMaterial->SetDiffuseClr(diff[0], diff[1], diff[2]);
-	}
-	ImGui::SameLine();
-	std::string buttonName = "Load##" + name + std::to_string(i);
-	if (ImGui::Button(buttonName.c_str()))
-	{
-		std::string newMtrlString = Dialogs::OpenFile("Images (*.png, *.jpg)\0*.png;*.jpg;\0", "Assets\\Textures\\");
-		if (newMtrlString != "")
-		{
-			pMaterial->LoadTexture(newMtrlString, (TextureType)e);
-		}
-	}
-	std::string remove = "Remove##";
-	remove += name;
-	if (pMaterial->HasTexture(e))
-	{
-		ImGui::SameLine();
-		if (ImGui::Button(remove.c_str()))
-		{
-			pMaterial->RemoveTexture((TextureType)e);
-		}
-	}
-}
-
-void Gui_MaterialProperties(void* ptr, bool* show)
-{
-	int selectedMAt = *(int*)ptr;
-	if (selectedMAt != -1)
-	{
-		ImGui::Begin("Properties", show);
-
-		PrimtTech::Material* pMaterial = PrimtTech::ResourceHandler::GetMaterialAdress(selectedMAt);
-		std::string matName = pMaterial->GetFileName();
-		if (ImGui::CollapsingHeader(matName.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
-		{
-			char* nameBuffer = new char[16];
-			strcpy_s(nameBuffer, 16, matName.c_str());
-			if (ImGui::InputText("##MaterialName", nameBuffer, 16, ImGuiInputTextFlags_EnterReturnsTrue))
-			{
-				pMaterial->SetName(nameBuffer);
-			}
-
-			delete[] nameBuffer;
-
-			LoadButton(pMaterial, "Diffuse: ", PrimtTech::eDiffuse, 0);
-			LoadButton(pMaterial, "NormalMap: ", PrimtTech::eNormal, 0);
-			LoadButton(pMaterial, "DistMap: ", PrimtTech::eDistortion, 0);
-			LoadButton(pMaterial, "OpacityMap: ", PrimtTech::eOpacity, 0);
-
-			sm::Vector2 diffuseSpeed(pMaterial->GetDiffuseScrollSpeed());
-			sm::Vector2 distortionSpeed(pMaterial->GetDistortionScrollSpeed());
-			bool hasDistMap = pMaterial->HasTexture(PrimtTech::eDistortion);
-			bool hasDiffuse = pMaterial->HasTexture(PrimtTech::eDiffuse) || pMaterial->HasTexture(PrimtTech::eNormal) || pMaterial->HasTexture(PrimtTech::eOpacity);
-
-			float diffSpeed[2]{ diffuseSpeed.x, diffuseSpeed.y };
-			float distSpeed[2]{ distortionSpeed.x, distortionSpeed.y };
-
-			std::string title = "Diffuse Scroll";
-			//ImGui::PushItemWidth(m_width * 0.14f);
-			if (hasDiffuse)
-			{
-				ImGui::SliderFloat2(title.c_str(), diffSpeed, -.5f, .5f);
-			}
-
-
-			title = "Distortion Scroll##";
-			if (hasDistMap)
-				ImGui::SliderFloat2(title.c_str(), distSpeed, -.5f, .5f);
-
-			title = "Reset Scrollspeed##";
-			if (ImGui::Button(title.c_str()))
-			{
-				for (int i = 0; i < 2; i++)
-				{
-					diffSpeed[i] = 0.f;
-					distSpeed[i] = 0.f;
-				}
-			}
-			ImGui::SameLine();
-			title = "Reset scrollvalues##";
-			if (ImGui::Button(title.c_str()))
-				pMaterial->ResetScrollValue();
-
-			pMaterial->SetDiffuseScrollSpeed(diffSpeed[0], diffSpeed[1]);
-			pMaterial->SetDistortionScrollSpeed(distSpeed[0], distSpeed[1]);
-
-			if (hasDistMap)
-			{
-				float distDivider = pMaterial->GetDistortionDivider();
-				title = "Dist divider##";
-				ImGui::SliderInt(title.c_str(), (int*)&distDivider, 1, 20);
-				pMaterial->SetDistortionDivider((float)distDivider);
-			}
-
-			float transparancy = pMaterial->GetTransparancy();
-			title = "Transparancy##";
-			ImGui::SliderFloat(title.c_str(), &transparancy, 0.f, 1.f);
-			pMaterial->SetTransparency(transparancy);
-
-			float tiling = pMaterial->GetTextureScale();
-			title = "Tiling##";
-			ImGui::SliderFloat(title.c_str(), &tiling, 1.f, 10.f);
-			pMaterial->SetTextureScale(tiling);
-			if (hasDistMap)
-			{
-				float distScale = pMaterial->GetTextureScaleDist();
-
-				title = "Dist Scale##";
-				ImGui::SliderFloat(title.c_str(), &distScale, 1.f, 10.f);
-				pMaterial->SetTextureScaleDist(distScale);
-			}
-
-			title = "Import##";
-			if (ImGui::Button(title.c_str()))
-			{
-				std::string savePath = "";
-				savePath = Dialogs::OpenFile("Material (*.pmtrl)\0*.pmtrl;\0", "Assets\\pmtrl\\");
-
-				if (savePath != "")
-				{
-					std::string test = StringHelper::GetExtension(savePath);
-					if (!(test != "pmtrl" || test != "mtl"))
-						savePath += ".pmtrl";
-					pMaterial->ImportMaterial(StringHelper::GetName(savePath));
-				}
-			}
-			ImGui::SameLine();
-			title = "Export##";
-			if (ImGui::Button(title.c_str()))
-			{
-				std::string savePath = "";
-				savePath = Dialogs::SaveFile("Material (*.pmtrl)\0*.pmtrl\0", "Assets\\pmtrl\\");
-
-				if (savePath != "")
-				{
-					std::string test = StringHelper::GetExtension(savePath);
-					if (test != "pmtrl")
-						savePath += ".pmtrl";
-					pMaterial->ExportMaterial(savePath);
-				}
-			}
-
-		}
-
-		ImGui::End();
-	}
-	
-}
-
-void Gui_menubar(void* ptr, bool* show)
-{
-	DevConsole* m_console = (DevConsole*)ptr;
-	ImGui::BeginMainMenuBar();
-
-	if (ImGui::BeginMenu("File"))
-	{
-		if (ImGui::MenuItem("New scene"))		{ m_console->AddLog("scene new"); }
-		if (ImGui::MenuItem("Open scene"))		{ m_console->AddLog("scene load"); }
-		if (ImGui::MenuItem("Export scene"))	{ m_console->AddLog("scene export"); }
-		if (ImGui::MenuItem("Exit editor"))		{ m_console->AddLog("exit"); }
-		ImGui::EndMenu();
-	}
-	if (ImGui::BeginMenu("Edit"))
-	{
-		if (ImGui::MenuItem("Load Lightwarp"))
-		{
-			std::string path = Dialogs::OpenFile("Images (*.png)\0*.png;*.jpg", "Assets\\Textures\\");
-			std::string cmd = "create lwtex " + path;
-			if (!path.empty()) m_console->AddLog(cmd.c_str());
-		}
-		ImTextureID lightwarptex = PrimtTech::ResourceHandler::GetTextureAdress(1)->GetSRV();
-		ImGui::Separator();
-		ImGui::Image(lightwarptex, { 255.f, 10.f });
-	//ImGui::
-		ImGui::EndMenu();
-	}
-	if (ImGui::BeginMenu("Windows"))
-	{
-		uint numWindows = m_console->m_showWin.size();
-		for (int i = 0; i < numWindows; i++)
-		{
-			ImGui::MenuItem(m_console->m_showWin[i].second.c_str(), NULL, &m_console->m_showWin[i].first);
-		}
-		ImGui::EndMenu();
-	}
-
-	ImGui::EndMainMenuBar();
-}
-
-void Gui_ImGuiDemo(void* ptr, bool* show)
-{
-	ImGui::ShowDemoWindow(show);
-}
-
-Editor::Editor(PrimtTech::DX11Renderer* pRenderer, d::XMINT2 windowRes) : m_renderer(pRenderer)
+Editor::Editor(d::XMINT2 windowRes, HINSTANCE hInstance)
 {
 	PrimtTech::ResourceHandler::ReserveMeshMemory(15);
+	PrimtTech::ResourceHandler::ReserveMaterialMemory(8);
+
+	m_primtech.Init(L"Editor", hInstance, L"wndc", windowRes.x, windowRes.y);
+
+	m_renderer = m_primtech.GetRenderer();
 
 	PrimtTech::ResourceHandler::AddMesh("Assets/models/cube.txt");
 	PrimtTech::ResourceHandler::AddMesh("Assets/models/gunter.obj");
@@ -620,13 +23,8 @@ Editor::Editor(PrimtTech::DX11Renderer* pRenderer, d::XMINT2 windowRes) : m_rend
 
 	m_renderer->SetImGuiHandler(m_pGui);
 
-	for (int i = 1; i < m_entlist.console.m_showWin.size(); i++)
-	{
-		m_entlist.console.m_showWin[i].first = true;
-	}
-
 	uint u = 0;
-	m_entlist.console.m_showWin.resize(6, { true, "" });
+	m_entlist.console.m_showWin.resize(7, { true, "" });
 	m_pGui.AddWindowFunc(Gui_ImGuiDemo, NULL, &m_entlist.console.m_showWin[u].first);
 	m_entlist.console.m_showWin[u].second = "imguiDemo";
 	m_entlist.console.m_showWin[u++].first = false;
@@ -638,6 +36,8 @@ Editor::Editor(PrimtTech::DX11Renderer* pRenderer, d::XMINT2 windowRes) : m_rend
 	m_entlist.console.m_showWin[u++].second = "console";
 	m_pGui.AddWindowFunc(Gui_MaterialProperties, &m_entlist.m_selectedMaterial, &m_entlist.console.m_showWin[u].first);
 	m_entlist.console.m_showWin[u++].second = "mtrlpropers";
+	m_pGui.AddWindowFunc(ImguiDebug, m_pGui.GetVarPtrs(), &m_entlist.console.m_showWin[u].first);
+	m_entlist.console.m_showWin[u++].second = "debugSettings";
 
 
 	m_pGui.AddWindowFunc(Gui_menubar, &m_entlist.console, &m_entlist.console.m_showWin[u].first);
@@ -650,11 +50,11 @@ Editor::Editor(PrimtTech::DX11Renderer* pRenderer, d::XMINT2 windowRes) : m_rend
 
 	pt::Light* pLight = pt::Entity::Create().AddComponent<pt::Light>();
 	pLight->SetType(2);
-	pLight->SetColor({1.f, 1.f, 1.f, .2f});
+	pLight->SetColor({ 1.f, 1.f, 1.f, .2f });
 
 	pLight = pt::Entity::Create().AddComponent<pt::Light>();
 	pLight->SetType(1);
-	pLight->SetDirectionOffset({0.f, 1.f, 1.f, 1.f});
+	pLight->SetDirectionOffset({ 0.f, 1.f, 1.f, 1.f });
 	pLight->SetColor({ 1.f, 1.f, 1.f, 1.f });
 
 	pt::Entity& ent0 = pt::Entity::Create();
@@ -664,14 +64,6 @@ Editor::Editor(PrimtTech::DX11Renderer* pRenderer, d::XMINT2 windowRes) : m_rend
 	ent1.Transform().SetPosition(0.f, -0.2f, 0.f);
 	ent1.Transform().SetScale(10.f, 1.f, 10.f);
 	ent1.AddComponent<pt::MeshRef>()->Init("scaledplane.obj");
-	
-	//m_entlist.ents[1].Transform().SetScale(1.f);
-
-
-
-	
-
-	//PrimtTech::Import("Scenes/shadowTesting.ptsc", pt::Entity::GetAllEnts());
 }
 
 Editor::~Editor()
@@ -682,7 +74,7 @@ void Editor::execCommand(std::string cmd)
 {
 	std::stringstream ss;
 	ss.clear();
-	
+
 	ss << cmd;
 	std::string argBuffer;
 	ss >> argBuffer;
@@ -706,7 +98,7 @@ void Editor::execCommand(std::string cmd)
 				PrimtTech::ResourceHandler::AddMesh(path);
 			}
 		}
-		else if (argBuffer == "lwtex")
+		else if (argBuffer == "lwtex") // lightwarp
 		{
 			ss >> argBuffer;
 			m_renderer->SetLightWarp(argBuffer);
@@ -724,32 +116,56 @@ void Editor::execCommand(std::string cmd)
 		{
 			uint entId = atoi(argBuffer.c_str());
 			ss >> argBuffer;
+			pt::Entity& rEnt = pt::Entity::GetEntity(entId);
+			bool edit = false;
+			if (argBuffer == "edit")
+			{
+				edit = true;
+				ss >> argBuffer;
+			}
+
 			if (argBuffer == "cam")
 			{
-				pt::Entity::GetEntity(entId).AddComponent<pt::Camera>();
+				rEnt.AddComponent<pt::Camera>();
 			}
 			else if (argBuffer == "meshref")
 			{
-				pt::Entity::GetEntity(entId).AddComponent<pt::MeshRef>();
+				rEnt.AddComponent<pt::MeshRef>();
 			}
 			else if (argBuffer == "aabb")
 			{
-				pt::Entity::GetEntity(entId).AddComponent<pt::AABBComp>();
+				rEnt.AddComponent<pt::AABBComp>();
 			}
 			else if (argBuffer == "light")
 			{
-				pt::Entity::GetEntity(entId).AddComponent<pt::Light>();
+				rEnt.AddComponent<pt::Light>();
 			}
+			else if (argBuffer == "rigidbody")
+			{
+				ss >> argBuffer;
+				rp::BodyType type = rp::BodyType(2);
+				if (argBuffer == "static") type = rp::BodyType(0);
+				if (argBuffer == "kinematic") type = rp::BodyType(1);
+				if (argBuffer == "dynamic") type = rp::BodyType(2);
+
+				pt::PhysicsBody* pRigidBody = rEnt.AddComponent<pt::PhysicsBody>();
+				if (edit)
+				{
+					
+
+					
+				}
+				else
+					pRigidBody->Init(m_primtech.m_physHandler.CreateRigidBody(rEnt.Transform(), (rp::BodyType)type));
+			}
+
 		}
 	}
 	else if (argBuffer == "select")
 	{
 		ss >> argBuffer;
-		if (StringHelper::IsNumber(argBuffer))
-		{
-			m_entlist.selected = atoi(argBuffer.c_str());
-		}
-		else m_entlist.selected = -1;
+		m_entlist.selected = StringHelper::IsNumber(argBuffer) ? atoi(argBuffer.c_str()) : -1;
+
 	}
 	else if (argBuffer == "exit")
 	{
@@ -760,7 +176,7 @@ void Editor::execCommand(std::string cmd)
 		ss >> argBuffer;
 		if (argBuffer == "hide")
 			m_msgQueue.push(Messages::eHideMouse);
-		else if(argBuffer == "show")
+		else if (argBuffer == "show")
 			m_msgQueue.push(Messages::eShowMouse);
 		else if (argBuffer == "sense")
 		{
@@ -786,7 +202,7 @@ void Editor::execCommand(std::string cmd)
 				}
 			}
 		}
-		
+
 	}
 	else if (argBuffer == "scene")
 	{
@@ -798,7 +214,7 @@ void Editor::execCommand(std::string cmd)
 			{
 				m_entlist.selected = -1;
 				pt::Entity::Clear(1);
-				
+
 				pt::Entity::GetEntity(0).AddComponent<pt::Camera>()->SetPerspective(80.f, ((float)m_entlist.winWidth / (float)m_entlist.winHeight), 0.1f, 100.f);
 				PrimtTech::Import(path, pt::Entity::GetAllEnts());
 			}
@@ -816,7 +232,7 @@ void Editor::execCommand(std::string cmd)
 		else if (argBuffer == "new")
 		{
 			m_entlist.selected = -1;
-			pt::Entity::Clear(1);
+			pt::Entity::Clear(4);
 			pt::Entity::GetEntity(0).AddComponent<pt::Camera>()->SetPerspective(80.f, ((float)m_entlist.winWidth / (float)m_entlist.winHeight), 0.1f, 100.f);
 		}
 	}
@@ -859,9 +275,9 @@ void Editor::Update(float deltatime)
 		move *= 10.f;
 
 		pDevTransform->Move(move * deltatime);
-		
+
 	}
-	
+
 	while (!MouseHandler::BufferIsEmpty())
 	{
 		MouseEvent me = MouseHandler::ReadEvent();
@@ -909,8 +325,47 @@ void Editor::Update(float deltatime)
 
 	pDevCam->UpdateView(*pDevTransform);
 
-	#ifdef _DEBUG
+#ifdef _DEBUG
 	if (KeyboardHandler::IsKeyDown(m_optionkey))
 		m_entlist.console.AddLog("exit");
-	#endif // _DEBUG
+#endif // _DEBUG
+}
+
+void Editor::Run()
+{
+	double start = 0, deltaTime = 0;
+	start = omp_get_wtime();
+
+	while (m_primtech.IsOpen())
+	{
+		start = omp_get_wtime();
+		m_primtech.Run();
+		Update((float)deltaTime);
+
+		while (!m_msgQueue.empty())
+		{
+			Editor::Messages postMsg = m_msgQueue.front();
+			switch (postMsg)
+			{
+			case Editor::Messages::eQuit:
+				m_primtech.Close();
+				break;
+			case Editor::Messages::eToggleMouse:
+				m_primtech.ToggleMouse();
+				break;
+			case Editor::Messages::eHideMouse:
+				m_primtech.HideCursor();
+				break;
+			case Editor::Messages::eShowMouse:
+				m_primtech.ShowCursor();
+				break;
+			default:
+				break;
+			}
+			m_msgQueue.pop();
+		}
+
+		deltaTime = omp_get_wtime() - start;
+		m_primtech.SetDeltaTime(deltaTime);
+	}
 }

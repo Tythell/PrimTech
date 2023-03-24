@@ -33,15 +33,15 @@ namespace pt
 
 			PrimtTech::ComponentHandler::LinkVector<T>(ptvec, c);
 
-			ptvec->emplace_back(m_id);
-
 			if (m_hasComponents & c)
 				return &ptvec[0][m_compTable[c]];
+
+			ptvec->emplace_back(m_id);
 
 			m_compTable.emplace(c, (uint)ptvec->size() - 1);
 
 			m_hasComponents |= (uint)c;
-			return &ptvec[0][(uint)ptvec->size() - 1];
+			return &ptvec[0][(uint)ptvec->size() - 1u];
 
 			return NULL;
 		}

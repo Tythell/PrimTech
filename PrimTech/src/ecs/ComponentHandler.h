@@ -14,7 +14,7 @@ namespace PrimtTech {
 		ec_obb = 0x10,
 		ec_bsphere = 0x20,
 		ec_light = 0x40,
-		//ec_08 = 0x80,
+		ec_rigidBodies = 0x80,
 		//ec_09 = 0x100, 
 	};
 
@@ -32,6 +32,7 @@ COMP_TYPE(pt::AABBComp, s_aabbs, STAT, AFTER) \
 COMP_TYPE(pt::OBBComp, s_obbs, STAT, AFTER) \
 COMP_TYPE(pt::BSphereComp, s_bspheres, STAT, AFTER) \
 COMP_TYPE(pt::Light, s_lights, STAT, AFTER) \
+COMP_TYPE(pt::PhysicsBody, s_rigidBodies, STAT, AFTER) \
 
 #define LINK_TYPE_VEC(ELSE,cTYPE, NAME, ENUM) \
 ELSE if constexpr (std::is_same_v<T, cTYPE>) { \
@@ -47,6 +48,7 @@ LINK_TYPE_VEC(else, pt::AABBComp, s_aabbs, ec_aabb) \
 LINK_TYPE_VEC(else, pt::OBBComp, s_obbs, ec_obb) \
 LINK_TYPE_VEC(else, pt::BSphereComp, s_bspheres, ec_bsphere) \
 LINK_TYPE_VEC(else, pt::Light, s_lights, ec_light) \
+LINK_TYPE_VEC(else, pt::PhysicsBody, s_rigidBodies, ec_rigidBodies) \
 
 	class ComponentHandler
 	{
