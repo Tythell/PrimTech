@@ -471,7 +471,7 @@ namespace PrimtTech
 
 		// -------------------------------------- Update transforms with rigidbodies ---------------------------------------------------
 		std::vector<PhysicsBody>& rRigidBodies = ComponentHandler::GetComponentArray<PhysicsBody>();
-		uint numRigidBodies = rRigidBodies.size();
+		uint numRigidBodies = (uint)rRigidBodies.size();
 		for (int i = 0; i < numRigidBodies; i++)
 		{
 			uint entId = rRigidBodies[i].EntId();
@@ -535,16 +535,29 @@ namespace PrimtTech
 		// iterate through meshrefs
 		drawMeshes(rMeshrefs, rTransforms, m_transformBuffer, &m_materialBuffer, dc, deltatime);
 
-		// --------------------------- Draw grid ---------------------------
 		m_transformBuffer.Data().world = d::XMMatrixIdentity();
 		m_transformBuffer.MapBuffer();
-
-		dc->IASetVertexBuffers(0, 1, m_grid.GetReference(), m_grid.GetStrideP(), &offset);
-		dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_LINELIST);
 		dc->VSSetShader(m_lineVS.GetShader(), NULL, 0);
 		dc->IASetInputLayout(m_lineVS.GetInputLayout());
 		dc->PSSetShader(m_linePS.GetShader(), NULL, 0);
-		dc->Draw(m_grid.GetBufferSize(), 0);
+		dc->RSSetState(m_wireFrameState);
+
+		// --------------------------- physics visuals ---------------------------
+
+#ifdef _DEBUG
+		if (mp_debufrenderer)
+			mp_debufrenderer->DrawBuffers(dc);
+#endif // _DEBUG
+
+		// --------------------------- Draw grid ---------------------------
+
+
+		if (im->m_drawGrid)
+		{
+			dc->IASetVertexBuffers(0, 1, m_grid.GetReference(), m_grid.GetStrideP(), &offset);
+			dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_LINELIST);
+			dc->Draw(m_grid.GetBufferSize(), 0);
+		}
 
 		std::vector<AABBComp>& rAabbs = ComponentHandler::GetComponentArray<AABBComp>();
 		uint numAabbs = (uint)rAabbs.size();

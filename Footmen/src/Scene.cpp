@@ -143,20 +143,16 @@ void Editor::execCommand(std::string cmd)
 			else if (argBuffer == "rigidbody")
 			{
 				ss >> argBuffer;
-				rp::BodyType type = rp::BodyType(2);
+				rp::BodyType type = rp::BodyType(1);
 				if (argBuffer == "static") type = rp::BodyType(0);
 				if (argBuffer == "kinematic") type = rp::BodyType(1);
 				if (argBuffer == "dynamic") type = rp::BodyType(2);
 
 				pt::PhysicsBody* pRigidBody = rEnt.AddComponent<pt::PhysicsBody>();
 				if (edit)
-				{
-					
-
-					
-				}
+					pRigidBody->SetType(type);
 				else
-					pRigidBody->Init(m_primtech.m_physHandler.CreateRigidBody(rEnt.Transform(), (rp::BodyType)type));
+					pRigidBody->CreateRigidBody(rEnt.Transform());
 			}
 
 		}

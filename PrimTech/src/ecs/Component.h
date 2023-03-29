@@ -4,7 +4,8 @@
 #include "Graphics/CbufferTypes.h"
 #undef max;
 #undef min;
-#include <reactphysics3d/reactphysics3d.h>
+#include "Physics/PhysicsHandler.h"
+//#include <reactphysics3d/reactphysics3d.h>
 #include<string>
 
 namespace rp = reactphysics3d;
@@ -191,12 +192,38 @@ namespace pt
 		PhysicsBody(uint id);
 
 		//void AddColider(rp::, const pt::TransformComp& transform);
-		void Init(rp::RigidBody* pRigidBody);
 		void UpdateTransform(pt::TransformComp& transform);
+
+		void CreateRigidBody(const pt::TransformComp& ptTransform)
+		{
+			rp::Transform rpTransform;
+			rpTransform.setPosition({ ptTransform.GetPosition().x, ptTransform.GetPosition().y, ptTransform.GetPosition().z });
+			rpTransform.setOrientation({ 
+				ptTransform.GetRotationQuaternion().x,
+				ptTransform.GetRotationQuaternion().y,
+				ptTransform.GetRotationQuaternion().z,
+				ptTransform.GetRotationQuaternion().w });
+
+
+			mp_rigidBody = m_pPhysHandle->CreateRigidBody(rpTransform);
+		}
+
+		void AddBoxColider()
+		{
+			rp::BoxShape* shape = m_pPhysHandle->CreateBoxShape({ .5f, .5f, .5f });
+			m_shapeIndexes.emplace_back(shape->getId());
+
+
+
+			mp_rigidBody->addCollider(shape, rp::Transform::identity());
+		}
 
 		rp::BodyType GetType() const { return mp_rigidBody->getType(); }
 		void SetType(rp::BodyType bodyType);
+		static void SetPtrs(PrimtTech::PhysicsHandler* pPhysHandle) { m_pPhysHandle = pPhysHandle; }
 	private:
 		reactphysics3d::RigidBody* mp_rigidBody = nullptr;
+		static PrimtTech::PhysicsHandler* m_pPhysHandle;
+		std::vector<uint> m_shapeIndexes;
 	};
 }

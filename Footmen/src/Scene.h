@@ -60,6 +60,8 @@ private:
 	EntListStruct m_entlist;
 	float m_mouseSense = 0.005f;
 
+	bool m_playing = false;
+
 	void execCommand(std::string cmd);
 
 	PrimtTech::DX11Renderer* m_renderer = nullptr;

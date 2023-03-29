@@ -7,7 +7,8 @@
 #include"Texture.h"
 #include"../Input/Mouse.h"
 #include"../Input/Keyboard.h"
-#include "../ecs/Entity.h"
+#include "Physics/PhysicsHandler.h"
+#include "ecs/Entity.h"
 #include "RenderShapes.h"
 
 #pragma warning(push)
@@ -50,6 +51,15 @@ namespace PrimtTech
 
 		void ImGuiRender();
 		void ImGuTextureDisplay();
+
+#ifdef _DEBUG
+		PhysicsHandler* mp_debufrenderer = nullptr;
+
+	public:
+		void SetDebugRenderer(PhysicsHandler* p) { mp_debufrenderer = p; }
+	private:
+
+#endif // _DEBUG
 
 		//void ImportScene(std::string path);
 		void ExportScene(std::string path);
@@ -99,8 +109,6 @@ namespace PrimtTech
 		ImGuiHandler* m_guiHandler = nullptr;
 		ImGuiVars* im = nullptr;
 
-		int m_selected = -1;
-		int m_selectedMtrl = -1;
 		RenderBox m_renderbox;
 		sm::Ray m_ray;
 		int m_fps = 0;

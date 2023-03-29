@@ -232,6 +232,7 @@ void ImguiDebug(void* ptr, bool* show)
 
 
 		ImGui::Checkbox("Vsync", &im->useVsync); ImGui::SameLine();
+		ImGui::Checkbox("Grid", &im->m_drawGrid); ImGui::SameLine();
 		//ImGui::Checkbox("Handmodel", &im.enableHandModel); ImGui::SameLine();
 		//ImGui::Checkbox("Raycast", &im.drawRayCast);
 		//ImGui::SameLine();
@@ -636,16 +637,14 @@ void Gui_EntList(void* test, bool* show)
 				pt::PhysicsBody* mr = pEnt->GetComponent<pt::PhysicsBody>();
 
 				const char* items[] = { "select a component", "static", "kinematic", "dynamic"};
-				int item_current = (int)mr->GetType();
+				int item_current = (int)mr->GetType()+1;
 
 				if (ImGui::Combo("##lightcombo", &item_current, items, IM_ARRAYSIZE(items)) && item_current != 0)
 				{
-					// execute command for specific component
-					/*
-					ent i rigidbody edit static
-					ent i rigidbody edit kinematic
-					ent i rigidbody edit dynamic
-					*/
+					std::string cmd = "comp " + std::to_string(mr->EntId());
+					cmd += " edit rigidbody ";
+					cmd += items[item_current];
+					p->console.AddLog(cmd.c_str());
 				}
 			}
 		}
