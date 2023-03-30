@@ -50,11 +50,11 @@ namespace pt
 
 		ID3D11Device* devi = mp_dxrenderer->GetDevice();
 		pt::PhysicsBody::SetPtrs(&m_physHandler);
-#ifdef _DEBUG
+#ifdef PHYSDEBUG
 		m_physHandler.EnableDebugDrawing(devi, true);
 
 		mp_dxrenderer->SetDebugRenderer(&m_physHandler);
-#endif // _DEBUG
+#endif // PHYSDEBUG
 
 
 		

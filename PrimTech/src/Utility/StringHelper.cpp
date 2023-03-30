@@ -22,5 +22,5 @@ std::string StringHelper::GetName(std::string path)
 bool StringHelper::IsNumber(std::string s)
 {
     return !s.empty() && std::find_if(s.begin(),
-        s.end(), [](unsigned char c) { return !std::isdigit(c); }) == s.end();
+        s.end(), [](unsigned char c) { return !std::isdigit(c) || c == '.'; }) == s.end();
 }

@@ -77,13 +77,6 @@ namespace PrimtTech
 			if (!(m_flags & eBufferFlags_Borrowoingdata) && (m_data && (m_type != eVERTEX)))
 				delete m_data;
 		}
-
-		void Release()
-		{
-			//m_buffer->Release();
-			//if (m_data && m_type != eVERTEX)
-			//	delete m_data;
-		}
 		UINT GetStride() const
 		{
 			return m_stride;

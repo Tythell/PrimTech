@@ -12,25 +12,14 @@ namespace PrimtTech
 {
 	class PhysicsHandler
 	{
-	private:
-		rp::PhysicsCommon m_physics;
-		rp::PhysicsWorld* m_pworld = nullptr;
-
-#ifdef _DEBUG
-		rp::DebugRenderer* md_debugRenderer;
-#endif // _DEBUG
-
-		bool m_isDraw = true;
-
-		ID3D11Device* device;
 	public:
 		PhysicsHandler();
+		void Update(float dt);
 		rp::RigidBody* CreateRigidBody(const rp::Transform& transform, rp::BodyType bodyType = rp::BodyType::DYNAMIC);
 
-		rp::BoxShape* CreateBoxShape(const sm::Vector3& extents)
-		{
-			return m_physics.createBoxShape(rp::Vector3(extents.x, extents.y, extents.z));
-		}
+		rp::BoxShape* CreateBoxShape(const sm::Vector3& extents);
+		rp::SphereShape* CreateSphereShape(float radius);
+		rp::CapsuleShape* CreateCapsuleShape(float radius, float height);
 
 		//uint CreateSphereShape(float r)
 		//{
@@ -40,13 +29,26 @@ namespace PrimtTech
 		//	return shape;
 		//}
 		//rp::CollisionBody* CreateCollissionBody(const pt::TransformComp& transform);
+		void SetRunning(bool b) { m_running = b; };
+		void ToggleRunning() { m_running = !m_running; };
 
-#ifdef _DEBUG
+#ifdef PHYSDEBUG
 		Buffer<PrimtTech::BBVertex> debugTris;
 		void EnableDebugDrawing(ID3D11Device*& pDevice, bool b = true);
 		void SetDrawDebug(bool b) { m_isDraw = b; };
 		void DrawBuffers(ID3D11DeviceContext*& dc);
 #endif // _DEBUG
-		void Update(float dt);
+	private:
+#ifdef PHYSDEBUG
+		rp::DebugRenderer* md_debugRenderer;
+#endif // _DEBUG
+
+		rp::PhysicsCommon m_physics;
+		rp::PhysicsWorld* m_pworld = nullptr;
+
+		bool m_isDraw = true;
+		ID3D11Device* device = nullptr;
+
+		bool m_running = false;
 	};
 }

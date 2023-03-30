@@ -1,4 +1,23 @@
 #pragma once
+#include "Math/Math.h"
+
+namespace pt
+{
+	class Color
+	{
+	public:
+		Color(uchar r, uchar g, uchar b, uchar a = 255u);
+		Color(uint hexColor);
+
+		sm::Vector3 GetAsVector3() const;
+		sm::Vector4 GetAsVector4() const;
+	private:
+		uint m_hexClr;
+	};
+}
+
+#define FlOATCLR3(r, g, b) r * 255, g * 255, b * 255
+#define FlOATCLR4(r, g, b, a) r * 255, g * 255, b * 255, a * 255
 
 #define BLACK_3F {0.f,0.f,0.f}
 #define BLACK_4F {0.f,0.f,0.f,0.f}

@@ -117,7 +117,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;PHYSDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(SolutionDir)PrimTech/src/Graphics/3rdParty/imgui/;$(SolutionDir)PrimTech/src/Graphics/3rdParty/ImGuizmo/;$(SolutionDir)PrimTech/src/Graphics/3rdParty/;$(SolutionDir)PrimTech/src/;$(SolutionDir)PrimTech\src\thirdParty\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -145,7 +145,7 @@ IF EXIST 3rdparty\*.dll ( copy 3rdparty\*.dll x64\Debug\ )</Command>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;PHYSDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(SolutionDir)PrimTech/src/Graphics/3rdParty/imgui/;$(SolutionDir)PrimTech/src/Graphics/3rdParty/ImGuizmo/;$(SolutionDir)PrimTech/src/Graphics/3rdParty/;$(SolutionDir)PrimTech/src/;$(SolutionDir)PrimTech\src\thirdParty\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -171,6 +171,7 @@ IF EXIST 3rdparty\*.dll ( copy 3rdparty\*.dll x64\Release\ )</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\ecs\PhysicsBody.cpp" />
+    <ClCompile Include="src\Macros\Colors.cpp" />
     <ClCompile Include="src\Physics\PhysicsHandler.cpp" />
     <ClCompile Include="src\ecs\BoundShapeC.cpp" />
     <ClCompile Include="src\ecs\CameraC.cpp" />

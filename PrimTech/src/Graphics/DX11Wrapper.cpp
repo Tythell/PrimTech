@@ -544,10 +544,10 @@ namespace PrimtTech
 
 		// --------------------------- physics visuals ---------------------------
 
-#ifdef _DEBUG
+#ifdef PHYSDEBUG
 		if (mp_debufrenderer)
 			mp_debufrenderer->DrawBuffers(dc);
-#endif // _DEBUG
+#endif // PHYSDEBUG
 
 		// --------------------------- Draw grid ---------------------------
 

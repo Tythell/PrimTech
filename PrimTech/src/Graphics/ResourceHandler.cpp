@@ -132,8 +132,6 @@ namespace PrimtTech
 
 	void ResourceHandler::Unload()
 	{
-		for (int i = 0; i < m_meshes.size(); i++)
-			m_meshes[i].Release();
 		for (int i = 0; i < m_textures.size(); i++)
 			delete m_textures[i];
 	}

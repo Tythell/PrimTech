@@ -225,6 +225,11 @@ void ImguiDebug(void* ptr, bool* show)
 	//		::SetWindowTextA(*m_pHWND, "balls");
 	//	}
 	//}
+	static bool hej = false;
+	if (ImGui::Checkbox("Play physics", &hej))
+	{
+		printf("");
+	}
 	if (ImGui::CollapsingHeader("General"))
 	{
 		//ImGui::RadioButton("local", (int*)&im.transformMode, 0); ImGui::SameLine();
@@ -639,13 +644,88 @@ void Gui_EntList(void* test, bool* show)
 				const char* items[] = { "select a component", "static", "kinematic", "dynamic"};
 				int item_current = (int)mr->GetType()+1;
 
-				if (ImGui::Combo("##lightcombo", &item_current, items, IM_ARRAYSIZE(items)) && item_current != 0)
+				if (ImGui::Combo("##rigidcombo", &item_current, items, IM_ARRAYSIZE(items)) && item_current != 0)
 				{
 					std::string cmd = "comp " + std::to_string(mr->EntId());
-					cmd += " edit rigidbody ";
+					cmd += " rigidbody type ";
 					cmd += items[item_current];
 					p->console.AddLog(cmd.c_str());
 				}
+				if (ImGui::Button("Add Collider"))
+					ImGui::OpenPopup("collidetypePop");
+				if (ImGui::BeginPopup("collidetypePop"))
+				{
+					if (ImGui::Selectable("Box"))
+					{
+						std::string cmd = "comp " + std::to_string(mr->EntId());
+						cmd += " rigidbody box add .5 .5 .5";
+						p->console.AddLog(cmd.c_str());
+					}
+					if (ImGui::Selectable("Sphere"))
+					{
+						std::string cmd = "comp " + std::to_string(mr->EntId());
+						cmd += " rigidbody sphere add 1.5";
+						p->console.AddLog(cmd.c_str());
+					}
+					if (ImGui::Selectable("Capsule"))
+					{
+						std::string cmd = "comp " + std::to_string(mr->EntId());
+						cmd += " rigidbody capsule add .5 1";
+						p->console.AddLog(cmd.c_str());
+					}
+					ImGui::EndPopup();
+				}
+				for (int i = 0; i < mr->GetNoColliders(); i++)
+				{
+					std::string buttonNAme = "Remove##" + std::to_string(i);
+					if (ImGui::Button(buttonNAme.c_str()))
+					{
+						std::string cmd = "comp " + std::to_string(mr->EntId());
+						cmd += " rigidbody box remove " + std::to_string(i);
+						p->console.AddLog(cmd.c_str());
+					} ImGui::SameLine();
+
+					switch (mr->GetColliderType(i))
+					{
+					case pt::PhysicsBody::ePT_ShapeType::Box:
+					{
+						sm::Vector3 v = mr->GetExtents(i);
+						buttonNAme = "Box##" + std::to_string(i);
+						if (ImGui::DragFloat3(buttonNAme.c_str(), reinterpret_cast<float*>(&v), .02f, 0.1f, 100.f))
+						{
+							mr->SetBoxExtents(v, i);
+						}
+						break;
+					}
+					case pt::PhysicsBody::ePT_ShapeType::Sphere:
+					{
+						float v = mr->GetSphereRadius(i);
+						buttonNAme = "Sphere##" + std::to_string(i);
+						if (ImGui::DragFloat(buttonNAme.c_str(), reinterpret_cast<float*>(&v), .02f, 0.1f, 100.f))
+						{
+							mr->SetSphereRadius(v);
+						}
+						break;
+					}
+					case pt::PhysicsBody::ePT_ShapeType::Capsule:
+					{
+						sm::Vector2 v = mr->GetCapsuleLengths(i);
+						buttonNAme = "Capsule##" + std::to_string(i);
+						if (ImGui::DragFloat2(buttonNAme.c_str(), reinterpret_cast<float*>(&v), .02f, 0.1f, 100.f))
+						{
+							mr->SetCapsuleLengths(v.x, v.y, i);
+						}
+						break;
+					}
+					default:
+						break;
+					}
+					
+					
+				}
+
+					
+				
 			}
 		}
 	}
@@ -684,7 +764,7 @@ void Gui_EntList(void* test, bool* show)
 
 		if (KeyboardHandler::IsKeyDown('Q'))
 			op = ImGuizmo::OPERATION::BOUNDS;
-		if (KeyboardHandler::IsKeyDown('W'))
+		else if (KeyboardHandler::IsKeyDown('W'))
 			op = ImGuizmo::OPERATION::TRANSLATE;
 		else if (KeyboardHandler::IsKeyDown('E'))
 			op = ImGuizmo::OPERATION::ROTATE;
@@ -695,15 +775,25 @@ void Gui_EntList(void* test, bool* show)
 
 		if (ImGuizmo::IsUsing())
 		{
+			pt::Entity* pEnt = pt::Entity::GetEntityP((uint)p->selected);
 			sm::Vector3 pos;
 			sm::Vector3 scale;
 			sm::Quaternion rot;
 			world.Decompose(scale, rot, pos);
 			//ImGuizmo::DecomposeMatrixToComponents(&world._11, &pos.x, &rot.x, &scale.x);
 
-			rTr.SetScale(scale);
-			rTr.SetRotation(rot);
-			rTr.SetPosition(pos);
+			
+			if (pEnt->HasComponentType(PrimtTech::ec_rigidBodies))
+			{
+				pt::PhysicsBody* p = pEnt->GetComponent<pt::PhysicsBody>();
+				p->SetPhysicsPosition(pos);
+			}
+			else
+			{
+				rTr.SetScale(scale);
+				rTr.SetRotation(rot);
+				rTr.SetPosition(pos);
+			}
 		}
 
 		ImGui::End();

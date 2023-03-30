@@ -70,6 +70,23 @@ Editor::~Editor()
 {
 }
 
+sm::Vector3 Vector3FromString(std::stringstream& ss)
+{
+	std::string argBuffer;
+
+	sm::Vector3 extents;
+	ss >> argBuffer;
+	extents.x = atof(argBuffer.c_str());
+	ss >> argBuffer;
+	extents.y = atof(argBuffer.c_str());
+	ss >> argBuffer;
+	extents.z = atof(argBuffer.c_str());
+
+	//pRigidBody->SetBoxExtents(extents);
+	/*pRigidBody->AddBoxColider(extents);*/
+	return extents;
+}
+
 void Editor::execCommand(std::string cmd)
 {
 	std::stringstream ss;
@@ -117,12 +134,6 @@ void Editor::execCommand(std::string cmd)
 			uint entId = atoi(argBuffer.c_str());
 			ss >> argBuffer;
 			pt::Entity& rEnt = pt::Entity::GetEntity(entId);
-			bool edit = false;
-			if (argBuffer == "edit")
-			{
-				edit = true;
-				ss >> argBuffer;
-			}
 
 			if (argBuffer == "cam")
 			{
@@ -142,17 +153,79 @@ void Editor::execCommand(std::string cmd)
 			}
 			else if (argBuffer == "rigidbody")
 			{
-				ss >> argBuffer;
-				rp::BodyType type = rp::BodyType(1);
-				if (argBuffer == "static") type = rp::BodyType(0);
-				if (argBuffer == "kinematic") type = rp::BodyType(1);
-				if (argBuffer == "dynamic") type = rp::BodyType(2);
-
 				pt::PhysicsBody* pRigidBody = rEnt.AddComponent<pt::PhysicsBody>();
-				if (edit)
-					pRigidBody->SetType(type);
-				else
+				if (!pRigidBody->Exists())
 					pRigidBody->CreateRigidBody(rEnt.Transform());
+
+				ss >> argBuffer;
+				if (argBuffer == "type")
+				{
+					ss >> argBuffer;
+					rp::BodyType type = rp::BodyType(1);
+					if (argBuffer == "static") type = rp::BodyType(0);
+					else if (argBuffer == "kinematic") type = rp::BodyType(1);
+					else if (argBuffer == "dynamic") type = rp::BodyType(2);
+
+					pRigidBody->SetType(type);
+				}
+				else if (argBuffer == "remove")
+				{
+					ss >> argBuffer;
+					pRigidBody->RemoveCollider(atoi(argBuffer.c_str()));
+				}
+				else if (argBuffer == "box")
+				{
+					ss >> argBuffer;
+					if (argBuffer == "add")
+					{
+						pRigidBody->AddBoxColider(Vector3FromString(ss));
+					}
+					else if (argBuffer == "edit")
+					{
+						ss >> argBuffer;
+						pRigidBody->SetBoxExtents(Vector3FromString(ss), atoi(argBuffer.c_str()));
+					}
+				}
+				else if (argBuffer == "sphere")
+				{
+					ss >> argBuffer;
+					if (argBuffer == "add")
+					{
+						ss >> argBuffer;
+						pRigidBody->AddSphereColider(atof(argBuffer.c_str()));
+					}
+					else if (argBuffer == "edit")
+					{
+						ss >> argBuffer;
+						pRigidBody->SetBoxExtents(Vector3FromString(ss), atoi(argBuffer.c_str()));
+					}
+					
+				}
+				else if (argBuffer == "capsule")
+				{
+					ss >> argBuffer;
+					if (argBuffer == "add")
+					{
+						sm::Vector2 lengths;
+						ss >> argBuffer;
+						lengths.x = atof(argBuffer.c_str());
+						ss >> argBuffer;
+						lengths.y = atof(argBuffer.c_str());
+						pRigidBody->AddCapsuleColider(lengths.x, lengths.y);
+					}
+					else if (argBuffer == "edit")
+					{
+						sm::Vector2 lengths;
+						ss >> argBuffer;
+						lengths.x = atof(argBuffer.c_str());
+						ss >> argBuffer;
+						lengths.y = atof(argBuffer.c_str());
+
+						ss >> argBuffer;
+						pRigidBody->SetCapsuleLengths(lengths.x, lengths.y, atoi(argBuffer.c_str()));
+					}
+
+				}
 			}
 
 		}

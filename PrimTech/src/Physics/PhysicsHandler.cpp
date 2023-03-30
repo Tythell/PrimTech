@@ -3,6 +3,11 @@
 
 namespace PrimtTech
 {
+	sm::Vector3 rpToSm(const rp::Vector3& f)
+	{
+		return sm::Vector3(f.x, f.y, f.z);
+	}
+
 	PhysicsHandler::PhysicsHandler()
 	{
 		rp::PhysicsWorld::WorldSettings rpSettings;
@@ -11,33 +16,11 @@ namespace PrimtTech
 
 	}
 
-	rp::RigidBody* PhysicsHandler::CreateRigidBody(const rp::Transform& transform, rp::BodyType bodyType)
-	{
-		rp::RigidBody* pRigidBody = nullptr;
-		rp::BoxShape* pSphereShape = nullptr;
-		//rp::SphereShape* pSphereShape = nullptr;
-
-
-		pRigidBody = m_pworld->createRigidBody(transform);
-		//pSphereShape = m_physics.createSphereShape(1.f);
-		pSphereShape = m_physics.createBoxShape({.5f,.5f,.5f});
-
-		pRigidBody->addCollider(pSphereShape, rp::Transform::identity());
-
-		pRigidBody->setType(bodyType);
-
-		return pRigidBody;
-	}
-
-	sm::Vector3 rpToSm(const rp::Vector3& f)
-	{
-		return sm::Vector3(f.x, f.y, f.z);
-	}
 	void PhysicsHandler::Update(float dt)
 	{
-		if (m_pworld->getNbRigidBodies() != 0)
+		if (/*m_running && */m_pworld->getNbRigidBodies() != 0)
 			m_pworld->update(dt);
-#ifdef _DEBUG
+#ifdef PHYSDEBUG
 		if (m_isDraw)
 		{
 			std::vector<PrimtTech::BBVertex> tris;
@@ -63,7 +46,38 @@ namespace PrimtTech
 #endif // _DEBUG
 	}
 
-#ifdef _DEBUG
+	rp::BoxShape* PhysicsHandler::CreateBoxShape(const sm::Vector3& extents)
+	{
+		return m_physics.createBoxShape(rp::Vector3(extents.x, extents.y, extents.z));
+	}
+
+	rp::SphereShape* PhysicsHandler::CreateSphereShape(float radius)
+	{
+		return m_physics.createSphereShape(radius);
+	}
+
+	rp::CapsuleShape* PhysicsHandler::CreateCapsuleShape(float radius, float height)
+	{
+		return m_physics.createCapsuleShape(radius, height);
+	}
+
+	rp::RigidBody* PhysicsHandler::CreateRigidBody(const rp::Transform& transform, rp::BodyType bodyType)
+	{
+		rp::RigidBody* pRigidBody = nullptr;
+		//rp::SphereShape* pSphereShape = nullptr;
+
+
+		pRigidBody = m_pworld->createRigidBody(transform);
+		//pSphereShape = m_physics.createSphereShape(1.f);
+
+		//pRigidBody->addCollider(CreateBoxShape({.5f,.5f,.5f}), rp::Transform::identity());
+
+		pRigidBody->setType(bodyType);
+
+		return pRigidBody;
+	}
+
+#ifdef PHYSDEBUG
 	void PhysicsHandler::EnableDebugDrawing(ID3D11Device*& pDevice, bool b)
 	{
 		m_isDraw = b;
