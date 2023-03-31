@@ -18,9 +18,9 @@ namespace pt
 	sm::Vector3 Color::GetAsVector3() const
 	{
 		sm::Vector3 vec;
-		vec.x = (float)((m_hexClr & 0xff000000) >> 24) / 255.f;
-		vec.y = (float)((m_hexClr & 0x00ff0000) >> 16) / 255.f;
-		vec.z = (float)((m_hexClr & 0x0000ff00) >> 8) / 255.f;
+		vec.x = (float)((m_hexClr & 0x00ff0000) >> 16) / 255.f;
+		vec.y = (float)((m_hexClr & 0x0000ff00) >> 8) / 255.f;
+		vec.z = (float)((m_hexClr & 0x000000ff) >> 0) / 255.f;
 
 		return vec;
 	}

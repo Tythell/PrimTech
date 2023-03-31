@@ -703,7 +703,7 @@ void Gui_EntList(void* test, bool* show)
 						buttonNAme = "Sphere##" + std::to_string(i);
 						if (ImGui::DragFloat(buttonNAme.c_str(), reinterpret_cast<float*>(&v), .02f, 0.1f, 100.f))
 						{
-							mr->SetSphereRadius(v);
+							mr->SetSphereRadius(v, i);
 						}
 						break;
 					}

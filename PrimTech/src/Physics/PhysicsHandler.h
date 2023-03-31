@@ -20,13 +20,9 @@ namespace PrimtTech
 		rp::BoxShape* CreateBoxShape(const sm::Vector3& extents);
 		rp::SphereShape* CreateSphereShape(float radius);
 		rp::CapsuleShape* CreateCapsuleShape(float radius, float height);
-
-		//uint CreateSphereShape(float r)
+		//rp::ConcaveShape* CreateConcaveShape(float radius, float height)
 		//{
-		//	rp::SphereShape* shape = m_physics.createSphereShape(r);
-
-
-		//	return shape;
+		//	return m_physics.createTriangleMesh
 		//}
 		//rp::CollisionBody* CreateCollissionBody(const pt::TransformComp& transform);
 		void SetRunning(bool b) { m_running = b; };
