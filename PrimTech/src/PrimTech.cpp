@@ -11,11 +11,6 @@ namespace pt
 		m_playerSpeed(5.f)
 	{
 		m_L = luaL_newstate();
-		
-
-
-
-		//HideCursor();
 	}
 
 	PrimTech::~PrimTech()
@@ -26,8 +21,6 @@ namespace pt
 		}
 		if (mp_dxrenderer)
 			delete mp_dxrenderer;
-
-		//m_physics.destroyPhysicsWorld(m_pworld);
 	}
 
 	void PrimTech::LoadPak(std::string path)
@@ -51,7 +44,7 @@ namespace pt
 		ent0.Transform().SetPosition(0.f, 1.f, -2.f);
 
 		mp_dxrenderer = new DX11Renderer(m_window);
-
+		
 		ID3D11Device* devi = mp_dxrenderer->GetDevice();
 		pt::PhysicsBody::SetPtrs(&m_physHandler);
 #ifdef PHYSDEBUG
