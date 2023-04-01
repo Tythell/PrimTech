@@ -58,6 +58,9 @@
     <Filter Include="Header Files\vendor\ImGui\ImGuizmo">
       <UniqueIdentifier>{44df7968-43f1-4480-8d3d-b358dd0d483b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\vendor\mono">
+      <UniqueIdentifier>{48484bde-3dd0-4a7c-84cc-6d430507e1ed}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Windows\WindowWrap.cpp">
@@ -199,6 +202,9 @@
     </None>
     <None Include="src\Graphics\3rdParty\assimp\quaternion.inl">
       <Filter>Header Files\vendor\assimp</Filter>
+    </None>
+    <None Include="src\thirdParty\mono\cil\opcode.def">
+      <Filter>Header Files\vendor\mono</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -867,6 +873,108 @@
     </ClInclude>
     <ClInclude Include="src\Physics\PhysicsHandler.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\mono\metadata\appdomain.h">
+      <Filter>Header Files\vendor\mono</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\mono\metadata\assembly.h">
+      <Filter>Header Files\vendor\mono</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\mono\metadata\attrdefs.h">
+      <Filter>Header Files\vendor\mono</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\mono\metadata\blob.h">
+      <Filter>Header Files\vendor\mono</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\mono\metadata\class.h">
+      <Filter>Header Files\vendor\mono</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\mono\metadata\debug-helpers.h">
+      <Filter>Header Files\vendor\mono</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\mono\metadata\debug-mono-symfile.h">
+      <Filter>Header Files\vendor\mono</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\mono\metadata\environment.h">
+      <Filter>Header Files\vendor\mono</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\mono\metadata\exception.h">
+      <Filter>Header Files\vendor\mono</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\mono\metadata\image.h">
+      <Filter>Header Files\vendor\mono</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\mono\jit\jit.h">
+      <Filter>Header Files\vendor\mono</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\mono\metadata\loader.h">
+      <Filter>Header Files\vendor\mono</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\mono\metadata\metadata.h">
+      <Filter>Header Files\vendor\mono</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\mono\metadata\mono-config.h">
+      <Filter>Header Files\vendor\mono</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\mono\utils\mono-counters.h">
+      <Filter>Header Files\vendor\mono</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\mono\metadata\mono-debug.h">
+      <Filter>Header Files\vendor\mono</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\mono\utils\mono-dl-fallback.h">
+      <Filter>Header Files\vendor\mono</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\mono\utils\mono-error.h">
+      <Filter>Header Files\vendor\mono</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\mono\utils\mono-forward.h">
+      <Filter>Header Files\vendor\mono</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\mono\metadata\mono-gc.h">
+      <Filter>Header Files\vendor\mono</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\mono\utils\mono-jemalloc.h">
+      <Filter>Header Files\vendor\mono</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\mono\utils\mono-logger.h">
+      <Filter>Header Files\vendor\mono</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\mono\utils\mono-publib.h">
+      <Filter>Header Files\vendor\mono</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\mono\metadata\object.h">
+      <Filter>Header Files\vendor\mono</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\mono\metadata\object-forward.h">
+      <Filter>Header Files\vendor\mono</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\mono\metadata\opcodes.h">
+      <Filter>Header Files\vendor\mono</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\mono\metadata\profiler.h">
+      <Filter>Header Files\vendor\mono</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\mono\metadata\profiler-events.h">
+      <Filter>Header Files\vendor\mono</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\mono\metadata\reflection.h">
+      <Filter>Header Files\vendor\mono</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\mono\metadata\row-indexes.h">
+      <Filter>Header Files\vendor\mono</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\mono\metadata\sgen-bridge.h">
+      <Filter>Header Files\vendor\mono</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\mono\metadata\threads.h">
+      <Filter>Header Files\vendor\mono</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\mono\metadata\tokentype.h">
+      <Filter>Header Files\vendor\mono</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thirdParty\mono\metadata\verify.h">
+      <Filter>Header Files\vendor\mono</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

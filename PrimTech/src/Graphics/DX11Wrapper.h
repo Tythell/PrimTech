@@ -52,18 +52,14 @@ namespace PrimtTech
 		void ImGuiRender();
 		void ImGuTextureDisplay();
 
-#ifdef _DEBUG
+#ifdef PHYSDEBUG
 		PhysicsHandler* mp_debufrenderer = nullptr;
 
 	public:
 		void SetDebugRenderer(PhysicsHandler* p) { mp_debufrenderer = p; }
 	private:
 
-#endif // _DEBUG
-
-		//void ImportScene(std::string path);
-		void ExportScene(std::string path);
-
+#endif // PHYSDEBUG
 		Window* m_pWin = nullptr;
 
 		const unsigned int m_width, m_height;

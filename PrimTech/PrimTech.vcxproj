@@ -80,10 +80,12 @@
     <LinkIncremental>true</LinkIncremental>
     <LibraryPath>$(SolutionDir)3rdparty;$(SolutionDir)3rdparty\Debug;$(LibraryPath)</LibraryPath>
     <IncludePath>$(ProkectDir)src;$(IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <LibraryPath>$(SolutionDir)3rdparty;$(SolutionDir)3rdparty\Release;$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -134,9 +136,8 @@
       </Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>cd $(SolutionDir)
-copy 3rdparty\Debug\*.dll x64\Debug\
-IF EXIST 3rdparty\*.dll ( copy 3rdparty\*.dll x64\Debug\ )</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -326,6 +327,40 @@ IF EXIST 3rdparty\*.dll ( copy 3rdparty\*.dll x64\Release\ )</Command>
     <ClInclude Include="src\Graphics\ShadowMap.h" />
     <ClInclude Include="src\pch.h" />
     <ClInclude Include="src\Serializer\Serializer.h" />
+    <ClInclude Include="src\thirdParty\mono\jit\jit.h" />
+    <ClInclude Include="src\thirdParty\mono\metadata\appdomain.h" />
+    <ClInclude Include="src\thirdParty\mono\metadata\assembly.h" />
+    <ClInclude Include="src\thirdParty\mono\metadata\attrdefs.h" />
+    <ClInclude Include="src\thirdParty\mono\metadata\blob.h" />
+    <ClInclude Include="src\thirdParty\mono\metadata\class.h" />
+    <ClInclude Include="src\thirdParty\mono\metadata\debug-helpers.h" />
+    <ClInclude Include="src\thirdParty\mono\metadata\debug-mono-symfile.h" />
+    <ClInclude Include="src\thirdParty\mono\metadata\environment.h" />
+    <ClInclude Include="src\thirdParty\mono\metadata\exception.h" />
+    <ClInclude Include="src\thirdParty\mono\metadata\image.h" />
+    <ClInclude Include="src\thirdParty\mono\metadata\loader.h" />
+    <ClInclude Include="src\thirdParty\mono\metadata\metadata.h" />
+    <ClInclude Include="src\thirdParty\mono\metadata\mono-config.h" />
+    <ClInclude Include="src\thirdParty\mono\metadata\mono-debug.h" />
+    <ClInclude Include="src\thirdParty\mono\metadata\mono-gc.h" />
+    <ClInclude Include="src\thirdParty\mono\metadata\object-forward.h" />
+    <ClInclude Include="src\thirdParty\mono\metadata\object.h" />
+    <ClInclude Include="src\thirdParty\mono\metadata\opcodes.h" />
+    <ClInclude Include="src\thirdParty\mono\metadata\profiler-events.h" />
+    <ClInclude Include="src\thirdParty\mono\metadata\profiler.h" />
+    <ClInclude Include="src\thirdParty\mono\metadata\reflection.h" />
+    <ClInclude Include="src\thirdParty\mono\metadata\row-indexes.h" />
+    <ClInclude Include="src\thirdParty\mono\metadata\sgen-bridge.h" />
+    <ClInclude Include="src\thirdParty\mono\metadata\threads.h" />
+    <ClInclude Include="src\thirdParty\mono\metadata\tokentype.h" />
+    <ClInclude Include="src\thirdParty\mono\metadata\verify.h" />
+    <ClInclude Include="src\thirdParty\mono\utils\mono-counters.h" />
+    <ClInclude Include="src\thirdParty\mono\utils\mono-dl-fallback.h" />
+    <ClInclude Include="src\thirdParty\mono\utils\mono-error.h" />
+    <ClInclude Include="src\thirdParty\mono\utils\mono-forward.h" />
+    <ClInclude Include="src\thirdParty\mono\utils\mono-jemalloc.h" />
+    <ClInclude Include="src\thirdParty\mono\utils\mono-logger.h" />
+    <ClInclude Include="src\thirdParty\mono\utils\mono-publib.h" />
     <ClInclude Include="src\thirdParty\reactphysics3d\body\CollisionBody.h" />
     <ClInclude Include="src\thirdParty\reactphysics3d\body\RigidBody.h" />
     <ClInclude Include="src\thirdParty\reactphysics3d\collision\broadphase\DynamicAABBTree.h" />
@@ -473,6 +508,7 @@ IF EXIST 3rdparty\*.dll ( copy 3rdparty\*.dll x64\Release\ )</Command>
     <None Include="src\Graphics\3rdParty\assimp\SmoothingGroups.inl" />
     <None Include="src\Graphics\3rdParty\assimp\vector2.inl" />
     <None Include="src\Graphics\3rdParty\assimp\vector3.inl" />
+    <None Include="src\thirdParty\mono\cil\opcode.def" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="src\Shaders\NoLightPS.hlsl">
@@ -486,6 +522,7 @@ IF EXIST 3rdparty\*.dll ( copy 3rdparty\*.dll x64\Release\ )</Command>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)%(Filename).cso</ObjectFileOutput>
     </FxCompile>
     <FxCompile Include="src\Shaders\LightWarpPS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>

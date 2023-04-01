@@ -265,8 +265,8 @@ namespace PrimtTech
 		m_3dvs.InitInputLayout(device, layout3D, ARRAYSIZE(layout3D));
 		m_toonPS.Init(device, "LightWarpPS.cso");
 
-		m_linePS.Init(device, "QuadPS.cso");
-		m_lineVS.Init(device, "QuadVS.cso");
+		m_linePS.Init(device, "LinePS.cso");
+		m_lineVS.Init(device, "LineVS.cso");
 		m_lineVS.InitInputLayout(device, lineLayout, ARRAYSIZE(lineLayout));
 
 		dc->VSSetShader(m_3dvs.GetShader(), NULL, 0);
@@ -344,46 +344,6 @@ namespace PrimtTech
 			ImGui::Render();
 			ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 		}
-	}
-
-	void DX11Renderer::ExportScene(std::string path)
-	{
-		/*std::ofstream writer(path, std::ios::binary | std::ios::out);
-
-		Sceneheaders header = Sceneheaders::eMODEL;
-		for (int i = 0; i < m_models.size(); i++)
-		{
-			ModelStruct ms;
-			strcpy_s(ms.modelname, m_models[i]->GetName().c_str());
-			if (ms.modelname[0] == '(')
-			{
-				std::string strCopy(ms.modelname);
-				int brackedIndex = -1;
-				for (int i = 0; i < strCopy.size() && brackedIndex == -1; i++)
-				{
-					if (strCopy[i] == ')')
-						brackedIndex = i - 1;
-				}
-				if (brackedIndex != -1)
-					strCopy = strCopy.substr(brackedIndex + 2);
-				sprintf_s(ms.modelname, strCopy.c_str());
-			}
-			ms.scale = m_models[i]->GetScale();
-			ms.rotation = m_models[i]->GetRotation();
-			ms.position = m_models[i]->GetPosition();
-			ms.noOfExtraMats = m_models[i]->GetMeshP()->GetNofMeshes() - 1;
-			strcpy_s(ms.mtrlname, m_models[i]->GetMaterial().GetFileName().c_str());
-			writer.write((const char*)&header, 4);
-			writer.write((const char*)&ms, sizeof(ModelStruct));
-			for (UINT eI = 0; eI < ms.noOfExtraMats; eI++)
-			{
-				strcpy_s(ms.mtrlname, m_models[i]->GetMaterial(eI + 1).GetFileName().c_str());
-				writer.write(ms.mtrlname, 24);
-			}
-		}
-		header = Sceneheaders::enull;
-		writer.write((const char*)&header, 1);
-		writer.close();*/
 	}
 
 	void DX11Renderer::ImGuTextureDisplay()
