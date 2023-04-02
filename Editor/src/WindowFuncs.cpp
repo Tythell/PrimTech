@@ -680,10 +680,15 @@ void Gui_EntList(void* test, bool* show)
 					std::string buttonNAme = "Remove##" + std::to_string(i);
 					if (ImGui::Button(buttonNAme.c_str()))
 					{
-						std::string cmd = "comp " + std::to_string(mr->EntId());
-						cmd += " rigidbody box remove " + std::to_string(i);
-						p->console.AddLog(cmd.c_str());
+						mr->RemoveCollider(i);
+						continue;
 					} ImGui::SameLine();
+
+					bool isTrigger = mr->GetIsTrigger(i);
+					if (ImGui::Checkbox("IsTrigger", &isTrigger))
+					{
+						mr->SetIsTrigger(isTrigger, i);
+					}
 
 					switch (mr->GetColliderType(i))
 					{
@@ -720,7 +725,6 @@ void Gui_EntList(void* test, bool* show)
 					default:
 						break;
 					}
-					
 					
 				}
 

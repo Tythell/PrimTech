@@ -3,7 +3,6 @@
 #include <omp.h>
 #include <thread>
 #include"Physics/PhysicsHandler.h"
-#include <lua/lua.hpp>
 
 namespace pt
 {
@@ -42,7 +41,5 @@ namespace pt
 		bool m_mouseLocked = false;
 
 		d::XMINT2 m_windowPos;
-
-		lua_State* m_L = nullptr;;
 	};
 };

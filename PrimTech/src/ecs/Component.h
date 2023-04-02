@@ -210,6 +210,8 @@ namespace pt
 		void SetBoxExtents(const sm::Vector3& extents, uint index = 0);
 		void SetSphereRadius(float r, uint index = 0);
 		void SetCapsuleLengths(float r, float h, uint index = 0);
+		void SetIsTrigger(bool trigger, uint i) { mp_rigidBody->getCollider(i)->setIsTrigger(trigger); }
+		bool GetIsTrigger(uint i) const { return mp_rigidBody->getCollider(i)->getIsTrigger(); }
 
 		ePT_ShapeType GetColliderType(uint index = 0) const { return m_shapeIndexes[index]; }
 

@@ -66,6 +66,7 @@ namespace pt
 	}
 	void PhysicsBody::RemoveCollider(uint index)
 	{
+		m_shapeIndexes.erase(m_shapeIndexes.begin() + index);
 		mp_rigidBody->removeCollider(mp_rigidBody->getCollider(index));
 	}
 	void PhysicsBody::SetType(rp::BodyType bodyType)
