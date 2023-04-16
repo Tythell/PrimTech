@@ -1,6 +1,7 @@
 #pragma once
 #include "../Math/Math.h"
-#include "Component.h"
+//#include "Component.h"
+#include "Components.hpp"
 
 
 namespace PrimtTech {

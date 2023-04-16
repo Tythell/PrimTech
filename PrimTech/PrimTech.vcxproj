@@ -239,6 +239,13 @@
     <ClCompile Include="src\Windows\WindowWrap.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\ecs\BoundShapeC.h" />
+    <ClInclude Include="src\ecs\CameraC.h" />
+    <ClInclude Include="src\ecs\Components.hpp" />
+    <ClInclude Include="src\ecs\Light.h" />
+    <ClInclude Include="src\ecs\LuaScript.h" />
+    <ClInclude Include="src\ecs\PhysicsBody.h" />
+    <ClInclude Include="src\ecs\TransformC.h" />
     <ClInclude Include="src\Physics\PhysicsHandler.h" />
     <ClInclude Include="src\ecs\ComponentHandler.h" />
     <ClInclude Include="src\ecs\Component.h" />

@@ -979,6 +979,27 @@
     <ClInclude Include="src\thirdParty\mono\metadata\verify.h">
       <Filter>Header Files\vendor\mono</Filter>
     </ClInclude>
+    <ClInclude Include="src\ecs\TransformC.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ecs\Components.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ecs\CameraC.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ecs\Light.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ecs\PhysicsBody.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ecs\LuaScript.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ecs\BoundShapeC.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="src\Shaders\LineVS.hlsl">
