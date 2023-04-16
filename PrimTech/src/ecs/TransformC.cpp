@@ -3,7 +3,7 @@
 
 namespace pt
 {
-	TransformComp::TransformComp(uint entId) : Component(entId),
+	TransformComp::TransformComp(EntIdType entId) : Component(entId),
 		m_scale(1.f, 1.f, 1.f)
 	{
 	}

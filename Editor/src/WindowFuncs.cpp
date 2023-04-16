@@ -543,7 +543,12 @@ void Gui_EntList(void* test, bool* show)
 						mr->SetMaterial(std::string(charbuffer), i);
 					}
 				}
+				if (ImGui::Button("Delete##meshref"))
+				{
+					pEnt->FreeComponent<pt::MeshRef>();
+				}
 			}
+
 		}
 		if (pEnt->HasComponentType(PrimtTech::ec_cam))
 		{
@@ -587,6 +592,11 @@ void Gui_EntList(void* test, bool* show)
 				}
 
 				mr->UpdateView(pEnt->Transform());
+
+				if (ImGui::Button("Delete##cam"))
+				{
+					pEnt->FreeComponent<pt::Camera>();
+				}
 			}
 		}
 		if (pEnt->HasComponentType(PrimtTech::ec_aabb))
@@ -604,6 +614,10 @@ void Gui_EntList(void* test, bool* show)
 				mr->SetPositionOffset(v);
 
 				//ImGui::Text(ptm::GetVectorAsString(mr->GetBox().Center).c_str());
+			}
+			if (ImGui::Button("Delete##aabb"))
+			{
+				pEnt->FreeComponent<pt::AABBComp>();
 			}
 		}
 		if (pEnt->HasComponentType(PrimtTech::ec_light))
@@ -633,6 +647,11 @@ void Gui_EntList(void* test, bool* show)
 
 				if (ImGui::Combo("##lightcombo", &item_current, items, IM_ARRAYSIZE(items)))
 					mr->SetType((uchar)item_current);
+
+				if (ImGui::Button("Delete##light"))
+				{
+					pEnt->FreeComponent<pt::Light>();
+				}
 			}
 		}
 		if (pEnt->HasComponentType(PrimtTech::ec_rigidBodies))
@@ -725,10 +744,13 @@ void Gui_EntList(void* test, bool* show)
 					default:
 						break;
 					}
-					
+
 				}
 
-					
+				if (ImGui::Button("Delete##physbod"))
+				{
+					pEnt->FreeComponent<pt::PhysicsBody>();
+				}
 				
 			}
 		}

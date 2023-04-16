@@ -3,26 +3,28 @@
 #include "../Graphics/Material.h"
 #include "Graphics/CbufferTypes.h"
 #include "Physics/PhysicsHandler.h"
-//#include <reactphysics3d/reactphysics3d.h>
+#include <lua/lua.hpp>
 #include<string>
 
 namespace rp = reactphysics3d;
+typedef int EntIdType;
 
 namespace pt
 {
 	class Component
 	{
 	public:
-		Component(const uint id);
-		const uint EntId() const;
+		Component(EntIdType id);
+		const EntIdType EntId() const;
+		void FreeComponent() { m_entId = -1; }
 	private:
-		const uint m_entId;
+		EntIdType m_entId;
 	};
 
 	class MeshRef : public Component
 	{
 	public:
-		MeshRef(uint entId, std::string meshName = "");
+		MeshRef(EntIdType entId, std::string meshName = "");
 
 		void Init(std::string path);
 		void SetMaterial(uint materialIndex, uint slot = 0);
@@ -41,7 +43,7 @@ namespace pt
 	class TransformComp : public Component
 	{
 	public:
-		TransformComp(uint entId);
+		TransformComp(EntIdType entId);
 		void SetPosition(float x, float y, float z);
 		void SetPosition(sm::Vector3 v);
 		void SetRotation(float x, float y, float z);
@@ -78,7 +80,7 @@ namespace pt
 	class Camera : public Component
 	{
 	public:
-		Camera(uint entId);
+		Camera(EntIdType entId);
 
 		sm::Matrix GetViewMatrix() const;
 		sm::Matrix GetProjMatrix() const;
@@ -99,21 +101,20 @@ namespace pt
 		sm::Vector3 GetForwardV() const { return m_forwardV; };
 		sm::Vector3 Getleft() const { 	return m_leftV; };
 		sm::Vector3 GetUp() const { return m_upV; };
+
+		bool IsOrthograpgic() const { return m_isOrthographic; };
 	private:
 		sm::Matrix m_viewM, m_projM;
 		sm::Vector3 m_posOffset, m_rotateOffset;
 		sm::Vector3 m_forwardV, m_leftV, m_upV;
 
 		bool m_isOrthographic = false;
-
-	public:
-		bool IsOrthograpgic() const { return m_isOrthographic; };
 	};
 
 	class AABBComp : public Component
 	{
 	public:
-		AABBComp(uint entId);
+		AABBComp(EntIdType entId);
 
 		void Update(pt::TransformComp& transform);
 		void SetExtends(const sm::Vector3& extends);
@@ -136,7 +137,7 @@ namespace pt
 	class OBBComp : public Component
 	{
 	public:
-		OBBComp(uint entId);
+		OBBComp(EntIdType entId);
 
 		void Update(const pt::TransformComp& transform);
 		void SetExtends(const sm::Vector3& extends);
@@ -147,7 +148,7 @@ namespace pt
 	class BSphereComp : public Component
 	{
 	public:
-		BSphereComp(uint entId);
+		BSphereComp(EntIdType entId);
 
 		void Update(const pt::TransformComp& transform);
 		void SetRadius(float r);
@@ -158,7 +159,7 @@ namespace pt
 	class Light : public Component
 	{
 	public:
-		Light(uint entId);
+		Light(EntIdType entId);
 
 		void Update(const TransformComp& transform);
 		void SetColor(sm::Vector4 clr) { m_lightData.clr = clr; };
@@ -187,7 +188,7 @@ namespace pt
 	class PhysicsBody : public Component
 	{
 	public:
-		PhysicsBody(uint id);
+		PhysicsBody(EntIdType id);
 
 		enum class ePT_ShapeType
 		{
@@ -243,5 +244,25 @@ namespace pt
 		std::vector<ePT_ShapeType> m_shapeIndexes;
 		sm::Vector3 m_startPos;
 		sm::Quaternion m_startOrientation;
+	};
+
+	class LuaScript : public Component
+	{
+	public:
+		LuaScript(EntIdType id) : Component(id) {}
+		LuaScript(const LuaScript& other);
+		~LuaScript();
+
+		void LoadScript(lua_State* L, const char* scriptFile/*, pt::Entity* pEnt*/);
+		void SetBuffer(lua_State* L, char* buffer, int size);
+
+		void Execute(const char* funcName);
+
+		int GetBufferSize() const { return m_size; };
+		char* GetBufferP() const { return m_pbuffer; };;
+	private:
+		lua_State* L = nullptr;
+		char* m_pbuffer = nullptr;;
+		int m_size = -1;
 	};
 }

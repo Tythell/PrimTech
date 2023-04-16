@@ -9,7 +9,7 @@ namespace pt
 
 
 
-	PhysicsBody::PhysicsBody(uint id) : Component(id)
+	PhysicsBody::PhysicsBody(EntIdType id) : Component(id)
 	{
 	}
 

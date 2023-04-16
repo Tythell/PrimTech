@@ -3,7 +3,7 @@
 
 namespace pt
 {
-	AABBComp::AABBComp(uint entId): Component(entId)
+	AABBComp::AABBComp(EntIdType entId): Component(entId)
 	{
 		m_aabb.Extents = { .5f,.5f,.5f };
 	}
@@ -32,7 +32,7 @@ namespace pt
 	{
 		//mr.GetMeshContainerP()
 	}
-	OBBComp::OBBComp(uint entId) : Component(entId) {}
+	OBBComp::OBBComp(EntIdType entId) : Component(entId) {}
 	void OBBComp::Update(const pt::TransformComp& transform)
 	{
 		m_obb.Center = transform.GetPosition();
@@ -42,7 +42,7 @@ namespace pt
 	{
 		m_obb.Extents = extends;
 	}
-	BSphereComp::BSphereComp(uint entId) : Component(entId) {}
+	BSphereComp::BSphereComp(EntIdType entId) : Component(entId) {}
 	void BSphereComp::Update(const pt::TransformComp& transform)
 	{
 		m_bsphere.Center = transform.GetPosition();

@@ -174,7 +174,7 @@
     <ClCompile Include="src\Macros\Colors.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\lualink\LuaLink.cpp">
+    <ClCompile Include="src\ecs\LuaSciptC.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -978,9 +978,6 @@
     </ClInclude>
     <ClInclude Include="src\thirdParty\mono\metadata\verify.h">
       <Filter>Header Files\vendor\mono</Filter>
-    </ClInclude>
-    <ClInclude Include="src\lualink\LuaLink.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

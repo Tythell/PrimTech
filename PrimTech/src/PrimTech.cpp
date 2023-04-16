@@ -113,7 +113,8 @@ namespace pt
 		}
 
 		std::vector<pt::Light>& r_lights = ComponentHandler::GetComponentArray<pt::Light>();
-		uint numLights = (uint)r_lights.size();
+		uint numLights = ComponentHandler::GetNoOfUsedComponents<pt::Light>();
+		//uint numLights = (uint)r_lights.size();
 		for (int i = 0; i < numLights; i++)
 		{
 			r_lights[i].Update(pt::Entity::GetEntity(r_lights[i].EntId()).Transform());

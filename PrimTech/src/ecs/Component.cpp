@@ -5,15 +5,15 @@
 
 namespace pt
 {
-	Component::Component(const uint id) : m_entId(id)
+	Component::Component(const EntIdType id) : m_entId(id)
 	{}
 
-	const uint Component::EntId() const
+	const EntIdType Component::EntId() const
 	{
 		return m_entId;
 	}
 
-	MeshRef::MeshRef(uint entId, std::string meshName) : Component(entId)
+	MeshRef::MeshRef(EntIdType entId, std::string meshName) : Component(entId)
 	{
 		Init(meshName);
 	}

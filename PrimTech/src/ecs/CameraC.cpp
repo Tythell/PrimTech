@@ -3,7 +3,7 @@
 
 namespace pt
 {
-	pt::Camera::Camera(uint entId) : Component(entId) {}
+	pt::Camera::Camera(EntIdType entId) : Component(entId) {}
 
 	sm::Matrix pt::Camera::GetViewMatrix() const
 	{

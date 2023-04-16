@@ -3,7 +3,7 @@
 
 namespace pt
 {
-	Light::Light(uint entId): Component(entId),
+	Light::Light(EntIdType entId): Component(entId),
 		m_dirOffset(0.f,-1.f,0.f, 0.f)
 	{
 		m_lightData.clr = { 1.f,1.f, 1.f, 1.f };

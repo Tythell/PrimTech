@@ -1,6 +1,7 @@
 #pragma once
-//#include "../Math/Math.h"
+#include "../Math/Math.h"
 #include "Component.h"
+
 
 namespace PrimtTech {
 
@@ -15,11 +16,11 @@ namespace PrimtTech {
 		ec_bsphere = 0x20,
 		ec_light = 0x40,
 		ec_rigidBodies = 0x80,
-		//ec_09 = 0x100, 
+		ec_lua = 0x100, 
 	};
 
 
-#define NUM_COMPONENT_TYPES 3
+#define NUM_COMPONENT_TYPES 10
 
 #define COMP_TYPE(cTYPE, NAME, STAT, MID) STAT std::vector<cTYPE> MID## NAME;
 
@@ -33,6 +34,7 @@ COMP_TYPE(pt::OBBComp, s_obbs, STAT, AFTER) \
 COMP_TYPE(pt::BSphereComp, s_bspheres, STAT, AFTER) \
 COMP_TYPE(pt::Light, s_lights, STAT, AFTER) \
 COMP_TYPE(pt::PhysicsBody, s_rigidBodies, STAT, AFTER) \
+COMP_TYPE(pt::LuaScript, s_luascripts, STAT, AFTER) \
 
 #define LINK_TYPE_VEC(ELSE,cTYPE, NAME, ENUM) \
 ELSE if constexpr (std::is_same_v<T, cTYPE>) { \
@@ -49,6 +51,7 @@ LINK_TYPE_VEC(else, pt::OBBComp, s_obbs, ec_obb) \
 LINK_TYPE_VEC(else, pt::BSphereComp, s_bspheres, ec_bsphere) \
 LINK_TYPE_VEC(else, pt::Light, s_lights, ec_light) \
 LINK_TYPE_VEC(else, pt::PhysicsBody, s_rigidBodies, ec_rigidBodies) \
+LINK_TYPE_VEC(else, pt::LuaScript, s_luascripts, ec_lua) \
 
 	class ComponentHandler
 	{
@@ -83,14 +86,26 @@ LINK_TYPE_VEC(else, pt::PhysicsBody, s_rigidBodies, ec_rigidBodies) \
 			tVec->reserve(n);
 		}
 
+		static int GetNoFreeComponents(int index);
+		template <class T>
+		static int GetNoOfUsedComponents()
+		{
+			HasComponent compType = ec_null;
+			std::vector<T>* tVec = nullptr;
+			LinkVector<T>(tVec, compType);
+			return (int)tVec->size() - freeComponents[ptm::firstset(compType)];
+		}
+		static void IncreaseFreeComponents(int index, int n);
+
 		template<class T>
 		static void LinkVector(std::vector<T>*& ptvec, HasComponent& c)
 		{
 			LINK_LIST
 		}
 	private:
-		COMPONENT_LIST(static, )
+		COMPONENT_LIST(static, );
 
+		static int freeComponents[NUM_COMPONENT_TYPES];
 	};
 
 }

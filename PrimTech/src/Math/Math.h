@@ -30,6 +30,10 @@ using uchar = unsigned char;
 
 namespace ptm
 {
+	inline int firstset(int bits) {
+		return (bits & 0x80000000) ? 31 : firstset((bits << 1) | 1) - 1;
+	}
+
 	inline std::string GetVectorAsString(sm::Vector3 v)
 	{
 		std::string s = std::to_string(v.x);

@@ -378,7 +378,8 @@ namespace PrimtTech
 	void drawMeshes(std::vector<MeshRef>& rMeshrefs, std::vector<TransformComp>& rTransforms,
 		Buffer<hlsl::cbpWorldTransforms3D>& transformBuffer, Buffer<hlsl::cbpMaterialBuffer>* pMAtBuffer, ID3D11DeviceContext*& dc, float deltatime)
 	{
-		uint numMEshRefs = (uint)rMeshrefs.size();
+		uint numMEshRefs = ComponentHandler::GetNoOfUsedComponents<pt::MeshRef>();
+		//uint numMEshRefs = (uint)rMeshrefs.size();
 		uint offset = 0;
 		for (int i = 0; i < numMEshRefs; i++)
 		{
@@ -431,7 +432,7 @@ namespace PrimtTech
 
 		// -------------------------------------- Update transforms with rigidbodies ---------------------------------------------------
 		std::vector<PhysicsBody>& rRigidBodies = ComponentHandler::GetComponentArray<PhysicsBody>();
-		uint numRigidBodies = (uint)rRigidBodies.size();
+		uint numRigidBodies = ComponentHandler::GetNoOfUsedComponents<PhysicsBody>();
 		for (int i = 0; i < numRigidBodies; i++)
 		{
 			uint entId = rRigidBodies[i].EntId();
@@ -452,7 +453,8 @@ namespace PrimtTech
 		// -------------------------------------- Lights ---------------------------------------------------
 
 		std::vector<pt::Light>& r_lights = ComponentHandler::GetComponentArray<pt::Light>();
-		uint numLights = (uint)r_lights.size();
+		uint numLights = ComponentHandler::GetNoOfUsedComponents<pt::Light>();
+		//uint numLights = (uint)r_lights.size();
 		m_lightbuffer.Data().numLights = numLights;
 
 		for (int i = 0; i < numLights; i++)

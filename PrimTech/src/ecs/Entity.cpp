@@ -43,10 +43,18 @@ namespace pt
 
 	bool pt::Entity::HasComponentType(uint comp) const
 	{
-		if (m_hasComponents & comp)
-			return true;
-		return false;
+		return (m_hasComponents & comp);
 	}
+
+	int pt::Entity::CalculateNrOfComponents() const
+	{
+		int num = 0;
+		for (int i = 0; i < NUM_COMPONENT_TYPES; i++)
+			num += (int)HasComponentType(1 << i);
+
+		return num;
+	}
+
 	void Entity::InsertTable(uint key, uint val)
 	{
 		m_hasComponents &= key;
