@@ -166,5 +166,12 @@ namespace pt
 		sm::Quaternion quat = quat.CreateFromYawPitchRoll(m_rot.x, m_rot.y, m_rot.z);
 		return quat;
 	}
+	int TransformComp::Lua_Move(lua_State* L)
+	{
+		TransformComp* comp = (TransformComp*)lua_touserdata(L, 1);
+		comp->Move(lua_tonumber(L, 2), lua_tonumber(L, 3), lua_tonumber(L, 4));
+
+		return 0;
+	}
 }
 

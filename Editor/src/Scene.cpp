@@ -64,6 +64,8 @@ Editor::Editor(d::XMINT2 windowRes, HINSTANCE hInstance)
 	ent1.Transform().SetPosition(0.f, -0.2f, 0.f);
 	ent1.Transform().SetScale(10.f, 1.f, 10.f);
 	ent1.AddComponent<pt::MeshRef>()->Init("scaledplane.obj");
+
+	ent1.AddComponent<pt::LuaScript>()->LoadScript("Scripts/moveScript.lua");
 }
 
 Editor::~Editor()

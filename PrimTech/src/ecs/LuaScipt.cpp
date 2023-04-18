@@ -1,8 +1,10 @@
-#include <pch.h>
-#include "Component.h"
+#include "pch.h"
+#include "LuaScript.h"
 
 namespace pt
 {
+	lua_State* LuaScript::L = nullptr;
+
 	LuaScript::LuaScript(const LuaScript& other) : Component(other.EntId())
 	{
 		m_size = other.m_size;
@@ -48,9 +50,8 @@ namespace pt
 		return 0;
 	}
 
-	void LuaScript::LoadScript(lua_State* L, const char* scriptFile)
+	void LuaScript::LoadScript(const char* scriptFile)
 	{
-		this->L = L;
 		if (m_pbuffer) delete[] m_pbuffer;
 
 		luaL_loadfile(L, scriptFile);
@@ -61,9 +62,9 @@ namespace pt
 		m_pbuffer = dumpData.data;
 		m_size = dumpData.size;
 	}
-	void LuaScript::SetBuffer(lua_State* L, char* buffer, int size)
+
+	void LuaScript::SetBuffer(char* buffer, int size)
 	{
-		this->L = L;
 		m_size = size;
 		m_pbuffer = buffer;
 	}
@@ -71,7 +72,11 @@ namespace pt
 	{
 		luaL_loadbuffer(L, m_pbuffer, m_size, funcName);
 		lua_pcall(L, 0, 0, 0);
-		lua_getglobal(L, funcName);
+		int d = lua_getglobal(L, funcName);
 		lua_pcall(L, 0, 0, 0);
+	}
+	void LuaScript::SetLuaState(lua_State* pL)
+	{
+		L = pL;
 	}
 }

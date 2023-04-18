@@ -6,3 +6,4 @@
 #include "Light.h"
 #include "LuaScript.h"
 #include "PhysicsBody.h"
+#include "Meshref.h"

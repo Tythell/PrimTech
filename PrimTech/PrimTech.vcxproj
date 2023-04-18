@@ -170,8 +170,10 @@
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\ecs\LuaSciptC.cpp" />
+    <ClCompile Include="src\ecs\LuaScipt.cpp" />
+    <ClCompile Include="src\ecs\MeshRef.cpp" />
     <ClCompile Include="src\ecs\PhysicsBody.cpp" />
+    <ClCompile Include="src\scripting\LuaHandler.cpp" />
     <ClCompile Include="src\Macros\Colors.cpp" />
     <ClCompile Include="src\Physics\PhysicsHandler.cpp" />
     <ClCompile Include="src\ecs\BoundShapeC.cpp" />
@@ -244,8 +246,10 @@
     <ClInclude Include="src\ecs\Components.hpp" />
     <ClInclude Include="src\ecs\Light.h" />
     <ClInclude Include="src\ecs\LuaScript.h" />
+    <ClInclude Include="src\ecs\Meshref.h" />
     <ClInclude Include="src\ecs\PhysicsBody.h" />
     <ClInclude Include="src\ecs\TransformC.h" />
+    <ClInclude Include="src\scripting\LuaHandler.h" />
     <ClInclude Include="src\Physics\PhysicsHandler.h" />
     <ClInclude Include="src\ecs\ComponentHandler.h" />
     <ClInclude Include="src\ecs\Component.h" />

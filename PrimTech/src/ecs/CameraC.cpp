@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "Component.h"
+#include "CameraC.h"
 #include "TransformC.h"
 
 namespace pt

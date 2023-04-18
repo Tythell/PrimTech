@@ -1,5 +1,5 @@
 #include"pch.h"
-#include"Component.h"
+#include"BoundShapeC.h"
 #include "TransformC.h"
 
 namespace pt
@@ -28,10 +28,6 @@ namespace pt
 	bool AABBComp::Intersects(AABBComp& box)
 	{
 		return m_aabb.Intersects(box.m_aabb);
-	}
-	void AABBComp::CreateFromMesh(const pt::MeshRef& mr)
-	{
-		//mr.GetMeshContainerP()
 	}
 	OBBComp::OBBComp(EntIdType entId) : Component(entId) {}
 	void OBBComp::Update(const pt::TransformComp& transform)

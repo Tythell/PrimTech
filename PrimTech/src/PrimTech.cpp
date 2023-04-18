@@ -37,6 +37,9 @@ namespace pt
 
 		pt::Entity& ent0 = pt::Entity::Create();
 
+		SetUpScriptEnviroment();
+		LuaScript::SetLuaState(m_luaEngine.GetLuaState());
+
 
 		pt::Camera* devCam = ent0.AddComponent<pt::Camera>();
 		devCam->UpdateView(ent0.Transform());
@@ -54,8 +57,6 @@ namespace pt
 #endif // PHYSDEBUG
 		//ComponentHandler::ReserveMemory<MeshRef>(6);
 	}
-
-	
 
 	void PrimTech::ToggleMouse()
 	{
@@ -78,25 +79,36 @@ namespace pt
 
 			::SetWindowTextW(m_window.getHWND(), extendedWinName.c_str());
 		}
+		if (m_playScripts)
+		{
+			std::vector<LuaScript>& scripts = ComponentHandler::GetComponentArray<LuaScript>();
+			uint numScripts = ComponentHandler::GetNoOfUsedComponents<LuaScript>();
+			for (int i = 0; i < numScripts; i++)
+			{
+				m_luaEngine.ChangeCurrentLuaEnt(scripts[i].EntId(), m_entTableIdx);
+				scripts[i].Execute("OnTick");
+			}
+		}
+		
 		std::vector<pt::AABBComp>& aabbs = ComponentHandler::GetComponentArray<pt::AABBComp>();
 
-		for (int i = 0; i < aabbs.size(); i++)
-		{
-			pt::AABBComp& comp = aabbs[i];
-			aabbs[i].EntId();
-			pt::TransformComp& transform = ComponentHandler::GetComponentByIndex<pt::TransformComp>(aabbs[i].EntId());
+		//for (int i = 0; i < aabbs.size(); i++)
+		//{
+		//	pt::AABBComp& comp = aabbs[i];
+		//	aabbs[i].EntId();
+		//	pt::TransformComp& transform = ComponentHandler::GetComponentByIndex<pt::TransformComp>(aabbs[i].EntId());
 
-			aabbs[i].Update(transform);
-		}
+		//	aabbs[i].Update(transform);
+		//}
 
-		// FIXME naive and slow solution, has to be optimised in the future
-		for (int i = 0; i < aabbs.size(); i++)
-			for (int j = 0; j < aabbs.size(); j++)
-				if (i != j && aabbs[i].Intersects(aabbs[j]))
-				{
-					aabbs[i].SetIsIntersecting(true);
-					aabbs[j].SetIsIntersecting(true);
-				}
+		//// FIXME naive and slow solution, has to be optimised in the future
+		//for (int i = 0; i < aabbs.size(); i++)
+		//	for (int j = 0; j < aabbs.size(); j++)
+		//		if (i != j && aabbs[i].Intersects(aabbs[j]))
+		//		{
+		//			aabbs[i].SetIsIntersecting(true);
+		//			aabbs[j].SetIsIntersecting(true);
+		//		}
 
 
 		if (m_mouseLocked)
@@ -119,6 +131,22 @@ namespace pt
 		{
 			r_lights[i].Update(pt::Entity::GetEntity(r_lights[i].EntId()).Transform());
 		}
+	}
+
+	void PrimTech::SetUpScriptEnviroment()
+	{
+		int typeTable = m_luaEngine.CreateLuaCompTable();
+		//m_luaEngine.AddTypeFunc()
+
+		int transformTable = m_luaEngine.InitCompType("Transform", ec_transform, typeTable);
+		m_luaEngine.AddTypeFunc(TransformComp::Lua_Move, transformTable, "Move");
+		int meshTable = m_luaEngine.InitCompType("MeshRef", ec_meshRef, typeTable);
+		int camTable = m_luaEngine.InitCompType("Camera", ec_cam, typeTable);
+		int lightTable = m_luaEngine.InitCompType("Light", ec_light, typeTable);
+		int physTable = m_luaEngine.InitCompType("PhysBody", ec_rigidBodies, typeTable);
+
+
+		m_entTableIdx = m_luaEngine.InitEntTable();
 	}
 
 	void PrimTech::HideCursor()
