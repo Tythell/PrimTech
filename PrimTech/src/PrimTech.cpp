@@ -44,7 +44,7 @@ namespace pt
 		pt::Camera* devCam = ent0.AddComponent<pt::Camera>();
 		devCam->UpdateView(ent0.Transform());
 		devCam->SetPerspective(80.f, (float)width / (float)height, 0.1f, 100.f);
-		ent0.Transform().SetPosition(0.f, 1.f, -2.f);
+		ent0.SetPosition(0.f, 1.f, -2.f);
 
 		mp_dxrenderer = new DX11Renderer(m_window);
 		
@@ -67,8 +67,6 @@ namespace pt
 
 	void PrimTech::Update(float dt)
 	{
-		m_physHandler.Update(dt);
-
 		static float timer = 0.f;
 		timer += dt;
 		if (timer >= 1.f)
@@ -79,7 +77,8 @@ namespace pt
 
 			::SetWindowTextW(m_window.getHWND(), extendedWinName.c_str());
 		}
-		if (m_playScripts)
+		m_physHandler.Update(dt, m_playing);
+		if (m_playing)
 		{
 			std::vector<LuaScript>& scripts = ComponentHandler::GetComponentArray<LuaScript>();
 			uint numScripts = ComponentHandler::GetNoOfUsedComponents<LuaScript>();
@@ -161,12 +160,34 @@ namespace pt
 		while (::ShowCursor(true) < 0);
 	}
 
+	bool PrimTech::TogglePlay(char b)
+	{
+		if (b == 2)
+		{
+			m_playing = !m_playing;
+		}
+		else
+			m_playing = (bool)b;
+
+		return m_playing;
+	}
+
 	void PrimTech::Run()
 	{
 		float dtf = (float)m_deltaTime;
 		Update(dtf);
 		mp_dxrenderer->Render((float)m_deltaTime);
 		m_isOpen = m_window.processMsg();
+	}
+	void PrimTech::ExecuteOnStart()
+	{
+		std::vector<LuaScript>& scripts = ComponentHandler::GetComponentArray<LuaScript>();
+		uint numScripts = ComponentHandler::GetNoOfUsedComponents<LuaScript>();
+		for (int i = 0; i < numScripts; i++)
+		{
+			m_luaEngine.ChangeCurrentLuaEnt(scripts[i].EntId(), m_entTableIdx);
+			scripts[i].Execute("OnStart");
+		}
 	}
 	bool PrimTech::IsOpen() const
 	{

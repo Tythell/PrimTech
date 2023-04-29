@@ -19,11 +19,20 @@ namespace pt
 
 		static Entity& Create();
 		static const uint NumEnts();
-		static Entity& GetEntity(uint index);
-		static Entity* GetEntityP(uint index);
+		static Entity& GetEntity(EntIdType index);
+		static Entity* GetEntityP(EntIdType index);
 		static void Clear(uint until = 0);
 		static std::vector<Entity>& GetAllEnts();
 		static void ReserveEnts(size_t size);
+
+		void SetPhysBodyIndex(int idx);
+		void SetPosition(float x, float y, float z);
+		void SetPosition(const sm::Vector3& v);
+		void SetRotation(float x, float y, float z);
+		void SetRotation(const sm::Vector3& v);
+		void SetRotation(const sm::Quaternion& v);
+		void SetScale(float x, float y, float z);
+		void SetScale(const sm::Vector3& v);
 
 		template<class T>
 		T* AddComponent()
@@ -121,6 +130,8 @@ namespace pt
 		EntIdType m_id = 0xffffffff;
 		uint m_hasComponents = 0;
 		std::string m_displayName = "";
+
+		int m_physIndex = -1;
 
 		static uint nrOfEntities;
 		std::/*unordered_*/map<uint, uint> m_compTable;

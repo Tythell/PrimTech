@@ -75,7 +75,7 @@ namespace PrimtTech
 
 	Material* ResourceHandler::AddMaterial(std::string name)
 	{
-		THROW_POPUP_ERROR(!(m_materials.size() == m_materials.capacity()), "not enough memory reserved for new material");
+		//THROW_POPUP_ERROR(!(m_materials.size() == m_materials.capacity()), "not enough memory reserved for new material");
 
 		return &m_materials.emplace_back(name);
 	}
@@ -139,6 +139,14 @@ namespace PrimtTech
 	ID3D11Device* ResourceHandler::GetDevice()
 	{
 		return pDevice;
+	}
+	void MeshCluster::Init()
+	{
+
+	}
+	void MeshCluster::IASet(ID3D11DeviceContext* dc)
+	{
+		dc->DrawInstanced()
 	}
 }
 

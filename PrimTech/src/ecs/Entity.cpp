@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Entity.h"
+//#include "ComponentHandler.h"
 
 namespace pt
 {
@@ -17,11 +18,11 @@ namespace pt
 		return (uint)s_ents.size();
 	}
 
-	Entity& Entity::GetEntity(uint index)
+	Entity& Entity::GetEntity(EntIdType index)
 	{
 		return s_ents[index];
 	}
-	Entity* Entity::GetEntityP(uint index)
+	Entity* Entity::GetEntityP(EntIdType index)
 	{
 		return &s_ents[index];
 	}
@@ -39,6 +40,60 @@ namespace pt
 	void Entity::ReserveEnts(size_t size)
 	{
 		s_ents.reserve(size);
+	}
+
+	void Entity::SetPhysBodyIndex(int idx)
+	{
+		m_physIndex = idx;
+	}
+
+	void Entity::SetPosition(float x, float y, float z)
+	{
+		SetPosition(sm::Vector3(x, y, z));
+	}
+
+	void Entity::SetPosition(const sm::Vector3& v)
+	{
+		if (m_physIndex != -1)
+		{
+			PhysicsBody& physBod = PrimtTech::ComponentHandler::GetComponentByIndex<PhysicsBody>((uint)m_physIndex);
+
+			physBod.SetPhysicsPosition(v);
+		}
+		else
+			Transform().SetPosition(v);
+	}
+
+	void Entity::SetRotation(float x, float y, float z)
+	{
+		SetRotation(sm::Vector3(x, y, z));
+	}
+
+	void Entity::SetRotation(const sm::Vector3& v)
+	{
+		if (m_physIndex != -1)
+		{
+			PhysicsBody& physBod = PrimtTech::ComponentHandler::GetComponentByIndex<PhysicsBody>((uint)m_physIndex);
+
+			physBod.SetPhysicsEulerRotation(v);
+		}
+		else
+			Transform().SetRotation(v);
+	}
+
+	void Entity::SetRotation(const sm::Quaternion& v)
+	{
+		Transform().SetRotation(v);
+	}
+
+	void Entity::SetScale(float x, float y, float z)
+	{
+		SetScale(sm::Vector3(x,y,z));
+	}
+
+	void Entity::SetScale(const sm::Vector3& v)
+	{
+		Transform().SetScale(v);
 	}
 
 	bool pt::Entity::HasComponentType(uint comp) const

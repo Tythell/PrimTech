@@ -40,6 +40,7 @@ namespace PrimtTech
 	public:
 		Material() {};
 		Material(std::string name);
+		//Material(const Material& other);
 		void LoadTexture(std::string textureName, TextureType type);
 		void UpdateTextureScroll(const float& deltatime);
 		void SetDiffuseScrollSpeed(float x, float y);
@@ -48,7 +49,6 @@ namespace PrimtTech
 		void SetTransparency(float f);
 		void SetTextureScale(float f);
 		void SetTextureScaleDist(float f);
-		void SetSelection(bool b);
 		void SetRimColor(sm::Vector3 rgb);
 		void ResetScrollValue();
 		void SetDistortionDivider(const float& f);
@@ -80,7 +80,7 @@ namespace PrimtTech
 		float m_textureScale = 1.f;
 		float m_textureScaleDist = 1.f;
 		
-		sm::Vector3 m_rimColor = GOLD_3F;
+		//sm::Vector3 m_rimColor = GOLD_3F;
 		float m_distDivider = 1.f;
 		sm::Vector3 m_diffuseClr = WHITE_3F;
 

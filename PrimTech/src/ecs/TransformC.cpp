@@ -1,18 +1,18 @@
 #include "pch.h"
 #include "Component.h"
 #include "TransformC.h"
+#include "ComponentHandler.h"
 
 namespace pt
 {
 	TransformComp::TransformComp(EntIdType entId) : Component(entId),
-		m_scale(1.f, 1.f, 1.f)
+		m_scale(1.f, 1.f, 1.f), m_pos(0.f,0.f,0.f), m_rot(0.f,0.f,0.f)
 	{
 	}
 
 	void TransformComp::SetPosition(float x, float y, float z)
 	{
-		m_pos = sm::Vector3(x, y, z);
-		UpdateWorld();
+		SetPosition(sm::Vector3(x, y, z));
 	}
 
 	void TransformComp::SetPosition(sm::Vector3 v)
@@ -47,11 +47,11 @@ namespace pt
 		m_rot = q.ToEuler();
 	}
 
-	void TransformComp::SetScale(float x, float y, float z)
-	{
-		m_scale = sm::Vector3(x, y, z);
-		UpdateWorld();
-	}
+	//void TransformComp::SetScale(float x, float y, float z)
+	//{
+	//	m_scale = sm::Vector3(x, y, z);
+	//	UpdateWorld();
+	//}
 
 	void TransformComp::SetScale(float xyz)
 	{
@@ -149,7 +149,7 @@ namespace pt
 	sm::Matrix TransformComp::GetWorld() const
 	{
 		sm::Matrix world = worldTransposed;
-		return world.Transpose();
+		return d::XMMatrixTranspose(world);
 	}
 
 	sm::Matrix TransformComp::GetWorldInversed()

@@ -272,7 +272,7 @@ namespace PrimtTech
 			transforms[i].SetRotation(f3[0], f3[1], f3[2]);
 
 			READ(f3);
-			transforms[i].SetScale(f3[0], f3[1], f3[2]);
+			//transforms[i].SetScale(f3[0], f3[1], f3[2]);
 		}
 
 		std::vector<pt::MeshRef>& meshrefs = ComponentHandler::GetComponentArray<pt::MeshRef>();

@@ -44,5 +44,21 @@ namespace PrimtTech
 		static std::vector<Material> m_materials;
 		static ID3D11Device* pDevice;
 	};
+
+	class MeshCluster
+	{
+	public:
+		void Init();
+		void AddMesh(Vertex3D* arr, int size);
+
+#ifdef DX11
+		void IASet(ID3D11DeviceContext* dc);
+#endif // DX11
+
+		
+	private:
+		std::vector<Vertex3D> m_allVerts;
+		Buffer<Vertex3D> m_mainVbuffer;
+	};
 }
 

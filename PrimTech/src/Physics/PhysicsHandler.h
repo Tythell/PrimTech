@@ -14,7 +14,7 @@ namespace PrimtTech
 	{
 	public:
 		PhysicsHandler();
-		void Update(float dt);
+		void Update(float dt, bool update);
 		rp::RigidBody* CreateRigidBody(const rp::Transform& transform, rp::BodyType bodyType = rp::BodyType::DYNAMIC);
 
 		rp::BoxShape* CreateBoxShape(const sm::Vector3& extents);
@@ -25,8 +25,8 @@ namespace PrimtTech
 		//	return m_physics.createTriangleMesh
 		//}
 		//rp::CollisionBody* CreateCollissionBody(const pt::TransformComp& transform);
-		void SetRunning(bool b) { m_running = b; };
-		void ToggleRunning() { m_running = !m_running; };
+		//void SetRunning(bool b) { m_running = b; };
+		//void ToggleRunning() { m_running = !m_running; };
 
 #ifdef PHYSDEBUG
 		Buffer<PrimtTech::BBVertex> debugTris;
@@ -43,8 +43,7 @@ namespace PrimtTech
 		rp::PhysicsWorld* m_pworld = nullptr;
 
 		bool m_isDraw = true;
+		bool m_running = true;
 		ID3D11Device* device = nullptr;
-
-		bool m_running = false;
 	};
 }

@@ -50,17 +50,26 @@ namespace pt
 		return 0;
 	}
 
-	void LuaScript::LoadScript(const char* scriptFile)
+	bool LuaScript::LoadScript(const char* scriptFile)
 	{
-		if (m_pbuffer) delete[] m_pbuffer;
+		lua_State* loadState = luaL_newstate();
+		int d = luaL_loadfile(loadState, scriptFile);
 
-		luaL_loadfile(L, scriptFile);
+		m_fileName = StringHelper::GetName(scriptFile);
 
-		LuaDumpData dumpData;
-		lua_dump(L, WriteFunc, &dumpData, 1);
+		if (d == LUA_OK)
+		{
+			LuaDumpData dumpData;
+			lua_dump(loadState, WriteFunc, &dumpData, 1);
 
-		m_pbuffer = dumpData.data;
-		m_size = dumpData.size;
+			if (m_pbuffer) delete[] m_pbuffer;
+
+			m_pbuffer = dumpData.data;
+			m_size = dumpData.size;
+		}
+
+		lua_close(loadState);
+		return d == LUA_OK;
 	}
 
 	void LuaScript::SetBuffer(char* buffer, int size)
@@ -68,12 +77,21 @@ namespace pt
 		m_size = size;
 		m_pbuffer = buffer;
 	}
-	void LuaScript::Execute(const char* funcName)
+	bool LuaScript::Execute(const char* funcName)
 	{
-		luaL_loadbuffer(L, m_pbuffer, m_size, funcName);
-		lua_pcall(L, 0, 0, 0);
-		int d = lua_getglobal(L, funcName);
-		lua_pcall(L, 0, 0, 0);
+		if (m_pbuffer)
+		{
+			luaL_loadbuffer(L, m_pbuffer, m_size, funcName);
+			lua_pcall(L, 0, 0, 0);
+			int d = lua_getglobal(L, funcName);
+			if (d != LUA_OK)
+			{
+				lua_pcall(L, 0, 0, 0);
+				return true;
+			}
+			
+		}
+		return false;
 	}
 	void LuaScript::SetLuaState(lua_State* pL)
 	{

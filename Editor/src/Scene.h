@@ -60,13 +60,16 @@ private:
 	EntListStruct m_entlist;
 	float m_mouseSense = 0.005f;
 
-	bool m_playing = false;
+	//bool m_playing = false;
 
 	void execCommand(std::string cmd);
 
 	PrimtTech::DX11Renderer* m_renderer = nullptr;
 
 	pt::PrimTech m_primtech;
+
+	std::vector<std::pair<sm::Vector3, sm::Vector3>> m_startTransforms;
+	void Play(char b = 2);
 
 	//bool m_exit = false;
 

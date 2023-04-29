@@ -9,6 +9,23 @@ namespace PrimtTech
 		SetName(name);
 	}
 
+	//Material::Material(const Material& other)
+	//{
+	//	m_name =					other.m_name;
+	//	m_textureScale =			other.m_textureScale;
+	//	m_textureScaleDist =		other.m_textureScaleDist;
+	//	m_rimColor =				other.m_rimColor;
+	//	m_distDivider =				other.m_distDivider;
+	//	m_diffuseClr =				other.m_diffuseClr;
+	//	m_diffuseOffsetValue =		other.m_diffuseOffsetValue;
+	//	m_distortionValue =			other.m_distortionValue;
+	//	m_diffuseOffsetSpeed =		other.m_diffuseOffsetSpeed;
+	//	m_distortionOffsetSpeed =	other.m_distortionOffsetSpeed;
+	//	m_transparency =			other.m_transparency;
+
+	//	mp_textures = ;
+	//}
+
 	void Material::LoadTexture(std::string textureName, TextureType type)
 	{
 		int textureIndex = ResourceHandler::CheckTextureNameExists(StringHelper::GetName(textureName));
@@ -134,9 +151,9 @@ namespace PrimtTech
 		matBuffer.Data().distDiv = m_distDivider;
 		matBuffer.Data().transparency = m_transparency;
 		matBuffer.Data().textureScale = m_textureScale;
-		matBuffer.Data().rimColor = m_rimColor;
+		//matBuffer.Data().rimColor = m_rimColor;
 
-		
+
 		for (UINT i = 0; i < eTextureTypeAMOUNT; i++)
 		{
 			UINT bitFlag = (1 << i);
@@ -165,7 +182,7 @@ namespace PrimtTech
 
 	void Material::SetRimColor(sm::Vector3 rgb)
 	{
-		m_rimColor = rgb;
+		//m_rimColor = rgb;
 	}
 
 	void Material::ResetScrollValue()

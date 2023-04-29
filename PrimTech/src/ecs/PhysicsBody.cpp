@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "PhysicsBody.h"
 #include "TransformC.h"
+#include "Entity.h"
 
 namespace pt
 {
@@ -8,10 +9,10 @@ namespace pt
 	//rp::PhysicsWorld* PhysicsBody::pPhysWorld = nullptr;
 	PrimtTech::PhysicsHandler* PhysicsBody::m_pPhysHandle = nullptr;
 
-
-
 	PhysicsBody::PhysicsBody(EntIdType id) : Component(id)
 	{
+		int h = PrimtTech::ComponentHandler::GetNoOfUsedComponents<pt::PhysicsBody>();
+		Entity::GetEntity(id).SetPhysBodyIndex(h);
 	}
 
 	void PhysicsBody::UpdateTransform(pt::TransformComp& transform)
@@ -76,16 +77,48 @@ namespace pt
 	}
 	void PhysicsBody::SetPhysicsPosition(const sm::Vector3& v)
 	{
+		std::vector<pt::TransformComp>& sss = PrimtTech::ComponentHandler::GetComponentArray<pt::TransformComp>();
+		pt::TransformComp& ptTransform = sss[EntId()];
+		rp::Transform rpTransform;
+		
+		rp::BodyType type = mp_rigidBody->getType();
+		mp_rigidBody->setType(rp::BodyType::STATIC);
+		rpTransform.setPosition({ v.x, v.y, v.z });
+
+		rp::Vector3 angles(ptTransform.GetRotation().x,
+			ptTransform.GetRotation().y,
+			ptTransform.GetRotation().z);
+
+		rp::Quaternion rpQ = rpQ.fromEulerAngles(angles);
+
+		//rpTransform.getOpenGLMatrix
+
+		rpTransform.setOrientation(rpQ);
+
+		mp_rigidBody->setTransform(rpTransform);
+		mp_rigidBody->resetTorque();
+		mp_rigidBody->resetForce();
+		mp_rigidBody->setType(type);
+	}
+
+	void PhysicsBody::SetPhysicsEulerRotation(const sm::Vector3& v)
+	{
+		pt::TransformComp ptTransform = Entity::GetEntity(EntId()).Transform();
 		rp::Transform rpTransform;
 		//rpTransform.setToIdentity();
 		rp::BodyType type = mp_rigidBody->getType();
 		mp_rigidBody->setType(rp::BodyType::STATIC);
-		rpTransform.setPosition({ v.x, v.y, v.z });
-		/*rpTransform.setOrientation({
-			ptTransform.GetRotationQuaternion().x,
-			ptTransform.GetRotationQuaternion().y,
-			ptTransform.GetRotationQuaternion().z,
-			ptTransform.GetRotationQuaternion().w });*/
+
+		rp::Quaternion q;
+
+		q.fromEulerAngles(v.x, v.y, v.z);
+
+		rpTransform.setOrientation(q);
+		rpTransform.setPosition({
+			ptTransform.GetPosition().x,
+			ptTransform.GetPosition().y,
+			ptTransform.GetPosition().z});
+
 		mp_rigidBody->setTransform(rpTransform);
 		mp_rigidBody->resetTorque();
 		mp_rigidBody->resetForce();

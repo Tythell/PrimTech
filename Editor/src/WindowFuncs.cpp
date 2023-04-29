@@ -115,7 +115,7 @@ void Gui_MaterialProperties(void* ptr, bool* show)
 			{
 				float distDivider = pMaterial->GetDistortionDivider();
 				title = "Dist divider##";
-				ImGui::SliderInt(title.c_str(), (int*)&distDivider, 1, 20);
+				ImGui::SliderFloat(title.c_str(), &distDivider, 1.f, 20.f, "%.f");
 				pMaterial->SetDistortionDivider((float)distDivider);
 			}
 
@@ -179,6 +179,30 @@ void Gui_ImGuiDemo(void* ptr, bool* show)
 	ImGui::ShowDemoWindow(show);
 }
 
+void Gui_CamView(void* ptr, bool* show)
+{
+	ImGui::Begin("View", show);
+
+	ImTextureID texture = PrimtTech::ResourceHandler::GetTextureAdress(0)->GetSRV();
+
+	ImGui::Image(texture, ImVec2(100, 100));
+
+	ImGui::End();
+}
+
+void Gui_PlayButton(void* ptr, bool* show)
+{
+	DevConsole* m_console = (DevConsole*)ptr;
+
+	ImGui::Begin("Game", show);
+	if (ImGui::Button("Play"))
+	{
+		m_console->AddLog("play 2");
+	}
+
+	ImGui::End();
+}
+
 void ImguiDebug(void* ptr, bool* show)
 {
 	ImGui::Begin("Render Settings", show);
@@ -225,11 +249,6 @@ void ImguiDebug(void* ptr, bool* show)
 	//		::SetWindowTextA(*m_pHWND, "balls");
 	//	}
 	//}
-	static bool hej = false;
-	if (ImGui::Checkbox("Play physics", &hej))
-	{
-		printf("");
-	}
 	if (ImGui::CollapsingHeader("General"))
 	{
 		//ImGui::RadioButton("local", (int*)&im.transformMode, 0); ImGui::SameLine();
@@ -294,6 +313,7 @@ void Gui_Console(void* ptr, bool* show)
 	DevConsole* pCon = (DevConsole*)ptr;
 
 	ImGui::Begin("Command console", show);
+
 	const float footer_height_to_reserve = ImGui::GetStyle().ItemSpacing.y + ImGui::GetFrameHeightWithSpacing();
 	if (ImGui::Button("Clear"))
 	{
@@ -381,12 +401,16 @@ void Gui_AssetList(void* ptr, bool* show)
 					ImGui::Text(name.c_str());
 					if (ImGui::IsItemHovered())
 					{
-						//ImGui::BeginTooltip();
+						ImGui::BeginTooltip();
 
-						//ImGui::Text("joe mama");
+						ImGui::Text("joe mama");
+						ImTextureID texture = PrimtTech::ResourceHandler::GetTextureAdress(0)->GetSRV();
+						ImGui::Image(texture, ImVec2(100, 100), { 0.f,1.f }, { 1.f,0.f });
 
-						//ImGui::EndTooltip();
-						ImGui::SetTooltip("am tooltip");
+						ImGui::EndTooltip();
+						//ImGui::SetTooltip("am tooltip");
+
+						
 					}
 				}
 
@@ -430,7 +454,14 @@ void Gui_AssetList(void* ptr, bool* show)
 				{
 					std::string name = arr[i]->GetName();
 					ImGui::Text(name.c_str());
+					if (ImGui::IsItemHovered())
+					{
+						ImGui::BeginTooltip();
 
+						ImTextureID texture = PrimtTech::ResourceHandler::GetTextureAdress(i)->GetSRV();
+						ImGui::Image(texture, ImVec2(100, 100), { 0.f,1.f }, { 1.f,0.f });
+						ImGui::EndTooltip();
+					}
 				}
 
 				ImGui::EndTabItem();
@@ -460,12 +491,12 @@ void Gui_EntList(void* test, bool* show)
 	}
 	ImGui::SameLine();
 	static bool s_imShowDents = false;
-	ImGui::Checkbox("Show Dev Ents", &s_imShowDents);
+	ImGui::Checkbox("Show Hidden", &s_imShowDents);
 	ImGui::BeginChild("Lefty", ImVec2(150, 400), true);
 
 	uint numEnts = pt::Entity::NumEnts();
 
-	for (uint i = 4 * (int)!s_imShowDents; i < numEnts; i++)
+	for (uint i = 2 * (int)!s_imShowDents; i < numEnts; i++)
 	{
 		ImGui::BeginDisabled(i == 0);
 		if (ImGui::Selectable(std::to_string(i).c_str(), p->selected == i))
@@ -502,29 +533,33 @@ void Gui_EntList(void* test, bool* show)
 			{
 				p->console.AddLog(AddCompString(p->selected, "rigidbody").c_str());
 			}
+			if (ImGui::Selectable("SCript"))
+			{
+				p->console.AddLog(AddCompString(p->selected, "script").c_str());
+			}
 			ImGui::EndPopup();
 		}
 		sm::Vector3 transform = pEnt->Transform().GetPosition();
 		ImGui::BeginDisabled(p->selected == 0);
-		ImGui::DragFloat3("Translate", reinterpret_cast<float*>(&transform), 0.02f);
-		pEnt->Transform().SetPosition(transform);
+		if (ImGui::DragFloat3("Translate", reinterpret_cast<float*>(&transform), 0.02f))
+			pEnt->SetPosition(transform);
 
 		transform = pEnt->Transform().GetRotation();
-		ImGui::DragFloat3("Rotate", reinterpret_cast<float*>(&transform), 0.02f);
-		pEnt->Transform().SetRotation(transform);
+		if (ImGui::DragFloat3("Rotate", reinterpret_cast<float*>(&transform), 0.02f))
+			pEnt->Transform().SetRotation(transform);
 
 		transform = pEnt->Transform().GetScale();
-		ImGui::DragFloat3("Scale", reinterpret_cast<float*>(&transform), 0.02f);
-		pEnt->Transform().SetScale(transform);
+		if(ImGui::DragFloat3("Scale", reinterpret_cast<float*>(&transform), 0.02f))
+			pEnt->Transform().SetScale(transform);
 		ImGui::EndDisabled();
 
 		if (pEnt->HasComponentType(PrimtTech::ec_meshRef))
 		{
-			if (ImGui::CollapsingHeader("MeshRef", ImGuiTreeNodeFlags_DefaultOpen))
+			if (ImGui::TreeNode("MeshRef"))
 			{
+				ImGui::Separator();
 				pt::MeshRef* mr = pEnt->GetComponent<pt::MeshRef>();
 				ImGui::Text(mr->GetNameOfMesh().c_str());
-				ImGui::Separator();
 
 				char charbuffer[16]{ "" };
 				strcpy_s(charbuffer, mr->GetNameOfMesh().c_str());
@@ -547,13 +582,16 @@ void Gui_EntList(void* test, bool* show)
 				{
 					pEnt->FreeComponent<pt::MeshRef>();
 				}
+				ImGui::Separator();
+				ImGui::TreePop();
 			}
 
 		}
 		if (pEnt->HasComponentType(PrimtTech::ec_cam))
 		{
-			if (ImGui::CollapsingHeader("Camera", ImGuiTreeNodeFlags_DefaultOpen))
+			if (ImGui::TreeNode("Camera"))
 			{
+				ImGui::Separator();
 				pt::Camera* mr = pEnt->GetComponent<pt::Camera>();
 
 				sm::Vector3 pos = mr->GetPositionOffset();
@@ -597,12 +635,15 @@ void Gui_EntList(void* test, bool* show)
 				{
 					pEnt->FreeComponent<pt::Camera>();
 				}
+				ImGui::Separator();
+				ImGui::TreePop();
 			}
 		}
 		if (pEnt->HasComponentType(PrimtTech::ec_aabb))
 		{
-			if (ImGui::CollapsingHeader("Bounding box", ImGuiTreeNodeFlags_DefaultOpen))
+			if (ImGui::TreeNode("Bounding box"))
 			{
+				ImGui::Separator();
 				pt::AABBComp* mr = pEnt->GetComponent<pt::AABBComp>();
 
 				sm::Vector3 v = mr->GetBox().Extents;
@@ -619,11 +660,14 @@ void Gui_EntList(void* test, bool* show)
 			{
 				pEnt->FreeComponent<pt::AABBComp>();
 			}
+			ImGui::Separator();
+			ImGui::TreePop();
 		}
 		if (pEnt->HasComponentType(PrimtTech::ec_light))
 		{
-			if (ImGui::CollapsingHeader("Light", ImGuiTreeNodeFlags_DefaultOpen))
+			if (ImGui::TreeNode("Light"))
 			{
+				ImGui::Separator();
 				pt::Light* mr = pEnt->GetComponent<pt::Light>();
 
 				sm::Vector4 v = mr->GetPositionOffset();
@@ -652,16 +696,19 @@ void Gui_EntList(void* test, bool* show)
 				{
 					pEnt->FreeComponent<pt::Light>();
 				}
+				ImGui::Separator();
+				ImGui::TreePop();
 			}
 		}
 		if (pEnt->HasComponentType(PrimtTech::ec_rigidBodies))
 		{
-			if (ImGui::CollapsingHeader("Rigidbody", ImGuiTreeNodeFlags_DefaultOpen))
+			if (ImGui::TreeNode("Rigidbody"))
 			{
+				ImGui::Separator();
 				pt::PhysicsBody* mr = pEnt->GetComponent<pt::PhysicsBody>();
 
-				const char* items[] = { "select a component", "static", "kinematic", "dynamic"};
-				int item_current = (int)mr->GetType()+1;
+				const char* items[] = { "select a component", "static", "kinematic", "dynamic" };
+				int item_current = (int)mr->GetType() + 1;
 
 				if (ImGui::Combo("##rigidcombo", &item_current, items, IM_ARRAYSIZE(items)) && item_current != 0)
 				{
@@ -748,10 +795,35 @@ void Gui_EntList(void* test, bool* show)
 				}
 
 				if (ImGui::Button("Delete##physbod"))
-				{
 					pEnt->FreeComponent<pt::PhysicsBody>();
+				ImGui::Separator();
+				ImGui::TreePop();
+			}
+		}
+		if (pEnt->HasComponentType(PrimtTech::ec_lua))
+		{
+			if (ImGui::TreeNode("Script"))
+			{
+				ImGui::Separator();
+				pt::LuaScript* mr = pEnt->GetComponent<pt::LuaScript>();
+
+				char buffer[32];
+				strcpy_s(buffer, mr->GetFileName().c_str());
+
+				std::string scriptpath = "Scripts/";
+
+				if (ImGui::InputText("lua file", buffer, 32, ImGuiInputTextFlags_EnterReturnsTrue))
+				{
+					scriptpath += buffer;
+					if (!mr->LoadScript(scriptpath.c_str()))
+						Popup::Error("File not found");
 				}
-				
+				if (ImGui::Button("Refresh"))
+				{
+					scriptpath += mr->GetFileName();
+				}
+				ImGui::Separator();
+				ImGui::TreePop();
 			}
 		}
 	}
@@ -808,18 +880,18 @@ void Gui_EntList(void* test, bool* show)
 			world.Decompose(scale, rot, pos);
 			//ImGuizmo::DecomposeMatrixToComponents(&world._11, &pos.x, &rot.x, &scale.x);
 
-			
-			if (pEnt->HasComponentType(PrimtTech::ec_rigidBodies))
-			{
-				pt::PhysicsBody* p = pEnt->GetComponent<pt::PhysicsBody>();
-				p->SetPhysicsPosition(pos);
-			}
-			else
-			{
+
+			//if (pEnt->HasComponentType(PrimtTech::ec_rigidBodies))
+			//{
+			//	pt::PhysicsBody* p = pEnt->GetComponent<pt::PhysicsBody>();
+			//	p->SetPhysicsPosition(pos);
+			//}
+			//else
+			//{
 				rTr.SetScale(scale);
-				rTr.SetRotation(rot);
-				rTr.SetPosition(pos);
-			}
+				pEnt->SetRotation(rot);
+				pEnt->SetPosition(pos);
+			//}
 		}
 
 		ImGui::End();

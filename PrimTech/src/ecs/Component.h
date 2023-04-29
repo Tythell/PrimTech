@@ -8,6 +8,7 @@
 
 namespace rp = reactphysics3d;
 typedef int EntIdType;
+typedef int CompIdType;
 
 namespace pt
 {

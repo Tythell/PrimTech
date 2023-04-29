@@ -17,6 +17,8 @@ namespace pt
 
 		void Init(LPCWSTR windowName, HINSTANCE hInstance, std::wstring windowClass, unsigned int width, unsigned int height);
 		void Run();
+
+		void ExecuteOnStart();
 		
 		bool IsOpen() const;
 		void SetDeltaTime(double& dt) { m_deltaTime = dt; };
@@ -27,6 +29,8 @@ namespace pt
 		void HideCursor();
 		void ShowCursor();
 		PrimtTech::PhysicsHandler m_physHandler;
+
+		bool TogglePlay(char b = 2);
 	private:
 		void Update(float dt);
 		void SetUpScriptEnviroment();
@@ -39,7 +43,7 @@ namespace pt
 		float m_playerSpeed;
 		double m_deltaTime = 0.0;
 		bool m_isOpen = true;
-		bool m_playScripts = true;
+		bool m_playing = false;
 
 		bool m_mouseLocked = false;
 

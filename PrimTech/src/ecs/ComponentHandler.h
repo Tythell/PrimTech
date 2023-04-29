@@ -48,9 +48,9 @@ LINK_TYPE_VEC(##, pt::MeshRef, s_meshrefs, ec_meshRef) \
 LINK_TYPE_VEC(else, pt::TransformComp, s_transforms, ec_transform) \
 LINK_TYPE_VEC(else, pt::Camera, s_cams, ec_cam) \
 LINK_TYPE_VEC(else, pt::AABBComp, s_aabbs, ec_aabb) \
-LINK_TYPE_VEC(else, pt::OBBComp, s_obbs, ec_obb) \
+LINK_TYPE_VEC(else, pt::OBBComp, s_obbs, ec_obb, ##) \
 LINK_TYPE_VEC(else, pt::BSphereComp, s_bspheres, ec_bsphere) \
-LINK_TYPE_VEC(else, pt::Light, s_lights, ec_light) \
+LINK_TYPE_VEC(else, pt::Light, s_lights, ec_light, ##) \
 LINK_TYPE_VEC(else, pt::PhysicsBody, s_rigidBodies, ec_rigidBodies) \
 LINK_TYPE_VEC(else, pt::LuaScript, s_luascripts, ec_lua) \
 

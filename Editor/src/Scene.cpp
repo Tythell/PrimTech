@@ -24,7 +24,7 @@ Editor::Editor(d::XMINT2 windowRes, HINSTANCE hInstance)
 	m_renderer->SetImGuiHandler(m_pGui);
 
 	uint u = 0;
-	m_entlist.console.m_showWin.resize(7, { true, "" });
+	m_entlist.console.m_showWin.resize(9, { true, "" });
 	m_pGui.AddWindowFunc(Gui_ImGuiDemo, NULL, &m_entlist.console.m_showWin[u].first);
 	m_entlist.console.m_showWin[u].second = "imguiDemo";
 	m_entlist.console.m_showWin[u++].first = false;
@@ -38,6 +38,10 @@ Editor::Editor(d::XMINT2 windowRes, HINSTANCE hInstance)
 	m_entlist.console.m_showWin[u++].second = "mtrlpropers";
 	m_pGui.AddWindowFunc(ImguiDebug, m_pGui.GetVarPtrs(), &m_entlist.console.m_showWin[u].first);
 	m_entlist.console.m_showWin[u++].second = "debugSettings";
+	m_pGui.AddWindowFunc(Gui_PlayButton, &m_entlist.console, &m_entlist.console.m_showWin[u].first);
+	m_entlist.console.m_showWin[u++].second = "runGameWin";
+	m_pGui.AddWindowFunc(Gui_CamView, NULL, &m_entlist.console.m_showWin[u].first);
+	m_entlist.console.m_showWin[u++].second = "camView";
 
 
 	m_pGui.AddWindowFunc(Gui_menubar, &m_entlist.console, &m_entlist.console.m_showWin[u].first);
@@ -59,13 +63,14 @@ Editor::Editor(d::XMINT2 windowRes, HINSTANCE hInstance)
 
 	pt::Entity& ent0 = pt::Entity::Create();
 	ent0.AddComponent<pt::MeshRef>();
-	ent0.Transform().SetPosition(0.f, 2.f, 0.f);
+	ent0.AddComponent<pt::Camera>();
+	ent0.SetPosition(0.f, 2.f, 0.f);
 	pt::Entity& ent1 = pt::Entity::Create();
-	ent1.Transform().SetPosition(0.f, -0.2f, 0.f);
-	ent1.Transform().SetScale(10.f, 1.f, 10.f);
+	ent1.SetPosition(0.f, -0.2f, 0.f);
+	ent1.SetScale(10.f, 1.f, 10.f);
 	ent1.AddComponent<pt::MeshRef>()->Init("scaledplane.obj");
 
-	ent1.AddComponent<pt::LuaScript>()->LoadScript("Scripts/moveScript.lua");
+	//ent1.AddComponent<pt::LuaScript>()->LoadScript("Scripts/moveScript.lua");
 }
 
 Editor::~Editor()
@@ -229,14 +234,22 @@ void Editor::execCommand(std::string cmd)
 
 				}
 			}
-
+			else if (argBuffer == "script")
+			{
+				rEnt.AddComponent<pt::LuaScript>();
+			}
 		}
+	}
+	else if (argBuffer == "play")
+	{
+		ss >> argBuffer;
+
+		Play(atoi(argBuffer.c_str()));
 	}
 	else if (argBuffer == "select")
 	{
 		ss >> argBuffer;
 		m_entlist.selected = StringHelper::IsNumber(argBuffer) ? atoi(argBuffer.c_str()) : -1;
-
 	}
 	else if (argBuffer == "exit")
 	{
@@ -305,6 +318,41 @@ void Editor::execCommand(std::string cmd)
 			m_entlist.selected = -1;
 			pt::Entity::Clear(4);
 			pt::Entity::GetEntity(0).AddComponent<pt::Camera>()->SetPerspective(80.f, ((float)m_entlist.winWidth / (float)m_entlist.winHeight), 0.1f, 100.f);
+		}
+	}
+}
+
+void Editor::Play(char b)
+{
+	std::vector<pt::TransformComp>& transforms = PrimtTech::ComponentHandler::GetComponentArray<pt::TransformComp>();
+	std::vector<pt::LuaScript>& scripts = PrimtTech::ComponentHandler::GetComponentArray<pt::LuaScript>();
+	
+	m_startTransforms.resize(PrimtTech::ComponentHandler::GetNoOfUsedComponents<pt::TransformComp>());
+	int n = m_startTransforms.size();
+
+	bool onPlay = m_primtech.TogglePlay((char)b);
+
+	if (onPlay)
+	{
+		for (int i = 0; i < n; i++)
+		{
+			m_startTransforms[i].first = transforms[i].GetPosition();
+			m_startTransforms[i].second = transforms[i].GetRotation();
+		}
+		m_primtech.ExecuteOnStart();
+	}
+	else
+	{
+		std::vector<pt::PhysicsBody>& physBodys = PrimtTech::ComponentHandler::GetComponentArray<pt::PhysicsBody>();
+		int noPhysBodys = PrimtTech::ComponentHandler::GetNoOfUsedComponents<pt::PhysicsBody>();
+		for (int i = 0; i < noPhysBodys; i++)
+		{
+			physBodys[i].SetPhysicsPosition(m_startTransforms[physBodys[i].EntId()].first);
+		}
+		for (int i = 0; i < n; i++)
+		{
+			transforms[i].SetPosition(m_startTransforms[i].first);
+			transforms[i].SetRotation(m_startTransforms[i].second);
 		}
 	}
 }

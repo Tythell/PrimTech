@@ -10,18 +10,22 @@ namespace pt
 		LuaScript(const LuaScript& other);
 		~LuaScript();
 
-		void LoadScript(const char* scriptFile);
+		bool LoadScript(const char* scriptFile);
 		
 		void SetBuffer(char* buffer, int size);
 
-		void Execute(const char* funcName);
+		bool Execute(const char* funcName);
 
 		int GetBufferSize() const { return m_size; };
-		char* GetBufferP() const { return m_pbuffer; };;
+		char* GetBufferP() const { return m_pbuffer; };
+
+		std::string GetFileName() const { return m_fileName; };
+
 		static void SetLuaState(lua_State* pL);
 	private:
 		static lua_State* L;
 		char* m_pbuffer = nullptr;;
 		int m_size = -1;
+		std::string m_fileName = "";
 	};
 }

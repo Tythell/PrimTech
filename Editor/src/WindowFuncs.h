@@ -14,4 +14,8 @@ void Gui_Console(void* ptr, bool* show);
 
 void Gui_ImGuiDemo(void* ptr, bool* show);
 
+void Gui_CamView(void* ptr, bool* show);
+
 void Gui_MaterialProperties(void* ptr, bool* show);
+
+void Gui_PlayButton(void* ptr, bool* show);

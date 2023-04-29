@@ -28,6 +28,7 @@ namespace pt
 		rp::BodyType GetType() const { return mp_rigidBody->getType(); }
 		void SetType(rp::BodyType bodyType);
 		void SetPhysicsPosition(const sm::Vector3& v);
+		void SetPhysicsEulerRotation(const sm::Vector3& v);
 		void SetBoxExtents(const sm::Vector3& extents, uint index = 0);
 		void SetSphereRadius(float r, uint index = 0);
 		void SetCapsuleLengths(float r, float h, uint index = 0);
@@ -62,7 +63,6 @@ namespace pt
 		reactphysics3d::RigidBody* mp_rigidBody = nullptr;
 		static PrimtTech::PhysicsHandler* m_pPhysHandle;
 		std::vector<ePT_ShapeType> m_shapeIndexes;
-		sm::Vector3 m_startPos;
 		sm::Quaternion m_startOrientation;
 	};
 }

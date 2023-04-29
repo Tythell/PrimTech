@@ -32,8 +32,8 @@ namespace PrimtTech
 		//pScam->SetRotationOffset(1.58f, 0.f, 0.f);
 		m_shadowCamIndex = shadowEnt.GetComponentIndex<Camera>();
 
-		shadowEnt.Transform().SetPosition(0.f, 4.f, 0.f);
-		shadowEnt.Transform().SetRotation(1.58f, 0.f, 0.f);
+		shadowEnt.SetPosition(0.f, 4.f, 0.f);
+		shadowEnt.SetRotation(1.58f, 0.f, 0.f);
 		pScam->UpdateView(shadowEnt.Transform());
 
 		InitScene();

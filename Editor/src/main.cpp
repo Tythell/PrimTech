@@ -12,6 +12,19 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	d::XMINT2 windowRes(1700, 900);
 
 	Editor editor(windowRes, hInstance);
+
+#ifdef _DEBUG
+	//HWND hwnd = GetConsoleWindow();
+	//HMENU hmenu = GetSystemMenu(hwnd, false);
+	//EnableMenuItem(hmenu, SC_CLOSE, MF_GRAYED);
+
+	//RECT rect;
+	//GetWindowRect(hwnd, &rect);
+	//int rWidth = rect.right - rect.left;
+	//int rHeight = rect.bottom - rect.top;
+	//SetWindowPos(hwnd, NULL, 0, 100, rWidth, rHeight, NULL);
+#endif // _DEBUG
+
 	editor.Run();
 
 	return 0;
