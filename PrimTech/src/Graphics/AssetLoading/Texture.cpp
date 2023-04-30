@@ -1,8 +1,8 @@
 #include"pch.h"
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "3rdParty/stb_image.h"
-#include "3rdParty/stb_image_write.h"
+#include "../3rdParty/stb_image.h"
+#include "../3rdParty/stb_image_write.h"
 #include "Texture.h"
 #include"../Utility/Popup.h"
 #include "ResourceHandler.h"

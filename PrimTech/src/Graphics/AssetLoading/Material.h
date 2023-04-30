@@ -2,7 +2,7 @@
 #include "Texture.h"
 #include "ResourceHandler.h"
 #include "../Utility/StringHelper.h"
-#include "Buffer.h"
+#include "../Buffer.h"
 #include <string>
 #include "../Macros/Colors.h"
 

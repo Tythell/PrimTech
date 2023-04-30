@@ -1,6 +1,7 @@
 #pragma once
 #include <d3d11.h>
-#include "../Math/Math.h"
+#include "../Buffer.h"
+#include "Vertex.h"
 #include <string>
 #include <vector>
 
@@ -49,15 +50,18 @@ namespace PrimtTech
 	{
 	public:
 		void Init();
-		//void AddMesh(Vertex3D* arr, int size);
+		int AddMesh(std::vector<Vertex3D> vec, std::string name);
 
 #ifdef DX11
 		void IASet(ID3D11DeviceContext* dc);
 #endif // DX11
 
-		
 	private:
-		std::vector<int> m_allVerts;
+		std::vector<Vertex3D> m_allVerts;
+		Buffer<Vertex3D> m_vBuffer;
+		std::vector<std::string> m_names;
+		std::vector<uint> m_startIndexes;
+
 		//Buffer<int> m_mainVbuffer;
 	};
 }

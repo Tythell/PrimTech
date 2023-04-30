@@ -52,6 +52,12 @@ namespace PrimtTech
 
 		ResourceHandler::Unload();
 
+		m_transformBuffer.Release();
+		m_lightbuffer.Release();
+		m_materialBuffer.Release();
+		m_multiLightBuffer.Release();
+		m_grid.Release();
+
 		device->Release();
 		dc->Release();
 		m_swapChain->Release();

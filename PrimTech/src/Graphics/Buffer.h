@@ -69,7 +69,8 @@ namespace PrimtTech
 			//	break;
 			//}
 		//}*/
-		~Buffer()
+		//~Buffer() {}
+		void Release()
 		{
 			m_buffer->Release();
 			if (m_srv)

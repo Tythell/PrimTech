@@ -7,16 +7,16 @@ namespace ig = ImGui;
 
 Editor::Editor(d::XMINT2 windowRes, HINSTANCE hInstance)
 {
-	PrimtTech::ResourceHandler::ReserveMeshMemory(15);
-	PrimtTech::ResourceHandler::ReserveMaterialMemory(8);
+	//PrimtTech::ResourceHandler::ReserveMeshMemory(15);
+	//PrimtTech::ResourceHandler::ReserveMaterialMemory(8);
 
 	m_primtech.Init(L"Editor", hInstance, L"wndc", windowRes.x, windowRes.y);
 
 	m_renderer = m_primtech.GetRenderer();
 
 	PrimtTech::ResourceHandler::AddMesh("Assets/models/cube.txt");
-	PrimtTech::ResourceHandler::AddMesh("Assets/models/gunter.obj");
-	PrimtTech::ResourceHandler::AddMesh("Assets/models/scuffball.obj");
+	//PrimtTech::ResourceHandler::AddMesh("Assets/models/gunter.obj");
+	//PrimtTech::ResourceHandler::AddMesh("Assets/models/scuffball.obj");
 	//PrimtTech::ResourceHandler::AddMesh("Assets/models/Slime.fbx");
 	PrimtTech::ResourceHandler::AddMesh("Assets/models/scaledplane.obj");
 	PrimtTech::ResourceHandler::AddMaterial("DefaultMaterial");

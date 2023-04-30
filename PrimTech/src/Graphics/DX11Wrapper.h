@@ -4,7 +4,7 @@
 #include "Shader.h"
 #include"ShadowMap.h"
 #include "../Utility/Popup.h"
-#include"Texture.h"
+#include"AssetLoading/Texture.h"
 #include"../Input/Mouse.h"
 #include"../Input/Keyboard.h"
 #include "Physics/PhysicsHandler.h"
@@ -97,7 +97,6 @@ namespace PrimtTech
 
 		std::vector<hlsl::Light> m_lightVector;
 		Buffer<hlsl::Light> m_multiLightBuffer;
-
 		Buffer<BBVertex> m_grid;
 
 		uint m_activeCamIndex = 0;

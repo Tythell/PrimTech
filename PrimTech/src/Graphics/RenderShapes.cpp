@@ -54,6 +54,12 @@ namespace PrimtTech
 		m_vbuffer.MapBuffer();
 	}
 
+	RenderShape::~RenderShape()
+	{
+		m_vbuffer.Release();
+		m_ibuffer.Release();
+	}
+
 	void RenderShape::Draw(ID3D11DeviceContext*& dc)
 	{
 		UINT offset = 0;

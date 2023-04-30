@@ -25,6 +25,8 @@ using int3 = d::XMINT3;
 using int4 = d::XMINT4;
 
 using uchar = unsigned char;
+using ulong = unsigned long;
+using ullong = unsigned long long;
 
 #define DEG(r) r * d::XM_PI / 180
 

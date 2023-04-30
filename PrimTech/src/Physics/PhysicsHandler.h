@@ -3,7 +3,7 @@
 #undef max
 #include<reactphysics3d/reactphysics3d.h>
 #include"Graphics/Buffer.h"
-#include"Graphics/Vertex.h"
+#include"Graphics/AssetLoading/Vertex.h"
 //#include"ecs/Component.h"
 
 namespace rp = reactphysics3d;
@@ -14,6 +14,8 @@ namespace PrimtTech
 	{
 	public:
 		PhysicsHandler();
+		~PhysicsHandler();
+
 		void Update(float dt, bool update);
 		rp::RigidBody* CreateRigidBody(const rp::Transform& transform, rp::BodyType bodyType = rp::BodyType::DYNAMIC);
 

@@ -1,6 +1,6 @@
 #pragma once
 #include "Math/Math.h"
-#include"Buffer.h"
+#include"../Buffer.h"
 #include"Vertex.h"
 #include "Material.h"
 
@@ -33,6 +33,8 @@ namespace PrimtTech
 		std::vector<Mtl> GetMtl() const;
 		std::vector<int> GetMtlIndex() const;
 		std::vector<int> GetMeshOffsfets() const;
+
+		void Release();
 	private:
 		Buffer<Vertex3D> m_vbuffer;
 		std::vector<Mtl> m_mtls;

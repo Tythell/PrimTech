@@ -10,7 +10,8 @@ namespace pt
 
 	Entity& Entity::Create()
 	{
-		return s_ents.emplace_back(true); // Don't question it
+		s_ents.emplace_back(true).AddComponent<pt::TransformComp>();
+		return s_ents[s_ents.size()-1]; // Don't question it
 	}
 
 	const uint Entity::NumEnts()

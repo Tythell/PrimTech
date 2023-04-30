@@ -36,7 +36,7 @@ namespace PrimtTech
 
 	Mesh* ResourceHandler::AddMesh(std::string path, bool makeLeftHanded)
 	{
-		THROW_POPUP_ERROR(!(m_meshes.size() == m_meshes.capacity()), "not enough memory reserved for new mesh");
+		//THROW_POPUP_ERROR(!(m_meshes.size() == m_meshes.capacity()), "not enough memory reserved for new mesh");
 		//uint reserves = m_meshes.capacity();
 		return &m_meshes.emplace_back(path, pDevice, makeLeftHanded);
 	}
@@ -134,6 +134,8 @@ namespace PrimtTech
 	{
 		for (int i = 0; i < m_textures.size(); i++)
 			delete m_textures[i];
+		for (int i = 0; i < m_meshes.size(); i++)
+			m_meshes[i].Release();
 	}
 
 	ID3D11Device* ResourceHandler::GetDevice()
@@ -142,7 +144,29 @@ namespace PrimtTech
 	}
 	void MeshCluster::Init()
 	{
+		m_startIndexes.emplace_back(0);
+	}
+	int MeshCluster::AddMesh(std::vector<Vertex3D> vec, std::string name)
+	{
+		//int meshExists = -1;
 
+
+
+		for (int i = 0;/* meshExists == -1 &&*/ i < m_names.size(); i++)
+		{
+			if (m_names[i] == name)
+			{
+				//meshExists = i;
+				return i;
+			}
+		}
+
+		m_allVerts.reserve(m_allVerts.size() + vec.size());
+		m_allVerts.insert(m_allVerts.end(), vec.begin(), vec.end());
+		m_startIndexes.emplace_back(m_allVerts.size());
+		m_names.emplace_back(name);
+
+		return (int)m_names.size()-1;
 	}
 	void MeshCluster::IASet(ID3D11DeviceContext* dc)
 	{

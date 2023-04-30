@@ -360,5 +360,10 @@ namespace PrimtTech
 		return m_offsets;
 	}
 
+	void Mesh::Release()
+	{
+		m_vbuffer.Release();
+	}
+
 }
 

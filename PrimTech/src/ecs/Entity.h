@@ -13,7 +13,7 @@ namespace pt
 		{
 			m_id = nrOfEntities++;
 			THROW_POPUP_ERROR(createdWithFunc, "MANNEN ANVÄND pt::Entity::Create() ISTÄLLET");
-			AddComponent<pt::TransformComp>();
+			
 			m_displayName = std::to_string(m_id);
 		}
 

@@ -10,15 +10,10 @@ namespace pt
 	PrimTech::PrimTech() :
 		m_playerSpeed(5.f)
 	{
-		//m_L = luaL_newstate();
 	}
 
 	PrimTech::~PrimTech()
 	{
-		//if (m_L)
-		//{
-		//	lua_close(m_L);
-		//}
 		if (mp_dxrenderer)
 			delete mp_dxrenderer;
 	}

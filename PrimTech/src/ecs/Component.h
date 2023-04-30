@@ -1,6 +1,6 @@
 #pragma once
-#include "../Graphics/Mesh.h"
-#include "../Graphics/Material.h"
+#include "../Graphics/AssetLoading/Mesh.h"
+#include "../Graphics/AssetLoading/Material.h"
 #include "Graphics/CbufferTypes.h"
 #include "Physics/PhysicsHandler.h"
 #include <lua/lua.hpp>

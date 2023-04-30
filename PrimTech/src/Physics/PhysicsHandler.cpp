@@ -17,6 +17,13 @@ namespace PrimtTech
 
 	}
 
+	PhysicsHandler::~PhysicsHandler()
+	{
+#ifdef PHYSDEBUG
+		debugTris.Release();
+#endif // PHYSDEBUG
+	}
+
 	void PhysicsHandler::Update(float dt, bool update)
 	{
 		if (m_running && m_pworld->getNbRigidBodies() != 0)

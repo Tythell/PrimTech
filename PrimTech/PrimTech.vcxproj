@@ -218,7 +218,7 @@
     <ClCompile Include="src\Graphics\ImGuiHandler.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\Graphics\Mesh.cpp" />
+    <ClCompile Include="src\Graphics\AssetLoading\Mesh.cpp" />
     <ClCompile Include="src\Graphics\RenderShapes.cpp" />
     <ClCompile Include="src\Graphics\ShadowMap.cpp" />
     <ClCompile Include="src\pch.cpp">
@@ -230,17 +230,18 @@
     <ClCompile Include="src\Macros\Defines.cpp" />
     <ClCompile Include="src\Graphics\DX11Wrapper.cpp" />
     <ClCompile Include="src\Graphics\Shader.cpp" />
-    <ClCompile Include="src\Graphics\Texture.cpp" />
+    <ClCompile Include="src\Graphics\AssetLoading\Texture.cpp" />
     <ClCompile Include="src\Input\Keyboard.cpp" />
     <ClCompile Include="src\Input\Mouse.cpp" />
-    <ClCompile Include="src\Graphics\Material.cpp" />
+    <ClCompile Include="src\Graphics\AssetLoading\Material.cpp" />
     <ClCompile Include="src\PrimTech.cpp" />
-    <ClCompile Include="src\Graphics\ResourceHandler.cpp" />
+    <ClCompile Include="src\Graphics\AssetLoading\ResourceHandler.cpp" />
     <ClCompile Include="src\Utility\StringHelper.cpp" />
     <ClCompile Include="src\Utility\Popup.cpp" />
     <ClCompile Include="src\Windows\WindowWrap.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Graphics\AssetLoading\MeshLoader.cpp" />
     <ClInclude Include="src\ecs\BoundShapeC.h" />
     <ClInclude Include="src\ecs\CameraC.h" />
     <ClInclude Include="src\ecs\Components.hpp" />
@@ -333,7 +334,7 @@
     <ClInclude Include="src\Graphics\3rdParty\assimp\ZipArchiveIOSystem.h" />
     <ClInclude Include="src\Graphics\3rdParty\ImGuizmo\ImGuizmo.h" />
     <ClInclude Include="src\Graphics\ImGuiHandler.h" />
-    <ClInclude Include="src\Graphics\Mesh.h" />
+    <ClInclude Include="src\Graphics\AssetLoading\Mesh.h" />
     <ClInclude Include="src\Graphics\RenderShapes.h" />
     <ClInclude Include="src\Graphics\ShadowMap.h" />
     <ClInclude Include="src\pch.h" />
@@ -490,17 +491,17 @@
     <ClInclude Include="src\Graphics\3rdParty\imgui\imstb_textedit.h" />
     <ClInclude Include="src\Graphics\3rdParty\imgui\imstb_truetype.h" />
     <ClInclude Include="src\Graphics\CbufferTypes.h" />
-    <ClInclude Include="src\Graphics\Texture.h" />
-    <ClInclude Include="src\Graphics\Vertex.h" />
+    <ClInclude Include="src\Graphics\AssetLoading\Texture.h" />
+    <ClInclude Include="src\Graphics\AssetLoading\Vertex.h" />
     <ClInclude Include="src\Graphics\Shader.h" />
     <ClInclude Include="src\Input\Keyboard.h" />
-    <ClInclude Include="src\Graphics\Material.h" />
+    <ClInclude Include="src\Graphics\AssetLoading\Material.h" />
     <ClInclude Include="src\Math\Math.h" />
     <ClInclude Include="src\Input\Mouse.h" />
     <ClInclude Include="src\Graphics\Paths.h" />
     <ClInclude Include="src\PrimTech.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="src\Graphics\ResourceHandler.h" />
+    <ClInclude Include="src\Graphics\AssetLoading\ResourceHandler.h" />
     <ClInclude Include="src\Utility\StringHelper.h" />
     <ClInclude Include="src\Utility\COMException.h" />
     <ClInclude Include="src\Graphics\DX11Wrapper.h" />

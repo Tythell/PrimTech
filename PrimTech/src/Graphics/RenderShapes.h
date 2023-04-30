@@ -1,11 +1,12 @@
 #pragma once
-#include "Mesh.h"
+#include "AssetLoading/Mesh.h"
 
 namespace PrimtTech
 {
 	class RenderShape
 	{
 	public:
+		~RenderShape();
 		virtual void Draw(ID3D11DeviceContext*& dc);
 		void DrawShape(ID3D11DeviceContext*& dc) { dc->DrawIndexed(m_ibuffer.GetBufferSize(), 0, 0); }
 		void SetColor(sm::Vector3 color);
