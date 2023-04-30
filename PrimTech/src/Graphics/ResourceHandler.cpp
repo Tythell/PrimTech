@@ -146,7 +146,8 @@ namespace PrimtTech
 	}
 	void MeshCluster::IASet(ID3D11DeviceContext* dc)
 	{
-		dc->DrawInstanced()
+		uint offset[] = { 0 };
+		//dc->IASetVertexBuffers(0, 1, m_mainVbuffer.GetReference(), m_mainVbuffer.GetStrideP(), offset);
 	}
 }
 

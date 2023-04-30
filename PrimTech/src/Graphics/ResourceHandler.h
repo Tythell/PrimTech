@@ -49,7 +49,7 @@ namespace PrimtTech
 	{
 	public:
 		void Init();
-		void AddMesh(Vertex3D* arr, int size);
+		//void AddMesh(Vertex3D* arr, int size);
 
 #ifdef DX11
 		void IASet(ID3D11DeviceContext* dc);
@@ -57,8 +57,8 @@ namespace PrimtTech
 
 		
 	private:
-		std::vector<Vertex3D> m_allVerts;
-		Buffer<Vertex3D> m_mainVbuffer;
+		std::vector<int> m_allVerts;
+		//Buffer<int> m_mainVbuffer;
 	};
 }
 
