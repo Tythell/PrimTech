@@ -37,6 +37,9 @@ namespace PrimtTech
 		void Release();
 	private:
 		Buffer<Vertex3D> m_vbuffer;
+
+		uint m_meshIndex = 0, m_noVerts = 0;
+
 		std::vector<Mtl> m_mtls;
 		std::vector<int> m_mtlIndexes;
 		std::vector<int> m_offsets;

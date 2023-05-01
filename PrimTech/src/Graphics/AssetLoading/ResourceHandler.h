@@ -49,18 +49,18 @@ namespace PrimtTech
 	class MeshCluster
 	{
 	public:
-		void Init();
-		int AddMesh(std::vector<Vertex3D> vec, std::string name);
+		MeshCluster();
+		static int AddMesh(std::vector<Vertex3D>& vec, std::string name);
 
 #ifdef DX11
-		void IASet(ID3D11DeviceContext* dc);
+		static void IASet(ID3D11DeviceContext* dc);
 #endif // DX11
 
 	private:
-		std::vector<Vertex3D> m_allVerts;
-		Buffer<Vertex3D> m_vBuffer;
-		std::vector<std::string> m_names;
-		std::vector<uint> m_startIndexes;
+		//static std::vector<Vertex3D> m_allVerts;
+		//static Buffer<Vertex3D> m_vBuffer;
+		//static std::vector<std::string> m_names;
+		//static std::vector<uint> m_startIndexes;
 
 		//Buffer<int> m_mainVbuffer;
 	};

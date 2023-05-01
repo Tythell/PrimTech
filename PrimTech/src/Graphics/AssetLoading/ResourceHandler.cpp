@@ -142,31 +142,30 @@ namespace PrimtTech
 	{
 		return pDevice;
 	}
-	void MeshCluster::Init()
+	MeshCluster::MeshCluster()
 	{
-		m_startIndexes.emplace_back(0);
+		//m_startIndexes.emplace_back(0);
 	}
-	int MeshCluster::AddMesh(std::vector<Vertex3D> vec, std::string name)
+	int MeshCluster::AddMesh(std::vector<Vertex3D>& vec, std::string name)
 	{
 		//int meshExists = -1;
 
+		//for (int i = 0;/* meshExists == -1 &&*/ i < m_names.size(); i++)
+		//{
+		//	if (m_names[i] == name)
+		//	{
+		//		//meshExists = i;
+		//		return i;
+		//	}
+		//}
 
+		//int returnIndex = (int)m_allVerts.size() - 1;
 
-		for (int i = 0;/* meshExists == -1 &&*/ i < m_names.size(); i++)
-		{
-			if (m_names[i] == name)
-			{
-				//meshExists = i;
-				return i;
-			}
-		}
+		//m_allVerts.reserve(m_allVerts.size() + vec.size());
+		//m_allVerts.insert(m_allVerts.end(), vec.begin(), vec.end());
 
-		m_allVerts.reserve(m_allVerts.size() + vec.size());
-		m_allVerts.insert(m_allVerts.end(), vec.begin(), vec.end());
-		m_startIndexes.emplace_back(m_allVerts.size());
-		m_names.emplace_back(name);
-
-		return (int)m_names.size()-1;
+		//return returnIndex;
+		return 0;
 	}
 	void MeshCluster::IASet(ID3D11DeviceContext* dc)
 	{

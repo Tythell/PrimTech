@@ -16,8 +16,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	Editor editor(windowRes, hInstance);
 
-	int* haaaa = _NEW int[5];
-
 #ifdef _DEBUG
 	HWND hwnd = GetConsoleWindow();
 	HMENU hmenu = GetSystemMenu(hwnd, false);

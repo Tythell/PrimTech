@@ -223,48 +223,6 @@ namespace PrimtTech
 			return HRESULT(device->CreateBuffer(&bufferDesc, &bufferData, &m_buffer));
 		}
 
-		//HRESULT CreateBuffer(BufferType type, ID3D11Device*& device, T* data, UINT size, ID3D11DeviceContext* dc = NULL)
-		//{
-		//	m_type = type;
-		//	m_bufferSize = size;
-		//	mp_dc = dc;
-		//	m_usage = eIMMULATBLE;
-		//	if (m_buffer)
-		//	{
-		//		throw;
-		//		Popup::Error("Buffer created twice");
-		//	}
-		//	UINT cpuFlags = 0;
-		//	//m_data = new T[size];
-		//	for (int i = 0; i < size; i++)
-		//	{
-		//		m_data[i] = data[i];
-		//	}
-		//	if (dc)
-		//	{
-		//		m_usage = eDYNAMIC;
-		//		mp_dc = dc;
-		//		cpuFlags = D3D11_CPU_ACCESS_WRITE;
-		//	}
-
-		//	//m_data = data;
-		//	mp_dc = dc;
-		//	D3D11_BUFFER_DESC bufferDesc;
-		//	ZeroMemory(&bufferDesc, sizeof(D3D11_BUFFER_DESC));
-		//	bufferDesc.Usage = (D3D11_USAGE)m_usage;
-		//	bufferDesc.ByteWidth = m_stride * m_bufferSize;
-		//	bufferDesc.BindFlags = (UINT)type;
-		//	bufferDesc.CPUAccessFlags = cpuFlags;
-		//	bufferDesc.MiscFlags = 0;
-		//	bufferDesc.Usage = (UINT)m_usage;
-
-		//	D3D11_SUBRESOURCE_DATA bufferData;
-		//	ZeroMemory(&bufferData, sizeof(D3D11_SUBRESOURCE_DATA));
-		//	bufferData.pSysMem = data;
-
-		//	return HRESULT(device->CreateBuffer(&bufferDesc, &bufferData, &m_buffer));
-		//}
-
 		void MapBuffer()
 		{
 			D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -276,6 +234,11 @@ namespace PrimtTech
 		ID3D11DeviceContext* GetDC() const
 		{
 			return mp_dc; // Only works if you initilized buffer with device context
+		}
+		ID3D11Buffer** GetInArrayWith(ID3D11Buffer* instance)
+		{
+			ID3D11Buffer* buffers[] = { m_buffer, instance };
+			return buffers;
 		}
 	private:
 		T* m_data = nullptr;

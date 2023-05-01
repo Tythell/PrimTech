@@ -280,6 +280,9 @@ namespace PrimtTech
 
 	Mesh::Mesh(std::string path, ID3D11Device*& device, bool makeLeftHanded)
 	{
+		ID3D11Buffer* buffer = nullptr;
+		ID3D11Buffer** gee = m_vbuffer.GetInArrayWith(buffer);
+
 		std::vector<Shape> mesh;
 		bool check = false;
 		switch (1) // if a custom fileformat is created int he future, simply chnage this number
