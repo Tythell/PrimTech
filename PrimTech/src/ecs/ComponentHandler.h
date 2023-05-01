@@ -4,7 +4,8 @@
 #include "Components.hpp"
 
 
-namespace PrimtTech {
+namespace PrimtTech
+{
 
 	enum HasComponent
 	{

@@ -55,8 +55,6 @@ namespace pt
 		lua_State* loadState = luaL_newstate();
 		int d = luaL_loadfile(loadState, scriptFile);
 
-		
-
 		if (d == LUA_OK)
 		{
 			m_fileName = StringHelper::GetName(scriptFile);

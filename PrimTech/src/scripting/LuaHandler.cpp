@@ -79,6 +79,23 @@ namespace PrimtTech
 		lua_setfield(L, tableIdx, funcName.c_str());
 	}
 
+	bool LuaEngine::ExecuteFunction(const char* funcName, char* scriptBuffer, int size)
+	{
+		if (scriptBuffer)
+		{
+			luaL_loadbuffer(L, scriptBuffer, size, funcName);
+			lua_pcall(L, 0, 0, 0);
+			int d = lua_getglobal(L, funcName);
+			if (d != LUA_OK)
+			{
+				lua_pcall(L, 0, 0, 0);
+				return true;
+			}
+
+		}
+		return false;
+	}
+
 	int LuaEngine::Lua_AddComp(lua_State* L)
 	{
 		lua_getglobal(L, "Ent");

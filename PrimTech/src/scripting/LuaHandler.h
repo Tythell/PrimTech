@@ -17,8 +17,7 @@ namespace PrimtTech
 		void ChangeCurrentLuaEnt(pt::Entity* pEnt);
 		void ChangeCurrentLuaEnt(EntIdType idx);
 		void AddTypeFunc(lua_CFunction func, int tableIdx, std::string funcName);
-
-		
+		bool ExecuteFunction(const char* funcName, char* scriptBuffer, int size);
 
 		lua_State* GetLuaState();
 

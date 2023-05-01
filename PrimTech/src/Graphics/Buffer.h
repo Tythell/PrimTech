@@ -29,47 +29,6 @@ namespace PrimtTech
 	{
 	public:
 		Buffer() {}
-		/*//Buffer(const Buffer& other) = delete;
-		//{
-			//m_type = other.m_type;
-			//m_bufferSize = other.m_bufferSize;
-			//m_data = other.m_data;
-			//m_stride = other.m_stride;
-			//m_usage = other.m_usage;
-
-
-			//switch (m_type)
-			//{
-			//case eVERTEX:
-			//{
-			//	mp_device = other.mp_device;
-			//	mp_dc = other.mp_dc;
-
-			//	CreateVertexBuffer(mp_device, other.m_data, other.m_bufferSize, mp_dc);
-			//	break;
-			//	
-			//}
-			//case eCONSTANT:
-			//{
-			//	mp_device = other.mp_device;
-			//	mp_dc = other.mp_dc;
-
-			//	CreateConstantBuffer(mp_device, mp_dc);
-			//	break;
-			//}
-			//case eINDEX:
-			//{
-			//	mp_device = other.mp_device;
-			//	mp_dc = other.mp_dc;
-
-			//	CreateVertexBuffer(mp_device, other.m_data, other.m_bufferSize, mp_dc);
-			//	break;
-			//}
-			//default:
-			//	break;
-			//}
-		//}*/
-		//~Buffer() {}
 		void Release()
 		{
 			m_buffer->Release();

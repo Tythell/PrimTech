@@ -13,7 +13,6 @@ namespace pt
 		bool LoadScript(const char* scriptFile);
 		
 		void SetBuffer(char* buffer, int size);
-
 		bool Execute(const char* funcName);
 
 		int GetBufferSize() const { return m_size; };
