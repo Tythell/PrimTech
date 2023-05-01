@@ -55,10 +55,11 @@ namespace pt
 		lua_State* loadState = luaL_newstate();
 		int d = luaL_loadfile(loadState, scriptFile);
 
-		m_fileName = StringHelper::GetName(scriptFile);
+		
 
 		if (d == LUA_OK)
 		{
+			m_fileName = StringHelper::GetName(scriptFile);
 			LuaDumpData dumpData;
 			lua_dump(loadState, WriteFunc, &dumpData, 1);
 

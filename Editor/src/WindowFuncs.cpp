@@ -818,10 +818,6 @@ void Gui_EntList(void* test, bool* show)
 					if (!mr->LoadScript(scriptpath.c_str()))
 						Popup::Error("File not found");
 				}
-				if (ImGui::Button("Refresh"))
-				{
-					scriptpath += mr->GetFileName();
-				}
 				ImGui::Separator();
 				ImGui::TreePop();
 			}

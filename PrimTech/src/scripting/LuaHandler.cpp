@@ -58,18 +58,19 @@ namespace PrimtTech
 		lua_setfield(L, -2, "GetComponent");
 		lua_pushcfunction(L, Lua_FreeComp);
 		lua_setfield(L, -2, "FreeComponent");
+		m_entTableIndex = entIdx;
 		return entIdx;
 	}
 
-	void LuaEngine::ChangeCurrentLuaEnt(pt::Entity* pEnt, int tableindex)
+	void LuaEngine::ChangeCurrentLuaEnt(pt::Entity* pEnt)
 	{
 		lua_pushlightuserdata(L, pEnt);
-		lua_setfield(L, tableindex, "ptr");
+		lua_setfield(L, m_entTableIndex, "ptr");
 	}
 
-	void LuaEngine::ChangeCurrentLuaEnt(EntIdType idx, int tableindex)
+	void LuaEngine::ChangeCurrentLuaEnt(EntIdType idx)
 	{
-		ChangeCurrentLuaEnt(&pt::Entity::GetAllEnts()[idx], tableindex);
+		ChangeCurrentLuaEnt(&pt::Entity::GetAllEnts()[idx]);
 	}
 
 	void LuaEngine::AddTypeFunc(lua_CFunction func, int tableIdx, std::string funcName)

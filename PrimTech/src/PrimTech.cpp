@@ -79,7 +79,7 @@ namespace pt
 			uint numScripts = ComponentHandler::GetNoOfUsedComponents<LuaScript>();
 			for (int i = 0; i < numScripts; i++)
 			{
-				m_luaEngine.ChangeCurrentLuaEnt(scripts[i].EntId(), m_entTableIdx);
+				m_luaEngine.ChangeCurrentLuaEnt(scripts[i].EntId());
 				scripts[i].Execute("OnTick");
 			}
 		}
@@ -174,15 +174,24 @@ namespace pt
 		mp_dxrenderer->Render((float)m_deltaTime);
 		m_isOpen = m_window.processMsg();
 	}
-	void PrimTech::ExecuteOnStart()
+	void PrimTech::ExecuteOnStart(pt::LuaScript* pScript)
 	{
-		std::vector<LuaScript>& scripts = ComponentHandler::GetComponentArray<LuaScript>();
-		uint numScripts = ComponentHandler::GetNoOfUsedComponents<LuaScript>();
-		for (int i = 0; i < numScripts; i++)
+		if (!pScript)
 		{
-			m_luaEngine.ChangeCurrentLuaEnt(scripts[i].EntId(), m_entTableIdx);
-			scripts[i].Execute("OnStart");
+			std::vector<LuaScript>& scripts = ComponentHandler::GetComponentArray<LuaScript>();
+			uint numScripts = ComponentHandler::GetNoOfUsedComponents<LuaScript>();
+			for (int i = 0; i < numScripts; i++)
+			{
+				m_luaEngine.ChangeCurrentLuaEnt(scripts[i].EntId());
+				scripts[i].Execute("OnStart");
+			}
 		}
+		else
+		{
+			m_luaEngine.ChangeCurrentLuaEnt(pScript->EntId());
+			pScript->Execute("OnStart");
+		}
+
 	}
 	bool PrimTech::IsOpen() const
 	{

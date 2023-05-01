@@ -304,18 +304,29 @@ namespace PrimtTech
 
 
 		//Shape fullshape;
-		UINT totalVertCount = 0;
-		for (int i = 0; i < m_nofMeshes; i++)
-		{
-			for (int j = 0; j < mesh[i].verts.size(); j++)
-			{
-				sm::Vector3 pos = mesh[i].verts[j].position;
+		//UINT totalVertCount = 0;
+		
+		//for (int i = 0; i < m_nofMeshes; i++)
+		//{
+		//	for (int j = 0; j < mesh[i].verts.size(); j++)
+		//	{
+		//		sm::Vector3 pos = mesh[i].verts[j].position;
 
-				mesh[i].verts[j].color = sm::Vector3(1.f, 1.f, 1.f);
-				mesh[i].verts[j].color = sm::Vector3(float(rand() % 10 + 1) / 10, float(rand() % 10 + 1) / 10, float(rand() % 10 + 1) / 10);
-				m_shape.verts.emplace_back(mesh[i].verts[j]);
-			}
-		}
+		//		mesh[i].verts[j].color = sm::Vector3(1.f, 1.f, 1.f);
+		//		mesh[i].verts[j].color = sm::Vector3(float(rand() % 10 + 1) / 10, float(rand() % 10 + 1) / 10, float(rand() % 10 + 1) / 10);
+		//		m_shape.verts.emplace_back(mesh[i].verts[j]);
+		//	}
+		//}
+
+		uint totalVertCount = 0;
+		for (int i = 0; i < m_nofMeshes; i++)
+			totalVertCount += mesh[i].verts.size();
+
+		m_shape.verts.reserve(totalVertCount);
+
+		for (int i = 0; i < m_nofMeshes; i++)
+			m_shape.verts.insert(m_shape.verts.end(), mesh[i].verts.begin(), mesh[i].verts.end());
+
 		UINT bsize = m_shape.verts.size();
 
 		HRESULT hr = m_vbuffer.CreateVertexBuffer(device, m_shape.verts.data(), bsize);

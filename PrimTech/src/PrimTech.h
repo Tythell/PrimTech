@@ -18,7 +18,7 @@ namespace pt
 		void Init(LPCWSTR windowName, HINSTANCE hInstance, std::wstring windowClass, unsigned int width, unsigned int height);
 		void Run();
 
-		void ExecuteOnStart();
+		void ExecuteOnStart(pt::LuaScript* pScript = nullptr);
 		
 		bool IsOpen() const;
 		void SetDeltaTime(double& dt) { m_deltaTime = dt; };
@@ -29,8 +29,10 @@ namespace pt
 		void HideCursor();
 		void ShowCursor();
 		PrimtTech::PhysicsHandler m_physHandler;
+		
 
 		bool TogglePlay(char b = 2);
+		
 	private:
 		void Update(float dt);
 		void SetUpScriptEnviroment();

@@ -14,8 +14,8 @@ namespace PrimtTech
 		int InitCompType(std::string typeStr, PrimtTech::HasComponent compType, int typeTableIdx);
 		int CreateLuaCompTable();
 		int InitEntTable();
-		void ChangeCurrentLuaEnt(pt::Entity* pEnt, int tableindex);
-		void ChangeCurrentLuaEnt(EntIdType idx, int tableindex);
+		void ChangeCurrentLuaEnt(pt::Entity* pEnt);
+		void ChangeCurrentLuaEnt(EntIdType idx);
 		void AddTypeFunc(lua_CFunction func, int tableIdx, std::string funcName);
 
 		
@@ -28,5 +28,7 @@ namespace PrimtTech
 		static int Lua_AddComp(lua_State* L);
 		static int Lua_GetComp(lua_State* L);
 		static int Lua_FreeComp(lua_State* L);
+
+		int m_entTableIndex = 0;
 	};
 }

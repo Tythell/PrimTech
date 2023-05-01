@@ -333,6 +333,7 @@ void Editor::Play(char b)
 
 	std::vector<pt::PhysicsBody>& physBodys = PrimtTech::ComponentHandler::GetComponentArray<pt::PhysicsBody>();
 	int noPhysBodys = PrimtTech::ComponentHandler::GetNoOfUsedComponents<pt::PhysicsBody>();
+	int noScripts = PrimtTech::ComponentHandler::GetNoOfUsedComponents<pt::LuaScript>();
 
 	if (onPlay)
 	{
@@ -343,7 +344,14 @@ void Editor::Play(char b)
 		}
 		for (int i = 0; i < noPhysBodys; i++)
 			physBodys[i].Freeze(false);
-		m_primtech.ExecuteOnStart();
+
+		// reloading scripts
+		for (int i = 0; i < noScripts; i++)
+		{
+			std::string scriptPath = "Scripts/" + scripts[i].GetFileName();
+			scripts[i].LoadScript(scriptPath.c_str());
+			m_primtech.ExecuteOnStart(&scripts[i]);
+		}
 	}
 	else
 	{
