@@ -173,6 +173,7 @@
     <ClCompile Include="src\ecs\LuaScipt.cpp" />
     <ClCompile Include="src\ecs\MeshRef.cpp" />
     <ClCompile Include="src\ecs\PhysicsBody.cpp" />
+    <ClCompile Include="src\Graphics\AssetLoading\LoaderFuncs.cpp" />
     <ClCompile Include="src\scripting\LuaHandler.cpp" />
     <ClCompile Include="src\Macros\Colors.cpp" />
     <ClCompile Include="src\Physics\PhysicsHandler.cpp" />
@@ -241,6 +242,7 @@
     <ClCompile Include="src\Windows\WindowWrap.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Graphics\AssetLoading\LoaderFuncs.h" />
     <ClInclude Include="src\Graphics\AssetLoading\MeshLoader.cpp" />
     <ClInclude Include="src\ecs\BoundShapeC.h" />
     <ClInclude Include="src\ecs\CameraC.h" />

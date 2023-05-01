@@ -3,29 +3,21 @@
 
 #include "ResourceHandler.h"
 #include "../Utility/CommonDialogs.h"
-#undef min
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
+//#undef min
+//#include <assimp/Importer.hpp>
+//#include <assimp/scene.h>
+//#include <assimp/postprocess.h>
 
 namespace PrimtTech
 {
-	sm::Vector3 aiVecToSm(const aiVector3D aivec)
-	{
-		return sm::Vector3(aivec.x, aivec.y, aivec.z);
-	}
-	sm::Vector2 aiVecToSm(const aiVector2D aivec)
-	{
-		return sm::Vector2(aivec.x, aivec.y);
-	}
-
-	template <class T>
-	void Swap(T& e1, T& e2)
-	{
-		T temp = e1;
-		e1 = e2;
-		e2 = temp;
-	}
+	//sm::Vector3 aiVecToSm(const aiVector3D aivec)
+	//{
+	//	return sm::Vector3(aivec.x, aivec.y, aivec.z);
+	//}
+	//sm::Vector2 aiVecToSm(const aiVector2D aivec)
+	//{
+	//	return sm::Vector2(aivec.x, aivec.y);
+	//}
 
 	bool LoadObjToBuffer(std::string path, std::vector<Shape>& shape, std::vector<Mtl>& localMtls, std::vector<int>& matIndex, bool makeLeftHanded)
 	{
@@ -221,62 +213,65 @@ namespace PrimtTech
 		return true;
 	}
 
-	Shape ProcessMesh(aiMesh* mesh, const aiScene* scene, Mtl& mtl)
-	{
-		Shape shape;
-		UINT numVerts = mesh->mNumVertices;
-		shape.verts.resize(numVerts);
-		for (int i = 0; i < numVerts; i++)
-		{
-			shape.verts[i].position = aiVecToSm(mesh->mVertices[i]);
-			shape.verts[i].normal = aiVecToSm(mesh->mNormals[i]);
-			shape.verts[i].tangent = aiVecToSm(mesh->mTangents[i]);
-			shape.verts[i].bitangent = aiVecToSm(mesh->mBitangents[i]);
-			shape.verts[i].texCoord = sm::Vector2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
-		}
-		UINT matIndex = mesh->mMaterialIndex;
-		aiMaterial* material = scene->mMaterials[matIndex];
-		aiString diffuseName;
-		material->Get(AI_MATKEY_TEXTURE(aiTextureType_DIFFUSE, 0), diffuseName);
-		mtl.diffuseName = diffuseName.C_Str();
-		// making vertexes clockwise because assimp is retarded
-		for (int i = 0; i < numVerts / 3; i++)
-		{
-			Vertex3D triangle[3];
-			for (int j = 0; j < 3; j++)
-				triangle[j] = shape.verts[i * 3 + j];
-			Swap(triangle[0], triangle[2]);
+	//Shape ProcessMesh(aiMesh* mesh, const aiScene* scene, Mtl& mtl)
+	//{
+	//	Shape shape;
+	//	UINT numVerts = mesh->mNumVertices;
+	//	shape.verts.resize(numVerts);
+	//	for (int i = 0; i < numVerts; i++)
+	//	{
+	//		shape.verts[i].position = aiVecToSm(mesh->mVertices[i]);
+	//		shape.verts[i].normal = aiVecToSm(mesh->mNormals[i]);
+	//		shape.verts[i].tangent = aiVecToSm(mesh->mTangents[i]);
+	//		shape.verts[i].bitangent = aiVecToSm(mesh->mBitangents[i]);
+	//		shape.verts[i].texCoord = sm::Vector2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
+	//	}
+	//	UINT matIndex = mesh->mMaterialIndex;
+	//	aiMaterial* material = scene->mMaterials[matIndex];
+	//	aiString diffuseName;
+	//	material->Get(AI_MATKEY_TEXTURE(aiTextureType_DIFFUSE, 0), diffuseName);
+	//	mtl.diffuseName = diffuseName.C_Str();
+	//	// making vertexes clockwise because assimp is retarded
+	//	for (int i = 0; i < numVerts / 3; i++)
+	//	{
+	//		Vertex3D triangle[3];
+	//		for (int j = 0; j < 3; j++)
+	//			triangle[j] = shape.verts[i * 3 + j];
+	//		std::swap(triangle[0], triangle[2]);
 
-			for (int j = 0; j < 3; j++)
-				shape.verts[i * 3 + j] = triangle[j];
-		}
-		return shape;
-	}
+	//		for (int j = 0; j < 3; j++)
+	//			shape.verts[i * 3 + j] = triangle[j];
+	//	}
+	//	return shape;
+	//}
 
-	void ProcessNode(aiNode* node, const aiScene* scene, std::vector<Shape>& fullShape, std::vector<Mtl>& allMtls)
-	{
-		for (int i = 0; i < node->mNumMeshes; i++)
-		{
-			aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-			Mtl mtl;
-			fullShape.emplace_back(ProcessMesh(mesh, scene, mtl));
-			allMtls.emplace_back(mtl);
-		}
-		for (int i = 0; i < node->mNumChildren; i++)
-			ProcessNode(node->mChildren[i], scene, fullShape, allMtls);
-	}
+	//void ProcessNode(aiNode* node, const aiScene* scene, std::vector<Shape>& fullShape, std::vector<Mtl>& allMtls)
+	//{
+	//	for (int i = 0; i < node->mNumMeshes; i++)
+	//	{
+	//		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+	//		Mtl mtl;
+	//		fullShape.emplace_back(ProcessMesh(mesh, scene, mtl));
+	//		allMtls.emplace_back(mtl);
+	//	}
+	//	for (int i = 0; i < node->mNumChildren; i++)
+	//		ProcessNode(node->mChildren[i], scene, fullShape, allMtls);
+	//}
 
-	bool AssimpLoad(const std::string path, std::vector<Shape>& shape, std::vector<Mtl>& allMtls)
-	{
-		Assimp::Importer importer;
-		const aiScene* pScene = importer.ReadFile(path.c_str(), aiProcess_MakeLeftHanded | aiProcess_CalcTangentSpace);
-		std::string errString = path + " file does not exist";
+	//bool AssimpLoad(const std::string path, std::vector<Shape>& shape, std::vector<Mtl>& allMtls)
+	//{
+		//std::vector<int> dummy;
+		//AssimpLoad("hee", dummy, dummy);
 
-		THROW_POPUP_ERROR(pScene != NULL, errString);
+		//Assimp::Importer importer;
+		//const aiScene* pScene = importer.ReadFile(path.c_str(), aiProcess_MakeLeftHanded | aiProcess_CalcTangentSpace);
+		//std::string errString = path + " file does not exist";
 
-		ProcessNode(pScene->mRootNode, pScene, shape, allMtls);
-		return true;
-	}
+		//THROW_POPUP_ERROR(pScene != NULL, errString);
+
+		//ProcessNode(pScene->mRootNode, pScene, shape, allMtls);
+		//return true;
+	//}
 
 	Mesh::Mesh(std::string path, ID3D11Device*& device, bool makeLeftHanded)
 	{
@@ -291,8 +286,27 @@ namespace PrimtTech
 			check = LoadObjToBuffer(path, mesh, m_mtls, m_mtlIndexes, makeLeftHanded);
 			break;
 		case 1:
-			check = AssimpLoad(path, mesh, m_mtls);
+			check = FileLoader::AssimpLoad(path, mesh, m_mtls);
 			break;
+		case 2: // triangle
+		{
+			check = true;
+			mesh.emplace_back();
+			mesh[0].verts.resize(3);
+
+			mesh[0].verts[0].position = sm::Vector3(-.5f, -.5f, 0.f);
+			mesh[0].verts[1].position = sm::Vector3(0.0f, 0.5f, 0.f);
+			mesh[0].verts[2].position = sm::Vector3(0.5f, -.5f, 0.f);
+			for (int i = 0; i < 3; i++)
+			{
+				mesh[0].verts[i].normal = sm::Vector3(0.f, 0.f, -1.f);
+				mesh[0].verts[i].tangent = sm::Vector3(0.f, 1.f, 0.f);
+				mesh[0].verts[i].bitangent = sm::Vector3(-1.f, 0.f, 0.f);
+			}
+			m_mtls.emplace_back();
+			m_mtlIndexes.emplace_back(0);
+			m_mtlIndexes.emplace_back(3);
+		}
 		}
 		THROW_POPUP_ERROR(check, " loading" + path);
 		m_name = StringHelper::GetName(path);
@@ -304,22 +318,6 @@ namespace PrimtTech
 			lastSize += mesh[i].verts.size();
 			m_offsets.emplace_back(lastSize);
 		}
-
-
-		//Shape fullshape;
-		//UINT totalVertCount = 0;
-		
-		//for (int i = 0; i < m_nofMeshes; i++)
-		//{
-		//	for (int j = 0; j < mesh[i].verts.size(); j++)
-		//	{
-		//		sm::Vector3 pos = mesh[i].verts[j].position;
-
-		//		mesh[i].verts[j].color = sm::Vector3(1.f, 1.f, 1.f);
-		//		mesh[i].verts[j].color = sm::Vector3(float(rand() % 10 + 1) / 10, float(rand() % 10 + 1) / 10, float(rand() % 10 + 1) / 10);
-		//		m_shape.verts.emplace_back(mesh[i].verts[j]);
-		//	}
-		//}
 
 		uint totalVertCount = 0;
 		for (int i = 0; i < m_nofMeshes; i++)

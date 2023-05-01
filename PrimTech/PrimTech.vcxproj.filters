@@ -183,6 +183,9 @@
     <ClCompile Include="src\scripting\LuaHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Graphics\AssetLoading\LoaderFuncs.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
@@ -1014,6 +1017,9 @@
     </ClInclude>
     <ClInclude Include="src\Graphics\AssetLoading\MeshLoader.cpp">
       <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\AssetLoading\LoaderFuncs.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

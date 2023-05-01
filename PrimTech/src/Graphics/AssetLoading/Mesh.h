@@ -3,22 +3,10 @@
 #include"../Buffer.h"
 #include"Vertex.h"
 #include "Material.h"
+#include "LoaderFuncs.h"
 
 namespace PrimtTech
 {
-	struct Mtl
-	{
-		std::string name;
-		std::string diffuseName; // map_Kd
-	};
-
-	struct Shape
-	{
-		std::vector<Vertex3D> verts;
-		//UINT mtlIndex = 0;
-		//Mtl material;
-	};
-
 	/// <summary>
 	/// Asset, always created by the ResourceHandler
 	/// </summary>
