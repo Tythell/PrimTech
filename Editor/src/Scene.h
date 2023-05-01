@@ -30,8 +30,8 @@ struct EntListStruct
 	DevConsole console;
 	//std::vector<pt::Entity> ents;
 	int selected = -1;
-	uint currentCamera;
-	int winWidth, winHeight;
+	uint currentCamera = 0;
+	int winWidth = -1, winHeight = -1;
 	int m_selectedMaterial = -1;
 };
 

@@ -16,7 +16,7 @@ namespace PrimtTech
 		PhysicsHandler();
 		~PhysicsHandler();
 
-		void Update(float dt, bool update);
+		void Update(float dt);
 		rp::RigidBody* CreateRigidBody(const rp::Transform& transform, rp::BodyType bodyType = rp::BodyType::DYNAMIC);
 
 		rp::BoxShape* CreateBoxShape(const sm::Vector3& extents);

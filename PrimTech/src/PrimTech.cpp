@@ -72,7 +72,7 @@ namespace pt
 
 			::SetWindowTextW(m_window.getHWND(), extendedWinName.c_str());
 		}
-		m_physHandler.Update(dt, m_playing);
+		m_physHandler.Update(dt);
 		if (m_playing)
 		{
 			std::vector<LuaScript>& scripts = ComponentHandler::GetComponentArray<LuaScript>();

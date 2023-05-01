@@ -24,7 +24,7 @@ namespace PrimtTech
 #endif // PHYSDEBUG
 	}
 
-	void PhysicsHandler::Update(float dt, bool update)
+	void PhysicsHandler::Update(float dt)
 	{
 		if (m_running && m_pworld->getNbRigidBodies() != 0)
 			m_pworld->update(dt);
@@ -64,8 +64,6 @@ namespace PrimtTech
 			}
 		}
 #endif // _DEBUG
-		m_running = update;
-
 	}
 
 	rp::BoxShape* PhysicsHandler::CreateBoxShape(const sm::Vector3& extents)

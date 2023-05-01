@@ -3,8 +3,6 @@
 #include"WindowFuncs.h"
 #include <sstream>
 
-namespace ig = ImGui;
-
 Editor::Editor(d::XMINT2 windowRes, HINSTANCE hInstance)
 {
 	//PrimtTech::ResourceHandler::ReserveMeshMemory(15);
@@ -41,7 +39,8 @@ Editor::Editor(d::XMINT2 windowRes, HINSTANCE hInstance)
 	m_pGui.AddWindowFunc(Gui_PlayButton, &m_entlist.console, &m_entlist.console.m_showWin[u].first);
 	m_entlist.console.m_showWin[u++].second = "runGameWin";
 	m_pGui.AddWindowFunc(Gui_CamView, NULL, &m_entlist.console.m_showWin[u].first);
-	m_entlist.console.m_showWin[u++].second = "camView";
+	m_entlist.console.m_showWin[u].second = "camView";
+	m_entlist.console.m_showWin[u++].first = false;
 
 
 	m_pGui.AddWindowFunc(Gui_menubar, &m_entlist.console, &m_entlist.console.m_showWin[u].first);
@@ -83,11 +82,11 @@ sm::Vector3 Vector3FromString(std::stringstream& ss)
 
 	sm::Vector3 extents;
 	ss >> argBuffer;
-	extents.x = atof(argBuffer.c_str());
+	extents.x = (float)atof(argBuffer.c_str());
 	ss >> argBuffer;
-	extents.y = atof(argBuffer.c_str());
+	extents.y = (float)atof(argBuffer.c_str());
 	ss >> argBuffer;
-	extents.z = atof(argBuffer.c_str());
+	extents.z = (float)atof(argBuffer.c_str());
 
 	//pRigidBody->SetBoxExtents(extents);
 	/*pRigidBody->AddBoxColider(extents);*/
@@ -199,7 +198,7 @@ void Editor::execCommand(std::string cmd)
 					if (argBuffer == "add")
 					{
 						ss >> argBuffer;
-						pRigidBody->AddSphereColider(atof(argBuffer.c_str()));
+						pRigidBody->AddSphereColider((float)atof(argBuffer.c_str()));
 					}
 					else if (argBuffer == "edit")
 					{
@@ -215,18 +214,18 @@ void Editor::execCommand(std::string cmd)
 					{
 						sm::Vector2 lengths;
 						ss >> argBuffer;
-						lengths.x = atof(argBuffer.c_str());
+						lengths.x = (float)atof(argBuffer.c_str());
 						ss >> argBuffer;
-						lengths.y = atof(argBuffer.c_str());
+						lengths.y = (float)atof(argBuffer.c_str());
 						pRigidBody->AddCapsuleColider(lengths.x, lengths.y);
 					}
 					else if (argBuffer == "edit")
 					{
 						sm::Vector2 lengths;
 						ss >> argBuffer;
-						lengths.x = atof(argBuffer.c_str());
+						lengths.x = (float)atof(argBuffer.c_str());
 						ss >> argBuffer;
-						lengths.y = atof(argBuffer.c_str());
+						lengths.y = (float)atof(argBuffer.c_str());
 
 						ss >> argBuffer;
 						pRigidBody->SetCapsuleLengths(lengths.x, lengths.y, atoi(argBuffer.c_str()));
@@ -265,7 +264,7 @@ void Editor::execCommand(std::string cmd)
 		else if (argBuffer == "sense")
 		{
 			ss >> argBuffer;
-			m_mouseSense = atof(argBuffer.c_str()) / 100.f;
+			m_mouseSense = (float)atof(argBuffer.c_str()) / 100.f;
 		}
 	}
 	else if (argBuffer == "showwin")
@@ -328,9 +327,12 @@ void Editor::Play(char b)
 	std::vector<pt::LuaScript>& scripts = PrimtTech::ComponentHandler::GetComponentArray<pt::LuaScript>();
 	
 	m_startTransforms.resize(PrimtTech::ComponentHandler::GetNoOfUsedComponents<pt::TransformComp>());
-	int n = m_startTransforms.size();
+	int n = (int)m_startTransforms.size();
 
 	bool onPlay = m_primtech.TogglePlay((char)b);
+
+	std::vector<pt::PhysicsBody>& physBodys = PrimtTech::ComponentHandler::GetComponentArray<pt::PhysicsBody>();
+	int noPhysBodys = PrimtTech::ComponentHandler::GetNoOfUsedComponents<pt::PhysicsBody>();
 
 	if (onPlay)
 	{
@@ -339,15 +341,16 @@ void Editor::Play(char b)
 			m_startTransforms[i].first = transforms[i].GetPosition();
 			m_startTransforms[i].second = transforms[i].GetRotation();
 		}
+		for (int i = 0; i < noPhysBodys; i++)
+			physBodys[i].Freeze(false);
 		m_primtech.ExecuteOnStart();
 	}
 	else
 	{
-		std::vector<pt::PhysicsBody>& physBodys = PrimtTech::ComponentHandler::GetComponentArray<pt::PhysicsBody>();
-		int noPhysBodys = PrimtTech::ComponentHandler::GetNoOfUsedComponents<pt::PhysicsBody>();
 		for (int i = 0; i < noPhysBodys; i++)
 		{
 			physBodys[i].SetPhysicsPosition(m_startTransforms[physBodys[i].EntId()].first);
+			physBodys[i].Freeze(true);
 		}
 		for (int i = 0; i < n; i++)
 		{

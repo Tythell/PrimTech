@@ -25,7 +25,7 @@ namespace pt
 		void AddCapsuleColider(float radius, float height);
 		void RemoveCollider(uint index = 0);
 
-		rp::BodyType GetType() const { return mp_rigidBody->getType(); }
+		rp::BodyType GetType() const { return m_bodyType; }
 		void SetType(rp::BodyType bodyType);
 		void SetPhysicsPosition(const sm::Vector3& v);
 		void SetPhysicsEulerRotation(const sm::Vector3& v);
@@ -36,6 +36,8 @@ namespace pt
 		bool GetIsTrigger(uint i) const { return mp_rigidBody->getCollider(i)->getIsTrigger(); }
 
 		ePT_ShapeType GetColliderType(uint index = 0) const { return m_shapeIndexes[index]; }
+
+		void Freeze(bool b);
 
 		sm::Vector3 GetExtents(uint index = 0) const;
 		float GetSphereRadius(uint index = 0) const;
@@ -64,5 +66,6 @@ namespace pt
 		static PrimtTech::PhysicsHandler* m_pPhysHandle;
 		std::vector<ePT_ShapeType> m_shapeIndexes;
 		sm::Quaternion m_startOrientation;
+		rp::BodyType m_bodyType = rp::BodyType::STATIC;
 	};
 }

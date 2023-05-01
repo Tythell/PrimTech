@@ -73,7 +73,8 @@ namespace pt
 	}
 	void PhysicsBody::SetType(rp::BodyType bodyType)
 	{
-		mp_rigidBody->setType(bodyType);
+		//mp_rigidBody->setType(bodyType);
+		m_bodyType = bodyType;
 	}
 	void PhysicsBody::SetPhysicsPosition(const sm::Vector3& v)
 	{
@@ -82,7 +83,7 @@ namespace pt
 		rp::Transform rpTransform;
 		
 		rp::BodyType type = mp_rigidBody->getType();
-		mp_rigidBody->setType(rp::BodyType::STATIC);
+		//Freeze(true);
 		rpTransform.setPosition({ v.x, v.y, v.z });
 
 		rp::Vector3 angles(ptTransform.GetRotation().x,
@@ -98,7 +99,7 @@ namespace pt
 		mp_rigidBody->setTransform(rpTransform);
 		mp_rigidBody->resetTorque();
 		mp_rigidBody->resetForce();
-		mp_rigidBody->setType(type);
+		//Freeze(false);
 	}
 
 	void PhysicsBody::SetPhysicsEulerRotation(const sm::Vector3& v)
@@ -123,6 +124,12 @@ namespace pt
 		mp_rigidBody->resetTorque();
 		mp_rigidBody->resetForce();
 		mp_rigidBody->setType(type);
+	}
+
+	void PhysicsBody::Freeze(bool b)
+	{
+		if (b) mp_rigidBody->setType(rp::BodyType::STATIC);
+		else mp_rigidBody->setType(m_bodyType);
 	}
 
 	sm::Vector3 PhysicsBody::GetExtents(uint index) const
