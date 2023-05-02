@@ -1,9 +1,10 @@
 #include"pch.h"
-#define STB_IMAGE_IMPLEMENTATION
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "../3rdParty/stb_image.h"
-#include "../3rdParty/stb_image_write.h"
+//#define STB_IMAGE_IMPLEMENTATION
+//#define STB_IMAGE_WRITE_IMPLEMENTATION
+//#include "../3rdParty/stb_image.h"
+//#include "../3rdParty/stb_image_write.h"
 #include "Texture.h"
+#include "LoaderFuncs.h"
 #include"../Utility/Popup.h"
 #include "ResourceHandler.h"
 
@@ -28,15 +29,13 @@ namespace PrimtTech
 		if (m_textureSRV)
 			m_textureSRV->Release();
 
-		stbi_set_flip_vertically_on_load(flipUV);
+		//stbi_set_flip_vertically_on_load(flipUV);
 
 		m_name = StringHelper::GetName(std::string(texturePath));
 
 		std::string fullpath;
 		if (texturePath[0] == '.')
-		{
 			fullpath = std::string(texturePath).substr(1);
-		}
 		else if (texturePath[1] != ':')
 			fullpath = "Assets/Textures/" + std::string(texturePath);
 		else
@@ -45,7 +44,9 @@ namespace PrimtTech
 
 		int textureWidth;
 		int textureHeight;
-		unsigned char* imageData = stbi_load(fullpath.c_str(), &textureWidth, &textureHeight, nullptr, STBI_rgb_alpha);
+		//unsigned char* imageData = stbi_load(fullpath.c_str(), &textureWidth, &textureHeight, nullptr, STBI_rgb_alpha);
+		unsigned char* imageData = nullptr;
+		FileLoader::StbiCreateCharFromFile(fullpath.c_str(), imageData, textureWidth, textureHeight, 4);
 
 		if (!imageData)
 		{
@@ -68,7 +69,7 @@ namespace PrimtTech
 		desc.CPUAccessFlags = 0;
 		desc.MiscFlags = 0;
 
-		D3D11_SUBRESOURCE_DATA data;
+		D3D11_SUBRESOURCE_DATA data = {};
 
 		data.pSysMem = &imageData[0];
 		data.SysMemPitch = textureWidth * 4;
@@ -83,7 +84,7 @@ namespace PrimtTech
 		HRESULT hr = device->CreateShaderResourceView(texture2D, nullptr, &m_textureSRV);
 		texture2D->Release();
 
-		stbi_image_free(imageData);
+		free(imageData);
 		return SUCCEEDED(hr);
 	}
 
@@ -132,25 +133,6 @@ namespace PrimtTech
 		texture->Release();
 
 		return true;
-	}
-
-	const unsigned char* TextureMap::CreateCharFromFile(const char* path, unsigned char*& imagedData, int imagewidth, int imageheight, int channels, bool flipUV)
-	{
-		imagedData = stbi_load(path, &imagewidth, &imageheight, nullptr, channels);
-		if (!imagedData)
-			Popup::Error(std::string(path) + " does not exist");
-
-		return imagedData;
-	}
-
-	void TextureMap::ExportCharToImage(const char* path, unsigned char* imageData, int width, int height, int channels)
-	{
-		stbi_set_flip_vertically_on_load(false);
-		std::string ext = StringHelper::GetExtension(std::string(path));
-		if (ext == "png")
-			stbi_write_png(path, width, height, channels, imageData, channels * width);
-		else
-			Popup::Error(path + std::string(" is not png, no image exported"));
 	}
 
 	bool TextureMap::CreatePerlinNoise(ID3D11Device*& device)

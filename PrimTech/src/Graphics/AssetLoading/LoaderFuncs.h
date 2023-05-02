@@ -13,16 +13,19 @@ namespace PrimtTech
 
 	struct Shape
 	{
-		std::vector<Vertex3D> verts;
+		std::vector<PrimtTech::Vertex3D> verts;
 		//UINT mtlIndex = 0;
 		//Mtl material;
 	};
+
 
 	class FileLoader
 	{
 	public:
 		static bool AssimpLoad(std::string path, std::vector<Shape>& shape, std::vector<Mtl>& allMtls);
+		static bool LoadObjToBuffer(std::string path, std::vector<Shape>& shape, std::vector<Mtl>& localMtls, std::vector<int>& matIndex, bool makeLeftHanded);
+		
+		static bool StbiCreateCharFromFile(const char* path, unsigned char*& imagedData, int& imagewidth, int& imageheight, int channels, bool flipUV = true);
+		static void StbiExportCharToImage(const char* path, unsigned char* imageData, int width, int height, int channels);
 	};
-
-	
 }
