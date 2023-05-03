@@ -55,6 +55,8 @@ LINK_TYPE_VEC(else, pt::Light, s_lights, ec_light) \
 LINK_TYPE_VEC(else, pt::PhysicsBody, s_rigidBodies, ec_rigidBodies) \
 LINK_TYPE_VEC(else, pt::LuaScript, s_luascripts, ec_lua) \
 
+#define GETCOMPVEC(type, name) std::vector<type>& name = PrimtTech::ComponentHandler::GetComponentArray<type>();
+
 	class ComponentHandler
 	{
 	public:

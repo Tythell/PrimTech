@@ -31,14 +31,14 @@ namespace PrimtTech
 		WRITE_asci(numEnts);
 
 		// exporting entity component tables
-		for (int i = 0; i < numEnts; i++)
+		for (int entIndex = 0; entIndex < numEnts; entIndex++)
 		{
 			// number of components
-			int numComponents = entList[i].CalculateNrOfComponents();
-			WRITE_asci(i);
+			int numComponents = entList[entIndex].CalculateNrOfComponents();
+			WRITE_asci(entIndex);
 			WRITE_asci(numComponents);
 
-			std::map<uint, uint> compTable = entList[i].GetCompTable();
+			std::map<uint, uint> compTable = entList[entIndex].GetCompTable();
 			for (auto const& [key, val] : compTable) // might be slow but works for now and probably ever
 			{
 				WRITE_asci(key);
@@ -95,7 +95,7 @@ namespace PrimtTech
 		std::vector<pt::Camera>& cams = ComponentHandler::GetComponentArray<pt::Camera>();
 		numComps = cams.size();
 		WRITE_asci(numComps);
-		for (int i = 0; i < numComps; i++)
+		for (int i = 1; i < numComps; i++)
 		{
 			uint entId = cams[i].EntId();
 			WRITE_asci(entId);
@@ -153,7 +153,7 @@ namespace PrimtTech
 		std::vector<pt::TransformComp>& transforms = ComponentHandler::GetComponentArray<pt::TransformComp>();
 		int numComps = transforms.size();
 		WRITEA(numComps);
-		for (int i = 0; i < transforms.size(); i++)
+		for (int i = 1; i < transforms.size(); i++)
 		{
 			uint entId = transforms[i].EntId();
 			WRITEA(entId);
@@ -222,6 +222,11 @@ namespace PrimtTech
 		if (!importer.is_open())
 			return false;
 
+		for (int i = 1; i < entList.size(); i++)
+		{
+			entList[i].Free();
+		}
+
 		int magicNum = 0;
 		READA(magicNum);
 		if (magicNum != 0x6969)
@@ -236,10 +241,11 @@ namespace PrimtTech
 		int numEnts = 0;
 		READA(numEnts);
 
-		entList.resize(numEnts, true); // to bypass the func check
+		entList.resize(numEnts, true);
+		pt::Entity::SetNoUsedEnts(numEnts);
 		
 
-		// exporting entity component tables
+		// importing entity component tables
 		for (int i = 0; i < numEnts; i++)
 		{
 			int numComponents = 0;
@@ -259,7 +265,7 @@ namespace PrimtTech
 		int numComps = 0;
 		READA(numComps);
 		transforms.reserve(numComps);
-		for (int i = 0; i < numComps; i++)
+		for (int i = 1; i < numComps; i++)
 		{
 			uint entId = 0;
 			READA(entId);
@@ -284,6 +290,7 @@ namespace PrimtTech
 		{
 			uint entId = 0;
 			READA(entId);
+			meshrefs[i].FreeComponent(entId);
 			meshrefs.emplace_back(entId);
 
 			READ(meshname);
@@ -302,7 +309,7 @@ namespace PrimtTech
 		numComps = 0;
 		READA(numComps);
 		cams.reserve(numComps);
-		for (int i = 0; i < numComps; i++)
+		for (int i = 1; i < numComps; i++)
 		{
 			uint entId = 0;
 			READA(entId);

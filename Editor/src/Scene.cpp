@@ -22,7 +22,7 @@ Editor::Editor(d::XMINT2 windowRes, HINSTANCE hInstance)
 	m_renderer->SetImGuiHandler(m_pGui);
 
 	uint u = 0;
-	m_entlist.console.m_showWin.resize(9, { true, "" });
+	m_entlist.console.m_showWin.resize(10, { true, "" });
 	m_pGui.AddWindowFunc(Gui_ImGuiDemo, NULL, &m_entlist.console.m_showWin[u].first);
 	m_entlist.console.m_showWin[u].second = "imguiDemo";
 	m_entlist.console.m_showWin[u++].first = false;
@@ -41,6 +41,18 @@ Editor::Editor(d::XMINT2 windowRes, HINSTANCE hInstance)
 	m_pGui.AddWindowFunc(Gui_CamView, NULL, &m_entlist.console.m_showWin[u].first);
 	m_entlist.console.m_showWin[u].second = "camView";
 	m_entlist.console.m_showWin[u++].first = false;
+
+	m_pGui.AddWindowFunc(Gui_CompView, NULL, &m_entlist.console.m_showWin[u].first);
+	m_entlist.console.m_showWin[u].second = "imguiDemo";
+
+
+	
+
+	pt::Entity& devEnt = pt::Entity::Create();
+	pt::Camera* devCam = devEnt.AddComponent<pt::Camera>();
+	devCam->UpdateView(devEnt.Transform());
+	devCam->SetPerspective(80.f, (float)windowRes.x / (float)windowRes.y, 0.1f, 100.f);
+	devEnt.SetPosition(0.f, 1.f, -2.f);
 
 
 	m_pGui.AddWindowFunc(Gui_menubar, &m_entlist.console, &m_entlist.console.m_showWin[u].first);
@@ -62,7 +74,6 @@ Editor::Editor(d::XMINT2 windowRes, HINSTANCE hInstance)
 
 	pt::Entity& ent0 = pt::Entity::Create();
 	ent0.AddComponent<pt::MeshRef>();
-	ent0.AddComponent<pt::Camera>();
 	ent0.SetPosition(0.f, 2.f, 0.f);
 	pt::Entity& ent1 = pt::Entity::Create();
 	ent1.SetPosition(0.f, -0.2f, 0.f);
@@ -296,9 +307,9 @@ void Editor::execCommand(std::string cmd)
 			if (!path.empty())
 			{
 				m_entlist.selected = -1;
-				pt::Entity::Clear(1);
+				//pt::Entity::Clear(1);
 
-				pt::Entity::GetEntity(0).AddComponent<pt::Camera>()->SetPerspective(80.f, ((float)m_entlist.winWidth / (float)m_entlist.winHeight), 0.1f, 100.f);
+				//pt::Entity::GetEntity(0).AddComponent<pt::Camera>()->SetPerspective(80.f, ((float)m_entlist.winWidth / (float)m_entlist.winHeight), 0.1f, 100.f);
 				PrimtTech::Import(path, pt::Entity::GetAllEnts());
 			}
 		}
@@ -310,6 +321,7 @@ void Editor::execCommand(std::string cmd)
 				if (StringHelper::GetExtension(path) != "ptsc")
 					path += ".ptsc";
 				PrimtTech::Export(path, pt::Entity::GetAllEnts());
+				//PrimtTech::Export(path, pt::Entity::GetAllEnts());
 			}
 		}
 		else if (argBuffer == "new")
@@ -382,8 +394,8 @@ void Editor::Update(float deltatime)
 
 	bool canMove = MouseHandler::GetIsMouseDown(eRIGHTCLICK);
 
-	pt::TransformComp* pDevTransform = &PrimtTech::ComponentHandler::GetComponentByIndex<pt::TransformComp>(0);
-	pt::Camera* pDevCam = &PrimtTech::ComponentHandler::GetComponentByIndex<pt::Camera>(0);
+	pt::TransformComp* pDevTransform = &PrimtTech::ComponentHandler::GetComponentByIndex<pt::TransformComp>(m_devEntIndex);
+	pt::Camera* pDevCam = &PrimtTech::ComponentHandler::GetComponentByIndex<pt::Camera>(m_devEntIndex);
 
 
 	if (canMove)

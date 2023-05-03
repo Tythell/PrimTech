@@ -381,6 +381,11 @@ namespace PrimtTech
 		dc->PSSetShaderResources(0, 1, ResourceHandler::GetTexture(1).GetSRVAdress());
 	}
 
+	void DX11Renderer::SetActiveCam(uint idx)
+	{
+		m_activeCamIndex = idx;
+	}
+
 	void drawMeshes(std::vector<MeshRef>& rMeshrefs, std::vector<TransformComp>& rTransforms,
 		Buffer<hlsl::cbpWorldTransforms3D>& transformBuffer, Buffer<hlsl::cbpMaterialBuffer>* pMAtBuffer, ID3D11DeviceContext*& dc, float deltatime)
 	{
@@ -472,6 +477,7 @@ namespace PrimtTech
 		m_multiLightBuffer.MapBuffer();
 
 		pt::Camera& cc = ComponentHandler::GetComponentByIndex<pt::Camera>(m_activeCamIndex);
+		int noCams = ComponentHandler::GetNoOfUsedComponents<Camera>();
 		pt::TransformComp& camTransform = ComponentHandler::GetComponentByIndex<pt::TransformComp>(m_activeCamIndex);
 		m_lightbuffer.Data().camPos = { camTransform.GetPosition().x, camTransform.GetPosition().y, camTransform.GetPosition().z, 1.f};
 		m_lightbuffer.MapBuffer();
@@ -502,6 +508,11 @@ namespace PrimtTech
 		m_shadowmap.BindSRV(dc, 10);
 		// iterate through meshrefs
 		drawMeshes(rMeshrefs, rTransforms, m_transformBuffer, &m_materialBuffer, dc, deltatime);
+		std::vector<Camera> cams = ComponentHandler::GetComponentArray<Camera>();
+		for (int i = 0; i < noCams; i++)
+		{
+			//cams[i].E
+		}
 
 		m_transformBuffer.Data().world = d::XMMatrixIdentity();
 		m_transformBuffer.MapBuffer();

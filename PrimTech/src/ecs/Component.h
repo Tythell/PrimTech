@@ -17,7 +17,7 @@ namespace pt
 	public:
 		Component(EntIdType id);
 		const EntIdType EntId() const;
-		void FreeComponent() { m_entId = -1; }
+		void FreeComponent(EntIdType idx = -1) { m_entId = idx; }
 	private:
 		EntIdType m_entId;
 	};

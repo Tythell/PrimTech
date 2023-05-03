@@ -9,15 +9,12 @@ namespace pt
 	public:
 		static std::vector<Entity> s_ents;
 
-		Entity(bool createdWithFunc = false)
-		{
-			m_id = nrOfEntities++;
-			THROW_POPUP_ERROR(createdWithFunc, "MANNEN ANVÄND pt::Entity::Create() ISTÄLLET");
-			
-			m_displayName = std::to_string(m_id);
-		}
+		Entity(bool createdWithFunc = false);
 
+		void SetEntId(EntIdType idx) { m_id = idx; }
+		EntIdType GetEntId() { return m_id; }
 		static Entity& Create();
+		void Free();
 		static const uint NumEnts();
 		static Entity& GetEntity(EntIdType index);
 		static Entity* GetEntityP(EntIdType index);
@@ -33,6 +30,20 @@ namespace pt
 		void SetRotation(const sm::Quaternion& v);
 		void SetScale(float x, float y, float z);
 		void SetScale(const sm::Vector3& v);
+
+		void Move(float x, float y, float z);
+		void Move(sm::Vector3 v);
+		void Rotate(float x, float y, float z);
+		void Rotate(sm::Vector3 v);
+		void Scale(float x, float y, float z);
+		void Scale(sm::Vector3 v);
+
+		static int Lua_SetPosition(lua_State* L);
+		static int Lua_SetRotation(lua_State* L);
+		static int Lua_SetScale(lua_State* L);
+		static int Lua_Move(lua_State* L);
+		static int Lua_Rotate(lua_State* L);
+		static int Lua_Scale(lua_State* L);
 
 		template<class T>
 		T* AddComponent()
@@ -82,12 +93,14 @@ namespace pt
 			return NULL;
 		}
 		template<class T>
-		void FreeComponent()
+		void FreeComponent(EntIdType newIndex = -1)
 		{
 			std::vector<T>* ptvec = nullptr;
 			PrimtTech::HasComponent c = PrimtTech::ec_null;
 
 			PrimtTech::ComponentHandler::LinkVector<T>(ptvec, c);
+
+			int swapIndex = ptvec->size() - PrimtTech::ComponentHandler::GetNoFreeComponents(c) - 1;
 
 			if (m_hasComponents & c)
 			{
@@ -98,11 +111,19 @@ namespace pt
 
 				ptvec[0][index].FreeComponent();
 
-				int swapIndex = ptvec->size() - PrimtTech::ComponentHandler::GetNoFreeComponents(c) - 1;
+				if (newIndex != -1)
+				{
+					ptvec[0][swapIndex].FreeComponent(newIndex);
+				}
 
 				std::swap(ptvec[0][index], ptvec[0][swapIndex]);
 				PrimtTech::ComponentHandler::IncreaseFreeComponents(c, 1);
 			}
+			else if (newIndex != -1 && ptvec->size() > 0)
+			{
+				ptvec[0][ptvec->size() - PrimtTech::ComponentHandler::GetNoFreeComponents(c)-1].FreeComponent(newIndex);
+			}
+			
 		}
 		template<class T>
 		uint GetComponentIndex()
@@ -126,6 +147,13 @@ namespace pt
 
 		void SetName(const std::string& name) { m_displayName = name; }
 		std::string GetName() const { return m_displayName; };
+
+		static int Lua_AddComp(lua_State* L);
+		static int Lua_GetComp(lua_State* L);
+		static int Lua_FreeComp(lua_State* L);
+
+		static uint GetNoUsedEnts();
+		static void SetNoUsedEnts(EntIdType n);
 	private:
 		EntIdType m_id = 0xffffffff;
 		uint m_hasComponents = 0;
@@ -134,6 +162,7 @@ namespace pt
 		int m_physIndex = -1;
 
 		static uint nrOfEntities;
+		static uint nrOfEntitiesUsed;
 		std::/*unordered_*/map<uint, uint> m_compTable;
 	};
 }

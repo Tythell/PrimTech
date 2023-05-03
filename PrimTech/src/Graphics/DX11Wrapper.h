@@ -39,6 +39,7 @@ namespace PrimtTech
 		ImGuiHandler* GetGuiHandlerP() { return m_guiHandler; }
 
 		void SetLightWarp(const std::string& path);
+		void SetActiveCam(uint idx);
 	private:
 		bool initSwapChain();
 		bool initRTV();
@@ -99,7 +100,7 @@ namespace PrimtTech
 		Buffer<hlsl::Light> m_multiLightBuffer;
 		Buffer<BBVertex> m_grid;
 
-		uint m_activeCamIndex = 0;
+		uint m_activeCamIndex = 1;
 
 		ImGuiHandler* m_guiHandler = nullptr;
 		ImGuiVars* im = nullptr;
@@ -111,6 +112,6 @@ namespace PrimtTech
 		//RenderSphere m_sphere;
 
 		ShadowMap m_shadowmap;
-		uint m_shadowCamIndex = 0xffffffff;
+		uint m_shadowCamIndex = 0;
 	};
 }

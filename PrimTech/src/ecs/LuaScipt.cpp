@@ -9,10 +9,11 @@ namespace pt
 	{
 		m_size = other.m_size;
 		this->L = other.L;
-
-		m_pbuffer = new char[m_size];
-
-		memcpy(m_pbuffer, other.m_pbuffer, m_size);
+		if (m_size != -1)
+		{
+			m_pbuffer = new char[m_size];
+			memcpy(m_pbuffer, other.m_pbuffer, m_size);
+		}
 	}
 
 	LuaScript::~LuaScript()

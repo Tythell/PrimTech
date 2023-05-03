@@ -156,6 +156,12 @@ namespace pt
 		dynamic_cast<rp::BoxShape*>(mp_rigidBody->getCollider(index)->getCollisionShape())->
 			setHalfExtents({ extents.x, extents.y, extents.z });
 	}
+	void PhysicsBody::PhysMove(const sm::Vector3& v)
+	{
+		//mp_rigidBody->applyWorldForceAtCenterOfMass(rp::Vector3(10000 * v.x, 100 * v.y, 10000 * v.z));
+		mp_rigidBody->setLinearVelocity(rp::Vector3(10000 * v.x, 100 * v.y, 10000 * v.z));
+		//mp_rigidBody->setLinearLockAxisFactor(rp::Vector3(10000 * v.x, 100 * v.y, 10000 * v.z));
+	}
 	void PhysicsBody::SetSphereRadius(float r, uint index)
 	{
 		dynamic_cast<rp::SphereShape*>(mp_rigidBody->getCollider(index)->getCollisionShape())->

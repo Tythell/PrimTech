@@ -30,16 +30,16 @@ namespace pt
 		m_windowName = windowName;
 		m_window.init(windowName, hInstance, windowClass, width, height);
 
-		pt::Entity& ent0 = pt::Entity::Create();
+		
 
 		SetUpScriptEnviroment();
 		LuaScript::SetLuaState(m_luaEngine.GetLuaState());
 
-
+		/*pt::Entity& ent0 = pt::Entity::Create();
 		pt::Camera* devCam = ent0.AddComponent<pt::Camera>();
 		devCam->UpdateView(ent0.Transform());
 		devCam->SetPerspective(80.f, (float)width / (float)height, 0.1f, 100.f);
-		ent0.SetPosition(0.f, 1.f, -2.f);
+		ent0.SetPosition(0.f, 1.f, -2.f);*/
 
 		mp_dxrenderer = new DX11Renderer(m_window);
 		
@@ -50,7 +50,6 @@ namespace pt
 
 		mp_dxrenderer->SetDebugRenderer(&m_physHandler);
 #endif // PHYSDEBUG
-		//ComponentHandler::ReserveMemory<MeshRef>(6);
 	}
 
 	void PrimTech::ToggleMouse()
@@ -73,8 +72,10 @@ namespace pt
 			::SetWindowTextW(m_window.getHWND(), extendedWinName.c_str());
 		}
 		m_physHandler.Update(dt);
+		
 		if (m_playing)
 		{
+			m_luaEngine.UpdateDeltaTime(dt);
 			std::vector<LuaScript>& scripts = ComponentHandler::GetComponentArray<LuaScript>();
 			uint numScripts = ComponentHandler::GetNoOfUsedComponents<LuaScript>();
 			for (int i = 0; i < numScripts; i++)
@@ -133,8 +134,10 @@ namespace pt
 		//m_luaEngine.AddTypeFunc()
 
 		int transformTable = m_luaEngine.InitCompType("Transform", ec_transform, typeTable);
-		m_luaEngine.AddTypeFunc(TransformComp::Lua_Move, transformTable, "Move");
+
 		int meshTable = m_luaEngine.InitCompType("MeshRef", ec_meshRef, typeTable);
+		m_luaEngine.AddTypeFunc(MeshRef::Lua_ChangeModel, meshTable, "ChangeMesh");
+
 		int camTable = m_luaEngine.InitCompType("Camera", ec_cam, typeTable);
 		int lightTable = m_luaEngine.InitCompType("Light", ec_light, typeTable);
 		int physTable = m_luaEngine.InitCompType("PhysBody", ec_rigidBodies, typeTable);
@@ -153,6 +156,11 @@ namespace pt
 	{
 		m_mouseLocked = false;
 		while (::ShowCursor(true) < 0);
+	}
+
+	void PrimTech::SetCamera(uint idx)
+	{
+		mp_dxrenderer->SetActiveCam(idx);
 	}
 
 	bool PrimTech::TogglePlay(char b)

@@ -212,43 +212,9 @@ void ImguiDebug(void* ptr, bool* show)
 	if (ImGui::IsWindowHovered())
 		im->m_isHoveringWindow = true;
 
-	//std::string fpsString = "FPS: " + std::to_string(im.m_fps);
-	//ImGui::Text(fpsString.c_str());
-
 	//ImGui::Checkbox("Show selection", &im.showSelection);
 
 
-	//if (ImGui::CollapsingHeader("ShadowMap"))
-	//{
-	//	ImGui::Checkbox("Shadows", &im.shadowMap); ImGui::SameLine();
-	//	ImGui::Checkbox("View Shadowcam", &im.viewshadowcam);
-	//	ImGui::DragFloat3("Pos", im.shadowcamPos, 0.1f);
-
-	//	im.shadowcamrotation[0] = m_shadowmap.GetShadowCam().GetRotation().x;
-	//	im.shadowcamrotation[1] = m_shadowmap.GetShadowCam().GetRotation().y;
-	//	im.shadowcamrotation[2] = m_shadowmap.GetShadowCam().GetRotation().z;
-	//	im.shadowcamPos[0] = m_shadowmap.GetShadowCam().GetPosition().x;
-	//	im.shadowcamPos[1] = m_shadowmap.GetShadowCam().GetPosition().y;
-	//	im.shadowcamPos[2] = m_shadowmap.GetShadowCam().GetPosition().z;
-
-	//	ImGui::DragFloat3("Rotate", im.shadowcamrotation, 0.1f);
-	//	ImGui::DragFloat("ShadowBias", &im.shadowBias, 0.001f, 0.0f, 0.5f);
-	//	m_shadowmap.GetShadowCam().SetRotation(im.shadowcamrotation[0], im.shadowcamrotation[1], im.shadowcamrotation[2]);
-	//	m_shadowmap.GetShadowCam().SetPosition(im.shadowcamPos[0], im.shadowcamPos[1], im.shadowcamPos[2]);
-	//	if (ImGui::Button("TP cam"))
-	//	{
-	//		im.shadowcamrotation[0] = mp_currentCam->GetRotation().x;
-	//		im.shadowcamrotation[1] = mp_currentCam->GetRotation().y;
-	//		im.shadowcamrotation[2] = mp_currentCam->GetRotation().z;
-	//		im.shadowcamPos[0] = mp_currentCam->GetPosition().x;
-	//		im.shadowcamPos[1] = mp_currentCam->GetPosition().y;
-	//		im.shadowcamPos[2] = mp_currentCam->GetPosition().z;
-	//	}
-	//	if (ImGui::Button("winname"))
-	//	{
-	//		::SetWindowTextA(*m_pHWND, "balls");
-	//	}
-	//}
 	if (ImGui::CollapsingHeader("General"))
 	{
 		//ImGui::RadioButton("local", (int*)&im.transformMode, 0); ImGui::SameLine();
@@ -256,13 +222,9 @@ void ImguiDebug(void* ptr, bool* show)
 
 
 		ImGui::Checkbox("Vsync", &im->useVsync); ImGui::SameLine();
-		ImGui::Checkbox("Grid", &im->m_drawGrid); ImGui::SameLine();
-		//ImGui::Checkbox("Handmodel", &im.enableHandModel); ImGui::SameLine();
-		//ImGui::Checkbox("Raycast", &im.drawRayCast);
-		//ImGui::SameLine();
-		//ImGui::Checkbox("BCircle", &im.drawBCircle);
-		//if (im.drawBCircle && ImGui::SliderInt("sphere point count", &im.points, 1, 8))
-		//	m_sphere.Init(device, dc, im.points);
+		ImGui::Checkbox("Grid", &im->m_drawGrid);
+		ImGui::Checkbox("Draw Cam models", &im->m_drawCams);
+
 	}
 
 	ImGui::End();
@@ -410,7 +372,7 @@ void Gui_AssetList(void* ptr, bool* show)
 						ImGui::EndTooltip();
 						//ImGui::SetTooltip("am tooltip");
 
-						
+
 					}
 				}
 
@@ -474,6 +436,103 @@ void Gui_AssetList(void* ptr, bool* show)
 	ImGui::End();
 }
 
+void Gui_CompView(void* test, bool* show)
+{
+	ImGui::Begin("CompView");
+
+	GETCOMPVEC(pt::TransformComp, tra);
+	std::string
+		line = "Transform " + std::to_string(PrimtTech::ComponentHandler::GetNoOfUsedComponents<pt::TransformComp>()) + "/" + std::to_string(tra.size());
+	if (ImGui::TreeNode(line.c_str()))
+	{
+		for (int i = 0; i < tra.size(); i++)
+		{
+			std::string str = std::to_string(i);
+			str += "| entId:";
+			str += std::to_string(tra[i].EntId());
+			ImGui::Text(str.c_str());
+		}
+
+		ImGui::TreePop();
+	}
+	GETCOMPVEC(pt::MeshRef, meshes);
+	line = "MeshRef " + std::to_string(PrimtTech::ComponentHandler::GetNoOfUsedComponents<pt::MeshRef>()) + "/" + std::to_string(meshes.size());
+	if (ImGui::TreeNode(line.c_str()))
+	{
+
+		for (int i = 0; i < meshes.size(); i++)
+		{
+			std::string str = std::to_string(i);
+			str += "| entId:";
+			str += std::to_string(meshes[i].EntId());
+			str += " ";
+			str += meshes[i].GetNameOfMesh();
+			ImGui::Text(str.c_str());
+		}
+
+		ImGui::TreePop();
+	}
+	GETCOMPVEC(pt::Camera, cams);
+	line = "Cams " + std::to_string(PrimtTech::ComponentHandler::GetNoOfUsedComponents<pt::Camera>()) + "/" + std::to_string(cams.size());
+	if (ImGui::TreeNode(line.c_str()))
+	{
+		for (int i = 0; i < cams.size(); i++)
+		{
+			std::string str = std::to_string(i);
+			str += "| entId:";
+			str += std::to_string(cams[i].EntId());
+			ImGui::Text(str.c_str());
+		}
+
+		ImGui::TreePop();
+	}
+	/*PrimtTech::ec_light*/
+	GETCOMPVEC(pt::Light, lights);
+	line = "Lights " + std::to_string(PrimtTech::ComponentHandler::GetNoOfUsedComponents<pt::Light>()) + "/" + std::to_string(lights.size());
+	if (ImGui::TreeNode(line.c_str()))
+	{
+		for (int i = 0; i < lights.size(); i++)
+		{
+			std::string str = std::to_string(i);
+			str += "| entId:";
+			str += std::to_string(lights[i].EntId());
+			ImGui::Text(str.c_str());
+		}
+
+		ImGui::TreePop();
+	}
+	GETCOMPVEC(pt::PhysicsBody, pbodys);
+	line = "Lights " + std::to_string(PrimtTech::ComponentHandler::GetNoOfUsedComponents<pt::PhysicsBody>()) + "/" + std::to_string(pbodys.size());
+	if (ImGui::TreeNode(line.c_str()))
+	{
+		for (int i = 0; i < pbodys.size(); i++)
+		{
+			std::string str = std::to_string(i);
+			str += "| entId:";
+			str += std::to_string(pbodys[i].EntId());
+			ImGui::Text(str.c_str());
+		}
+
+		ImGui::TreePop();
+	}
+	GETCOMPVEC(pt::LuaScript, scripts);
+	line = "Lights " + std::to_string(PrimtTech::ComponentHandler::GetNoOfUsedComponents<pt::LuaScript>()) + "/" + std::to_string(scripts.size());
+	if (ImGui::TreeNode(line.c_str()))
+	{
+		for (int i = 0; i < scripts.size(); i++)
+		{
+			std::string str = std::to_string(i);
+			str += "| entId:";
+			str += std::to_string(scripts[i].EntId());
+			ImGui::Text(str.c_str());
+		}
+
+		ImGui::TreePop();
+	}
+
+	ImGui::End();
+}
+
 void Gui_EntList(void* test, bool* show)
 {
 	EntListStruct* p = (EntListStruct*)test;
@@ -491,15 +550,21 @@ void Gui_EntList(void* test, bool* show)
 	}
 	ImGui::SameLine();
 	static bool s_imShowDents = false;
-	ImGui::Checkbox("Show Hidden", &s_imShowDents);
+	ImGui::Checkbox("Show Hidden", &s_imShowDents); ImGui::SameLine();
+	if (ImGui::Button("Free"))
+	{
+		pt::Entity::GetEntity(p->selected).Free();
+	}
 	ImGui::BeginChild("Lefty", ImVec2(150, 400), true);
 
-	uint numEnts = pt::Entity::NumEnts();
+	uint numEnts = pt::Entity::GetNoUsedEnts();
 
-	for (uint i = 2 * (int)!s_imShowDents; i < numEnts; i++)
+	for (uint i = 2 * (uint)!s_imShowDents; i < numEnts; i++)
 	{
 		ImGui::BeginDisabled(i == 0);
-		if (ImGui::Selectable(std::to_string(i).c_str(), p->selected == i))
+		pt::Entity* pEnt = pt::Entity::GetEntityP((uint)i);
+		std::string entName = std::to_string(pEnt->GetEntId())/*pEnt->GetName()*/ + " - " + std::to_string(i);
+		if (ImGui::Selectable(entName.c_str(), p->selected == i))
 			p->selected = i;
 		ImGui::EndDisabled();
 	}
@@ -511,6 +576,13 @@ void Gui_EntList(void* test, bool* show)
 		pt::Entity* pEnt = pt::Entity::GetEntityP((uint)p->selected);
 		if (ImGui::Button("Add Component"))
 			ImGui::OpenPopup("cmpList");
+		ImGui::SameLine();
+		std::string entName = pEnt->GetName();
+		char* entNameBuffer = new char[32];
+		strcpy_s(entNameBuffer, 32, entName.c_str());
+		if (ImGui::InputText("##EntName", entNameBuffer, 32, ImGuiInputTextFlags_EnterReturnsTrue))
+			pEnt->SetName(entNameBuffer);
+		delete[] entNameBuffer;
 		if (ImGui::BeginPopup("cmpList"))
 		{
 			if (ImGui::Selectable("MeshRef"))
@@ -549,7 +621,7 @@ void Gui_EntList(void* test, bool* show)
 			pEnt->Transform().SetRotation(transform);
 
 		transform = pEnt->Transform().GetScale();
-		if(ImGui::DragFloat3("Scale", reinterpret_cast<float*>(&transform), 0.02f))
+		if (ImGui::DragFloat3("Scale", reinterpret_cast<float*>(&transform), 0.02f))
 			pEnt->Transform().SetScale(transform);
 		ImGui::EndDisabled();
 
@@ -818,6 +890,11 @@ void Gui_EntList(void* test, bool* show)
 					if (!mr->LoadScript(scriptpath.c_str()))
 						Popup::Error("File not found");
 				}
+				if (ImGui::Button("Open in VSCode"))
+				{
+					std::string cmd = "code " + scriptpath;
+					system(cmd.c_str());
+				}
 				ImGui::Separator();
 				ImGui::TreePop();
 			}
@@ -884,9 +961,9 @@ void Gui_EntList(void* test, bool* show)
 			//}
 			//else
 			//{
-				rTr.SetScale(scale);
-				pEnt->SetRotation(rot);
-				pEnt->SetPosition(pos);
+			rTr.SetScale(scale);
+			pEnt->SetRotation(rot);
+			pEnt->SetPosition(pos);
 			//}
 		}
 

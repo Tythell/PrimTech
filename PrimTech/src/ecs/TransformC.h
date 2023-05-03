@@ -33,7 +33,7 @@ namespace pt
 		sm::Matrix GetWorldInversed();
 		sm::Quaternion GetRotationQuaternion() const;
 
-		static int Lua_Move(lua_State* L);
+		//static int Lua_Move(lua_State* L);
 	protected:
 		void UpdateWorld();
 	private:

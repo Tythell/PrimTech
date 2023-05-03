@@ -30,7 +30,7 @@ struct EntListStruct
 	DevConsole console;
 	//std::vector<pt::Entity> ents;
 	int selected = -1;
-	uint currentCamera = 0;
+	uint currentCamera = 1;
 	int winWidth = -1, winHeight = -1;
 	int m_selectedMaterial = -1;
 };
@@ -65,6 +65,8 @@ private:
 	void execCommand(std::string cmd);
 
 	PrimtTech::DX11Renderer* m_renderer = nullptr;
+
+	uint m_devEntIndex = 1;
 
 	pt::PrimTech m_primtech;
 

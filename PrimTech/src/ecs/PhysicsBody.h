@@ -27,9 +27,12 @@ namespace pt
 
 		rp::BodyType GetType() const { return m_bodyType; }
 		void SetType(rp::BodyType bodyType);
+
 		void SetPhysicsPosition(const sm::Vector3& v);
 		void SetPhysicsEulerRotation(const sm::Vector3& v);
 		void SetBoxExtents(const sm::Vector3& extents, uint index = 0);
+		void PhysMove(const sm::Vector3& v);
+
 		void SetSphereRadius(float r, uint index = 0);
 		void SetCapsuleLengths(float r, float h, uint index = 0);
 		void SetIsTrigger(bool trigger, uint i) { mp_rigidBody->getCollider(i)->setIsTrigger(trigger); }
@@ -43,29 +46,12 @@ namespace pt
 		float GetSphereRadius(uint index = 0) const;
 		sm::Vector2 GetCapsuleLengths(uint index = 0) const; // x = r, y = h
 		uint GetNoColliders() const;
-		bool Exists() const
-		{
-			return (mp_rigidBody);
-		}
-
-		//void ResetPosition()
-		//{
-		//	rp::Transform rpTransform;
-		//	rpTransform.setPosition({ m_startPos.x,m_startPos.y,m_startPos.z });
-		//	rpTransform.setOrientation({
-		//		m_startOrientation.x,
-		//		m_startOrientation.y,
-		//		m_startOrientation.z,
-		//		m_startOrientation.w });
-
-		//	mp_rigidBody->setTransform(rpTransform);
-		//}
+		bool Exists() const { return (mp_rigidBody); }
 		static void SetPtrs(PrimtTech::PhysicsHandler* pPhysHandle) { m_pPhysHandle = pPhysHandle; }
 	private:
 		reactphysics3d::RigidBody* mp_rigidBody = nullptr;
 		static PrimtTech::PhysicsHandler* m_pPhysHandle;
 		std::vector<ePT_ShapeType> m_shapeIndexes;
-		sm::Quaternion m_startOrientation;
 		rp::BodyType m_bodyType = rp::BodyType::STATIC;
 	};
 }

@@ -7,6 +7,9 @@ namespace PrimtTech
 	{
 		this->L = luaL_newstate();
 		luaL_openlibs(L);
+
+		lua_pushcfunction(L, Lua_IsKeyPress);
+		lua_setglobal(L, "KeyDown");
 	}
 
 	LuaEngine::~LuaEngine()
@@ -52,14 +55,35 @@ namespace PrimtTech
 		int entIdx = lua_gettop(L);
 		lua_pushvalue(L, entIdx);
 		lua_setglobal(L, "Ent");
-		lua_pushcfunction(L, Lua_AddComp);
+		lua_pushcfunction(L, pt::Entity::Lua_AddComp);
 		lua_setfield(L, -2, "AddComponent");
-		lua_pushcfunction(L, Lua_GetComp);
+		lua_pushcfunction(L, pt::Entity::Lua_GetComp);
 		lua_setfield(L, -2, "GetComponent");
-		lua_pushcfunction(L, Lua_FreeComp);
+		lua_pushcfunction(L, pt::Entity::Lua_FreeComp);
 		lua_setfield(L, -2, "FreeComponent");
+
+		lua_pushcfunction(L, pt::Entity::Lua_Move);
+		lua_setfield(L, -2, "Move");
+		lua_pushcfunction(L, pt::Entity::Lua_Rotate);
+		lua_setfield(L, -2, "Rotate");
+		lua_pushcfunction(L, pt::Entity::Lua_Scale);
+		lua_setfield(L, -2, "Rotate");
+		lua_pushcfunction(L, pt::Entity::Lua_SetPosition);
+		lua_setfield(L, -2, "SetPosition");
+		lua_pushcfunction(L, pt::Entity::Lua_SetRotation);
+		lua_setfield(L, -2, "SetRotation");
+		lua_pushcfunction(L, pt::Entity::Lua_SetScale);
+		lua_setfield(L, -2, "SetScale");
+
 		m_entTableIndex = entIdx;
 		return entIdx;
+	}
+
+	int LuaEngine::UpdateDeltaTime(float dt)
+	{
+		lua_pushnumber(L, (lua_Number)dt);
+		lua_setglobal(L, "DeltaTime");
+		return 0;
 	}
 
 	void LuaEngine::ChangeCurrentLuaEnt(pt::Entity* pEnt)
@@ -96,118 +120,13 @@ namespace PrimtTech
 		return false;
 	}
 
-	int LuaEngine::Lua_AddComp(lua_State* L)
+	int LuaEngine::Lua_IsKeyPress(lua_State* L)
 	{
-		lua_getglobal(L, "Ent");
-		lua_getfield(L, -1, "ptr");
-		//Lua_dumpStack(L);
+		size_t size = 1;
+		const char* d = lua_tolstring(L, -1, &size);
 
-		int type = lua_tointeger(L, 1);
+		lua_pushinteger(L, (int)KeyboardHandler::IsKeyDown(d[0]));
 
-		pt::Entity* pEnt = (pt::Entity*)lua_touserdata(L, -1);
-
-		switch (type)
-		{
-		case ec_transform:
-		{
-			lua_pushlightuserdata(L, &pEnt->Transform());
-
-			int d = luaL_getmetatable(L, "TransformMetaTable");
-			assert(lua_istable(L, -1));
-			lua_setmetatable(L, -2);
-
-			break;
-		}
-		case PrimtTech::ec_meshRef:
-		{
-			// args (string, int)
-
-			const char* name = lua_tostring(L, 2);
-
-			pt::MeshRef* pImag = pEnt->AddComponent<pt::MeshRef>();
-			pImag->Init(name);
-
-			lua_pushlightuserdata(L, pImag);
-
-			luaL_getmetatable(L, "MeshMetaTable");
-			assert(lua_istable(L, -1));
-			lua_setmetatable(L, -2);
-			break;
-		}
-		case PrimtTech::ec_cam:
-		{
-			// args (string, int)
-
-			const char* name = lua_tostring(L, 2);
-
-			pt::Camera* pImag = pEnt->AddComponent<pt::Camera>();
-
-			lua_pushlightuserdata(L, pImag);
-
-			luaL_getmetatable(L, "CameraMetaTable");
-			assert(lua_istable(L, -1));
-			lua_setmetatable(L, -2);
-			break;
-		}
-		default:
-			break;
-		}
-
-		return 1;
-	}
-
-	int LuaEngine::Lua_GetComp(lua_State* L)
-	{
-		lua_getglobal(L, "Ent");
-		lua_getfield(L, -1, "ptr");
-
-		int type = lua_tointeger(L, 1);
-
-		pt::Entity* pEnt = (pt::Entity*)lua_touserdata(L, -1);
-
-		switch (type)
-		{
-		case ec_transform:
-		{
-			lua_pushlightuserdata(L, &pEnt->Transform());
-
-			luaL_getmetatable(L, "TransformMetaTable");
-			assert(lua_istable(L, -1));
-			lua_setmetatable(L, -2);
-			break;
-		}
-		case PrimtTech::ec_meshRef:
-		{
-			THROW_POPUP_ERROR(false, "Not implemented yet");
-
-			break;
-		}
-		case PrimtTech::ec_cam:
-		{
-			THROW_POPUP_ERROR(false, "Not implemented yet");
-
-			break;
-		}
-		case PrimtTech::ec_light:
-		{
-			THROW_POPUP_ERROR(false, "Not implemented yet");
-
-			break;
-		}
-		case PrimtTech::ec_rigidBodies:
-		{
-			THROW_POPUP_ERROR(false, "Not implemented yet");
-			break;
-		}
-		default:
-			THROW_POPUP_ERROR(false, "Not implemented yet");
-			break;
-		}
-		return 1;
-	}
-
-	int LuaEngine::Lua_FreeComp(lua_State* L)
-	{
 		return 1;
 	}
 

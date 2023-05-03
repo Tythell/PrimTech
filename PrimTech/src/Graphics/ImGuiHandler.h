@@ -20,6 +20,7 @@ namespace PrimtTech
 		uint width, height;
 		bool m_isHoveringWindow = false;
 		bool m_drawGrid = true;
+		bool m_drawCams = true;
 	};
 
 	typedef void(*ImGuiWindowFunc)(void*, bool*);

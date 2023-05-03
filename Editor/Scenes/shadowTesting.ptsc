@@ -1,0 +1,79 @@
+26985 magicNum
+6 numEnts
+0 entIndex
+2 numComponents
+1 key
+0 val
+4 key
+0 val
+1 entIndex
+2 numComponents
+1 key
+1 val
+4 key
+1 val
+2 entIndex
+2 numComponents
+1 key
+2 val
+64 key
+0 val
+3 entIndex
+2 numComponents
+1 key
+3 val
+64 key
+1 val
+4 entIndex
+2 numComponents
+1 key
+4 val
+2 key
+0 val
+5 entIndex
+2 numComponents
+1 key
+5 val
+2 key
+1 val
+6 numComps
+0 entId
+0 4 0 pos
+1.58 0 0 rot
+1 1 1 scale
+1 entId
+0 1 -2 pos
+0 0 0 rot
+1 1 1 scale
+2 entId
+0 0 0 pos
+0 0 0 rot
+1 1 1 scale
+3 entId
+0 0 0 pos
+0 0 0 rot
+1 1 1 scale
+4 entId
+0 2 0 pos
+0 0 0 rot
+1 1 1 scale
+5 entId
+0 -0.2 0 pos
+0 0 0 rot
+10 1 10 scale
+
+2 numComps
+4 entId
+cube.txt meshname
+1 numMats
+0 index
+5 entId
+scaledplane.obj meshname
+1 numMats
+0 index
+
+2 numComps
+1 entId
+80 fov
+0 0 0 posoffset
+0 0 0 rotOffset

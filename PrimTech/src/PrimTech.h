@@ -30,7 +30,7 @@ namespace pt
 		void ShowCursor();
 		PrimtTech::PhysicsHandler m_physHandler;
 		
-
+		void SetCamera(uint idx);
 		bool TogglePlay(char b = 2);
 		
 	private:
@@ -48,7 +48,7 @@ namespace pt
 		bool m_playing = false;
 
 		bool m_mouseLocked = false;
-
+		uint m_activeCamera = 1;
 		int m_entTableIdx = 0;
 
 		d::XMINT2 m_windowPos;

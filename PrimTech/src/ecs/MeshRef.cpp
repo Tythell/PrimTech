@@ -46,4 +46,11 @@ namespace pt
 			return 0;
 		return m_pMaterialindexes[index];
 	}
+	int MeshRef::Lua_ChangeModel(lua_State* L)
+	{
+		MeshRef* m = (MeshRef*)lua_touserdata(L, 1);
+		std::string meshName = lua_tostring(L, 2);
+		m->Init(meshName);
+		return 0;
+	}
 }

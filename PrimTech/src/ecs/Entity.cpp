@@ -5,13 +5,51 @@
 namespace pt
 {
 	uint Entity::nrOfEntities = 0;
+	uint Entity::nrOfEntitiesUsed = 0;
 
 	std::vector<Entity> Entity::s_ents;
 
+	Entity::Entity(bool createdWithFunc)
+	{
+		m_id = nrOfEntitiesUsed++;
+		nrOfEntities++;
+		THROW_POPUP_ERROR(createdWithFunc, "MANNEN ANVÄND pt::Entity::Create() ISTÄLLET");
+
+		m_displayName = std::to_string(m_id);
+	}
+
 	Entity& Entity::Create()
 	{
-		s_ents.emplace_back(true).AddComponent<pt::TransformComp>();
-		return s_ents[s_ents.size()-1]; // Don't question it
+		if (nrOfEntities - nrOfEntitiesUsed > 0)
+		{
+			int num = nrOfEntitiesUsed;
+			s_ents[num] = pt::Entity(true);
+			s_ents[num].AddComponent<TransformComp>();
+			return s_ents[num];
+		}
+		else
+		{
+			s_ents.emplace_back(true).AddComponent<TransformComp>();
+			return s_ents[s_ents.size() - 1]; // Don't question it
+		}
+		
+	}
+
+	void Entity::Free()
+	{
+		--nrOfEntitiesUsed;
+		FreeComponent<TransformComp>(m_id);
+		FreeComponent<MeshRef>(m_id);
+		FreeComponent<AABBComp>(m_id);
+		FreeComponent<BSphereComp>(m_id);
+		FreeComponent<Camera>(m_id);
+		FreeComponent<Light>(m_id);
+		FreeComponent<LuaScript>(m_id);
+		FreeComponent<OBBComp>(m_id);
+		FreeComponent<PhysicsBody>(m_id);
+		
+		printf("");
+
 	}
 
 	const uint Entity::NumEnts()
@@ -97,6 +135,85 @@ namespace pt
 		Transform().SetScale(v);
 	}
 
+	void Entity::Move(float x, float y, float z)
+	{
+		Move(sm::Vector3(x, y, z));
+	}
+
+	void Entity::Move(sm::Vector3 v)
+	{
+		if (m_physIndex != -1)
+		{
+			PhysicsBody& physBod = PrimtTech::ComponentHandler::GetComponentByIndex<PhysicsBody>((uint)m_physIndex);
+
+			physBod.PhysMove(v);
+		}
+		else
+			Transform().Move(v);
+	}
+
+	void Entity::Rotate(float x, float y, float z)
+	{
+	}
+
+	void Entity::Rotate(sm::Vector3 v)
+	{
+	}
+
+	void Entity::Scale(float x, float y, float z)
+	{
+	}
+
+	void Entity::Scale(sm::Vector3 v)
+	{
+	}
+
+	int Entity::Lua_SetPosition(lua_State* L)
+	{
+		lua_getglobal(L, "Ent");
+		lua_getfield(L, -1, "ptr");
+		Entity* pEnt = (Entity*)lua_touserdata(L, -1);
+		pEnt->SetPosition(lua_tonumber(L, 2), lua_tonumber(L, 3), lua_tonumber(L, 4));
+		return 0;
+	}
+
+	int Entity::Lua_SetRotation(lua_State* L)
+	{
+		lua_getglobal(L, "Ent");
+		lua_getfield(L, -1, "ptr");
+		Entity* pEnt = (Entity*)lua_touserdata(L, -1);
+		pEnt->SetRotation(lua_tonumber(L, 2), lua_tonumber(L, 3), lua_tonumber(L, 4));
+		return 0;
+	}
+
+	int Entity::Lua_SetScale(lua_State* L)
+	{
+		lua_getglobal(L, "Ent");
+		lua_getfield(L, -1, "ptr");
+		Entity* pEnt = (Entity*)lua_touserdata(L, -1);
+		pEnt->SetScale(lua_tonumber(L, 1), lua_tonumber(L, 2), lua_tonumber(L, 3));
+		return 0;
+	}
+
+	int Entity::Lua_Move(lua_State* L)
+	{
+		lua_getglobal(L, "Ent");
+		lua_getfield(L, -1, "ptr");
+		Entity* pEnt = (Entity*)lua_touserdata(L, -1);
+		pEnt->Move(lua_tonumber(L, 1), lua_tonumber(L, 2), lua_tonumber(L, 3));
+		return 0;
+	}
+
+	int Entity::Lua_Rotate(lua_State* L)
+	{
+		return 0;
+	}
+
+	int Entity::Lua_Scale(lua_State* L)
+	{
+		return 0;
+	}
+
 	bool pt::Entity::HasComponentType(uint comp) const
 	{
 		return (m_hasComponents & comp);
@@ -113,8 +230,167 @@ namespace pt
 
 	void Entity::InsertTable(uint key, uint val)
 	{
-		m_hasComponents &= key;
+		m_hasComponents |= key;
 		m_compTable.emplace(key, val);
+	}
+
+	template <class T>
+	T* addComp(lua_State* L, std::string TypeName, pt::Entity* pEnt)
+	{
+		const char* name = lua_tostring(L, 2);
+
+		T* pImag = pEnt->AddComponent<T>();
+		if (name)
+			pImag->Init(name);
+
+		lua_pushlightuserdata(L, pImag);
+
+		TypeName += "MetaTable";
+
+		luaL_getmetatable(L, TypeName.c_str());
+		assert(lua_istable(L, -1));
+		lua_setmetatable(L, -2);
+
+		return pImag;
+	}
+
+	int Entity::Lua_AddComp(lua_State* L)
+	{
+		lua_getglobal(L, "Ent");
+		lua_getfield(L, -1, "ptr");
+		//Lua_dumpStack(L);
+
+		int type = lua_tointeger(L, 1);
+
+		pt::Entity* e = (pt::Entity*)lua_touserdata(L, -1);
+
+		switch (type)
+		{
+		/*//case PrimtTech::ec_transform:
+		//{
+		//	lua_pushlightuserdata(L, &pEnt->Transform());
+
+		//	int d = luaL_getmetatable(L, "TransformMetaTable");
+		//	assert(lua_istable(L, -1));
+		//	lua_setmetatable(L, -2);
+
+		//	break;
+		//}*/
+		case PrimtTech::ec_meshRef:
+		{
+			// args (string, int)
+			pt::MeshRef* mr = addComp<MeshRef>(L, "MeshRef", e);
+			const char* name = lua_tostring(L, 2);
+
+			//pt::MeshRef* pImag = pEnt->AddComponent<pt::MeshRef>();
+			if (name)
+				mr->Init(name);
+
+			//lua_pushlightuserdata(L, pImag);
+
+			//luaL_getmetatable(L, "MeshRefMetaTable");
+			//assert(lua_istable(L, -1));
+			//lua_setmetatable(L, -2);
+			break;
+		}
+		case PrimtTech::ec_cam:
+		{
+			// args (string, int)
+
+			const char* name = lua_tostring(L, 2);
+
+			pt::Camera* pImag = e->AddComponent<pt::Camera>();
+
+			lua_pushlightuserdata(L, pImag);
+
+			luaL_getmetatable(L, "CameraMetaTable");
+			assert(lua_istable(L, -1));
+			lua_setmetatable(L, -2);
+			break;
+		}
+		case PrimtTech::ec_light:
+		{
+			// args (string, int)
+
+			const char* name = lua_tostring(L, 2);
+
+			pt::Light* pImag = e->AddComponent<pt::Light>();
+
+			lua_pushlightuserdata(L, pImag);
+
+			luaL_getmetatable(L, "LightMetaTable");
+			assert(lua_istable(L, -1));
+			lua_setmetatable(L, -2);
+			break;
+		}
+		default:
+			break;
+		}
+
+		return 1;
+	}
+
+	int Entity::Lua_GetComp(lua_State* L)
+	{
+		lua_getglobal(L, "Ent");
+		lua_getfield(L, -1, "ptr");
+
+		int type = lua_tointeger(L, 1);
+
+		pt::Entity* pEnt = (pt::Entity*)lua_touserdata(L, -1);
+
+		switch (type)
+		{
+		case PrimtTech::ec_transform:
+		{
+			lua_pushlightuserdata(L, &pEnt->Transform());
+
+			luaL_getmetatable(L, "TransformMetaTable");
+			assert(lua_istable(L, -1));
+			lua_setmetatable(L, -2);
+			break;
+		}
+		case PrimtTech::ec_meshRef:
+		{
+			THROW_POPUP_ERROR(false, "Not implemented yet");
+
+			break;
+		}
+		case PrimtTech::ec_cam:
+		{
+			THROW_POPUP_ERROR(false, "Not implemented yet");
+
+			break;
+		}
+		case PrimtTech::ec_light:
+		{
+			THROW_POPUP_ERROR(false, "Not implemented yet");
+
+			break;
+		}
+		case PrimtTech::ec_rigidBodies:
+		{
+			THROW_POPUP_ERROR(false, "Not implemented yet");
+			break;
+		}
+		default:
+			THROW_POPUP_ERROR(false, "Not implemented yet");
+			break;
+		}
+		return 1;
+	}
+
+	int Entity::Lua_FreeComp(lua_State* L)
+	{
+		return 1;
+	}
+	uint Entity::GetNoUsedEnts()
+	{
+		return nrOfEntitiesUsed;
+	}
+	void Entity::SetNoUsedEnts(EntIdType n)
+	{
+		nrOfEntitiesUsed = n;
 	}
 }
 
