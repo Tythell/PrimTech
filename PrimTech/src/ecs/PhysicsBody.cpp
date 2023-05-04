@@ -151,6 +151,59 @@ namespace pt
 		return mp_rigidBody->getNbColliders();
 	}
 
+	void PhysicsBody::Delete()
+	{
+		for (int i = 0; i < GetNoColliders(); i++)
+			RemoveCollider(i);
+		m_pPhysHandle->DestroyPhysicsBody(mp_rigidBody);
+	}
+
+	void PhysicsBody::DuplicateFrom(Component* other)
+	{
+		PhysicsBody* otherComp = dynamic_cast<PhysicsBody*>(other);
+		m_bodyType = otherComp->m_bodyType;
+		//m_shapeIndexes = otherComp->m_shapeIndexes;
+		if (!mp_rigidBody)
+		{
+			mp_rigidBody = m_pPhysHandle->CreateRigidBody(
+				ptTransformToRp(
+					PrimtTech::ComponentHandler::GetComponentByIndex<TransformComp>(other->EntId())));
+
+			Freeze(true);
+		}
+
+		for (int i = 0; i < otherComp->m_shapeIndexes.size(); i++)
+		{
+			switch (otherComp->m_shapeIndexes[i])
+			{
+			case pt::PhysicsBody::ePT_ShapeType::Box:
+				AddBoxColider(otherComp->GetExtents(i));
+				break;
+			case pt::PhysicsBody::ePT_ShapeType::Sphere:
+				AddSphereColider(otherComp->GetSphereRadius(i));
+				break;
+			case pt::PhysicsBody::ePT_ShapeType::Capsule:
+				AddCapsuleColider(otherComp->GetCapsuleLengths(i).x, otherComp->GetCapsuleLengths(i).y);
+				break;
+			default:
+				break;
+			}
+		}
+	}
+
+	rp::Transform PhysicsBody::ptTransformToRp(const pt::TransformComp& t) const
+	{
+		rp::Transform rpTransform;
+		rpTransform.setPosition({ t.GetPosition().x, t.GetPosition().y, t.GetPosition().z });
+		rpTransform.setOrientation({
+			t.GetRotationQuaternion().x,
+			t.GetRotationQuaternion().y,
+			t.GetRotationQuaternion().z,
+			t.GetRotationQuaternion().w });
+
+		return rpTransform;
+	}
+
 	void PhysicsBody::SetBoxExtents(const sm::Vector3& extents, uint index)
 	{
 		dynamic_cast<rp::BoxShape*>(mp_rigidBody->getCollider(index)->getCollisionShape())->
@@ -158,8 +211,8 @@ namespace pt
 	}
 	void PhysicsBody::PhysMove(const sm::Vector3& v)
 	{
-		//mp_rigidBody->applyWorldForceAtCenterOfMass(rp::Vector3(10000 * v.x, 100 * v.y, 10000 * v.z));
-		mp_rigidBody->setLinearVelocity(rp::Vector3(10000 * v.x, 100 * v.y, 10000 * v.z));
+		mp_rigidBody->applyWorldForceAtCenterOfMass(rp::Vector3(10000 * v.x, 0 * v.y, 10000 * v.z));
+		//mp_rigidBody->setLinearVelocity(rp::Vector3(10000 * v.x, 100 * v.y, 10000 * v.z));
 		//mp_rigidBody->setLinearLockAxisFactor(rp::Vector3(10000 * v.x, 100 * v.y, 10000 * v.z));
 	}
 	void PhysicsBody::SetSphereRadius(float r, uint index)

@@ -15,6 +15,18 @@ namespace pt
 	{
 		return m_projM;
 	}
+	void Camera::SetProjMatrix(float* f)
+	{
+		m_projM = *reinterpret_cast<sm::Matrix*>(f);
+		//m_projM = m_projM.Transpose();
+		//memcpy(&m_projM.m[0][0], f, sizeof(sm::Matrix));
+	}
+	void Camera::SetViewMatrix(float* f)
+	{
+		m_viewM = *reinterpret_cast<sm::Matrix*>(f);
+		//m_viewM = m_viewM.Transpose();
+		//memcpy(&m_viewM.m[0][0], f, sizeof(sm::Matrix));
+	}
 	void Camera::SetPerspective(float fovDeg, float aspectRatio, float nearZ, float farZ)
 	{
 		float fovRad = (fovDeg / 360.f) * d::XM_2PI;
@@ -60,5 +72,15 @@ namespace pt
 	void Camera::SetRotationOffset(float x, float y, float z)
 	{
 		SetRotationOffset(sm::Vector3(x, y, z));
+	}
+	void Camera::DuplicateFrom(Component* other)
+	{
+		Camera* otherComp = dynamic_cast<Camera*>(other);
+		m_viewM = otherComp->m_viewM; m_projM = otherComp->m_projM;
+		m_posOffset = otherComp->m_posOffset; m_rotateOffset = otherComp->m_rotateOffset;
+		m_forwardV = otherComp->m_forwardV;
+		m_leftV = otherComp->m_leftV;
+		m_upV = otherComp->m_upV;
+		m_isOrthographic = otherComp->m_isOrthographic;
 	}
 }

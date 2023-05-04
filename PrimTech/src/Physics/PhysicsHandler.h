@@ -22,14 +22,9 @@ namespace PrimtTech
 		rp::BoxShape* CreateBoxShape(const sm::Vector3& extents);
 		rp::SphereShape* CreateSphereShape(float radius);
 		rp::CapsuleShape* CreateCapsuleShape(float radius, float height);
-		//rp::ConcaveShape* CreateConcaveShape(float radius, float height)
-		//{
-		//	return m_physics.createTriangleMesh
-		//}
-		//rp::CollisionBody* CreateCollissionBody(const pt::TransformComp& transform);
-		//void SetRunning(bool b) { m_running = b; };
-		//void ToggleRunning() { m_running = !m_running; };
 
+		void DestroyPhysicsBody(rp::RigidBody*& pRigidBody);
+		uint GetNoPhysBodies() const;
 #ifdef PHYSDEBUG
 		Buffer<PrimtTech::BBVertex> debugTris;
 		void EnableDebugDrawing(ID3D11Device*& pDevice, bool b = true);

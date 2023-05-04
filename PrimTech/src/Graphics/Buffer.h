@@ -160,7 +160,6 @@ namespace PrimtTech
 			bufferDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
 			bufferDesc.StructureByteStride = byteSize;
 
-
 			HRESULT hr = device->CreateBuffer(&bufferDesc, NULL, &m_buffer);
 			COM_ERROR(hr, "failed to setup sbuffer");
 

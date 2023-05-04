@@ -25,6 +25,9 @@ namespace pt
 		d::BoundingBox m_aabb;
 		sm::Vector3 m_posOffset;
 		bool m_isIntersecting = false;
+
+		// Inherited via Component
+		virtual void DuplicateFrom(Component* other) override;
 	};
 
 	class OBBComp : public Component
@@ -36,6 +39,9 @@ namespace pt
 		void SetExtends(const sm::Vector3& extends);
 	private:
 		d::BoundingOrientedBox m_obb;
+
+		// Inherited via Component
+		virtual void DuplicateFrom(Component* other) override;
 	};
 
 	class BSphereComp : public Component
@@ -47,5 +53,8 @@ namespace pt
 		void SetRadius(float r);
 	private:
 		d::BoundingSphere m_bsphere;
+
+		// Inherited via Component
+		virtual void DuplicateFrom(Component* other) override;
 	};
 }

@@ -29,6 +29,9 @@ namespace pt
 	{
 		return m_aabb.Intersects(box.m_aabb);
 	}
+	void AABBComp::DuplicateFrom(Component* other)
+	{
+	}
 	OBBComp::OBBComp(EntIdType entId) : Component(entId) {}
 	void OBBComp::Update(const pt::TransformComp& transform)
 	{
@@ -39,6 +42,9 @@ namespace pt
 	{
 		m_obb.Extents = extends;
 	}
+	void OBBComp::DuplicateFrom(Component* other)
+	{
+	}
 	BSphereComp::BSphereComp(EntIdType entId) : Component(entId) {}
 	void BSphereComp::Update(const pt::TransformComp& transform)
 	{
@@ -47,5 +53,8 @@ namespace pt
 	void BSphereComp::SetRadius(float r)
 	{
 		m_bsphere.Radius = r;
+	}
+	void BSphereComp::DuplicateFrom(Component* other)
+	{
 	}
 }

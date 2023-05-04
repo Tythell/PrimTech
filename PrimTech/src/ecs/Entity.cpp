@@ -14,7 +14,7 @@ namespace pt
 		m_id = nrOfEntitiesUsed++;
 		nrOfEntities++;
 		THROW_POPUP_ERROR(createdWithFunc, "MANNEN ANVÄND pt::Entity::Create() ISTÄLLET");
-
+		AddComponent<TransformComp>();
 		m_displayName = std::to_string(m_id);
 	}
 
@@ -23,13 +23,14 @@ namespace pt
 		if (nrOfEntities - nrOfEntitiesUsed > 0)
 		{
 			int num = nrOfEntitiesUsed;
-			s_ents[num] = pt::Entity(true);
-			s_ents[num].AddComponent<TransformComp>();
+			//s_ents[num] = pt::Entity(true);
+			nrOfEntitiesUsed++;
+			//s_ents[num].AddComponent<TransformComp>();
 			return s_ents[num];
 		}
 		else
 		{
-			s_ents.emplace_back(true).AddComponent<TransformComp>();
+			s_ents.emplace_back(true)/*.AddComponent<TransformComp>()*/;
 			return s_ents[s_ents.size() - 1]; // Don't question it
 		}
 		
@@ -38,18 +39,18 @@ namespace pt
 	void Entity::Free()
 	{
 		--nrOfEntitiesUsed;
-		FreeComponent<TransformComp>(m_id);
-		FreeComponent<MeshRef>(m_id);
-		FreeComponent<AABBComp>(m_id);
-		FreeComponent<BSphereComp>(m_id);
-		FreeComponent<Camera>(m_id);
-		FreeComponent<Light>(m_id);
-		FreeComponent<LuaScript>(m_id);
-		FreeComponent<OBBComp>(m_id);
-		FreeComponent<PhysicsBody>(m_id);
-		
-		printf("");
+		FreeComponent<MeshRef>();
+		FreeComponent<AABBComp>();
+		FreeComponent<BSphereComp>();
+		FreeComponent<Camera>();
+		FreeComponent<Light>();
+		FreeComponent<LuaScript>();
+		FreeComponent<OBBComp>();
+		FreeComponent<PhysicsBody>();
 
+		FreeComponent<TransformComp>(m_id);
+
+		std::swap(*this, s_ents[nrOfEntitiesUsed]);
 	}
 
 	const uint Entity::NumEnts()
@@ -212,6 +213,29 @@ namespace pt
 	int Entity::Lua_Scale(lua_State* L)
 	{
 		return 0;
+	}
+
+#define COMPDUPL(type, en) \
+if(otherEnt.m_hasComponents & en) \
+{ \
+	type* m = AddComponent<type>(); \
+	m->DuplicateFrom(otherEnt.GetComponent<type>()); \
+} \
+
+	void Entity::DuplicateCompDataFrom(Entity& otherEnt)
+	{
+		//m_hasComponents = otherEnt.m_hasComponents;
+		//if (m_hasComponents & PrimtTech::ec_meshRef)
+		//{
+		//	pt::MeshRef* m = AddComponent<MeshRef>();
+		//	m->DuplicateFrom(otherEnt.GetComponent<MeshRef>());
+		//}
+		COMPDUPL(TransformComp, PrimtTech::ec_transform);
+		COMPDUPL(MeshRef, PrimtTech::ec_meshRef);
+		COMPDUPL(Camera, PrimtTech::ec_cam);
+		COMPDUPL(Light, PrimtTech::ec_light);
+		COMPDUPL(LuaScript, PrimtTech::ec_lua);
+		COMPDUPL(PhysicsBody, PrimtTech::ec_rigidBodies);
 	}
 
 	bool pt::Entity::HasComponentType(uint comp) const
@@ -391,6 +415,10 @@ namespace pt
 	void Entity::SetNoUsedEnts(EntIdType n)
 	{
 		nrOfEntitiesUsed = n;
+	}
+	void Entity::SetNoEnts(int n)
+	{
+		nrOfEntities = n;
 	}
 }
 

@@ -14,4 +14,15 @@ namespace PrimtTech
 	{
 		freeComponents[ptm::firstset(index)] += n;
 	}
+	void ComponentHandler::SetFreeComponents(int index, int n)
+	{
+		freeComponents[ptm::firstset(index)] = n;
+	}
+	void ComponentHandler::ZeroFreeArray()
+	{
+		for (int i = 0; i < NUM_COMPONENT_TYPES; i++)
+		{
+			freeComponents[i] = 0;
+		}
+	}
 }

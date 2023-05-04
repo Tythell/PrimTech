@@ -81,6 +81,17 @@ namespace PrimtTech
 		return m_physics.createCapsuleShape(radius, height);
 	}
 
+	void PhysicsHandler::DestroyPhysicsBody(rp::RigidBody*& pRigidBody)
+	{
+		m_pworld->destroyRigidBody(pRigidBody);
+		pRigidBody = nullptr;
+	}
+
+	uint PhysicsHandler::GetNoPhysBodies() const
+	{
+		return m_pworld->getNbRigidBodies();
+	}
+
 	rp::RigidBody* PhysicsHandler::CreateRigidBody(const rp::Transform& transform, rp::BodyType bodyType)
 	{
 		rp::RigidBody* pRigidBody = nullptr;

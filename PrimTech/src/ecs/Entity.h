@@ -102,26 +102,29 @@ namespace pt
 
 			int swapIndex = ptvec->size() - PrimtTech::ComponentHandler::GetNoFreeComponents(c) - 1;
 
-			if (m_hasComponents & c)
+			if (m_hasComponents & c && c != PrimtTech::ec_transform)
 			{
 				int index = m_compTable[c];
 
-				m_hasComponents &= ~c;
-				m_compTable.erase(c);
+				ptvec[0][index].freeComponent(newIndex);
 
-				ptvec[0][index].FreeComponent();
+				std::swap(ptvec[0][index], ptvec[0][swapIndex]);
 
 				if (newIndex != -1)
 				{
-					ptvec[0][swapIndex].FreeComponent(newIndex);
+					ptvec[0][swapIndex].freeComponent(index);
 				}
 
-				std::swap(ptvec[0][index], ptvec[0][swapIndex]);
 				PrimtTech::ComponentHandler::IncreaseFreeComponents(c, 1);
+
+				m_hasComponents &= ~c;
+				m_compTable.erase(c);
 			}
-			else if (newIndex != -1 && ptvec->size() > 0)
+			else if (c == PrimtTech::ec_transform)
 			{
-				ptvec[0][ptvec->size() - PrimtTech::ComponentHandler::GetNoFreeComponents(c)-1].FreeComponent(newIndex);
+				//int gg = ptvec->size() - PrimtTech::ComponentHandler::GetNoFreeComponents(c) - 1;
+				//ptvec[0][gg].FreeComponent(newIndex);
+				m_id = newIndex;
 			}
 			
 		}
@@ -136,7 +139,9 @@ namespace pt
 			return m_compTable[c];
 		}
 
-		pt::TransformComp& Transform() { return PrimtTech::ComponentHandler::GetComponentArray<pt::TransformComp>()[m_id]; }
+		void DuplicateCompDataFrom(Entity& ent);
+
+		pt::TransformComp& Transform() { return PrimtTech::ComponentHandler::GetComponentByIndex<TransformComp>(m_id); /*PrimtTech::ComponentHandler::GetComponentArray<pt::TransformComp>()[m_id];*/ }
 
 		bool HasComponentType(uint comp) const;
 
@@ -154,6 +159,7 @@ namespace pt
 
 		static uint GetNoUsedEnts();
 		static void SetNoUsedEnts(EntIdType n);
+		static void SetNoEnts(int n);
 	private:
 		EntIdType m_id = 0xffffffff;
 		uint m_hasComponents = 0;

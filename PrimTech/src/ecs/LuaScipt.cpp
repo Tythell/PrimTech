@@ -97,4 +97,12 @@ namespace pt
 	{
 		L = pL;
 	}
+	void LuaScript::DuplicateFrom(Component* other)
+	{
+		LuaScript* otherComp = dynamic_cast<LuaScript*>(other);
+		m_size = otherComp->m_size;
+		m_pbuffer = new char[otherComp->m_size];
+		memcpy(m_pbuffer, otherComp->m_pbuffer, m_size);
+		m_fileName = otherComp->m_fileName;
+	}
 }

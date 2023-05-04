@@ -44,4 +44,12 @@ namespace pt
 			break;
 		}
 	}
+	void Light::DuplicateFrom(Component* other)
+	{
+		Light* otherComp = dynamic_cast<Light*>(other);
+		m_lightData = otherComp->m_lightData;
+		m_posOffset = otherComp->m_posOffset;
+		m_dirOffset = otherComp->m_dirOffset;
+		m_type = otherComp->m_type;
+	}
 }

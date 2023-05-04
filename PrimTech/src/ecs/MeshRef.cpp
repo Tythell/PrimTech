@@ -53,4 +53,10 @@ namespace pt
 		m->Init(meshName);
 		return 0;
 	}
+	void MeshRef::DuplicateFrom(Component* other)
+	{
+		MeshRef* otherComp = dynamic_cast<MeshRef*>(other);
+		m_meshIndex = otherComp->m_meshIndex;
+		m_pMaterialindexes = otherComp->m_pMaterialindexes;
+	}
 }

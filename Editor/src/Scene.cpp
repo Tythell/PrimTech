@@ -23,11 +23,14 @@ Editor::Editor(d::XMINT2 windowRes, HINSTANCE hInstance)
 
 	uint u = 0;
 	m_entlist.console.m_showWin.resize(10, { true, "" });
+
 	m_pGui.AddWindowFunc(Gui_ImGuiDemo, NULL, &m_entlist.console.m_showWin[u].first);
 	m_entlist.console.m_showWin[u].second = "imguiDemo";
 	m_entlist.console.m_showWin[u++].first = false;
+
 	m_pGui.AddWindowFunc(Gui_EntList, &m_entlist, &m_entlist.console.m_showWin[u].first);
 	m_entlist.console.m_showWin[u++].second = "entlist";
+
 	m_pGui.AddWindowFunc(Gui_AssetList, &m_entlist, &m_entlist.console.m_showWin[u].first);
 	m_entlist.console.m_showWin[u++].second = "assetlist";
 	m_pGui.AddWindowFunc(Gui_Console, &m_entlist.console, &m_entlist.console.m_showWin[u].first);
@@ -43,20 +46,16 @@ Editor::Editor(d::XMINT2 windowRes, HINSTANCE hInstance)
 	m_entlist.console.m_showWin[u++].first = false;
 
 	m_pGui.AddWindowFunc(Gui_CompView, NULL, &m_entlist.console.m_showWin[u].first);
-	m_entlist.console.m_showWin[u].second = "imguiDemo";
+	m_entlist.console.m_showWin[u++].second = "compView";
 
-
-	
+	m_pGui.AddWindowFunc(Gui_menubar, &m_entlist.console, &m_entlist.console.m_showWin[u].first);
+	m_entlist.console.m_showWin[u++].second = "Menu_Bar";
 
 	pt::Entity& devEnt = pt::Entity::Create();
 	pt::Camera* devCam = devEnt.AddComponent<pt::Camera>();
 	devCam->UpdateView(devEnt.Transform());
 	devCam->SetPerspective(80.f, (float)windowRes.x / (float)windowRes.y, 0.1f, 100.f);
 	devEnt.SetPosition(0.f, 1.f, -2.f);
-
-
-	m_pGui.AddWindowFunc(Gui_menubar, &m_entlist.console, &m_entlist.console.m_showWin[u].first);
-	m_entlist.console.m_showWin[u++].second = "Menu_Bar";
 
 	pt::Entity::ReserveEnts(10);
 
@@ -66,11 +65,6 @@ Editor::Editor(d::XMINT2 windowRes, HINSTANCE hInstance)
 	pt::Light* pLight = pt::Entity::Create().AddComponent<pt::Light>();
 	pLight->SetType(2);
 	pLight->SetColor({ 1.f, 1.f, 1.f, .2f });
-
-	pLight = pt::Entity::Create().AddComponent<pt::Light>();
-	pLight->SetType(1);
-	pLight->SetDirectionOffset({ 0.f, 1.f, 1.f, 1.f });
-	pLight->SetColor({ 1.f, 1.f, 1.f, 1.f });
 
 	pt::Entity& ent0 = pt::Entity::Create();
 	ent0.AddComponent<pt::MeshRef>();
@@ -142,6 +136,14 @@ void Editor::execCommand(std::string cmd)
 			//	
 			//}
 		}
+	}
+	else if (argBuffer == "dupe")
+	{
+		ss >> argBuffer;
+		uint entId = atoi(argBuffer.c_str());
+		pt::Entity& rEnt = pt::Entity::GetEntity(entId);
+
+		pt::Entity::Create().DuplicateCompDataFrom(rEnt);
 	}
 	else if (argBuffer == "comp")
 	{

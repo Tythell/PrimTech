@@ -47,11 +47,10 @@ namespace pt
 		m_rot = q.ToEuler();
 	}
 
-	//void TransformComp::SetScale(float x, float y, float z)
-	//{
-	//	m_scale = sm::Vector3(x, y, z);
-	//	UpdateWorld();
-	//}
+	void TransformComp::SetScale(float x, float y, float z)
+	{
+		SetScale(sm::Vector3(x, y, z));
+	}
 
 	void TransformComp::SetScale(float xyz)
 	{
@@ -139,6 +138,15 @@ namespace pt
 			d::XMMatrixRotationRollPitchYawFromVector(m_rot) *
 			d::XMMatrixTranslationFromVector(m_pos);
 		worldTransposed = worldTransposed.Transpose();
+	}
+
+	void TransformComp::DuplicateFrom(Component* other)
+	{
+		TransformComp* otherComp = dynamic_cast<TransformComp*>(other);
+		m_pos = otherComp->m_pos;
+		m_rot = otherComp->m_rot;
+		m_scale = otherComp->m_scale;
+		worldTransposed = otherComp->worldTransposed;
 	}
 
 	sm::Matrix TransformComp::GetWorldTransposed() const

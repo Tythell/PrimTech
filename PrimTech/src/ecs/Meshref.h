@@ -18,6 +18,9 @@ namespace pt
 		std::string GetNameOfMesh() const { return PrimtTech::ResourceHandler::GetMeshAdress(m_meshIndex)->GetName(); }
 
 		static int Lua_ChangeModel(lua_State* L);
+
+		// Inherited via Component
+		virtual void DuplicateFrom(Component* other) override;
 	private:
 		uint m_meshIndex = 0;
 		std::vector<uint> m_pMaterialindexes;

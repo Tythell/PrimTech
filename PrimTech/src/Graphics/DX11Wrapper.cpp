@@ -524,7 +524,7 @@ namespace PrimtTech
 		// --------------------------- physics visuals ---------------------------
 
 #ifdef PHYSDEBUG
-		if (mp_debufrenderer)
+		if (mp_debufrenderer && mp_debufrenderer->GetNoPhysBodies())
 			mp_debufrenderer->DrawBuffers(dc);
 #endif // PHYSDEBUG
 

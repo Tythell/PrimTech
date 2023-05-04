@@ -438,7 +438,7 @@ void Gui_AssetList(void* ptr, bool* show)
 
 void Gui_CompView(void* test, bool* show)
 {
-	ImGui::Begin("CompView");
+	ImGui::Begin("CompView", show);
 
 	GETCOMPVEC(pt::TransformComp, tra);
 	std::string
@@ -450,6 +450,12 @@ void Gui_CompView(void* test, bool* show)
 			std::string str = std::to_string(i);
 			str += "| entId:";
 			str += std::to_string(tra[i].EntId());
+			str += " ";
+			str += std::to_string(tra[i].GetPosition().x);
+			str += " ";
+			str += std::to_string(tra[i].GetPosition().y);
+			str += " ";
+			str += std::to_string(tra[i].GetPosition().z);
 			ImGui::Text(str.c_str());
 		}
 
@@ -459,7 +465,6 @@ void Gui_CompView(void* test, bool* show)
 	line = "MeshRef " + std::to_string(PrimtTech::ComponentHandler::GetNoOfUsedComponents<pt::MeshRef>()) + "/" + std::to_string(meshes.size());
 	if (ImGui::TreeNode(line.c_str()))
 	{
-
 		for (int i = 0; i < meshes.size(); i++)
 		{
 			std::string str = std::to_string(i);
@@ -502,7 +507,7 @@ void Gui_CompView(void* test, bool* show)
 		ImGui::TreePop();
 	}
 	GETCOMPVEC(pt::PhysicsBody, pbodys);
-	line = "Lights " + std::to_string(PrimtTech::ComponentHandler::GetNoOfUsedComponents<pt::PhysicsBody>()) + "/" + std::to_string(pbodys.size());
+	line = "PhysBodys " + std::to_string(PrimtTech::ComponentHandler::GetNoOfUsedComponents<pt::PhysicsBody>()) + "/" + std::to_string(pbodys.size());
 	if (ImGui::TreeNode(line.c_str()))
 	{
 		for (int i = 0; i < pbodys.size(); i++)
@@ -516,7 +521,7 @@ void Gui_CompView(void* test, bool* show)
 		ImGui::TreePop();
 	}
 	GETCOMPVEC(pt::LuaScript, scripts);
-	line = "Lights " + std::to_string(PrimtTech::ComponentHandler::GetNoOfUsedComponents<pt::LuaScript>()) + "/" + std::to_string(scripts.size());
+	line = "scritps " + std::to_string(PrimtTech::ComponentHandler::GetNoOfUsedComponents<pt::LuaScript>()) + "/" + std::to_string(scripts.size());
 	if (ImGui::TreeNode(line.c_str()))
 	{
 		for (int i = 0; i < scripts.size(); i++)
@@ -547,6 +552,11 @@ void Gui_EntList(void* test, bool* show)
 	if (ImGui::Button("Deselect"))
 	{
 		p->console.AddLog("select -1");
+	}
+	if (ImGui::Button("Dupe"))
+	{
+		std::string cmd = "dupe " + std::to_string(p->selected);
+		p->console.AddLog(cmd.c_str());
 	}
 	ImGui::SameLine();
 	static bool s_imShowDents = false;
@@ -593,10 +603,10 @@ void Gui_EntList(void* test, bool* show)
 			{
 				p->console.AddLog(AddCompString(p->selected, "cam").c_str());
 			}
-			if (ImGui::Selectable("AABB"))
-			{
-				p->console.AddLog(AddCompString(p->selected, "aabb").c_str());
-			}
+			//if (ImGui::Selectable("AABB"))
+			//{
+			//	p->console.AddLog(AddCompString(p->selected, "aabb").c_str());
+			//}
 			if (ImGui::Selectable("Light"))
 			{
 				p->console.AddLog(AddCompString(p->selected, "light").c_str());
@@ -605,7 +615,7 @@ void Gui_EntList(void* test, bool* show)
 			{
 				p->console.AddLog(AddCompString(p->selected, "rigidbody").c_str());
 			}
-			if (ImGui::Selectable("SCript"))
+			if (ImGui::Selectable("Script"))
 			{
 				p->console.AddLog(AddCompString(p->selected, "script").c_str());
 			}
@@ -867,7 +877,11 @@ void Gui_EntList(void* test, bool* show)
 				}
 
 				if (ImGui::Button("Delete##physbod"))
+				{
+					pEnt->GetComponent<pt::PhysicsBody>()->Delete();
 					pEnt->FreeComponent<pt::PhysicsBody>();
+				}
+					
 				ImGui::Separator();
 				ImGui::TreePop();
 			}
@@ -921,7 +935,8 @@ void Gui_EntList(void* test, bool* show)
 		ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, (float)p->winWidth, (float)p->winHeight);
 
 		pt::Camera& pCam = PrimtTech::ComponentHandler::GetComponentByIndex<pt::Camera>(p->currentCamera);
-		pt::TransformComp& rTr = PrimtTech::ComponentHandler::GetComponentByIndex<pt::TransformComp>(p->selected);
+		
+		pt::TransformComp& rTr = pt::Entity::GetEntity(p->selected).Transform();
 
 		sm::Matrix camViewM = pCam.GetViewMatrix();
 		sm::Matrix camProj = pCam.GetProjMatrix();

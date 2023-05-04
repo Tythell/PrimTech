@@ -17,7 +17,9 @@ namespace pt
 	public:
 		Component(EntIdType id);
 		const EntIdType EntId() const;
-		void FreeComponent(EntIdType idx = -1) { m_entId = idx; }
+		void freeComponent(EntIdType idx = -1);
+		virtual void Delete() {};
+		virtual void DuplicateFrom(Component* other) = 0;
 	private:
 		EntIdType m_entId;
 	};

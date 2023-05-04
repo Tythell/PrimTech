@@ -11,7 +11,7 @@
 function OnStart()
 	
 	--Ent.Move(0.0004, 1, 0)
-	local meshh = Ent.AddComponent(Type.MeshRef, "cube.txt")
+	local meshh = Ent.AddComponent(Type.MeshRef, "sphere.obj")
 	
 	--meshh:ChangeMesh("sphere.obj")
 end
@@ -19,10 +19,10 @@ end
 function OnTick()
 	
 	local dt = DeltaTime
-	local y = KeyDown("W");
-	y = y + -KeyDown("S")
-	local z = KeyDown("D")
-	z = z - KeyDown("A")
+	local y = Input.KeyDown("W");
+	y = y + -Input.KeyDown("S")
+	local z = Input.KeyDown("D")
+	z = z - Input.KeyDown("A")
 
 	Ent.Move(z * dt * 2, 2 * dt, y * dt * 2)
 end

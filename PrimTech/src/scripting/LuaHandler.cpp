@@ -8,8 +8,12 @@ namespace PrimtTech
 		this->L = luaL_newstate();
 		luaL_openlibs(L);
 
+		lua_newtable(L);
+		int keyIndex = lua_gettop(L);
+		lua_pushvalue(L, keyIndex);
+		lua_setglobal(L, "Input");
 		lua_pushcfunction(L, Lua_IsKeyPress);
-		lua_setglobal(L, "KeyDown");
+		lua_setfield(L, -2, "KeyDown");
 	}
 
 	LuaEngine::~LuaEngine()

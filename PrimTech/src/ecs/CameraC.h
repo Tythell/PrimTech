@@ -14,6 +14,9 @@ namespace pt
 		sm::Matrix GetViewMatrix() const;
 		sm::Matrix GetProjMatrix() const;
 
+		void SetProjMatrix(float* f);
+		void SetViewMatrix(float* f);
+
 		void SetPerspective(float fovDeg, float aspectRatio, float nearZ, float farZ);
 		void SetOrtographic(float width, float height, float nearZ, float farZ);
 
@@ -32,12 +35,17 @@ namespace pt
 		sm::Vector3 GetUp() const { return m_upV; };
 
 		bool IsOrthograpgic() const { return m_isOrthographic; };
+
+		// Inherited via Component
+		virtual void DuplicateFrom(Component* other) override;
 	private:
 		sm::Matrix m_viewM, m_projM;
 		sm::Vector3 m_posOffset, m_rotateOffset;
 		sm::Vector3 m_forwardV, m_leftV, m_upV;
 
 		bool m_isOrthographic = false;
+
+	
 	};
 }
 
