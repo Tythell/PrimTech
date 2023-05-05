@@ -38,6 +38,12 @@ namespace PrimtTech
 	{
 		//THROW_POPUP_ERROR(!(m_meshes.size() == m_meshes.capacity()), "not enough memory reserved for new mesh");
 		//uint reserves = m_meshes.capacity();
+		for (int i = 0; i < m_meshes.size(); i++)
+		{
+			if (m_meshes[i].GetName() == StringHelper::GetName(path))
+				return &m_meshes[i];
+		}
+
 		return &m_meshes.emplace_back(path, pDevice, makeLeftHanded);
 	}
 
@@ -77,6 +83,12 @@ namespace PrimtTech
 	{
 		//THROW_POPUP_ERROR(!(m_materials.size() == m_materials.capacity()), "not enough memory reserved for new material");
 
+		//for (int i = 0; i < m_materials.size(); i++)
+		//{
+		//	if (m_materials[i].GetFileName() == StringHelper::GetName(name))
+		//		return &m_materials[i];
+		//}
+
 		return &m_materials.emplace_back(name);
 	}
 
@@ -103,6 +115,11 @@ namespace PrimtTech
 	uint ResourceHandler::GetNoMaterials()
 	{
 		return (uint)m_materials.size();
+	}
+
+	uint ResourceHandler::GetNoMeshes()
+	{
+		return m_meshes.size();
 	}
 
 	const uint ResourceHandler::GetMtrlCount()
@@ -141,6 +158,10 @@ namespace PrimtTech
 	ID3D11Device* ResourceHandler::GetDevice()
 	{
 		return pDevice;
+	}
+	void ResourceHandler::ResizeMaterials(uint u)
+	{
+		m_materials.resize(u);
 	}
 	MeshCluster::MeshCluster()
 	{

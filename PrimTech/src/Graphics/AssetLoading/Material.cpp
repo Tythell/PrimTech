@@ -38,6 +38,7 @@ namespace PrimtTech
 	void Material::ReadRecursion(eMaterialHeaders& header, std::ifstream& reader)
 	{
 		char charBuffer[FILENAME_MAXSIZE] = { "" };
+
 		switch (header)
 		{
 		case eMaterialHeaders::eDIFFUSE:
@@ -208,11 +209,13 @@ namespace PrimtTech
 
 	bool Material::ExportMaterial(std::string path)
 	{
-		m_name = StringHelper::GetName(path);
+		//m_name = StringHelper::GetName(path);
 		std::ofstream writer(path, std::ios::binary);
 		eMaterialHeaders header;
 		if (!writer.is_open())
 			Popup::Error("Failed to export material");
+
+		writer.write(m_name.c_str(), 32);
 
 		if (HasTexture(eDiffuse))
 		{
@@ -325,7 +328,7 @@ namespace PrimtTech
 			return;
 
 
-		m_name = path;
+		//m_name = path;
 
 		std::string err = "Failed to open: " + path;
 
@@ -333,6 +336,12 @@ namespace PrimtTech
 		POPUP_MESSAGE(reader.is_open(), ("Failed to open " + m_name));
 
 		eMaterialHeaders header = eMaterialHeaders::eNull;
+
+		char matName[32] = {""};
+
+		reader.read(matName, 32);
+		m_name = matName;
+
 		reader.read((char*)&header, 4);
 
 		ReadRecursion(header, reader);

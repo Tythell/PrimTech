@@ -180,7 +180,7 @@ float4 main(PSInput input) : SV_Target
         else if (light.dire.w == 1)
         {
             float3 direct = normalize(mySb[i].dire.xyz);
-            float3 lightVecc = (dot(direct, normal) * light.clr.w) * shadow;
+            float3 lightVecc = (max(0, -dot(normal, direct)) * light.clr.w) * shadow;
             lightValue += lightVecc;
         }
         else

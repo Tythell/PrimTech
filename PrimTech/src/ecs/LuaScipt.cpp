@@ -53,6 +53,7 @@ namespace pt
 
 	bool LuaScript::LoadScript(const char* scriptFile)
 	{
+		m_fileName = StringHelper::GetName(scriptFile);
 		lua_State* loadState = luaL_newstate();
 		int d = luaL_loadfile(loadState, scriptFile);
 
@@ -101,8 +102,12 @@ namespace pt
 	{
 		LuaScript* otherComp = dynamic_cast<LuaScript*>(other);
 		m_size = otherComp->m_size;
-		m_pbuffer = new char[otherComp->m_size];
-		memcpy(m_pbuffer, otherComp->m_pbuffer, m_size);
+		if (m_size > 0)
+		{
+			m_pbuffer = new char[otherComp->m_size];
+			memcpy(m_pbuffer, otherComp->m_pbuffer, m_size);
+		}
+		
 		m_fileName = otherComp->m_fileName;
 	}
 }

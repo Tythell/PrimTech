@@ -13,7 +13,7 @@ namespace pt
 
 		void SetEntId(EntIdType idx) { m_id = idx; }
 		EntIdType GetEntId() { return m_id; }
-		static Entity& Create();
+		static Entity& Create(std::string name = "");
 		void Free();
 		static const uint NumEnts();
 		static Entity& GetEntity(EntIdType index);
@@ -21,6 +21,7 @@ namespace pt
 		static void Clear(uint until = 0);
 		static std::vector<Entity>& GetAllEnts();
 		static void ReserveEnts(size_t size);
+		static void ClearAll();
 
 		void SetPhysBodyIndex(int idx);
 		void SetPosition(float x, float y, float z);
@@ -102,7 +103,7 @@ namespace pt
 
 			int swapIndex = ptvec->size() - PrimtTech::ComponentHandler::GetNoFreeComponents(c) - 1;
 
-			if (m_hasComponents & c && c != PrimtTech::ec_transform)
+			if (m_hasComponents & c /*&& c != PrimtTech::ec_transform*/)
 			{
 				int index = m_compTable[c];
 
@@ -120,12 +121,12 @@ namespace pt
 				m_hasComponents &= ~c;
 				m_compTable.erase(c);
 			}
-			else if (c == PrimtTech::ec_transform)
-			{
-				//int gg = ptvec->size() - PrimtTech::ComponentHandler::GetNoFreeComponents(c) - 1;
-				//ptvec[0][gg].FreeComponent(newIndex);
-				m_id = newIndex;
-			}
+			//else if (c == PrimtTech::ec_transform)
+			//{
+			//	//int gg = ptvec->size() - PrimtTech::ComponentHandler::GetNoFreeComponents(c) - 1;
+			//	//ptvec[0][gg].FreeComponent(newIndex);
+			//	m_id = newIndex;
+			//}
 			
 		}
 		template<class T>
@@ -146,11 +147,11 @@ namespace pt
 		bool HasComponentType(uint comp) const;
 
 		int CalculateNrOfComponents() const;
-		std::map<uint, uint> GetCompTable() { return m_compTable; };
+		std::map<PrimtTech::HasComponent, uint> GetCompTable() { return m_compTable; };
 
-		void InsertTable(uint key, uint val);
+		void InsertTable(PrimtTech::HasComponent key, uint val);
 
-		void SetName(const std::string& name) { m_displayName = name; }
+		void SetName(const std::string& name);
 		std::string GetName() const { return m_displayName; };
 
 		static int Lua_AddComp(lua_State* L);
@@ -169,7 +170,7 @@ namespace pt
 
 		static uint nrOfEntities;
 		static uint nrOfEntitiesUsed;
-		std::/*unordered_*/map<uint, uint> m_compTable;
+		std::/*unordered_*/map<PrimtTech::HasComponent, uint> m_compTable;
 	};
 }
 

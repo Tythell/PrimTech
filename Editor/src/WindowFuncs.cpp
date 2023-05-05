@@ -58,7 +58,7 @@ void Gui_MaterialProperties(void* ptr, bool* show)
 
 		PrimtTech::Material* pMaterial = PrimtTech::ResourceHandler::GetMaterialAdress(selectedMAt);
 		std::string matName = pMaterial->GetFileName();
-		if (ImGui::CollapsingHeader(matName.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
+		if (ImGui::CollapsingHeader(std::string(matName + "##heee").c_str(), ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			char* nameBuffer = new char[16];
 			strcpy_s(nameBuffer, 16, matName.c_str());
@@ -573,14 +573,14 @@ void Gui_EntList(void* test, bool* show)
 	{
 		ImGui::BeginDisabled(i == 0);
 		pt::Entity* pEnt = pt::Entity::GetEntityP((uint)i);
-		std::string entName = std::to_string(pEnt->GetEntId())/*pEnt->GetName()*/ + " - " + std::to_string(i);
+		std::string entName = /*std::to_string(pEnt->GetEntId())*/pEnt->GetName() + " - " + std::to_string(i);
 		if (ImGui::Selectable(entName.c_str(), p->selected == i))
 			p->selected = i;
 		ImGui::EndDisabled();
 	}
 	ImGui::EndChild();
 	ImGui::SameLine();
-	ImGui::BeginChild("Righty", ImVec2(300, 350), false);
+	ImGui::BeginChild("Righty", ImVec2(300, 400), false);
 	if (p->selected != -1)
 	{
 		pt::Entity* pEnt = pt::Entity::GetEntityP((uint)p->selected);
@@ -881,7 +881,7 @@ void Gui_EntList(void* test, bool* show)
 					pEnt->GetComponent<pt::PhysicsBody>()->Delete();
 					pEnt->FreeComponent<pt::PhysicsBody>();
 				}
-					
+
 				ImGui::Separator();
 				ImGui::TreePop();
 			}
@@ -935,7 +935,7 @@ void Gui_EntList(void* test, bool* show)
 		ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, (float)p->winWidth, (float)p->winHeight);
 
 		pt::Camera& pCam = PrimtTech::ComponentHandler::GetComponentByIndex<pt::Camera>(p->currentCamera);
-		
+
 		pt::TransformComp& rTr = pt::Entity::GetEntity(p->selected).Transform();
 
 		sm::Matrix camViewM = pCam.GetViewMatrix();

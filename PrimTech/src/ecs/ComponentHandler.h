@@ -98,7 +98,8 @@ LINK_TYPE_VEC(else, pt::LuaScript, s_luascripts, ec_lua) \
 			HasComponent compType = ec_null;
 			std::vector<T>* tVec = nullptr;
 			LinkVector<T>(tVec, compType);
-			return (int)tVec->size() - freeComponents[ptm::firstset(compType)];
+			int index = ptm::firstset(compType);
+			return (int)tVec->size() - freeComponents[index];
 		}
 		static void IncreaseFreeComponents(int index, int n);
 		static void SetFreeComponents(int index, int n);

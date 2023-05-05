@@ -62,17 +62,19 @@ Editor::Editor(d::XMINT2 windowRes, HINSTANCE hInstance)
 	m_entlist.winWidth = windowRes.x;
 	m_entlist.winHeight = windowRes.y;
 
-	pt::Light* pLight = pt::Entity::Create().AddComponent<pt::Light>();
+	pt::Light* pLight = pt::Entity::Create("AmbLight").AddComponent<pt::Light>();
 	pLight->SetType(2);
 	pLight->SetColor({ 1.f, 1.f, 1.f, .2f });
 
-	pt::Entity& ent0 = pt::Entity::Create();
+	pt::Entity& ent0 = pt::Entity::Create("Cube");
 	ent0.AddComponent<pt::MeshRef>();
 	ent0.SetPosition(0.f, 2.f, 0.f);
-	pt::Entity& ent1 = pt::Entity::Create();
+	pt::Entity& ent1 = pt::Entity::Create("Plane");
 	ent1.SetPosition(0.f, -0.2f, 0.f);
 	ent1.SetScale(10.f, 1.f, 10.f);
 	ent1.AddComponent<pt::MeshRef>()->Init("scaledplane.obj");
+
+	pt::Entity::Create("DirLight").AddComponent<pt::Light>()->SetType(1);
 
 	//ent1.AddComponent<pt::LuaScript>()->LoadScript("Scripts/moveScript.lua");
 }
@@ -140,10 +142,11 @@ void Editor::execCommand(std::string cmd)
 	else if (argBuffer == "dupe")
 	{
 		ss >> argBuffer;
-		uint entId = atoi(argBuffer.c_str());
-		pt::Entity& rEnt = pt::Entity::GetEntity(entId);
+		EntIdType entId = atoi(argBuffer.c_str());
 
-		pt::Entity::Create().DuplicateCompDataFrom(rEnt);
+		pt::Entity& newEnt = pt::Entity::Create();
+		pt::Entity& rEnt = pt::Entity::GetEntity(entId);
+		newEnt.DuplicateCompDataFrom(rEnt);
 	}
 	else if (argBuffer == "comp")
 	{

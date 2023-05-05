@@ -34,11 +34,14 @@ namespace PrimtTech
 		static Material* GetMaterialAdress(unsigned int index);
 		static int CheckMtrlNameExists(std::string mtrlName);
 		static uint GetNoMaterials();
+		static uint GetNoMeshes();
 		static const uint GetMtrlCount();
 		static int CheckMeshNameExists(std::string meshName);
 		static int CheckTextureNameExists(std::string textureName);
 		static void Unload();
 		static ID3D11Device* GetDevice();
+
+		static void ResizeMaterials(uint u);
 	private:
 		static std::vector<Mesh> m_meshes;
 		static std::vector<TextureMap*> m_textures;

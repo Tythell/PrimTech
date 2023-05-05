@@ -18,19 +18,22 @@ namespace pt
 		m_displayName = std::to_string(m_id);
 	}
 
-	Entity& Entity::Create()
+	Entity& Entity::Create(std::string name)
 	{
 		if (nrOfEntities - nrOfEntitiesUsed > 0)
 		{
 			int num = nrOfEntitiesUsed;
 			//s_ents[num] = pt::Entity(true);
-			nrOfEntitiesUsed++;
+			
 			//s_ents[num].AddComponent<TransformComp>();
+			s_ents[num].SetName(name);
+			if (name == "") s_ents[num].SetName(std::to_string(nrOfEntitiesUsed));
+			nrOfEntitiesUsed++;
 			return s_ents[num];
 		}
 		else
 		{
-			s_ents.emplace_back(true)/*.AddComponent<TransformComp>()*/;
+			s_ents.emplace_back(true).SetName(name)/*.AddComponent<TransformComp>()*/;
 			return s_ents[s_ents.size() - 1]; // Don't question it
 		}
 		
@@ -80,6 +83,14 @@ namespace pt
 	void Entity::ReserveEnts(size_t size)
 	{
 		s_ents.reserve(size);
+	}
+
+	void Entity::ClearAll()
+	{
+		//for (size_t i = 0; i < length; i++)
+		//{
+
+		//}
 	}
 
 	void Entity::SetPhysBodyIndex(int idx)
@@ -230,6 +241,10 @@ if(otherEnt.m_hasComponents & en) \
 		//	pt::MeshRef* m = AddComponent<MeshRef>();
 		//	m->DuplicateFrom(otherEnt.GetComponent<MeshRef>());
 		//}
+		//if (otherEnt.m_hasComponents & PrimtTech::ec_transform) {
+		//	TransformComp* m = AddComponent<TransformComp>();
+		//	m->DuplicateFrom(otherEnt.GetComponent<TransformComp>());
+		//}
 		COMPDUPL(TransformComp, PrimtTech::ec_transform);
 		COMPDUPL(MeshRef, PrimtTech::ec_meshRef);
 		COMPDUPL(Camera, PrimtTech::ec_cam);
@@ -252,10 +267,18 @@ if(otherEnt.m_hasComponents & en) \
 		return num;
 	}
 
-	void Entity::InsertTable(uint key, uint val)
+	void Entity::InsertTable(PrimtTech::HasComponent key, uint val)
 	{
 		m_hasComponents |= key;
 		m_compTable.emplace(key, val);
+	}
+
+	void Entity::SetName(const std::string& name)
+	{
+		if (name != "")
+		{
+			m_displayName = name;
+		}
 	}
 
 	template <class T>
