@@ -36,12 +36,17 @@ namespace pt
 		//static int Lua_Move(lua_State* L);
 		// Inherited via Component
 		virtual void DuplicateFrom(Component* other) override;
+		// Inherited via Component
+		virtual void OnFree() override;
 	protected:
 		void UpdateWorld();
 	private:
 		sm::Vector3 m_pos, m_rot, m_scale;
 		//sm::Quaternion m_rot;
 		sm::Matrix worldTransposed;
+
+
+
 
 	};
 }

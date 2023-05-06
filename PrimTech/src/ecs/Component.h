@@ -20,6 +20,7 @@ namespace pt
 		void freeComponent(EntIdType idx = -1);
 		virtual void Delete() {};
 		virtual void DuplicateFrom(Component* other) = 0;
+		virtual void OnFree() = 0;
 	private:
 		EntIdType m_entId;
 	};

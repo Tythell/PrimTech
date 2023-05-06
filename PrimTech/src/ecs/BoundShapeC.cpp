@@ -32,6 +32,9 @@ namespace pt
 	void AABBComp::DuplicateFrom(Component* other)
 	{
 	}
+	void AABBComp::OnFree()
+	{
+	}
 	OBBComp::OBBComp(EntIdType entId) : Component(entId) {}
 	void OBBComp::Update(const pt::TransformComp& transform)
 	{
@@ -45,6 +48,9 @@ namespace pt
 	void OBBComp::DuplicateFrom(Component* other)
 	{
 	}
+	void OBBComp::OnFree()
+	{
+	}
 	BSphereComp::BSphereComp(EntIdType entId) : Component(entId) {}
 	void BSphereComp::Update(const pt::TransformComp& transform)
 	{
@@ -55,6 +61,9 @@ namespace pt
 		m_bsphere.Radius = r;
 	}
 	void BSphereComp::DuplicateFrom(Component* other)
+	{
+	}
+	void BSphereComp::OnFree()
 	{
 	}
 }

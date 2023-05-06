@@ -97,6 +97,8 @@ namespace PrimtTech
 
 	void Mesh::InitInstanceBuffer(uint numInstances, ID3D11Device*& d, ID3D11DeviceContext*& dc)
 	{
+		if (m_pmeshInstArr)
+			delete[] m_pmeshInstArr;
 		m_pmeshInstArr = new MeshInstance[numInstances];
 
 		m_numInstances = numInstances;
@@ -106,15 +108,17 @@ namespace PrimtTech
 
 	void Mesh::Bind(ID3D11DeviceContext*& dc)
 	{
-		//uint offset = 0;
-		dc->IASetVertexBuffers(0, 1, m_vbuffer.GetReference(), m_vbuffer.GetStrideP(), &offset[0]);
+		if (/*m_numActiveInstances > 1*/m_pmeshInstArr)
+			InstancedBind(dc);
+		else
+			dc->IASetVertexBuffers(0, 1, m_vbuffer.GetReference(), m_vbuffer.GetStrideP(), &offset[0]);
 	}
 
 	void Mesh::InstancedBind(ID3D11DeviceContext*& dc)
 	{
-		uint offset[] = { 0, 0 };
 		uint strides[] = { m_vbuffer.GetStride(), m_instancebuffer.GetStride()};
-		dc->IASetVertexBuffers(0, 2, m_vbuffer.GetInArrayWith(m_instancebuffer.Get()), strides, offset);
+		ID3D11Buffer** bufferPtr = m_vbuffer.GetInArrayWith(m_instancebuffer.Get());
+		dc->IASetVertexBuffers(0, 2, bufferPtr, strides, offset);
 	}
 
 	void Mesh::Release()
@@ -134,6 +138,16 @@ namespace PrimtTech
 	void Mesh::MapInstance()
 	{
 		m_instancebuffer.MapBuffer();
+	}
+	void Mesh::IncreaseUses(int n)
+	{
+		m_numActiveInstances += n;
+		if (m_numActiveInstances < 0) m_numActiveInstances = 0;
+	}
+
+	int Mesh::GetNrOfUses() const
+	{
+		return m_numActiveInstances;
 	}
 
 }

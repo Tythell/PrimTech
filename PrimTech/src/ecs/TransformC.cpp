@@ -140,6 +140,10 @@ namespace pt
 		worldTransposed = worldTransposed.Transpose();
 	}
 
+	void TransformComp::OnFree()
+	{
+	}
+
 	void TransformComp::DuplicateFrom(Component* other)
 	{
 		TransformComp* otherComp = dynamic_cast<TransformComp*>(other);

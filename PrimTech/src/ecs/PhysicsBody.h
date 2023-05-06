@@ -52,6 +52,9 @@ namespace pt
 		virtual void Delete() override;
 		// Inherited via Component
 		virtual void DuplicateFrom(Component* other) override;
+
+		// Inherited via Component
+		virtual void OnFree() override;
 	private:
 		reactphysics3d::RigidBody* mp_rigidBody = nullptr;
 		static PrimtTech::PhysicsHandler* m_pPhysHandle;
@@ -59,5 +62,7 @@ namespace pt
 		rp::BodyType m_bodyType = rp::BodyType::STATIC;
 
 		rp::Transform ptTransformToRp(const pt::TransformComp& t) const;
+
+
 	};
 }

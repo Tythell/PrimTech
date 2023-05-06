@@ -5,6 +5,7 @@ namespace pt
 {
 	MeshRef::MeshRef(EntIdType entId, std::string meshName) : Component(entId)
 	{
+		PrimtTech::ResourceHandler::GetMesh(m_meshIndex).IncreaseUses(1);
 		Init(meshName);
 	}
 
@@ -15,9 +16,11 @@ namespace pt
 
 	void MeshRef::Init(std::string name)
 	{
+		PrimtTech::ResourceHandler::GetMesh(m_meshIndex).IncreaseUses(-1);
 		if (name == "")
 		{
 			m_pMaterialindexes.resize(1, 0);
+			PrimtTech::ResourceHandler::GetMesh(m_meshIndex).IncreaseUses(1);
 			return;
 		}
 		//std::vector<PrimtTech::Mesh>& meshArr = PrimtTech::ResourceHandler::GetMeshArrayReference();
@@ -25,6 +28,8 @@ namespace pt
 		int meshIndex = PrimtTech::ResourceHandler::CheckMeshNameExists(name);
 
 		m_meshIndex = (meshIndex == -1) ? 0 : meshIndex;
+
+		PrimtTech::ResourceHandler::GetMesh(m_meshIndex).IncreaseUses(1);
 
 		uint u = PrimtTech::ResourceHandler::GetMeshAdress(m_meshIndex)->GetNofMeshes();
 		m_pMaterialindexes.resize(u, 0);
@@ -56,7 +61,13 @@ namespace pt
 	void MeshRef::DuplicateFrom(Component* other)
 	{
 		MeshRef* otherComp = dynamic_cast<MeshRef*>(other);
+		PrimtTech::ResourceHandler::GetMesh(0).IncreaseUses(-1);
 		m_meshIndex = otherComp->m_meshIndex;
+		PrimtTech::ResourceHandler::GetMesh(m_meshIndex).IncreaseUses(1);
 		m_pMaterialindexes = otherComp->m_pMaterialindexes;
+	}
+	void MeshRef::OnFree()
+	{
+		PrimtTech::ResourceHandler::GetMesh(m_meshIndex).IncreaseUses(-1);
 	}
 }

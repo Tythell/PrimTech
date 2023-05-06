@@ -83,4 +83,7 @@ namespace pt
 		m_upV = otherComp->m_upV;
 		m_isOrthographic = otherComp->m_isOrthographic;
 	}
+	void Camera::OnFree()
+	{
+	}
 }

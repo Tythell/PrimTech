@@ -22,11 +22,15 @@ namespace pt
 		uchar GetType() const { return m_type; };
 		// Inherited via Component
 		virtual void DuplicateFrom(Component* other) override;
+		// Inherited via Component
+		virtual void OnFree() override;
 	private:
 		PrimtTech::hlsl::Light m_lightData;
 		sm::Vector4 m_posOffset;
 		sm::Vector4 m_dirOffset;
 		uchar m_type = 0u;
+
+
 
 		//enum Type
 		//{

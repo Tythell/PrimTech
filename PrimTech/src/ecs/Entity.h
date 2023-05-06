@@ -108,6 +108,7 @@ namespace pt
 				int index = m_compTable[c];
 
 				ptvec[0][index].freeComponent(newIndex);
+				ptvec[0][index].OnFree();
 
 				if (index != swapIndex)
 					std::swap(ptvec[0][index], ptvec[0][swapIndex]);

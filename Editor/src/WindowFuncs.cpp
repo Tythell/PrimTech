@@ -363,7 +363,7 @@ void Gui_AssetList(void* ptr, bool* show)
 				std::vector<PrimtTech::Mesh>& meshArr = PrimtTech::ResourceHandler::GetMeshArrayReference();
 				for (int i = 0; i < meshArr.size(); i++)
 				{
-					std::string name = meshArr[i].GetName();
+					std::string name = meshArr[i].GetName() + " " + std::to_string(meshArr[i].GetNrOfUses());
 					if (ImGui::TreeNode(name.c_str()))
 					{
 						if (ImGui::Button("Instance 4"))

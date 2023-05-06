@@ -21,13 +21,18 @@ namespace pt
 		void SetIsIntersecting(bool b) { m_isIntersecting = b; }
 
 		d::BoundingBox GetBox() const { return m_aabb; };
+
+		// Inherited via Component
+		virtual void DuplicateFrom(Component* other) override;
+
+		// Inherited via Component
+		virtual void OnFree() override;
 	private:
 		d::BoundingBox m_aabb;
 		sm::Vector3 m_posOffset;
 		bool m_isIntersecting = false;
 
-		// Inherited via Component
-		virtual void DuplicateFrom(Component* other) override;
+
 	};
 
 	class OBBComp : public Component
@@ -37,11 +42,16 @@ namespace pt
 
 		void Update(const pt::TransformComp& transform);
 		void SetExtends(const sm::Vector3& extends);
-	private:
-		d::BoundingOrientedBox m_obb;
 
 		// Inherited via Component
 		virtual void DuplicateFrom(Component* other) override;
+
+		// Inherited via Component
+		virtual void OnFree() override;
+	private:
+		d::BoundingOrientedBox m_obb;
+
+
 	};
 
 	class BSphereComp : public Component
@@ -51,10 +61,14 @@ namespace pt
 
 		void Update(const pt::TransformComp& transform);
 		void SetRadius(float r);
+		// Inherited via Component
+		virtual void DuplicateFrom(Component* other) override;
+
+		// Inherited via Component
+		virtual void OnFree() override;
 	private:
 		d::BoundingSphere m_bsphere;
 
-		// Inherited via Component
-		virtual void DuplicateFrom(Component* other) override;
+
 	};
 }

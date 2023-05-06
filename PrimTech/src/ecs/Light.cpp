@@ -52,4 +52,7 @@ namespace pt
 		m_dirOffset = otherComp->m_dirOffset;
 		m_type = otherComp->m_type;
 	}
+	void Light::OnFree()
+	{
+	}
 }

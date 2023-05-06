@@ -21,6 +21,8 @@ namespace pt
 
 		// Inherited via Component
 		virtual void DuplicateFrom(Component* other) override;
+		virtual void OnFree() override;
+
 	private:
 		uint m_meshIndex = 0;
 		std::vector<uint> m_pMaterialindexes;

@@ -38,6 +38,7 @@ namespace pt
 
 		// Inherited via Component
 		virtual void DuplicateFrom(Component* other) override;
+		virtual void OnFree() override;
 	private:
 		sm::Matrix m_viewM, m_projM;
 		sm::Vector3 m_posOffset, m_rotateOffset;
@@ -46,6 +47,9 @@ namespace pt
 		bool m_isOrthographic = false;
 
 	
+
+
+
 	};
 }
 

@@ -5,6 +5,7 @@
 #include <cmath>
 #include <string>
 #include <cstdint>
+#include <algorithm>
 namespace sm = DirectX::SimpleMath;
 namespace d = DirectX;
 

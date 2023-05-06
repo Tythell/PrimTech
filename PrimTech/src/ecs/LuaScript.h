@@ -23,11 +23,15 @@ namespace pt
 		static void SetLuaState(lua_State* pL);
 		// Inherited via Component
 		virtual void DuplicateFrom(Component* other) override;
+		// Inherited via Component
+		virtual void OnFree() override;
 	private:
 		static lua_State* L;
 		char* m_pbuffer = nullptr;;
 		int m_size = -1;
 		std::string m_fileName = "";
+
+
 
 	};
 }

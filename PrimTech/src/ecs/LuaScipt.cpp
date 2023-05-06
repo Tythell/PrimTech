@@ -112,4 +112,7 @@ namespace pt
 		
 		m_fileName = otherComp->m_fileName;
 	}
+	void LuaScript::OnFree()
+	{
+	}
 }

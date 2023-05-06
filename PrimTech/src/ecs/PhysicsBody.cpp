@@ -204,6 +204,10 @@ namespace pt
 		return rpTransform;
 	}
 
+	void PhysicsBody::OnFree()
+	{
+	}
+
 	void PhysicsBody::SetBoxExtents(const sm::Vector3& extents, uint index)
 	{
 		dynamic_cast<rp::BoxShape*>(mp_rigidBody->getCollider(index)->getCollisionShape())->

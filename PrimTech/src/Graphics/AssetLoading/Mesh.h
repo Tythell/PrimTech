@@ -4,7 +4,6 @@
 #include"Vertex.h"
 #include "Material.h"
 #include "LoaderFuncs.h"
-
 namespace PrimtTech
 {
 	/// <summary>
@@ -15,8 +14,8 @@ namespace PrimtTech
 	struct MeshInstance
 	{
 		sm::Vector3 position;
-		sm::Vector3 rotation;
-		sm::Vector3 scale;
+		//sm::Vector3 rotation;
+		//sm::Vector3 scale;
 	};
 
 	class Mesh
@@ -36,6 +35,9 @@ namespace PrimtTech
 		void ChangeInstance(uint i, MeshInstance instance);
 		void MapInstance();
 
+		void IncreaseUses(int n);
+		int GetNrOfUses() const;
+
 		void Release();
 	private:
 		Buffer<Vertex3D> m_vbuffer;
@@ -43,7 +45,7 @@ namespace PrimtTech
 		Buffer<MeshInstance> m_instancebuffer;
 
 		uint m_numInstances = 0;
-		uint m_numActiveInstances = 0;
+		int m_numActiveInstances = 0;
 		uint offset[2] = { 0,0 };
 
 		//uint m_meshIndex = 0, m_noVerts = 0;
