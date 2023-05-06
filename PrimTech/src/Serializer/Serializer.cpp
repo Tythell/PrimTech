@@ -24,6 +24,11 @@ namespace PrimtTech
 //#define READ(content) importer.read((char*)&content, sizeof(content))
 //#define READ(content) importer.read((char*)content, sizeof(content))
 
+	void NewScene(std::vector<pt::Entity>& entList)
+	{
+		Import("Default3DScene.ptsc", entList);
+	}
+
 	void Export(std::string path, std::vector<pt::Entity>& entList)
 	{
 		std::ofstream exporter(path, std::ios::out | std::ios::binary);
@@ -83,6 +88,9 @@ namespace PrimtTech
 		{
 			// number of components
 			int numComponents = entList[i].CalculateNrOfComponents();
+			char entName[32]{ "" };
+			strcpy_s(entName, entList[i].GetName().c_str());
+			WRITE(, entName, 32);
 			WRITE(&, numComponents, sizeof(int));
 
 			std::map<PrimtTech::HasComponent, uint> compTable = entList[i].GetCompTable();
@@ -379,8 +387,12 @@ namespace PrimtTech
 		// importing entity component tables
 		for (int i = 0; i < numEnts; i++)
 		{
+			char entName[32]{ "" };
+			READ(, entName, 32);
 			int numComponents = 0;
 			READ(&, numComponents, sizeof(int));
+
+			entList[i].SetName(entName);
 
 			for (int j = 0; j < numComponents; j++)
 			{

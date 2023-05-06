@@ -21,7 +21,7 @@ namespace PrimtTech
 		InitBlendState();
 		m_shadowmap.Init(device);
 
-		ResourceHandler::SetDevice(device);
+		ResourceHandler::SetDevice(device, dc);
 
 		InitShaders();
 		InitConstantBuffers();
@@ -258,7 +258,8 @@ namespace PrimtTech
 			{"NORMAL",	0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 			{"TANGENT",	0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 			{"BITANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
-			{"COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+			{"INSTPOS", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_INSTANCE_DATA, 0},
+			//{"COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 		};
 
 		D3D11_INPUT_ELEMENT_DESC lineLayout[] =
@@ -387,11 +388,10 @@ namespace PrimtTech
 	}
 
 	void drawMeshes(std::vector<MeshRef>& rMeshrefs, std::vector<TransformComp>& rTransforms,
-		Buffer<hlsl::cbpWorldTransforms3D>& transformBuffer, Buffer<hlsl::cbpMaterialBuffer>* pMAtBuffer, ID3D11DeviceContext*& dc, float deltatime)
+		Buffer<hlsl::cbpWorldTransforms3D>& transformBuffer, Buffer<hlsl::cbpMaterialBuffer>* pMAtBuffer, ID3D11DeviceContext*& dc, float deltatime, int& drawCalls)
 	{
 		uint numMEshRefs = ComponentHandler::GetNoOfUsedComponents<pt::MeshRef>();
 		//uint numMEshRefs = (uint)rMeshrefs.size();
-		uint offset = 0;
 		for (int i = 0; i < numMEshRefs; i++)
 		{
 			uint entId = rMeshrefs[i].EntId();
@@ -402,7 +402,7 @@ namespace PrimtTech
 			transformBuffer.Data().world = pTransformComp->GetWorldTransposed();
 			transformBuffer.MapBuffer();
 
-			dc->IASetVertexBuffers(0, 1, meshPtr->GetVBuffer().GetReference(), meshPtr->GetVBuffer().GetStrideP(), &offset);
+			meshPtr->Bind(dc);
 			
 			uint numMeshes = meshPtr->GetNofMeshes();
 
@@ -410,7 +410,9 @@ namespace PrimtTech
 			if (!pMAtBuffer)
 			{
 				uint vCount = meshPtr->GetMeshOffsfets()[numMeshes];
-				dc->Draw(vCount, 0);
+				//dc->Draw(vCount, 0);
+				dc->DrawInstanced(vCount, 1, 0, 0);
+				drawCalls++;
 				continue;
 			}
 
@@ -422,7 +424,9 @@ namespace PrimtTech
 				rMat.UpdateTextureScroll(deltatime);
 
 				int v1 = meshPtr->GetMeshOffsfets()[j + 1], v2 = meshPtr->GetMeshOffsfets()[j];
-				dc->Draw(v1 - v2, v2);
+				drawCalls++;
+				//dc->Draw(v1 - v2, v2);
+				dc->DrawInstanced(v1 - v2, 1, v2, 0);
 			}
 		}
 	}
@@ -489,7 +493,7 @@ namespace PrimtTech
 		uint numMEshRefs = (uint)rMeshrefs.size();
 		uint offset = 0;
 
-		drawMeshes(rMeshrefs, rTransforms, m_transformBuffer, NULL, dc, deltatime);
+		drawMeshes(rMeshrefs, rTransforms, m_transformBuffer, NULL, dc, deltatime, im->m_drawCalls);
 
 		// --------------------------End of shadw pass-----------------------------------------------
 		dc->OMSetRenderTargets(1, &m_rtv, m_dsView);
@@ -507,7 +511,7 @@ namespace PrimtTech
 		m_materialBuffer.Data().flags = 0;
 		m_shadowmap.BindSRV(dc, 10);
 		// iterate through meshrefs
-		drawMeshes(rMeshrefs, rTransforms, m_transformBuffer, &m_materialBuffer, dc, deltatime);
+		drawMeshes(rMeshrefs, rTransforms, m_transformBuffer, &m_materialBuffer, dc, deltatime, im->m_drawCalls);
 		std::vector<Camera> cams = ComponentHandler::GetComponentArray<Camera>();
 		for (int i = 0; i < noCams; i++)
 		{
@@ -561,6 +565,7 @@ namespace PrimtTech
 		}
 
 		ImGuiRender();
+		im->m_drawCalls = 0;
 		m_swapChain->Present((UINT)im->useVsync, NULL);
 	}
 

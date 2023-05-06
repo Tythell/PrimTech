@@ -8,10 +8,12 @@ namespace PrimtTech
 	std::vector<TextureMap*> ResourceHandler::m_textures;
 	std::vector<Material> ResourceHandler::m_materials;
 	ID3D11Device* ResourceHandler::pDevice;
+	ID3D11DeviceContext* ResourceHandler::s_pDc;
 
-	void ResourceHandler::SetDevice(ID3D11Device*& device)
+	void ResourceHandler::SetDevice(ID3D11Device*& device, ID3D11DeviceContext*& dc)
 	{
 		pDevice = device;
+		s_pDc = dc;
 	}
 
 	void ResourceHandler::LoadPak(std::string path)
@@ -163,36 +165,40 @@ namespace PrimtTech
 	{
 		m_materials.resize(u);
 	}
-	MeshCluster::MeshCluster()
+	void ResourceHandler::InitInstancesForMesh(uint i, uint slots)
 	{
-		//m_startIndexes.emplace_back(0);
+		m_meshes[i].InitInstanceBuffer(slots, pDevice, s_pDc);
 	}
-	int MeshCluster::AddMesh(std::vector<Vertex3D>& vec, std::string name)
-	{
-		//int meshExists = -1;
+	//MeshCluster::MeshCluster()
+	//{
+	//	//m_startIndexes.emplace_back(0);
+	//}
+	//int MeshCluster::AddMesh(std::vector<Vertex3D>& vec, std::string name)
+	//{
+	//	//int meshExists = -1;
 
-		//for (int i = 0;/* meshExists == -1 &&*/ i < m_names.size(); i++)
-		//{
-		//	if (m_names[i] == name)
-		//	{
-		//		//meshExists = i;
-		//		return i;
-		//	}
-		//}
+	//	//for (int i = 0;/* meshExists == -1 &&*/ i < m_names.size(); i++)
+	//	//{
+	//	//	if (m_names[i] == name)
+	//	//	{
+	//	//		//meshExists = i;
+	//	//		return i;
+	//	//	}
+	//	//}
 
-		//int returnIndex = (int)m_allVerts.size() - 1;
+	//	//int returnIndex = (int)m_allVerts.size() - 1;
 
-		//m_allVerts.reserve(m_allVerts.size() + vec.size());
-		//m_allVerts.insert(m_allVerts.end(), vec.begin(), vec.end());
+	//	//m_allVerts.reserve(m_allVerts.size() + vec.size());
+	//	//m_allVerts.insert(m_allVerts.end(), vec.begin(), vec.end());
 
-		//return returnIndex;
-		return 0;
-	}
-	void MeshCluster::IASet(ID3D11DeviceContext* dc)
-	{
-		uint offset[] = { 0 };
-		//dc->IASetVertexBuffers(0, 1, m_mainVbuffer.GetReference(), m_mainVbuffer.GetStrideP(), offset);
-	}
+	//	//return returnIndex;
+	//	return 0;
+	//}
+	//void MeshCluster::IASet(ID3D11DeviceContext* dc)
+	//{
+	//	uint offset[] = { 0 };
+	//	//dc->IASetVertexBuffers(0, 1, m_mainVbuffer.GetReference(), m_mainVbuffer.GetStrideP(), offset);
+	//}
 }
 
 

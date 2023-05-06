@@ -21,6 +21,7 @@ namespace PrimtTech
 		bool m_isHoveringWindow = false;
 		bool m_drawGrid = true;
 		bool m_drawCams = true;
+		int m_drawCalls = 0;
 	};
 
 	typedef void(*ImGuiWindowFunc)(void*, bool*);

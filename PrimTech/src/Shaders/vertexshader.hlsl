@@ -12,7 +12,9 @@ struct VSInput
     float3 localNormal : NORMAL;
     float3 tangent : TANGENT;
     float3 bitangent : BITANGENT;
-    float3 vcolor : COLOR;
+    float3 instPos : INSTPOS;
+    //float3 instRot : ROTATION;
+    //float3 instScale : SCALE;
 };
 
 struct VSOutput
@@ -24,12 +26,13 @@ struct VSOutput
     float3 tangent : TANGENT;
     float3 bitangent : BITANGENT;
     float4 clipSpace : CLIPSPACE;
-    float3 vcolor : COLOR;
+    //float3 vcolor : COLOR;
 };
 
 VSOutput main(VSInput input)
 {   
     VSOutput output;
+    input.localPosition.xyz += input.instPos;
     output.position = mul(float4(input.localPosition.xyz, 1.f), mul(world, viewProj));
     output.texCoord = input.texCoord;
     output.normal = normalize(mul(float4(input.localNormal, 0.f), world));
@@ -37,6 +40,6 @@ VSOutput main(VSInput input)
     output.tangent = mul(float4(input.tangent, 0.f), world).xyz;
     output.bitangent = mul(float4(input.bitangent, 0.f), world).xyz;
     output.clipSpace = mul(float4(input.localPosition, 1.f), mul(world, lightviewProj));
-    output.vcolor = input.vcolor;
+    //output.vcolor = input.vcolor;
     return output;
 }

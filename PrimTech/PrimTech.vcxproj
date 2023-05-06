@@ -119,7 +119,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;PHYSDEBUG;_WINDOWS;DX11;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>PHYSDEBUG;_DEBUG;_WINDOWS;DX11;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(SolutionDir)PrimTech/src/Graphics/3rdParty/imgui/;$(SolutionDir)PrimTech/src/Graphics/3rdParty/ImGuizmo/;$(SolutionDir)PrimTech/src/Graphics/3rdParty/;$(SolutionDir)PrimTech/src/;$(SolutionDir)PrimTech\src\thirdParty\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -146,7 +146,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;PHYSDEBUG;_WINDOWS;DX11;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>PHYSDEBUG;NDEBUG;_WINDOWS;DX11;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(SolutionDir)PrimTech/src/Graphics/3rdParty/imgui/;$(SolutionDir)PrimTech/src/Graphics/3rdParty/ImGuizmo/;$(SolutionDir)PrimTech/src/Graphics/3rdParty/;$(SolutionDir)PrimTech/src/;$(SolutionDir)PrimTech\src\thirdParty\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -228,7 +228,6 @@
     </ClCompile>
     <ClCompile Include="src\Serializer\Serializer.cpp" />
     <ClCompile Include="src\Utility\CommonDialogs.cpp" />
-    <ClCompile Include="src\Macros\Defines.cpp" />
     <ClCompile Include="src\Graphics\DX11Wrapper.cpp" />
     <ClCompile Include="src\Graphics\Shader.cpp" />
     <ClCompile Include="src\Graphics\AssetLoading\Texture.cpp" />
@@ -243,7 +242,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Graphics\AssetLoading\LoaderFuncs.h" />
-    <ClInclude Include="src\Graphics\AssetLoading\MeshLoader.cpp" />
     <ClInclude Include="src\ecs\BoundShapeC.h" />
     <ClInclude Include="src\ecs\CameraC.h" />
     <ClInclude Include="src\ecs\Components.hpp" />

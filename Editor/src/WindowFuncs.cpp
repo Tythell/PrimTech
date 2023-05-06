@@ -215,7 +215,7 @@ void ImguiDebug(void* ptr, bool* show)
 	//ImGui::Checkbox("Show selection", &im.showSelection);
 
 
-	if (ImGui::CollapsingHeader("General"))
+	if (ImGui::CollapsingHeader("General", ImGuiTreeNodeFlags_DefaultOpen))
 	{
 		//ImGui::RadioButton("local", (int*)&im.transformMode, 0); ImGui::SameLine();
 		//ImGui::RadioButton("world", (int*)&im.transformMode, 1);
@@ -223,7 +223,11 @@ void ImguiDebug(void* ptr, bool* show)
 
 		ImGui::Checkbox("Vsync", &im->useVsync); ImGui::SameLine();
 		ImGui::Checkbox("Grid", &im->m_drawGrid);
-		ImGui::Checkbox("Draw Cam models", &im->m_drawCams);
+		//ImGui::Checkbox("Draw Cam models", &im->m_drawCams);
+		
+
+		std::string test =  "Draw calls: " + std::to_string(im->m_drawCalls);
+		ImGui::Text(test.c_str());
 
 	}
 
@@ -360,20 +364,29 @@ void Gui_AssetList(void* ptr, bool* show)
 				for (int i = 0; i < meshArr.size(); i++)
 				{
 					std::string name = meshArr[i].GetName();
-					ImGui::Text(name.c_str());
-					if (ImGui::IsItemHovered())
+					if (ImGui::TreeNode(name.c_str()))
 					{
-						ImGui::BeginTooltip();
-
-						ImGui::Text("joe mama");
-						ImTextureID texture = PrimtTech::ResourceHandler::GetTextureAdress(0)->GetSRV();
-						ImGui::Image(texture, ImVec2(100, 100), { 0.f,1.f }, { 1.f,0.f });
-
-						ImGui::EndTooltip();
-						//ImGui::SetTooltip("am tooltip");
-
-
+						if (ImGui::Button("Instance 4"))
+						{
+							PrimtTech::ResourceHandler::InitInstancesForMesh(i, 4);
+						}
+						ImGui::TreePop();
 					}
+					//ImGui::Text(name.c_str());
+
+					//if (ImGui::IsItemHovered())
+					//{
+					//	ImGui::BeginTooltip();
+
+					//	ImGui::Text("joe mama");
+					//	ImTextureID texture = PrimtTech::ResourceHandler::GetTextureAdress(0)->GetSRV();
+					//	ImGui::Image(texture, ImVec2(100, 100), { 0.f,1.f }, { 1.f,0.f });
+
+					//	ImGui::EndTooltip();
+					//	//ImGui::SetTooltip("am tooltip");
+
+
+					//}
 				}
 
 				ImGui::EndTabItem();

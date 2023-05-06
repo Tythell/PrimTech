@@ -3,36 +3,18 @@
 
 #include "ResourceHandler.h"
 #include "../Utility/CommonDialogs.h"
-#undef min
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
 
 namespace PrimtTech
 {
-	//sm::Vector3 aiVecToSm(const aiVector3D aivec)
-	//{
-	//	return sm::Vector3(aivec.x, aivec.y, aivec.z);
-	//}
-	//sm::Vector2 aiVecToSm(const aiVector2D aivec)
-	//{
-	//	return sm::Vector2(aivec.x, aivec.y);
-	//}
-
 	Mesh::Mesh(std::string path, ID3D11Device*& device, bool makeLeftHanded)
 	{
-		ID3D11Buffer* buffer = nullptr;
-		ID3D11Buffer** gee = m_vbuffer.GetInArrayWith(buffer);
-
 		std::vector<Shape> mesh;
 		bool check = false;
-		uchar* dummy = NULL;
-		
 
 		switch (1) // In case we don't want to use assimp
 		{
 		case 0:
-			check = FileLoader::LoadObjToBuffer(path, mesh, m_mtls, m_mtlIndexes, makeLeftHanded);
+			check = FileLoader::LoadObjToBuffer(path, mesh, m_mtls, m_mtlIndexes, true);
 			break;
 		case 1:
 			check = FileLoader::AssimpLoad(path, mesh, m_mtls);
@@ -57,7 +39,7 @@ namespace PrimtTech
 			m_mtlIndexes.emplace_back(3);
 		}
 		}
-		THROW_POPUP_ERROR(check, " loading" + path);
+		THROW_POPUP_ERROR(check, "loading " + path);
 		m_name = StringHelper::GetName(path);
 		m_nofMeshes = mesh.size();
 		m_offsets.emplace_back(0);
@@ -82,14 +64,6 @@ namespace PrimtTech
 		HRESULT hr = m_vbuffer.CreateVertexBuffer(device, m_shape.verts.data(), bsize);
 		COM_ERROR(hr, "Failed to load vertex buffer");
 	}
-
-	//Mesh::Mesh(const Mesh& other)
-	//{
-	//	ID3D11Device* pDev = other.pDevice;
-	//	Vertex3D verts = other.m_shape.verts
-	//
-	//	m_vbuffer.CreateVertexBuffer(pDev, other.m_shape.verts.data(), other.m_vbuffer.GetBufferSize());
-	//}
 
 	Buffer<Vertex3D>& Mesh::GetVBuffer()
 	{
@@ -121,9 +95,45 @@ namespace PrimtTech
 		return m_offsets;
 	}
 
+	void Mesh::InitInstanceBuffer(uint numInstances, ID3D11Device*& d, ID3D11DeviceContext*& dc)
+	{
+		m_pmeshInstArr = new MeshInstance[numInstances];
+
+		m_numInstances = numInstances;
+
+		m_instancebuffer.CreateVertexBuffer(d, m_pmeshInstArr, numInstances, dc, eBufferFlags_IgnoreCreateTwice);
+	}
+
+	void Mesh::Bind(ID3D11DeviceContext*& dc)
+	{
+		//uint offset = 0;
+		dc->IASetVertexBuffers(0, 1, m_vbuffer.GetReference(), m_vbuffer.GetStrideP(), &offset[0]);
+	}
+
+	void Mesh::InstancedBind(ID3D11DeviceContext*& dc)
+	{
+		uint offset[] = { 0, 0 };
+		uint strides[] = { m_vbuffer.GetStride(), m_instancebuffer.GetStride()};
+		dc->IASetVertexBuffers(0, 2, m_vbuffer.GetInArrayWith(m_instancebuffer.Get()), strides, offset);
+	}
+
 	void Mesh::Release()
 	{
 		m_vbuffer.Release();
+		if (m_instancebuffer.Get())
+			m_instancebuffer.Release();
+		if (m_pmeshInstArr)
+			delete[] m_pmeshInstArr;
+	}
+
+	void Mesh::ChangeInstance(uint i, MeshInstance instance)
+	{
+		m_instancebuffer.Data(i) = instance;
+	}
+
+	void Mesh::MapInstance()
+	{
+		m_instancebuffer.MapBuffer();
 	}
 
 }

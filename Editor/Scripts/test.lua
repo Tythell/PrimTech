@@ -26,5 +26,5 @@ function OnTick()
 
 	local jump = Input.KeyDown("G")
 
-	Ent.Move(z * dt * 2, jump * dt * 100, y * dt * 2)
+	Ent.Move(z * dt * 2, jump * dt * 2, y * dt * 2)
 end

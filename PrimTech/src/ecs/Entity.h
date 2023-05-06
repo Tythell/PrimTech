@@ -109,24 +109,17 @@ namespace pt
 
 				ptvec[0][index].freeComponent(newIndex);
 
-				std::swap(ptvec[0][index], ptvec[0][swapIndex]);
+				if (index != swapIndex)
+					std::swap(ptvec[0][index], ptvec[0][swapIndex]);
 
 				if (newIndex != -1)
-				{
 					ptvec[0][swapIndex].freeComponent(index);
-				}
 
 				PrimtTech::ComponentHandler::IncreaseFreeComponents(c, 1);
 
 				m_hasComponents &= ~c;
 				m_compTable.erase(c);
 			}
-			//else if (c == PrimtTech::ec_transform)
-			//{
-			//	//int gg = ptvec->size() - PrimtTech::ComponentHandler::GetNoFreeComponents(c) - 1;
-			//	//ptvec[0][gg].FreeComponent(newIndex);
-			//	m_id = newIndex;
-			//}
 			
 		}
 		template<class T>

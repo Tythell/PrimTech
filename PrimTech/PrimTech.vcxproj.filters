@@ -99,9 +99,6 @@
     <ClCompile Include="src\Utility\CommonDialogs.cpp">
       <Filter>Source Files\Utility</Filter>
     </ClCompile>
-    <ClCompile Include="src\Macros\Defines.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Graphics\RenderShapes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -1014,9 +1011,6 @@
     </ClInclude>
     <ClInclude Include="src\scripting\LuaHandler.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\AssetLoading\MeshLoader.cpp">
-      <Filter>Header Files\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\AssetLoading\LoaderFuncs.h">
       <Filter>Header Files</Filter>

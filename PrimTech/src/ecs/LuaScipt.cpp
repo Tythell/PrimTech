@@ -22,6 +22,8 @@ namespace pt
 		{
 			delete[] m_pbuffer;
 			m_pbuffer = nullptr;
+			m_size = -1;
+			printf("");
 		}
 	}
 

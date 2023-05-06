@@ -61,7 +61,7 @@ struct PSInput
     float3 tangent : TANGENT;
     float3 bitangent : BITANGENT;
     float4 clipSpace : CLIPSPACE;
-    float3 vcolor : COLOR;
+    //float3 vcolor : COLOR;
 };
 
 float3 calcNormal(in float2 texCoord, in float3 normal, in float3 tan, in float3 biTan)

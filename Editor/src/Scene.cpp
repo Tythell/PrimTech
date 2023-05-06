@@ -332,8 +332,9 @@ void Editor::execCommand(std::string cmd)
 		else if (argBuffer == "new")
 		{
 			m_entlist.selected = -1;
-			pt::Entity::Clear(4);
-			pt::Entity::GetEntity(0).AddComponent<pt::Camera>()->SetPerspective(80.f, ((float)m_entlist.winWidth / (float)m_entlist.winHeight), 0.1f, 100.f);
+			PrimtTech::NewScene(pt::Entity::GetAllEnts());
+			//pt::Entity::Clear(4);
+			//pt::Entity::GetEntity(0).AddComponent<pt::Camera>()->SetPerspective(80.f, ((float)m_entlist.winWidth / (float)m_entlist.winHeight), 0.1f, 100.f);
 		}
 	}
 }

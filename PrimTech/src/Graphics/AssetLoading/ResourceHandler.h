@@ -14,7 +14,7 @@ namespace PrimtTech
 	class ResourceHandler
 	{
 	public:
-		static void SetDevice(ID3D11Device*& device);
+		static void SetDevice(ID3D11Device*& device, ID3D11DeviceContext*& dc);
 		static void LoadPak(std::string path);
 		//static Mesh* AddMesh(std::string path, bool makeLeftHanded = true);
 		static void ReserveMeshMemory(int num);
@@ -42,30 +42,32 @@ namespace PrimtTech
 		static ID3D11Device* GetDevice();
 
 		static void ResizeMaterials(uint u);
+		static void InitInstancesForMesh(uint i, uint slots);
 	private:
 		static std::vector<Mesh> m_meshes;
 		static std::vector<TextureMap*> m_textures;
 		static std::vector<Material> m_materials;
 		static ID3D11Device* pDevice;
+		static ID3D11DeviceContext* s_pDc;
 	};
 
-	class MeshCluster
-	{
-	public:
-		MeshCluster();
-		static int AddMesh(std::vector<Vertex3D>& vec, std::string name);
-
-#ifdef DX11
-		static void IASet(ID3D11DeviceContext* dc);
-#endif // DX11
-
-	private:
-		//static std::vector<Vertex3D> m_allVerts;
-		//static Buffer<Vertex3D> m_vBuffer;
-		//static std::vector<std::string> m_names;
-		//static std::vector<uint> m_startIndexes;
-
-		//Buffer<int> m_mainVbuffer;
-	};
+//	class MeshCluster
+//	{
+//	public:
+//		MeshCluster();
+//		static int AddMesh(std::vector<Vertex3D>& vec, std::string name);
+//
+//#ifdef DX11
+//		static void IASet(ID3D11DeviceContext* dc);
+//#endif // DX11
+//
+//	private:
+//		//static std::vector<Vertex3D> m_allVerts;
+//		//static Buffer<Vertex3D> m_vBuffer;
+//		//static std::vector<std::string> m_names;
+//		//static std::vector<uint> m_startIndexes;
+//
+//		//Buffer<int> m_mainVbuffer;
+//	};
 }
 
