@@ -8,8 +8,52 @@
 namespace PrimtTech
 {
 	class Mesh;
+	class MeshInstance;
 	class TextureMap;
 	class Material;
+
+	class Prefab
+	{
+	public:
+		Prefab(ID3D11Device *& d, ID3D11DeviceContext*& dc, uint maxCap, std::string name = "");
+
+		void SetMaterial(uint slot, std::string material);
+		void SetMaterial(uint slot, uint materialIndex);
+
+		void SetMesh(uint meshIndex);
+		void SetMesh(std::string meshName);
+
+		void InitInstanceBuffer(uint numInstances, ID3D11Device*& d, ID3D11DeviceContext*& dc);
+		void BindInstanceBuffer(ID3D11DeviceContext*& dc);
+		void ChangeInstance(uint i, const MeshInstance& inst);
+		void MapInstBuffer();
+
+		void SetName(std::string name);
+		std::string GetName() const;
+		std::string GetMeshName() const;
+		uint GetMeshIndex() const;
+		uint GetMaterialIndex(uint i) const;
+		Mesh* GetMeshPtr() const;
+
+		void AddRefIdx(uint idx);
+		uint GetRefIdx(uint idx) const;
+		uint GetNOfRefIdx() const;
+		uint IncreaseUses(int num);
+		uint GetUses() const;
+		uint GetCap() const;
+
+		void Release();
+	private:
+		MeshInstance* m_pmeshInstArr = nullptr;
+		Buffer<MeshInstance> m_instancebuffer;
+		std::vector<uint> m_prefabRefsIdx;
+
+		uint m_meshIndex = 0;
+		int m_noOfUses = 0;
+		int m_maxNoInstances = 0;
+		std::vector<uint> m_materialIndex;
+		std::string m_prefabName = "";
+	};
 
 	class ResourceHandler
 	{
@@ -41,9 +85,14 @@ namespace PrimtTech
 		static void Unload();
 		static ID3D11Device* GetDevice();
 
+		static Prefab& NewPrefab(const std::string& name = "", uint maxCap = 4);
+		static Prefab& GetPrefab(uint index);
+		static std::vector<Prefab>& GetPrefabArray();
+
 		static void ResizeMaterials(uint u);
 		static void InitInstancesForMesh(uint i, uint slots);
 	private:
+		static std::vector<Prefab> m_prefabs;
 		static std::vector<Mesh> m_meshes;
 		static std::vector<TextureMap*> m_textures;
 		static std::vector<Material> m_materials;

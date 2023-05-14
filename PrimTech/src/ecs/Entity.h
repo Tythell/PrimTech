@@ -100,6 +100,14 @@ namespace pt
 			PrimtTech::HasComponent c = PrimtTech::ec_null;
 
 			PrimtTech::ComponentHandler::LinkVector<T>(ptvec, c);
+			if (c == PrimtTech::ec_null)
+			{
+				std::string outputStr = typeid(T).name();
+				outputStr += " is not a component";
+				BCOM_INFO(false, outputStr);
+				
+				return;
+			}
 
 			int swapIndex = ptvec->size() - PrimtTech::ComponentHandler::GetNoFreeComponents(c) - 1;
 

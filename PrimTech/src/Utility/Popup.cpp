@@ -7,6 +7,12 @@ void Popup::Error(std::string err)
 	MessageBoxA(NULL, str.c_str(), "Joe mama", MB_ICONERROR);
 }
 
+void Popup::Info(std::string err)
+{
+	std::string str = "Error: " + err;
+	MessageBoxA(NULL, str.c_str(), "Joe mama", MB_ICONINFORMATION);
+}
+
 void Popup::Error(COMException& exception)
 {
 	std::wstring errMsg = exception.what();

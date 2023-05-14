@@ -14,8 +14,8 @@ namespace PrimtTech
 		ec_meshRef = 0x2,
 		ec_cam = 0x4,
 		ec_aabb = 0x8,
-		ec_obb = 0x10,
-		ec_bsphere = 0x20,
+		ec_prefab = 0x10,
+		//ec_bsphere = 0x20,
 		ec_light = 0x40,
 		ec_rigidBodies = 0x80,
 		ec_lua = 0x100, 
@@ -29,11 +29,10 @@ namespace PrimtTech
 
 #define COMPONENT_LIST(STAT, AFTER) \
 COMP_TYPE(pt::MeshRef, s_meshrefs, STAT, AFTER) \
+COMP_TYPE(pt::MeshPrefabRef, s_meshPrefabs, STAT, AFTER) \
 COMP_TYPE(pt::TransformComp, s_transforms, STAT, AFTER) \
 COMP_TYPE(pt::Camera, s_cams, STAT, AFTER) \
 COMP_TYPE(pt::AABBComp, s_aabbs, STAT, AFTER) \
-COMP_TYPE(pt::OBBComp, s_obbs, STAT, AFTER) \
-COMP_TYPE(pt::BSphereComp, s_bspheres, STAT, AFTER) \
 COMP_TYPE(pt::Light, s_lights, STAT, AFTER) \
 COMP_TYPE(pt::PhysicsBody, s_rigidBodies, STAT, AFTER) \
 COMP_TYPE(pt::LuaScript, s_luascripts, STAT, AFTER) \
@@ -46,11 +45,10 @@ ELSE if constexpr (std::is_same_v<T, cTYPE>) { \
 
 #define LINK_LIST \
 LINK_TYPE_VEC(##, pt::MeshRef, s_meshrefs, ec_meshRef) \
+LINK_TYPE_VEC(else, pt::MeshPrefabRef, s_meshPrefabs, ec_prefab) \
 LINK_TYPE_VEC(else, pt::TransformComp, s_transforms, ec_transform) \
 LINK_TYPE_VEC(else, pt::Camera, s_cams, ec_cam) \
 LINK_TYPE_VEC(else, pt::AABBComp, s_aabbs, ec_aabb) \
-LINK_TYPE_VEC(else, pt::OBBComp, s_obbs, ec_obb) \
-LINK_TYPE_VEC(else, pt::BSphereComp, s_bspheres, ec_bsphere) \
 LINK_TYPE_VEC(else, pt::Light, s_lights, ec_light) \
 LINK_TYPE_VEC(else, pt::PhysicsBody, s_rigidBodies, ec_rigidBodies) \
 LINK_TYPE_VEC(else, pt::LuaScript, s_luascripts, ec_lua) \

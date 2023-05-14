@@ -24,6 +24,19 @@ namespace PrimtTech
 //#define READ(content) importer.read((char*)&content, sizeof(content))
 //#define READ(content) importer.read((char*)content, sizeof(content))
 
+	enum class FileHeader
+	{
+		null,
+		MeshNames,
+		MaterialName,
+		entities,
+		pakpath,
+
+
+
+		MagicNum = 0x6969,
+	};
+
 	void NewScene(std::vector<pt::Entity>& entList)
 	{
 		Import("Default3DScene.ptsc", entList);
@@ -141,6 +154,8 @@ namespace PrimtTech
 		{
 			EntIdType entId = meshrefs[i].EntId();
 			WRITE(&, entId, sizeof(EntIdType));
+			pt::MeshRef::Type type = meshrefs[i].GetType();
+			WRITE(&, type, sizeof(pt::MeshRef::Type));
 			strcpy_s(meshname, meshrefs[i].GetNameOfMesh().c_str());
 			WRITE(,meshname, 64);
 			uint numMats = meshrefs[i].GetNumMaterials();
@@ -311,9 +326,9 @@ namespace PrimtTech
 		if (!importer.is_open())
 			return false;
 
-		uint magicNum = 0;
-		READ(&, magicNum, sizeof(uint));
-		if (magicNum != 0x6969)
+		FileHeader fileheader = FileHeader::null;
+		READ(&, fileheader, sizeof(FileHeader));
+		if (fileheader != FileHeader::MagicNum)
 		{
 			importer.close();
 			return false;
@@ -325,11 +340,17 @@ namespace PrimtTech
 			entList[i].Free();
 		}
 
-		char pakPath[32] = "";
-		READ(, pakPath, 32);
+		//READ(&, fileheader, sizeof(FileHeader));
+		//if (fileheader == FileHeader::pakpath)
+		//{
+			char pakPath[32] = "";
+			READ(, pakPath, 32);
+		//}
+		
 
 		//WRITESHIT("AssetNames");
 		//WRITESHIT("MeshesNames");
+
 
 		uint numMeshes = 0;
 		READ(&, numMeshes, sizeof(uint));
@@ -451,6 +472,9 @@ namespace PrimtTech
 		{
 			EntIdType entId = 0;
 			READ(&, entId, sizeof(EntIdType));
+			pt::MeshRef::Type type = pt::MeshRef::Type(0);
+			READ(&, type, sizeof(pt::MeshRef::Type));
+			meshrefs[i].SetType(type);
 			meshrefs.emplace_back(entId);
 			meshrefs[i].freeComponent(entId);
 

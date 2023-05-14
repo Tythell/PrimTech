@@ -10,7 +10,7 @@ namespace PrimtTech
 		sm::Vector3 normal;
 		sm::Vector3 tangent;
 		sm::Vector3 bitangent;
-		sm::Vector3 color = { 1.f,1.f,1.f };
+		//sm::Vector3 color = { 1.f,1.f,1.f };
 	};
 
 	struct BBVertex

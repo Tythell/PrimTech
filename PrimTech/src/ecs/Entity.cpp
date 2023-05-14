@@ -43,12 +43,11 @@ namespace pt
 	{
 		--nrOfEntitiesUsed;
 		FreeComponent<MeshRef>();
+		FreeComponent<MeshPrefabRef>();
 		FreeComponent<AABBComp>();
-		FreeComponent<BSphereComp>();
 		FreeComponent<Camera>();
 		FreeComponent<Light>();
 		FreeComponent<LuaScript>();
-		FreeComponent<OBBComp>();
 		FreeComponent<PhysicsBody>();
 
 		FreeComponent<TransformComp>(m_id);
@@ -247,6 +246,7 @@ if(otherEnt.m_hasComponents & en) \
 		//}
 		COMPDUPL(TransformComp, PrimtTech::ec_transform);
 		COMPDUPL(MeshRef, PrimtTech::ec_meshRef);
+		COMPDUPL(MeshPrefabRef, PrimtTech::ec_prefab);
 		COMPDUPL(Camera, PrimtTech::ec_cam);
 		COMPDUPL(Light, PrimtTech::ec_light);
 		COMPDUPL(LuaScript, PrimtTech::ec_lua);

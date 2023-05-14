@@ -6,7 +6,7 @@
 
 namespace PrimtTech
 {
-	Mesh::Mesh(std::string path, ID3D11Device*& device, bool makeLeftHanded)
+	Mesh::Mesh(std::string path, ID3D11Device*& device, ID3D11DeviceContext*& deviceContext, bool makeLeftHanded)
 	{
 		std::vector<Shape> mesh;
 		bool check = false;
@@ -63,6 +63,8 @@ namespace PrimtTech
 
 		HRESULT hr = m_vbuffer.CreateVertexBuffer(device, m_shape.verts.data(), bsize);
 		COM_ERROR(hr, "Failed to load vertex buffer");
+
+		InitInstanceBuffer(10, device, deviceContext);
 	}
 
 	Buffer<Vertex3D>& Mesh::GetVBuffer()
@@ -97,6 +99,7 @@ namespace PrimtTech
 
 	void Mesh::InitInstanceBuffer(uint numInstances, ID3D11Device*& d, ID3D11DeviceContext*& dc)
 	{
+		//numInstances = 2;
 		if (m_pmeshInstArr)
 			delete[] m_pmeshInstArr;
 		m_pmeshInstArr = new MeshInstance[numInstances];
@@ -108,16 +111,13 @@ namespace PrimtTech
 
 	void Mesh::Bind(ID3D11DeviceContext*& dc)
 	{
-		if (/*m_numActiveInstances > 1*/m_pmeshInstArr)
-			InstancedBind(dc);
-		else
-			dc->IASetVertexBuffers(0, 1, m_vbuffer.GetReference(), m_vbuffer.GetStrideP(), &offset[0]);
+		dc->IASetVertexBuffers(0, 1, m_vbuffer.GetReference(), m_vbuffer.GetStrideP(), &offset[0]);
 	}
 
 	void Mesh::InstancedBind(ID3D11DeviceContext*& dc)
 	{
-		uint strides[] = { m_vbuffer.GetStride(), m_instancebuffer.GetStride()};
-		ID3D11Buffer** bufferPtr = m_vbuffer.GetInArrayWith(m_instancebuffer.Get());
+		uint strides[] = { m_vbuffer.GetStride(), m_instancebuffer.GetStride() };
+		ID3D11Buffer* bufferPtr[] = {m_vbuffer.Get(), m_instancebuffer.Get() };
 		dc->IASetVertexBuffers(0, 2, bufferPtr, strides, offset);
 	}
 
@@ -139,10 +139,11 @@ namespace PrimtTech
 	{
 		m_instancebuffer.MapBuffer();
 	}
-	void Mesh::IncreaseUses(int n)
+	int Mesh::IncreaseUses(int n)
 	{
 		m_numActiveInstances += n;
 		if (m_numActiveInstances < 0) m_numActiveInstances = 0;
+		return m_numActiveInstances - 1;
 	}
 
 	int Mesh::GetNrOfUses() const
@@ -150,5 +151,9 @@ namespace PrimtTech
 		return m_numActiveInstances;
 	}
 
+	int Mesh::GetNrOfMaxInstances() const
+	{
+		return m_numInstances;
+	}
 }
 

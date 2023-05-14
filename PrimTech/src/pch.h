@@ -8,3 +8,4 @@
 
 #include "Math/Math.h"
 #include "Utility/Popup.h"
+#undef max

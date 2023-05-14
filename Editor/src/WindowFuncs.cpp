@@ -348,6 +348,65 @@ void Gui_AssetList(void* ptr, bool* show)
 	{
 		if (ImGui::BeginTabBar("tabs", ImGuiTabBarFlags_None))
 		{
+			if (ImGui::BeginTabItem("Prefab"))
+			{
+				if (ImGui::Button(" + ##addPrefab"))
+				{
+					p->console.AddLog("create prefab");
+				}
+				std::vector<PrimtTech::Prefab>& arr = PrimtTech::ResourceHandler::GetPrefabArray();
+				for (int i = 0; i < arr.size(); i++)
+				{
+					uint uses = arr[i].GetUses();
+					uint cap = arr[i].GetCap();
+					std::string capStr = " " + std::to_string(uses) + "/" + std::to_string(cap);
+					std::string prefabName = arr[i].GetName() + capStr +"##nodeName";
+					if (ImGui::TreeNode(prefabName.c_str()))
+					{
+						char buffer[32] = "";
+						strcpy_s(buffer, arr[i].GetName().c_str());
+						if (ImGui::InputText("Name##Prefab", buffer, 32, ImGuiInputTextFlags_EnterReturnsTrue))
+						{
+							arr[i].SetName(buffer);
+						}
+						strcpy_s(buffer, arr[i].GetMeshName().c_str());
+						if (ImGui::InputText("Mesh##Prefab", buffer, 32, ImGuiInputTextFlags_EnterReturnsTrue))
+						{
+							arr[i].SetMesh(buffer);
+						}
+						uint numMaterials = PrimtTech::ResourceHandler::GetMesh(arr[i].GetMeshIndex()).GetNofMeshes();
+						for (int j = 0; j < numMaterials; j++)
+						{
+							uint matIndex = arr[i].GetMaterialIndex(j);
+							std::string materialString = PrimtTech::ResourceHandler::GetMaterial(matIndex).GetFileName() + " - " + std::to_string(j);
+							if (ImGui::TreeNode(materialString.c_str()))
+							{
+								char buffer2[32] = "material name";
+								materialString = "##material name" + std::to_string(j);
+								//strcpy_s(buffer2, "",)
+								if (ImGui::InputText(materialString.c_str(), buffer2, 32, ImGuiInputTextFlags_EnterReturnsTrue))
+								{
+									arr[i].SetMaterial(j, buffer2);
+								}
+								//ImGui::Text("fdsf");
+								//if (ImGui::TreeNode("pree.c_str()"))
+								//{
+								//	ImGui::Text("sdsaf");
+								//	ImGui::TreePop();
+								//}
+
+								ImGui::TreePop();
+							}
+						}
+						
+
+						ImGui::TreePop();
+					}
+				}
+				
+
+				ImGui::EndTabItem();
+			}
 			if (ImGui::BeginTabItem("Meshes"))
 			{
 				std::vector<PrimtTech::Mesh>& arr = PrimtTech::ResourceHandler::GetMeshArrayReference();
@@ -608,30 +667,53 @@ void Gui_EntList(void* test, bool* show)
 		delete[] entNameBuffer;
 		if (ImGui::BeginPopup("cmpList"))
 		{
-			if (ImGui::Selectable("MeshRef"))
+			//if (ImGui::Selectable("MeshRef"))
+			//{
+			ImGui::BeginDisabled(pEnt->HasComponentType(PrimtTech::ec_meshRef | PrimtTech::ec_prefab));
+			if (ImGui::BeginMenu("Mesh"))
 			{
-				pEnt->AddComponent<pt::MeshRef>()->Init("cube.txt");
+				
+				if (ImGui::MenuItem("Reference"))
+				{
+					pEnt->AddComponent<pt::MeshRef>()->Init("cube.txt");
+				}
+				
+				if (ImGui::MenuItem("Prefab"))
+				{
+					pEnt->AddComponent<pt::MeshPrefabRef>();
+				}
+				
+				ImGui::EndMenu();
 			}
+			ImGui::EndDisabled();
+			ImGui::BeginDisabled(pEnt->HasComponentType(PrimtTech::ec_cam));
 			if (ImGui::Selectable("Camera"))
 			{
 				p->console.AddLog(AddCompString(p->selected, "cam").c_str());
 			}
+			ImGui::EndDisabled();
 			//if (ImGui::Selectable("AABB"))
 			//{
 			//	p->console.AddLog(AddCompString(p->selected, "aabb").c_str());
 			//}
+			ImGui::BeginDisabled(pEnt->HasComponentType(PrimtTech::ec_light));
 			if (ImGui::Selectable("Light"))
 			{
 				p->console.AddLog(AddCompString(p->selected, "light").c_str());
 			}
+			ImGui::EndDisabled();
+			ImGui::BeginDisabled(pEnt->HasComponentType(PrimtTech::ec_rigidBodies));
 			if (ImGui::Selectable("RigidBody"))
 			{
 				p->console.AddLog(AddCompString(p->selected, "rigidbody").c_str());
 			}
+			ImGui::EndDisabled();
+			ImGui::BeginDisabled(pEnt->HasComponentType(PrimtTech::ec_lua));
 			if (ImGui::Selectable("Script"))
 			{
 				p->console.AddLog(AddCompString(p->selected, "script").c_str());
 			}
+			ImGui::EndDisabled();
 			ImGui::EndPopup();
 		}
 		sm::Vector3 transform = pEnt->Transform().GetPosition();
@@ -659,20 +741,45 @@ void Gui_EntList(void* test, bool* show)
 				char charbuffer[16]{ "" };
 				strcpy_s(charbuffer, mr->GetNameOfMesh().c_str());
 
-				if (ImGui::InputText("mesh", charbuffer, 16, ImGuiInputTextFlags_EnterReturnsTrue))
+				const char* items[] = { "mesh", "prefab"};
+				int item_current = (int)mr->GetType();
+
+				if (ImGui::Combo("##meshprefabcombo", &item_current, items, IM_ARRAYSIZE(items)))
 				{
-					mr->Init(std::string(charbuffer));
-				}
-				uint matSize = (uint)mr->GetMeshContainerP()->GetMtl().size();
-				for (int i = 0; i < matSize; i++)
-				{
-					std::string s = "material " + std::to_string(i);
-					strcpy_s(charbuffer, std::to_string(mr->GetMaterialIndex(i)).c_str());
-					if (ImGui::InputText(s.c_str(), charbuffer, 16, ImGuiInputTextFlags_EnterReturnsTrue))
+					//mr->SetType(pt::MeshRef::Type(item_current));
+					if (item_current == 1)
 					{
-						mr->SetMaterial(std::string(charbuffer), i);
+						pEnt->FreeComponent<pt::MeshRef>();
+						pEnt->AddComponent<pt::MeshPrefabRef>();
+					}
+					
+				}
+				if (item_current == 0)
+				{
+					if (ImGui::InputText("mesh", charbuffer, 16, ImGuiInputTextFlags_EnterReturnsTrue))
+					{
+						mr->Init(std::string(charbuffer));
+					}
+					uint matSize = (uint)mr->GetMeshContainerP()->GetMtl().size();
+					for (int i = 0; i < matSize; i++)
+					{
+						std::string s = "material " + std::to_string(i);
+						strcpy_s(charbuffer, std::to_string(mr->GetMaterialIndex(i)).c_str());
+						if (ImGui::InputText(s.c_str(), charbuffer, 16, ImGuiInputTextFlags_EnterReturnsTrue))
+						{
+							mr->SetMaterial(std::string(charbuffer), i);
+						}
 					}
 				}
+				else
+				{
+					if (ImGui::InputText("prefab", charbuffer, 16, ImGuiInputTextFlags_EnterReturnsTrue))
+					{
+						mr->SetIndex(atoi(charbuffer));
+					}
+				}
+				
+
 				if (ImGui::Button("Delete##meshref"))
 				{
 					pEnt->FreeComponent<pt::MeshRef>();
@@ -681,6 +788,47 @@ void Gui_EntList(void* test, bool* show)
 				ImGui::TreePop();
 			}
 
+		}
+		if (pEnt->HasComponentType(PrimtTech::ec_prefab))
+		{
+			if (ImGui::TreeNode("Mesh"))
+			{
+				pt::MeshPrefabRef* mr = pEnt->GetComponent<pt::MeshPrefabRef>();
+				const char* items[] = { "mesh", "prefab" };
+				int item_current = 1;
+
+
+				if (ImGui::Combo("##meshprefabcombo", &item_current, items, IM_ARRAYSIZE(items)))
+				{
+					//mr->SetType(pt::MeshRef::Type(item_current));
+					if (item_current != 1)
+					{
+						pEnt->FreeComponent<pt::MeshPrefabRef>();
+						pEnt->AddComponent<pt::MeshRef>();
+					}
+				}
+
+				
+				if (mr)
+				{
+					char buffer[32] = "";
+
+					strcpy_s(buffer, std::to_string(mr->GetIndex()).c_str());
+
+					if (ImGui::InputText("index", buffer, 32, ImGuiInputTextFlags_EnterReturnsTrue))
+					{
+						mr->SetPrefabIndex(atoi(buffer));
+						GETCOMPVEC(pt::MeshPrefabRef, prefabs)
+					}
+					std::string instidxStr = "Instance Index: " + std::to_string(mr->GetInstIndex());
+					ImGui::Text(instidxStr.c_str());
+					if (ImGui::Button("Refresh"))
+					{
+						mr->RefreshInstance();
+					}
+					ImGui::TreePop();
+				}
+			}
 		}
 		if (pEnt->HasComponentType(PrimtTech::ec_cam))
 		{

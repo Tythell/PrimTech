@@ -4,6 +4,7 @@
 
 namespace PrimtTech
 {
+	std::vector<Prefab> ResourceHandler::m_prefabs;
 	std::vector<Mesh> ResourceHandler::m_meshes;
 	std::vector<TextureMap*> ResourceHandler::m_textures;
 	std::vector<Material> ResourceHandler::m_materials;
@@ -46,7 +47,7 @@ namespace PrimtTech
 				return &m_meshes[i];
 		}
 
-		return &m_meshes.emplace_back(path, pDevice, makeLeftHanded);
+		return &m_meshes.emplace_back(path, pDevice, s_pDc, makeLeftHanded);
 	}
 
 	Mesh& ResourceHandler::GetMesh(unsigned int index)
@@ -106,7 +107,7 @@ namespace PrimtTech
 
 	int ResourceHandler::CheckMtrlNameExists(std::string mtrlName)
 	{
-		for (int i = 0; i < m_meshes.size(); i++)
+		for (int i = 0; i < m_materials.size(); i++)
 		{
 			if (m_materials[i].GetFileName() == mtrlName)
 				return i;
@@ -155,16 +156,35 @@ namespace PrimtTech
 			delete m_textures[i];
 		for (int i = 0; i < m_meshes.size(); i++)
 			m_meshes[i].Release();
+		for (int i = 0; i < m_prefabs.size(); i++)
+			m_prefabs[i].Release();
 	}
 
 	ID3D11Device* ResourceHandler::GetDevice()
 	{
 		return pDevice;
 	}
+
+	Prefab& ResourceHandler::NewPrefab(const std::string& name, uint maxCap)
+	{
+		return m_prefabs.emplace_back(pDevice, s_pDc, maxCap, name);
+	}
+
+	Prefab& ResourceHandler::GetPrefab(uint index)
+	{
+		return m_prefabs[index];
+	}
+
+	std::vector<Prefab>& ResourceHandler::GetPrefabArray()
+	{
+		return m_prefabs;
+	}
+
 	void ResourceHandler::ResizeMaterials(uint u)
 	{
 		m_materials.resize(u);
 	}
+
 	void ResourceHandler::InitInstancesForMesh(uint i, uint slots)
 	{
 		m_meshes[i].InitInstanceBuffer(slots, pDevice, s_pDc);
@@ -190,6 +210,132 @@ namespace PrimtTech
 
 	//	//m_allVerts.reserve(m_allVerts.size() + vec.size());
 	//	//m_allVerts.insert(m_allVerts.end(), vec.begin(), vec.end());
+
+	Prefab::Prefab(ID3D11Device*& d, ID3D11DeviceContext*& dc, uint maxCap, std::string name):
+		m_prefabName(name), m_maxNoInstances(maxCap)
+	{
+		InitInstanceBuffer(maxCap, d, dc);
+		m_materialIndex.resize(1,0);
+	}
+
+	void Prefab::SetMaterial(uint slot, std::string material)
+	{
+		SetMaterial(slot, std::max(ResourceHandler::CheckMtrlNameExists(material), 0));
+	}
+
+	void Prefab::SetMaterial(uint slot, uint materialIndex)
+	{
+		m_materialIndex[slot] = std::max(0u, materialIndex);
+	}
+
+	void Prefab::SetMesh(uint meshIndex)
+	{
+		m_meshIndex = meshIndex;
+		m_materialIndex.resize(ResourceHandler::GetMesh(m_meshIndex).GetNofMeshes(),0);
+	}
+
+	void Prefab::SetMesh(std::string meshName)
+	{
+		SetMesh(std::max(0, ResourceHandler::CheckMeshNameExists(meshName)));
+	}
+
+	void Prefab::InitInstanceBuffer(uint numInstances, ID3D11Device*& d, ID3D11DeviceContext*& dc)
+	{
+		if (m_pmeshInstArr)
+			delete[] m_pmeshInstArr;
+		m_pmeshInstArr = new MeshInstance[numInstances];
+
+		m_maxNoInstances = numInstances;
+
+		m_instancebuffer.CreateVertexBuffer(d, m_pmeshInstArr, numInstances, dc, eBufferFlags_IgnoreCreateTwice);
+	}
+
+	void Prefab::BindInstanceBuffer(ID3D11DeviceContext*& dc)
+	{
+		MeshInstance debugArr[4];
+		memcpy(debugArr, m_pmeshInstArr, sizeof(MeshInstance) * 4);
+
+		uint offset[] = { 0 };
+		dc->IASetVertexBuffers(1, 1, m_instancebuffer.GetReference(), m_instancebuffer.GetStrideP(), offset);
+	}
+
+	void Prefab::ChangeInstance(uint i, const MeshInstance& inst)
+	{
+		m_instancebuffer.Data(i) = inst;
+	}
+
+	void Prefab::MapInstBuffer()
+	{
+		m_instancebuffer.MapBuffer();
+	}
+
+	void Prefab::SetName(std::string meshName)
+	{
+		m_prefabName = meshName;
+	}
+
+	std::string Prefab::GetName() const
+	{
+		return m_prefabName;
+	}
+
+	std::string Prefab::GetMeshName() const
+	{
+		return ResourceHandler::GetMesh(m_meshIndex).GetName();
+	}
+
+	uint Prefab::GetMeshIndex() const
+	{
+		return m_meshIndex;
+	}
+
+	uint Prefab::GetMaterialIndex(uint i) const
+	{
+		return m_materialIndex[i];
+	}
+
+	Mesh* Prefab::GetMeshPtr() const
+	{
+		return ResourceHandler::GetMeshAdress(m_meshIndex);
+	}
+
+	void Prefab::AddRefIdx(uint idx)
+	{
+		m_prefabRefsIdx.emplace_back(idx);
+	}
+
+	uint Prefab::GetRefIdx(uint idx) const
+	{
+		return m_prefabRefsIdx[idx];
+	}
+
+	uint Prefab::GetNOfRefIdx() const
+	{
+		return (uint)m_prefabRefsIdx.size();
+	}
+
+	uint Prefab::IncreaseUses(int num)
+	{
+		m_noOfUses += num;
+		return (uint)std::max(0, m_noOfUses);
+	}
+
+	uint Prefab::GetUses() const
+	{
+		return m_noOfUses;
+	}
+
+	uint Prefab::GetCap() const
+	{
+		return m_maxNoInstances;
+	}
+
+	void Prefab::Release()
+	{
+		delete[] m_pmeshInstArr;
+
+		m_instancebuffer.Release();
+	}
 
 	//	//return returnIndex;
 	//	return 0;

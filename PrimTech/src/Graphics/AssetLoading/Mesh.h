@@ -13,15 +13,16 @@ namespace PrimtTech
 
 	struct MeshInstance
 	{
-		sm::Vector3 position;
-		//sm::Vector3 rotation;
-		//sm::Vector3 scale;
+		sm::Vector3 row = sm::Vector3(1.f,0.f,0.f);
+		sm::Vector3 row1 = sm::Vector3(0.f,1.f,0.f);
+		sm::Vector3 row2 = sm::Vector3(0.f,0.f,1.f);
+		sm::Vector3 row3 = sm::Vector3(0.f,0.f,0.f);
 	};
 
 	class Mesh
 	{
 	public:
-		Mesh(std::string path, ID3D11Device*& device, bool makeLeftHanded = true);
+		Mesh(std::string path, ID3D11Device*& device, ID3D11DeviceContext*& deviceContext, bool makeLeftHanded = true);
 		Buffer<Vertex3D>& GetVBuffer();
 		std::string GetName() const;
 		const uint GetNofMeshes() const;
@@ -35,8 +36,9 @@ namespace PrimtTech
 		void ChangeInstance(uint i, MeshInstance instance);
 		void MapInstance();
 
-		void IncreaseUses(int n);
+		int IncreaseUses(int n);
 		int GetNrOfUses() const;
+		int GetNrOfMaxInstances() const;
 
 		void Release();
 	private:
@@ -44,7 +46,7 @@ namespace PrimtTech
 		MeshInstance* m_pmeshInstArr = nullptr;
 		Buffer<MeshInstance> m_instancebuffer;
 
-		uint m_numInstances = 0;
+		uint m_numInstances = 1;
 		int m_numActiveInstances = 0;
 		uint offset[2] = { 0,0 };
 

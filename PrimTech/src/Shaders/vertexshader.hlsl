@@ -12,9 +12,10 @@ struct VSInput
     float3 localNormal : NORMAL;
     float3 tangent : TANGENT;
     float3 bitangent : BITANGENT;
-    float3 instPos : INSTPOS;
-    //float3 instRot : ROTATION;
-    //float3 instScale : SCALE;
+    float3 instWorld : INSTWORLD;
+    float3 instWorld1 : INSTWORLD1;
+    float3 instWorld2 : INSTWORLD2;
+    float3 instWorld3 : INSTWORLD3;
 };
 
 struct VSOutput
@@ -32,14 +33,25 @@ struct VSOutput
 VSOutput main(VSInput input)
 {   
     VSOutput output;
-    input.localPosition.xyz += input.instPos;
-    output.position = mul(float4(input.localPosition.xyz, 1.f), mul(world, viewProj));
+    // Copy matrix from instance buffer
+    float4x4 instWorld;
+    instWorld._11_12_13_14 = float4(input.instWorld,0.f);
+    instWorld._21_22_23_24 = float4(input.instWorld1,0.f);
+    instWorld._31_32_33_34 = float4(input.instWorld2,0.f);
+    instWorld._41_42_43_44 = float4(input.instWorld3, 1.f);
+    
+    // Not all drawcalls will be instanced
+    // When drawing instanced, worldMatrix will be identity, and when drawing noninstanced geometry inst will be identity,
+    // this way, switching vertex shader won't be neccesary
+    float4x4 finalWorld = mul(instWorld, world);
+    
+    output.position = mul(float4(input.localPosition.xyz, 1.f), mul(finalWorld, viewProj));
     output.texCoord = input.texCoord;
-    output.normal = normalize(mul(float4(input.localNormal, 0.f), world));
-    output.worldpos = mul(float4(input.localPosition.xyz, 1.f), world).xyz;
-    output.tangent = mul(float4(input.tangent, 0.f), world).xyz;
-    output.bitangent = mul(float4(input.bitangent, 0.f), world).xyz;
-    output.clipSpace = mul(float4(input.localPosition, 1.f), mul(world, lightviewProj));
+    output.normal = normalize(mul(float4(input.localNormal, 0.f), finalWorld));
+    output.worldpos = mul(float4(input.localPosition.xyz, 1.f), finalWorld).xyz;
+    output.tangent = mul(float4(input.tangent, 0.f), finalWorld).xyz;
+    output.bitangent = mul(float4(input.bitangent, 0.f), finalWorld).xyz;
+    output.clipSpace = mul(float4(input.localPosition, 1.f), mul(finalWorld, lightviewProj));
     //output.vcolor = input.vcolor;
     return output;
 }

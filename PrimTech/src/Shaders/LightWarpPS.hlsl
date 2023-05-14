@@ -8,6 +8,8 @@ Texture2D opacityMap : NORMALMAP : register(t4);
 
 Texture2D shadowMap : SHADOWMAP : register(t10);
 
+Texture2DArray texArr : TEXARR : register(t11);
+
 
 struct Light
 {
@@ -104,6 +106,9 @@ float calcShadow(in float4 clipspace, in float3 normal)
 
 float4 main(PSInput input) : SV_Target
 {
+    
+    
+    
     float2 distortion = 0.f;
     float opacity = 1.f;
     

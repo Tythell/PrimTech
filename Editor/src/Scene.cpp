@@ -18,6 +18,13 @@ Editor::Editor(d::XMINT2 windowRes, HINSTANCE hInstance)
 	//PrimtTech::ResourceHandler::AddMesh("Assets/models/Slime.fbx");
 	PrimtTech::ResourceHandler::AddMesh("Assets/models/scaledplane.obj");
 	PrimtTech::ResourceHandler::AddMaterial("DefaultMaterial");
+	PrimtTech::Material* ma = PrimtTech::ResourceHandler::AddMaterial("bl");
+	ma->SetDiffuseClr(0.f, 0.f, .5f);
+
+	PrimtTech::ResourceHandler::NewPrefab("DefaultPrefab", 4);
+	PrimtTech::Prefab& pr = PrimtTech::ResourceHandler::NewPrefab("b", 4);
+
+	pr.SetMaterial(0, 1);
 
 	m_renderer->SetImGuiHandler(m_pGui);
 
@@ -127,6 +134,10 @@ void Editor::execCommand(std::string cmd)
 			{
 				PrimtTech::ResourceHandler::AddMesh(path);
 			}
+		}
+		else if (argBuffer == "prefab")
+		{
+			PrimtTech::ResourceHandler::NewPrefab("new prefab");
 		}
 		else if (argBuffer == "lwtex") // lightwarp
 		{
