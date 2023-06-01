@@ -157,10 +157,10 @@ HWND& Window::getHWND()
 	return m_hwnd;
 }
 
-bool Window::CreateDX11()
+bool Window::CreateDX11(int x, int y)
 {
 	if (m_apiLoaded) return false;
-	m_pDX11 = new DX11Addon(*this);
+	m_pDX11 = new DX11Addon(*this, x, y);
 	m_apiLoaded = true;
 	return true;
 }

@@ -1,9 +1,9 @@
 #include "DX11Wrapper.h"
 #include"../WindowWrap.h"
 
-DX11Addon::DX11Addon(Window& window) :
+DX11Addon::DX11Addon(Window& window, int x, int y) :
 	m_width(window.getWinWidth()), m_height(window.getWinHeight()), m_pHWND(&window.getHWND()),
-	m_grid(200, 90)
+	m_grid(x, y)
 {
 	m_pWin = &window;
 
@@ -174,9 +174,9 @@ bool DX11Addon::InitShaders()
 		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 	};
 
-	m_vShader.Init(m_device, "../x64/Debug/BaseVS.cso");
+	m_vShader.Init(m_device, "BaseVS.cso");
 	m_vShader.InitInputLayout(m_device, layout, ARRAYSIZE(layout));
-	m_pShader.Init(m_device, "../x64/Debug/BasePS.cso");
+	m_pShader.Init(m_device, "BasePS.cso");
 
 	m_dc->VSSetShader(m_vShader.GetShader(), NULL, 0);
 	m_dc->PSSetShader(m_pShader.GetShader(), NULL, 0);
@@ -219,11 +219,11 @@ void DX11Addon::ImGuiRender()
 	//ImGui::SetCursorPos
 
 	ImGui::SliderFloat("Ortho view", &im.f[0], 50.f, 200.f);
-	ImGui::SliderInt("Speed", &im.speed, 0, 100);
+	//ImGui::SliderInt("Speed", &im.speed, 0, 100);
 
 	ImGui::InputText("Text", im.buffer, 16);
 	ImGui::Checkbox("Pause", &im.pause);
-	ImGui::Checkbox("Test window", &im_appear);
+	//ImGui::Checkbox("Test window", &im_appear);
 
 	if (ImGui::Button("Export image"))
 		ExportImage(im.buffer);

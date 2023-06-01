@@ -27,7 +27,7 @@ struct ImGuiVars
 class DX11Addon
 {
 public:
-	DX11Addon(Window& window);
+	DX11Addon(Window& window, int x, int y);
 	~DX11Addon();
 
 

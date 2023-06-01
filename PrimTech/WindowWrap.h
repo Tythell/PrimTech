@@ -15,7 +15,7 @@ public:
 	std::wstring getWinName() const;
 	HWND& getHWND();
 
-	bool CreateDX11();
+	bool CreateDX11(int x, int y);
 	
 	uint16_t getWinWidth() const;
 	uint16_t getWinHeight() const;
