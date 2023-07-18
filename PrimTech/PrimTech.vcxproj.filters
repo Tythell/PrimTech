@@ -215,6 +215,9 @@
     <None Include="src\thirdParty\mono\cil\opcode.def">
       <Filter>Header Files\vendor\mono</Filter>
     </None>
+    <None Include="src\Shaders\Material.hlsli">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Windows\WindowWrap.h">

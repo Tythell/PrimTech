@@ -1,5 +1,7 @@
 //#pragma pack_matrix(row_major)
 
+//#include "Material.hlsli"
+
 Texture2D ZAToon : ZATOON : register(t0);
 Texture2D diffuseMap : DIFFUSEMAP : register(t1);
 Texture2D distortionMap : DISTORTIONMAP : register(t2);

@@ -510,6 +510,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
+    <None Include="src\Shaders\Material.hlsli" />
     <None Include="src\Graphics\3rdParty\assimp\.editorconfig" />
     <None Include="src\Graphics\3rdParty\assimp\color4.inl" />
     <None Include="src\Graphics\3rdParty\assimp\config.h.in" />

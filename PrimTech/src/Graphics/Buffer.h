@@ -234,11 +234,6 @@ namespace PrimtTech
 		{
 			return mp_dc; // Only works if you initilized buffer with device context
 		}
-		ID3D11Buffer** GetInArrayWith(ID3D11Buffer* instance)
-		{
-			ID3D11Buffer* buffers[] = { m_buffer, instance };
-			return buffers;
-		}
 	private:
 		T* m_data = nullptr;
 		ID3D11Buffer* m_buffer = nullptr;
