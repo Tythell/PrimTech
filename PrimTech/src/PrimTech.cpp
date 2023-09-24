@@ -41,7 +41,7 @@ namespace pt
 		devCam->SetPerspective(80.f, (float)width / (float)height, 0.1f, 100.f);
 		ent0.SetPosition(0.f, 1.f, -2.f);*/
 
-		mp_dxrenderer = new DX11Renderer(m_window);
+		mp_dxrenderer = new Renderer(m_window);
 		
 		ID3D11Device* devi = mp_dxrenderer->GetDevice();
 		pt::PhysicsBody::SetPtrs(&m_physHandler);

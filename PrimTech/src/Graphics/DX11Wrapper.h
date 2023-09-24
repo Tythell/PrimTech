@@ -24,11 +24,11 @@ namespace PrimtTech
 {
 	class Window;
 
-	class DX11Renderer
+	class Renderer
 	{
 	public:
-		DX11Renderer(Window& window);
-		~DX11Renderer();
+		Renderer(Window& window);
+		~Renderer();
 		void SetImGuiHandler(ImGuiHandler& gui);
 
 		void Render(const float& deltatime);
@@ -59,6 +59,9 @@ namespace PrimtTech
 	public:
 		void SetDebugRenderer(PhysicsHandler* p) { mp_debufrenderer = p; }
 	private:
+
+		//ID3D11Texture2D* mp_clickBuffer = nullptr;
+		ID3D11ShaderResourceView* mp_clickbufferSrv = nullptr;
 
 #endif // PHYSDEBUG
 		Window* m_pWin = nullptr;

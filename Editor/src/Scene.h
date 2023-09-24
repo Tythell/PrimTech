@@ -64,7 +64,7 @@ private:
 
 	void execCommand(std::string cmd);
 
-	PrimtTech::DX11Renderer* m_renderer = nullptr;
+	PrimtTech::Renderer* m_renderer = nullptr;
 
 	uint m_devEntIndex = 1;
 

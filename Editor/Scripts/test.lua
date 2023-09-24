@@ -11,7 +11,7 @@
 function OnStart()
 	
 	--Ent.Move(0.0004, 1, 0)
-	local meshh = Ent.AddComponent(Type.MeshRef, "sphere.obj")
+	--local meshh = Ent.AddComponent(Type.MeshRef, "sphere.obj")
 	
 	--meshh:ChangeMesh("sphere.obj")
 end

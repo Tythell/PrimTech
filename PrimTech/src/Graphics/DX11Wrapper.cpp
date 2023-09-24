@@ -8,7 +8,7 @@ using namespace pt;
 
 namespace PrimtTech
 {
-	DX11Renderer::DX11Renderer(Window& window) :
+	Renderer::Renderer(Window& window) :
 		m_width(window.getWinWidth()), m_height(window.getWinHeight()), m_pHWND(&window.getHWND()),
 		m_shadowmap(1024 * shadowQuality, 1024 * shadowQuality), m_viewport(0.f, 0.f, (float)m_width, (float)m_height)
 	{
@@ -46,8 +46,9 @@ namespace PrimtTech
 		m_multiLightBuffer.BindSRV(11);
 	}
 
-	DX11Renderer::~DX11Renderer()
+	Renderer::~Renderer()
 	{
+		mp_clickbufferSrv->Release();
 		m_guiHandler->ImGuiShutDown();
 
 		ResourceHandler::Unload();
@@ -73,7 +74,7 @@ namespace PrimtTech
 		m_wireFrameState->Release();
 	}
 
-	void DX11Renderer::SetImGuiHandler(ImGuiHandler& gui)
+	void Renderer::SetImGuiHandler(ImGuiHandler& gui)
 	{
 		m_guiHandler = &gui;
 		im = m_guiHandler->GetVarPtrs();
@@ -82,7 +83,7 @@ namespace PrimtTech
 		m_guiHandler->ImGuiInit(m_pWin->getHWND(), device, dc);
 	}
 
-	bool DX11Renderer::initSwapChain()
+	bool Renderer::initSwapChain()
 	{
 		UINT flags = 0;
 #ifdef _DEBUG
@@ -129,7 +130,7 @@ namespace PrimtTech
 		return true;
 	}
 
-	bool DX11Renderer::initRTV()
+	bool Renderer::initRTV()
 	{
 		ID3D11Texture2D* backBuffer = nullptr;
 
@@ -143,7 +144,7 @@ namespace PrimtTech
 		return true;
 	}
 
-	bool DX11Renderer::SetupDSAndVP()
+	bool Renderer::SetupDSAndVP()
 	{
 		CD3D11_TEXTURE2D_DESC depthStencilTextureDesc(DXGI_FORMAT_D24_UNORM_S8_UINT, m_width, m_height);
 		depthStencilTextureDesc.MipLevels = 1;
@@ -168,7 +169,7 @@ namespace PrimtTech
 		return SUCCEEDED(hr);
 	}
 
-	bool DX11Renderer::InitRastNSampState()
+	bool Renderer::InitRastNSampState()
 	{
 		D3D11_RASTERIZER_DESC rastDesc;
 		ZeroMemory(&rastDesc, sizeof(D3D11_RASTERIZER_DESC));
@@ -229,7 +230,7 @@ namespace PrimtTech
 		return true;
 	}
 
-	void DX11Renderer::InitBlendState()
+	void Renderer::InitBlendState()
 	{
 		D3D11_BLEND_DESC blendDesc;
 		ZeroMemory(&blendDesc, sizeof(D3D11_BLEND_DESC));
@@ -249,7 +250,7 @@ namespace PrimtTech
 		//dc->OMSetBlendState(m_blendState, NULL, 0xFFFFFFFF);
 	}
 
-	bool DX11Renderer::InitShaders()
+	bool Renderer::InitShaders()
 	{
 		D3D11_INPUT_ELEMENT_DESC layout3D[] =
 		{
@@ -284,7 +285,7 @@ namespace PrimtTech
 		return true;
 	}
 
-	bool DX11Renderer::InitScene()
+	bool Renderer::InitScene()
 	{
 		dc->RSSetState(m_rasterizerState);
 		dc->OMSetDepthStencilState(m_dsState, 0);
@@ -324,7 +325,7 @@ namespace PrimtTech
 		return true;
 	}
 
-	void DX11Renderer::InitConstantBuffers()
+	void Renderer::InitConstantBuffers()
 	{
 		m_transformBuffer.CreateConstantBuffer(device, dc);
 		dc->VSSetConstantBuffers(0, 1, m_transformBuffer.GetReference());
@@ -334,7 +335,7 @@ namespace PrimtTech
 		dc->PSSetConstantBuffers(1, 1, m_materialBuffer.GetReference());
 	}
 
-	void DX11Renderer::ImGuiRender()
+	void Renderer::ImGuiRender()
 	{
 		if (m_guiHandler)
 		{
@@ -355,7 +356,7 @@ namespace PrimtTech
 		}
 	}
 
-	void DX11Renderer::ImGuTextureDisplay()
+	void Renderer::ImGuTextureDisplay()
 	{
 		float winvar = 400;
 		float offset = 35;
@@ -370,7 +371,7 @@ namespace PrimtTech
 	}
 	using uchar = unsigned char;
 
-	void DX11Renderer::SetLightWarp(const std::string& path)
+	void Renderer::SetLightWarp(const std::string& path)
 	{
 		int textureIndex = ResourceHandler::CheckTextureNameExists(StringHelper::GetName(path));
 		if (textureIndex != -1)
@@ -384,7 +385,7 @@ namespace PrimtTech
 		dc->PSSetShaderResources(0, 1, ResourceHandler::GetTexture(1).GetSRVAdress());
 	}
 
-	void DX11Renderer::SetActiveCam(uint idx)
+	void Renderer::SetActiveCam(uint idx)
 	{
 		m_activeCamIndex = idx;
 	}
@@ -550,7 +551,7 @@ namespace PrimtTech
 		}
 	}
 
-	void DX11Renderer::Render(const float& deltatime)
+	void Renderer::Render(const float& deltatime)
 	{
 		float bgColor[] = { .1f,.1f,.1f,1.f };
 
@@ -695,17 +696,17 @@ namespace PrimtTech
 		m_swapChain->Present((UINT)im->useVsync, NULL);
 	}
 
-	ID3D11Device* DX11Renderer::GetDevice() const
+	ID3D11Device* Renderer::GetDevice() const
 	{
 		return device;
 	}
 
-	ID3D11DeviceContext* DX11Renderer::GetDeviceContext() const
+	ID3D11DeviceContext* Renderer::GetDeviceContext() const
 	{
 		return dc;
 	}
 
-	void DX11Renderer::ShutDown()
+	void Renderer::ShutDown()
 	{
 		DestroyWindow(*m_pHWND);
 	}

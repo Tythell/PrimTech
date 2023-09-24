@@ -23,7 +23,7 @@ namespace pt
 		bool IsOpen() const;
 		void SetDeltaTime(double& dt) { m_deltaTime = dt; };
 		double GetDeltaTime() const { return m_deltaTime; };
-		PrimtTech::DX11Renderer* GetRenderer() { return mp_dxrenderer; }
+		PrimtTech::Renderer* GetRenderer() { return mp_dxrenderer; }
 		void Close() { m_window.ShutDown(); };
 		void ToggleMouse();
 		void HideCursor();
@@ -39,7 +39,7 @@ namespace pt
 		
 		std::wstring m_windowName;
 		PrimtTech::Window m_window;
-		PrimtTech::DX11Renderer* mp_dxrenderer = nullptr;
+		PrimtTech::Renderer* mp_dxrenderer = nullptr;
 		PrimtTech::LuaEngine m_luaEngine;
 
 		float m_playerSpeed;
