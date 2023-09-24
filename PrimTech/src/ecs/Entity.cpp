@@ -133,7 +133,14 @@ namespace pt
 
 	void Entity::SetRotation(const sm::Quaternion& v)
 	{
-		Transform().SetRotation(v);
+		if (m_physIndex != -1)
+		{
+			PhysicsBody& physBod = PrimtTech::ComponentHandler::GetComponentByIndex<PhysicsBody>((uint)m_physIndex);
+
+			//physBod.SetPhysicsEulerRotation(v.ToEuler());
+		}
+		else
+			Transform().SetRotation(v);
 	}
 
 	void Entity::SetScale(float x, float y, float z)
@@ -144,6 +151,11 @@ namespace pt
 	void Entity::SetScale(const sm::Vector3& v)
 	{
 		Transform().SetScale(v);
+	}
+
+	void Entity::OverrideTransformMatrix(const sm::Matrix& matrix)
+	{
+		throw;
 	}
 
 	void Entity::Move(float x, float y, float z)

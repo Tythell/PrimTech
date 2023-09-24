@@ -61,7 +61,7 @@ namespace PrimtTech
 	private:
 
 		//ID3D11Texture2D* mp_clickBuffer = nullptr;
-		ID3D11ShaderResourceView* mp_clickbufferSrv = nullptr;
+		//ID3D11ShaderResourceView* mp_clickbufferSrv = nullptr;
 
 #endif // PHYSDEBUG
 		Window* m_pWin = nullptr;

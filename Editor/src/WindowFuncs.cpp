@@ -1129,18 +1129,20 @@ void Gui_EntList(void* test, bool* show)
 			world.Decompose(scale, rot, pos);
 			//ImGuizmo::DecomposeMatrixToComponents(&world._11, &pos.x, &rot.x, &scale.x);
 
-
-			//if (pEnt->HasComponentType(PrimtTech::ec_rigidBodies))
-			//{
-			//	pt::PhysicsBody* p = pEnt->GetComponent<pt::PhysicsBody>();
-			//	p->SetPhysicsPosition(pos);
-			//}
-			//else
-			//{
 			rTr.SetScale(scale);
-			pEnt->SetRotation(rot);
-			pEnt->SetPosition(pos);
-			//}
+			rTr.SetRotation(rot);
+			rTr.SetPosition(pos);
+
+			if (pEnt->HasComponentType(PrimtTech::ec_rigidBodies))
+			{
+				pt::PhysicsBody* p = pEnt->GetComponent<pt::PhysicsBody>();
+
+				p->SetPhysicsTransformation(rTr);
+
+				//p->SetPhysicsPosition(pos);
+				//p->SetPhysicsQuatRotation(rot);
+				//p->UpdateTransform
+			}
 		}
 
 		ImGui::End();

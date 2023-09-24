@@ -17,6 +17,7 @@ namespace pt
 
 		//void AddColider(rp::, const pt::TransformComp& transform);
 		void UpdateTransform(pt::TransformComp& transform);
+		void SetPhysicsTransformation(const pt::TransformComp& transform);
 
 		void CreateRigidBody(const pt::TransformComp& ptTransform);
 
@@ -30,6 +31,7 @@ namespace pt
 
 		void SetPhysicsPosition(const sm::Vector3& v);
 		void SetPhysicsEulerRotation(const sm::Vector3& v);
+		void SetPhysicsQuatRotation(const sm::Quaternion& q);
 		void SetBoxExtents(const sm::Vector3& extents, uint index = 0);
 		void PhysMove(const sm::Vector3& v);
 

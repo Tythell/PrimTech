@@ -30,6 +30,22 @@ namespace pt
 			transform.SetRotation(smQuat);
 		}
 	}
+
+	void PhysicsBody::SetPhysicsTransformation(const pt::TransformComp& transform)
+	{
+		if (mp_rigidBody)
+		{
+			sm::Vector3 smPos = transform.GetPosition();
+			rp::Vector3 rpPos = { smPos.x,smPos.y,smPos.z };
+
+			sm::Quaternion fuckingAngle = transform.GetRotationQuaternion();
+			rp::Quaternion ruckingAngle = { fuckingAngle.x, fuckingAngle.y, fuckingAngle.z, fuckingAngle.w };
+			rp::Transform rptra(rpPos, ruckingAngle);
+
+			mp_rigidBody->setTransform(rptra);
+		}
+	}
+
 	void PhysicsBody::CreateRigidBody(const pt::TransformComp& ptTransform)
 	{
 		rp::Transform rpTransform;
@@ -125,6 +141,30 @@ namespace pt
 		mp_rigidBody->resetForce();
 		mp_rigidBody->setType(type);
 	}
+
+	void PhysicsBody::SetPhysicsQuatRotation(const sm::Quaternion& q)
+	{
+		pt::TransformComp ptTransform = Entity::GetEntity(EntId()).Transform();
+		rp::Transform rpTransform;
+		//rpTransform.setToIdentity();
+		rp::BodyType type = mp_rigidBody->getType();
+		mp_rigidBody->setType(rp::BodyType::STATIC);
+
+		rp::Quaternion rpq(q.x, q.y, q.z, q.w);
+
+		rpTransform.setOrientation(rpq);
+		rpTransform.setPosition({
+			ptTransform.GetPosition().x,
+			ptTransform.GetPosition().y,
+			ptTransform.GetPosition().z });
+
+		mp_rigidBody->setTransform(rpTransform);
+		mp_rigidBody->resetTorque();
+		mp_rigidBody->resetForce();
+		mp_rigidBody->setType(type);
+	}
+
+	
 
 	void PhysicsBody::Freeze(bool b)
 	{

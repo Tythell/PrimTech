@@ -26,7 +26,7 @@ namespace PrimtTech
 
 	void PhysicsHandler::Update(float dt)
 	{
-		if (m_running && m_pworld->getNbRigidBodies() != 0)
+		if (m_running && m_pworld->getNbRigidBodies() != 0 && dt != 0.f)
 			m_pworld->update(dt);
 
 #ifdef PHYSDEBUG

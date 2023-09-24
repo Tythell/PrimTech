@@ -48,7 +48,7 @@ namespace PrimtTech
 
 	Renderer::~Renderer()
 	{
-		mp_clickbufferSrv->Release();
+		//mp_clickbufferSrv->Release();
 		m_guiHandler->ImGuiShutDown();
 
 		ResourceHandler::Unload();

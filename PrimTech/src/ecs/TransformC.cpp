@@ -33,7 +33,7 @@ namespace pt
 		//if (v.y < 0.f || v.y > d::XM_2PI) v.y = d::XM_2PI + v.y;
 		//if (v.z < 0.f || v.z > d::XM_2PI) v.z = d::XM_2PI + v.z;
 		m_rot = v;
-		ptm::ForceRotation(m_rot);
+		//ptm::ForceRotation(m_rot);
 		//if (v.x + v.y + v.z != 0.f)
 			//printf("");
 		//sm::Quaternion quat = quat.CreateFromYawPitchRoll(v.x, v.y, v.z);
@@ -86,7 +86,7 @@ namespace pt
 	{
 		//sm::Quaternion quat = quat.CreateFromYawPitchRoll(v.x, v.y, v.z);
 		m_rot += v;
-		ptm::ForceRotation(m_rot);
+		//ptm::ForceRotation(m_rot);
 
 		UpdateWorld();
 	}

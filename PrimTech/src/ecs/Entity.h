@@ -32,6 +32,8 @@ namespace pt
 		void SetScale(float x, float y, float z);
 		void SetScale(const sm::Vector3& v);
 
+		void OverrideTransformMatrix(const sm::Matrix& matrix);
+
 		void Move(float x, float y, float z);
 		void Move(sm::Vector3 v);
 		void Rotate(float x, float y, float z);
