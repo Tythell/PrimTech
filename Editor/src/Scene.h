@@ -70,7 +70,7 @@ private:
 
 	pt::PrimTech m_primtech;
 
-	std::vector<std::pair<sm::Vector3, sm::Vector3>> m_startTransforms;
+	std::vector<std::pair<float3, float3>> m_startTransforms;
 	void Play(char b = 2);
 
 	//bool m_exit = false;

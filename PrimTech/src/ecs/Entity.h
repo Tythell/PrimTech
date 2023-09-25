@@ -25,21 +25,21 @@ namespace pt
 
 		void SetPhysBodyIndex(int idx);
 		void SetPosition(float x, float y, float z);
-		void SetPosition(const sm::Vector3& v);
+		void SetPosition(const float3& v);
 		void SetRotation(float x, float y, float z);
-		void SetRotation(const sm::Vector3& v);
-		void SetRotation(const sm::Quaternion& v);
+		void SetRotation(const float3& v);
+		void SetRotation(const quat& v);
 		void SetScale(float x, float y, float z);
-		void SetScale(const sm::Vector3& v);
+		void SetScale(const float3& v);
 
-		void OverrideTransformMatrix(const sm::Matrix& matrix);
+		void OverrideTransformMatrix(const matrix& matrix);
 
 		void Move(float x, float y, float z);
-		void Move(sm::Vector3 v);
+		void Move(float3 v);
 		void Rotate(float x, float y, float z);
-		void Rotate(sm::Vector3 v);
+		void Rotate(float3 v);
 		void Scale(float x, float y, float z);
-		void Scale(sm::Vector3 v);
+		void Scale(float3 v);
 
 		static int Lua_SetPosition(lua_State* L);
 		static int Lua_SetRotation(lua_State* L);

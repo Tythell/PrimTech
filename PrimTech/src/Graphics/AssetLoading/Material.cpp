@@ -44,7 +44,7 @@ namespace PrimtTech
 		case eMaterialHeaders::eDIFFUSE:
 			reader.read(charBuffer, FILENAME_MAXSIZE);
 			LoadTexture(std::string(charBuffer), eDiffuse);
-			reader.read((char*)&m_diffuseOffsetSpeed, sizeof(sm::Vector2));
+			reader.read((char*)&m_diffuseOffsetSpeed, sizeof(float2));
 			reader.read((char*)&m_transparency, 4);
 			break;
 		case eMaterialHeaders::eNORMAL:
@@ -53,7 +53,7 @@ namespace PrimtTech
 			break;
 		case eMaterialHeaders::eDISTORTION:
 			reader.read(charBuffer, FILENAME_MAXSIZE);
-			reader.read((char*)&m_distortionOffsetSpeed, sizeof(sm::Vector2));
+			reader.read((char*)&m_distortionOffsetSpeed, sizeof(float2));
 			reader.read((char*)&m_distDivider, 4);
 			reader.read((char*)&m_textureScaleDist, 4);
 			//if(std::string(charBuffer) != "")
@@ -68,7 +68,7 @@ namespace PrimtTech
 			reader.read((char*)&m_textureScale, 4);
 			break;
 		case eMaterialHeaders::eDIFFCLR:
-			reader.read((char*)&m_diffuseClr, sizeof(sm::Vector3));
+			reader.read((char*)&m_diffuseClr, sizeof(float3));
 			break;
 		default:
 			return;
@@ -77,7 +77,7 @@ namespace PrimtTech
 		ReadRecursion(header, reader);
 	}
 
-	sm::Vector3 Material::GetDiffuseClr() const
+	float3 Material::GetDiffuseClr() const
 	{
 		return m_diffuseClr;
 	}
@@ -120,12 +120,12 @@ namespace PrimtTech
 
 	void Material::SetDiffuseScrollSpeed(float x, float y)
 	{
-		m_diffuseOffsetSpeed = sm::Vector2(x, y);
+		m_diffuseOffsetSpeed = float2(x, y);
 	}
 
 	void Material::SetDistortionScrollSpeed(float x, float y)
 	{
-		m_distortionOffsetSpeed = sm::Vector2(x, y);
+		m_distortionOffsetSpeed = float2(x, y);
 	}
 
 	void Material::Set(ID3D11DeviceContext*& dc, Buffer<hlsl::cbpMaterialBuffer>& matBuffer)
@@ -181,15 +181,15 @@ namespace PrimtTech
 		m_textureScaleDist = f;
 	}
 
-	void Material::SetRimColor(sm::Vector3 rgb)
+	void Material::SetRimColor(float3 rgb)
 	{
 		//m_rimColor = rgb;
 	}
 
 	void Material::ResetScrollValue()
 	{
-		m_diffuseOffsetValue = sm::Vector2();
-		m_distortionValue = sm::Vector2();
+		m_diffuseOffsetValue = float2();
+		m_distortionValue = float2();
 	}
 
 	void Material::SetDistortionDivider(const float& f)
@@ -222,13 +222,13 @@ namespace PrimtTech
 			header = eMaterialHeaders::eDIFFUSE;
 			writer.write((const char*)&header, sizeof(eMaterialHeaders));
 			writer.write((const char*)mp_textures[eDiffuse]->GetName().c_str(), FILENAME_MAXSIZE);
-			writer.write((const char*)&m_diffuseOffsetSpeed, sizeof(sm::Vector2));
+			writer.write((const char*)&m_diffuseOffsetSpeed, sizeof(float2));
 		}
 		else
 		{
 			header = eMaterialHeaders::eDIFFCLR;
 			writer.write((const char*)&header, sizeof(eMaterialHeaders));
-			writer.write((const char*)&m_diffuseClr, sizeof(sm::Vector3));
+			writer.write((const char*)&m_diffuseClr, sizeof(float3));
 		}
 		writer.write((const char*)&m_transparency, sizeof(float));
 		if (HasTexture(eNormal))
@@ -242,7 +242,7 @@ namespace PrimtTech
 			header = eMaterialHeaders::eDISTORTION;
 			writer.write((const char*)&header, sizeof(eMaterialHeaders));
 			writer.write((const char*)mp_textures[eDistortion]->GetName().c_str(), FILENAME_MAXSIZE);
-			writer.write((const char*)&m_distortionOffsetSpeed, sizeof(sm::Vector2));
+			writer.write((const char*)&m_distortionOffsetSpeed, sizeof(float2));
 			writer.write((const char*)&m_distDivider, sizeof(float));
 			writer.write((const char*)&m_textureScaleDist, sizeof(float));
 		}
@@ -359,7 +359,7 @@ namespace PrimtTech
 		return mp_textures[e]->GetName();
 	}
 
-	void Material::SetDiffuseClr(const sm::Vector3& v)
+	void Material::SetDiffuseClr(const float3& v)
 	{
 		m_diffuseClr = v;
 	}
@@ -371,7 +371,7 @@ namespace PrimtTech
 
 	void Material::SetDiffuseClr(float r, float g, float b)
 	{
-		SetDiffuseClr(sm::Vector3(r, g, b));
+		SetDiffuseClr(float3(r, g, b));
 	}
 
 	void Material::SetName(std::string name)
@@ -379,12 +379,12 @@ namespace PrimtTech
 		m_name = name;
 	}
 
-	sm::Vector2 Material::GetDiffuseScrollSpeed() const
+	float2 Material::GetDiffuseScrollSpeed() const
 	{
 		return m_diffuseOffsetSpeed;
 	}
 
-	sm::Vector2 Material::GetDistortionScrollSpeed() const
+	float2 Material::GetDistortionScrollSpeed() const
 	{
 		return m_distortionOffsetSpeed;
 	}

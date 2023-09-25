@@ -10,18 +10,19 @@ namespace pt
 	}
 	void AABBComp::Update(pt::TransformComp& transform)
 	{
-		m_aabb.Center = transform.GetPosition() + m_posOffset;
+		m_aabb.Center = smm::Vector3(
+			transform.GetPosition().x + m_posOffset.x, transform.GetPosition().y + m_posOffset.y, transform.GetPosition().z + m_posOffset.z);
 		m_isIntersecting = false;
 	}
-	void AABBComp::SetExtends(const sm::Vector3& extends)
+	void AABBComp::SetExtends(const float3& extends)
 	{
-		m_aabb.Extents = extends;
+		memcpy(&m_aabb.Extents.x, &extends.x, sizeof(float) * 3);
 	}
-	void AABBComp::SetPositionOffset(const sm::Vector3& pos)
+	void AABBComp::SetPositionOffset(const float3& pos)
 	{
-		m_posOffset = pos;
+		memcpy(&m_posOffset.x, &pos.x, sizeof(float) * 3);
 	}
-	sm::Vector3 AABBComp::GetPositionOffset() const
+	smm::Vector3 AABBComp::GetPositionOffset() const
 	{
 		return m_posOffset;
 	}
@@ -38,12 +39,21 @@ namespace pt
 	OBBComp::OBBComp(EntIdType entId) : Component(entId) {}
 	void OBBComp::Update(const pt::TransformComp& transform)
 	{
-		m_obb.Center = transform.GetPosition();
-		m_obb.Orientation = transform.GetRotationQuaternion();
+		m_obb.Center = { 
+			transform.GetPosition().x,
+			transform.GetPosition().y,
+			transform.GetPosition().z,
+		};
+		m_obb.Orientation = {
+			transform.GetRotationQuaternion().x,
+			transform.GetRotationQuaternion().y,
+			transform.GetRotationQuaternion().z,
+			transform.GetRotationQuaternion().w
+		};
 	}
-	void OBBComp::SetExtends(const sm::Vector3& extends)
+	void OBBComp::SetExtends(const float3& extends)
 	{
-		m_obb.Extents = extends;
+		memcpy(&m_obb.Extents.x, &extends.x, sizeof(float) * 3);
 	}
 	void OBBComp::DuplicateFrom(Component* other)
 	{
@@ -54,7 +64,11 @@ namespace pt
 	BSphereComp::BSphereComp(EntIdType entId) : Component(entId) {}
 	void BSphereComp::Update(const pt::TransformComp& transform)
 	{
-		m_bsphere.Center = transform.GetPosition();
+		m_bsphere.Center = { 
+			transform.GetPosition().x,
+			transform.GetPosition().y,
+			transform.GetPosition().z
+		};
 	}
 	void BSphereComp::SetRadius(float r)
 	{

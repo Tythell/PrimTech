@@ -25,14 +25,14 @@ namespace PrimtTech
 			mesh.emplace_back();
 			mesh[0].verts.resize(3);
 
-			mesh[0].verts[0].position = sm::Vector3(-.5f, -.5f, 0.f);
-			mesh[0].verts[1].position = sm::Vector3(0.0f, 0.5f, 0.f);
-			mesh[0].verts[2].position = sm::Vector3(0.5f, -.5f, 0.f);
+			mesh[0].verts[0].position = float3(-.5f, -.5f, 0.f);
+			mesh[0].verts[1].position = float3(0.0f, 0.5f, 0.f);
+			mesh[0].verts[2].position = float3(0.5f, -.5f, 0.f);
 			for (int i = 0; i < 3; i++)
 			{
-				mesh[0].verts[i].normal = sm::Vector3(0.f, 0.f, -1.f);
-				mesh[0].verts[i].tangent = sm::Vector3(0.f, 1.f, 0.f);
-				mesh[0].verts[i].bitangent = sm::Vector3(-1.f, 0.f, 0.f);
+				mesh[0].verts[i].normal = float3(0.f, 0.f, -1.f);
+				mesh[0].verts[i].tangent = float3(0.f, 1.f, 0.f);
+				mesh[0].verts[i].bitangent = float3(-1.f, 0.f, 0.f);
 			}
 			m_mtls.emplace_back();
 			m_mtlIndexes.emplace_back(0);

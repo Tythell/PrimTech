@@ -23,8 +23,8 @@ namespace pt
 
 			rp::Vector3 rpPos(rpTransform.getPosition());
 			rp::Quaternion rpQuat(rpTransform.getOrientation());
-			sm::Vector3 smPos(rpPos.x, rpPos.y, rpPos.z);
-			sm::Quaternion smQuat(rpQuat.x, rpQuat.y, rpQuat.z, rpQuat.w);
+			float3 smPos(rpPos.x, rpPos.y, rpPos.z);
+			quat smQuat(rpQuat.x, rpQuat.y, rpQuat.z, rpQuat.w);
 
 			transform.SetPosition(smPos);
 			transform.SetRotation(smQuat);
@@ -35,10 +35,10 @@ namespace pt
 	{
 		if (mp_rigidBody)
 		{
-			sm::Vector3 smPos = transform.GetPosition();
+			float3 smPos = transform.GetPosition();
 			rp::Vector3 rpPos = { smPos.x,smPos.y,smPos.z };
 
-			sm::Quaternion fuckingAngle = transform.GetRotationQuaternion();
+			quat fuckingAngle = transform.GetRotationQuaternion();
 			rp::Quaternion ruckingAngle = { fuckingAngle.x, fuckingAngle.y, fuckingAngle.z, fuckingAngle.w };
 			rp::Transform rptra(rpPos, ruckingAngle);
 
@@ -61,7 +61,7 @@ namespace pt
 		mp_rigidBody->setType(rp::BodyType::STATIC);
 		//mp_rigidBody->addCollider()
 	}
-	void PhysicsBody::AddBoxColider(const sm::Vector3& extents)
+	void PhysicsBody::AddBoxColider(const float3& extents)
 	{
 		rp::BoxShape* shape = m_pPhysHandle->CreateBoxShape({ extents.x, extents.y, extents.z });
 		m_shapeIndexes.emplace_back(ePT_ShapeType::Box);
@@ -92,7 +92,7 @@ namespace pt
 		//mp_rigidBody->setType(bodyType);
 		m_bodyType = bodyType;
 	}
-	void PhysicsBody::SetPhysicsPosition(const sm::Vector3& v)
+	void PhysicsBody::SetPhysicsPosition(const float3& v)
 	{
 		std::vector<pt::TransformComp>& sss = PrimtTech::ComponentHandler::GetComponentArray<pt::TransformComp>();
 		pt::TransformComp& ptTransform = sss[EntId()];
@@ -118,7 +118,7 @@ namespace pt
 		//Freeze(false);
 	}
 
-	void PhysicsBody::SetPhysicsEulerRotation(const sm::Vector3& v)
+	void PhysicsBody::SetPhysicsEulerRotation(const float3& v)
 	{
 		rp::BodyType type = mp_rigidBody->getType();
 		mp_rigidBody->setType(rp::BodyType::STATIC);
@@ -139,7 +139,7 @@ namespace pt
 		mp_rigidBody->setType(type);
 	}
 
-	void PhysicsBody::SetPhysicsQuatRotation(const sm::Quaternion& q)
+	void PhysicsBody::SetPhysicsQuatRotation(const quat& q)
 	{
 		pt::TransformComp ptTransform = Entity::GetEntity(EntId()).Transform();
 		rp::Transform rpTransform;
@@ -169,19 +169,19 @@ namespace pt
 		else mp_rigidBody->setType(m_bodyType);
 	}
 
-	sm::Vector3 PhysicsBody::GetExtents(uint index) const
+	float3 PhysicsBody::GetExtents(uint index) const
 	{
 		rp::Vector3 ve = dynamic_cast<rp::BoxShape*>(mp_rigidBody->getCollider(index)->getCollisionShape())->getHalfExtents();
-		return sm::Vector3(ve.x, ve.y, ve.z);
+		return float3(ve.x, ve.y, ve.z);
 	}
 	float PhysicsBody::GetSphereRadius(uint index) const
 	{
 		return dynamic_cast<rp::SphereShape*>(mp_rigidBody->getCollider(index)->getCollisionShape())->getRadius();
 	}
-	sm::Vector2 PhysicsBody::GetCapsuleLengths(uint index) const
+	float2 PhysicsBody::GetCapsuleLengths(uint index) const
 	{
 		rp::CapsuleShape* shape = dynamic_cast<rp::CapsuleShape*>(mp_rigidBody->getCollider(index)->getCollisionShape());
-		return sm::Vector2(shape->getRadius(), shape->getHeight());
+		return float2(shape->getRadius(), shape->getHeight());
 	}
 	uint PhysicsBody::GetNoColliders() const
 	{
@@ -245,12 +245,12 @@ namespace pt
 	{
 	}
 
-	void PhysicsBody::SetBoxExtents(const sm::Vector3& extents, uint index)
+	void PhysicsBody::SetBoxExtents(const float3& extents, uint index)
 	{
 		dynamic_cast<rp::BoxShape*>(mp_rigidBody->getCollider(index)->getCollisionShape())->
 			setHalfExtents({ extents.x, extents.y, extents.z });
 	}
-	void PhysicsBody::PhysMove(const sm::Vector3& v)
+	void PhysicsBody::PhysMove(const float3& v)
 	{
 		mp_rigidBody->applyWorldForceAtCenterOfMass(rp::Vector3(10000 * v.x, 0 * v.y, 10000 * v.z));
 		//mp_rigidBody->setLinearVelocity(rp::Vector3(10000 * v.x, 100 * v.y, 10000 * v.z));

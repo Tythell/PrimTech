@@ -297,16 +297,16 @@ namespace PrimtTech
 		gridArr.resize(nLines * 4);
 		for (int i = 0; i < nLines; i++)
 		{
-			gridArr[2 * i + 0].m_position = sm::Vector3(i - 5, 0.f, (float)nLines / 2.f);
-			gridArr[2 * i + 1].m_position = sm::Vector3(i - 5, 0.f, -(float)nLines / 2.f);
+			gridArr[2 * i + 0].m_position = float3(i - 5, 0.f, (float)nLines / 2.f);
+			gridArr[2 * i + 1].m_position = float3(i - 5, 0.f, -(float)nLines / 2.f);
 			gridArr[2 * i + 0].m_color = GRAY_3F;
 			gridArr[2 * i + 1].m_color = GRAY_3F;
 		}
 		for (int i = 0; i < nLines; i++)
 		{
 			uint index = (nLines * 2) + i * 2;
-			gridArr[index + 0].m_position = sm::Vector3(-(float)nLines / 2.f, 0.f, i - 5);
-			gridArr[index + 1].m_position = sm::Vector3((float)nLines / 2.f, 0.f, i - 5);
+			gridArr[index + 0].m_position = float3(-(float)nLines / 2.f, 0.f, i - 5);
+			gridArr[index + 1].m_position = float3((float)nLines / 2.f, 0.f, i - 5);
 
 			gridArr[index + 0].m_color = GRAY_3F;
 			gridArr[index + 1].m_color = GRAY_3F;
@@ -422,12 +422,12 @@ namespace PrimtTech
 				uint index = rMeshrefs[i].GetInstIndex() + 1; // instance 1 is identity matrix
 
 				MeshInstance mehsInst;
-				sm::Matrix mat = pTransformComp->GetWorld();
+				matrix mat = pTransformComp->GetWorld();
 
-				memcpy(&mehsInst.row.x, &mat._11, sizeof(float) * 3);
-				memcpy(&mehsInst.row1.x, &mat._21, sizeof(float) * 3);
-				memcpy(&mehsInst.row2.x, &mat._31, sizeof(float) * 3);
-				memcpy(&mehsInst.row3.x, &mat._41, sizeof(float) * 3);
+				memcpy(&mehsInst.row.x, &mat[0][0], sizeof(float) * 3);
+				memcpy(&mehsInst.row1.x, &mat[1][0], sizeof(float) * 3);
+				memcpy(&mehsInst.row2.x, &mat[2][0], sizeof(float) * 3);
+				memcpy(&mehsInst.row3.x, &mat[3][0], sizeof(float) * 3);
 
 				meshPtr->ChangeInstance(index, mehsInst);
 			}
@@ -435,7 +435,7 @@ namespace PrimtTech
 			uint numMeshes = meshVec.size();
 
 			// Set world matrix to identity because they should be affected by instanced world matrix instead
-			transformBuffer.Data().world = sm::Matrix();
+			transformBuffer.Data().world = matrix();
 			transformBuffer.MapBuffer();
 
 			for (int i = 0; i < numMeshes; i++)
@@ -504,19 +504,19 @@ namespace PrimtTech
 			uint prefabIndex = rPrefabs[i].GetIndex();
 
 			MeshInstance mehsInst;
-			sm::Matrix mat = pTransformComp->GetWorld();
+			matrix mat = pTransformComp->GetWorld();
 
-			memcpy(&mehsInst.row.x, &mat._11, sizeof(float) * 3);
-			memcpy(&mehsInst.row1.x, &mat._21, sizeof(float) * 3);
-			memcpy(&mehsInst.row2.x, &mat._31, sizeof(float) * 3);
-			memcpy(&mehsInst.row3.x, &mat._41, sizeof(float) * 3);
+			memcpy(&mehsInst.row.x,  &mat[0][0], sizeof(float) * 3);
+			memcpy(&mehsInst.row1.x, &mat[1][0], sizeof(float) * 3);
+			memcpy(&mehsInst.row2.x, &mat[2][0], sizeof(float) * 3);
+			memcpy(&mehsInst.row3.x, &mat[3][0], sizeof(float) * 3);
 
 			prefabsArr[prefabIndex].ChangeInstance(instanceIndex, mehsInst);
 
 			//rPrefabs[i].RefreshInstance();
 		}
 		uint nOPrefs = prefabsArr.size();
-		transformBuffer.Data().world = sm::Matrix();;
+		transformBuffer.Data().world = matrix();;
 		transformBuffer.MapBuffer();
 		for (int i = 0; i < nOPrefs; i++)
 		{
@@ -604,12 +604,12 @@ namespace PrimtTech
 		pt::Camera& cc = ComponentHandler::GetComponentByIndex<pt::Camera>(m_activeCamIndex);
 		int noCams = ComponentHandler::GetNoOfUsedComponents<Camera>();
 		pt::TransformComp& camTransform = ComponentHandler::GetComponentByIndex<pt::TransformComp>(m_activeCamIndex);
-		m_lightbuffer.Data().camPos = { camTransform.GetPosition().x, camTransform.GetPosition().y, camTransform.GetPosition().z, 1.f };
+		m_lightbuffer.Data().camPos = camTransform.GetPosition();
 		m_lightbuffer.MapBuffer();
 
-		m_transformBuffer.Data().viewProj = d::XMMatrixTranspose(scam.GetViewMatrix() * scam.GetProjMatrix());
-		m_transformBuffer.Data().lightViewProj = d::XMMatrixTranspose(scam.GetViewMatrix() * scam.GetProjMatrix());
-		m_transformBuffer.Data().world = d::XMMatrixIdentity();
+		m_transformBuffer.Data().viewProj = glm::transpose(scam.GetViewMatrix() * scam.GetProjMatrix());
+		m_transformBuffer.Data().lightViewProj = glm::transpose(scam.GetViewMatrix() * scam.GetProjMatrix());
+		m_transformBuffer.Data().world = matrix(1.f);
 		m_transformBuffer.MapBuffer();
 		m_shadowmap.Bind(dc, 10);
 
@@ -623,7 +623,7 @@ namespace PrimtTech
 		dc->OMSetRenderTargets(1, &m_rtv, m_dsView);
 		dc->RSSetViewports(1, &m_viewport);
 
-		m_transformBuffer.Data().viewProj = d::XMMatrixTranspose(cc.GetViewMatrix() * cc.GetProjMatrix());
+		m_transformBuffer.Data().viewProj = glm::transpose(cc.GetViewMatrix() * cc.GetProjMatrix());
 		m_transformBuffer.MapBuffer();
 
 		dc->IASetInputLayout(m_3dvs.GetInputLayout());
@@ -644,7 +644,7 @@ namespace PrimtTech
 			//cams[i].E
 		}
 
-		m_transformBuffer.Data().world = d::XMMatrixIdentity();
+		m_transformBuffer.Data().world = matrix(1.f);
 		dc->VSSetShader(m_lineVS.GetShader(), NULL, 0);
 		dc->IASetInputLayout(m_lineVS.GetInputLayout());
 		dc->PSSetShader(m_linePS.GetShader(), NULL, 0);
@@ -662,7 +662,7 @@ namespace PrimtTech
 
 		if (im->m_drawGrid)
 		{
-			m_transformBuffer.Data().world = sm::Matrix();
+			m_transformBuffer.Data().world = matrix();
 			m_transformBuffer.MapBuffer();
 			dc->IASetVertexBuffers(0, 1, m_grid.GetReference(), m_grid.GetStrideP(), &offset);
 			dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_LINELIST);
@@ -677,10 +677,10 @@ namespace PrimtTech
 		//	uint entId = rAabbs[i].EntId();
 		//	TransformComp& pTransformComp = rTransforms[entId];
 
-		//	sm::Vector3 scaling = rAabbs[i].GetBox().Extents;
+		//	float3 scaling = rAabbs[i].GetBox().Extents;
 
 		//	d::XMMATRIX world = d::XMMatrixScalingFromVector(scaling) *
-		//		d::XMMatrixTranslationFromVector(sm::Vector3(rAabbs[i].GetBox().Center));
+		//		d::XMMatrixTranslationFromVector(float3(rAabbs[i].GetBox().Center));
 
 		//	bool intersecting = rAabbs[i].IsIntersecting();
 		//	if (intersecting) m_renderbox.SetColor(GREEN_3F);

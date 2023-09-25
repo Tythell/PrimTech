@@ -10,13 +10,13 @@
 
 namespace PrimtTech
 {
-	sm::Vector3 aiVecToSm(const aiVector3D aivec)
+	float3 aiVecToSm(const aiVector3D aivec)
 	{
-		return sm::Vector3(aivec.x, aivec.y, aivec.z);
+		return float3(aivec.x, aivec.y, aivec.z);
 	}
-	sm::Vector2 aiVecToSm(const aiVector2D aivec)
+	float2 aiVecToSm(const aiVector2D aivec)
 	{
-		return sm::Vector2(aivec.x, aivec.y);
+		return float2(aivec.x, aivec.y);
 	}
 	Shape ProcessMesh(aiMesh* mesh, const aiScene* scene, Mtl& mtl)
 	{
@@ -29,7 +29,7 @@ namespace PrimtTech
 			shape.verts[i].normal = aiVecToSm(mesh->mNormals[i]);
 			shape.verts[i].tangent = aiVecToSm(mesh->mTangents[i]);
 			shape.verts[i].bitangent = aiVecToSm(mesh->mBitangents[i]);
-			shape.verts[i].texCoord = sm::Vector2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
+			shape.verts[i].texCoord = float2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
 		}
 		UINT matIndex = mesh->mMaterialIndex;
 		aiMaterial* material = scene->mMaterials[matIndex];
@@ -83,9 +83,9 @@ namespace PrimtTech
 		//makeLeftHanded = false;
 
 		std::string dummy;
-		std::vector<sm::Vector3> v;
-		std::vector<sm::Vector3> vn;
-		std::vector<sm::Vector2> vt;
+		std::vector<float3> v;
+		std::vector<float3> vn;
+		std::vector<float2> vt;
 
 		std::vector<UINT> posIndex;
 		std::vector<UINT> normalIndex;
@@ -232,23 +232,23 @@ namespace PrimtTech
 		{
 			for (int i = 0; i < shape[si].verts.size(); i += 3)
 			{
-				sm::Vector2 UVA = shape[si].verts[i + 0].texCoord;
-				sm::Vector2 UVB = shape[si].verts[i + 1].texCoord;
-				sm::Vector2 UVC = shape[si].verts[i + 2].texCoord;
+				float2 UVA = shape[si].verts[i + 0].texCoord;
+				float2 UVB = shape[si].verts[i + 1].texCoord;
+				float2 UVC = shape[si].verts[i + 2].texCoord;
 
-				sm::Vector3 POSA = shape[si].verts[i + 0].position;
-				sm::Vector3 POSB = shape[si].verts[i + 1].position;
-				sm::Vector3 POSC = shape[si].verts[i + 2].position;
+				float3 POSA = shape[si].verts[i + 0].position;
+				float3 POSB = shape[si].verts[i + 1].position;
+				float3 POSC = shape[si].verts[i + 2].position;
 
-				sm::Vector2 dAB = UVB - UVA;
-				sm::Vector2 dAC = UVC - UVA;
+				float2 dAB = UVB - UVA;
+				float2 dAC = UVC - UVA;
 
-				sm::Vector3 edge1 = POSB - POSA;
-				sm::Vector3 edge2 = POSC - POSA;
+				float3 edge1 = POSB - POSA;
+				float3 edge2 = POSC - POSA;
 
 				float f = 1.0f / (dAB.x * dAC.y - dAC.x * dAB.y);
 
-				sm::Vector3 tangent;
+				float3 tangent;
 				tangent.x = f * (dAC.y * edge1.x - dAB.y * edge2.x);
 				tangent.y = f * (dAC.y * edge1.y - dAB.y * edge2.y);
 				tangent.z = f * (dAC.y * edge1.z - dAB.y * edge2.z);

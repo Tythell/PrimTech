@@ -3,6 +3,11 @@
 #include <DirectXCollision.h>
 #include"../Math/Simplemath.h"
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/quaternion.hpp>
+#include <glm/gtx/matrix_decompose.hpp>
 
 #include <cmath>
 #include <string>
@@ -30,6 +35,8 @@ using int4 = d::XMINT4;
 using uchar = unsigned char;
 using ulong = unsigned long;
 using ullong = unsigned long long;
+
+using quat = glm::quat;
 
 #define DEG(r) r * d::XM_PI / 180
 
@@ -115,7 +122,7 @@ namespace ptm
 		return value;
 	}
 
-	inline float GetAvarageValue(const sm::Vector3& v)
+	inline float GetAvarageValue(const float3& v)
 	{
 		return (v.x + v.y + v.z) / 3;
 	}

@@ -74,8 +74,8 @@ void Gui_MaterialProperties(void* ptr, bool* show)
 			LoadButton(pMaterial, "DistMap: ", PrimtTech::eDistortion, 0);
 			LoadButton(pMaterial, "OpacityMap: ", PrimtTech::eOpacity, 0);
 
-			sm::Vector2 diffuseSpeed(pMaterial->GetDiffuseScrollSpeed());
-			sm::Vector2 distortionSpeed(pMaterial->GetDistortionScrollSpeed());
+			float2 diffuseSpeed(pMaterial->GetDiffuseScrollSpeed());
+			float2 distortionSpeed(pMaterial->GetDistortionScrollSpeed());
 			bool hasDistMap = pMaterial->HasTexture(PrimtTech::eDistortion);
 			bool hasDiffuse = pMaterial->HasTexture(PrimtTech::eDiffuse) || pMaterial->HasTexture(PrimtTech::eNormal) || pMaterial->HasTexture(PrimtTech::eOpacity);
 
@@ -716,7 +716,7 @@ void Gui_EntList(void* test, bool* show)
 			ImGui::EndDisabled();
 			ImGui::EndPopup();
 		}
-		sm::Vector3 transform = pEnt->Transform().GetPosition();
+		float3 transform = pEnt->Transform().GetPosition();
 		ImGui::BeginDisabled(p->selected == 0);
 		if (ImGui::DragFloat3("Translate", &transform.x, 0.02f))
 		{
@@ -839,8 +839,8 @@ void Gui_EntList(void* test, bool* show)
 				ImGui::Separator();
 				pt::Camera* mr = pEnt->GetComponent<pt::Camera>();
 
-				sm::Vector3 pos = mr->GetPositionOffset();
-				sm::Vector3 rot = mr->GetRotationOffset();
+				float3 pos = mr->GetPositionOffset();
+				float3 rot = mr->GetRotationOffset();
 
 				ImGui::DragFloat3("Translate##cam", reinterpret_cast<float*>(&pos), 0.02f);
 				ImGui::DragFloat3("Rotation##cam", reinterpret_cast<float*>(&rot), 0.02f);
@@ -864,7 +864,7 @@ void Gui_EntList(void* test, bool* show)
 					switch (item_current)
 					{
 					case 0:
-						mr->SetPerspective(80.f, (float)p->winWidth / (float)p->winHeight, 0.1f, 100.f);
+						mr->SetPerspective(80.f, (float)p->winWidth, (float)p->winHeight, 0.1f, 100.f);
 						break;
 					case 1:
 						mr->SetOrtographic(20.f, 20.f, 0.1f, 10.f);
@@ -884,30 +884,30 @@ void Gui_EntList(void* test, bool* show)
 				ImGui::TreePop();
 			}
 		}
-		if (pEnt->HasComponentType(PrimtTech::ec_aabb))
-		{
-			if (ImGui::TreeNode("Bounding box"))
-			{
-				ImGui::Separator();
-				pt::AABBComp* mr = pEnt->GetComponent<pt::AABBComp>();
+		//if (pEnt->HasComponentType(PrimtTech::ec_aabb))
+		//{
+		//	if (ImGui::TreeNode("Bounding box"))
+		//	{
+		//		ImGui::Separator();
+		//		pt::AABBComp* mr = pEnt->GetComponent<pt::AABBComp>();
 
-				sm::Vector3 v = mr->GetBox().Extents;
-				ImGui::DragFloat3("size", reinterpret_cast<float*>(&v), 0.02f);
-				mr->SetExtends(v);
+		//		float3 v = mr->GetBox().Extents;
+		//		ImGui::DragFloat3("size", reinterpret_cast<float*>(&v), 0.02f);
+		//		mr->SetExtends(v);
 
-				v = mr->GetPositionOffset();
-				ImGui::DragFloat3("Position Offset", reinterpret_cast<float*>(&v), 0.02f);
-				mr->SetPositionOffset(v);
+		//		v = mr->GetPositionOffset();
+		//		ImGui::DragFloat3("Position Offset", reinterpret_cast<float*>(&v), 0.02f);
+		//		mr->SetPositionOffset(v);
 
-				//ImGui::Text(ptm::GetVectorAsString(mr->GetBox().Center).c_str());
-			}
-			if (ImGui::Button("Delete##aabb"))
-			{
-				pEnt->FreeComponent<pt::AABBComp>();
-			}
-			ImGui::Separator();
-			ImGui::TreePop();
-		}
+		//		//ImGui::Text(ptm::GetVectorAsString(mr->GetBox().Center).c_str());
+		//	}
+		//	if (ImGui::Button("Delete##aabb"))
+		//	{
+		//		pEnt->FreeComponent<pt::AABBComp>();
+		//	}
+		//	ImGui::Separator();
+		//	ImGui::TreePop();
+		//}
 		if (pEnt->HasComponentType(PrimtTech::ec_light))
 		{
 			if (ImGui::TreeNode("Light"))
@@ -915,7 +915,7 @@ void Gui_EntList(void* test, bool* show)
 				ImGui::Separator();
 				pt::Light* mr = pEnt->GetComponent<pt::Light>();
 
-				sm::Vector4 v = mr->GetPositionOffset();
+				float4 v = mr->GetPositionOffset();
 
 				ImGui::DragFloat3("Posiiton", reinterpret_cast<float*>(&v), 0.02f);
 				mr->SetOffsetPosition(v);
@@ -1005,7 +1005,7 @@ void Gui_EntList(void* test, bool* show)
 					{
 					case pt::PhysicsBody::ePT_ShapeType::Box:
 					{
-						sm::Vector3 v = mr->GetExtents(i);
+						float3 v = mr->GetExtents(i);
 						buttonNAme = "Box##" + std::to_string(i);
 						if (ImGui::DragFloat3(buttonNAme.c_str(), reinterpret_cast<float*>(&v), .02f, 0.1f, 100.f))
 						{
@@ -1025,7 +1025,7 @@ void Gui_EntList(void* test, bool* show)
 					}
 					case pt::PhysicsBody::ePT_ShapeType::Capsule:
 					{
-						sm::Vector2 v = mr->GetCapsuleLengths(i);
+						float2 v = mr->GetCapsuleLengths(i);
 						buttonNAme = "Capsule##" + std::to_string(i);
 						if (ImGui::DragFloat2(buttonNAme.c_str(), reinterpret_cast<float*>(&v), .02f, 0.1f, 100.f))
 						{
@@ -1101,9 +1101,9 @@ void Gui_EntList(void* test, bool* show)
 
 		pt::TransformComp& rTr = pt::Entity::GetEntity(p->selected).Transform();
 
-		sm::Matrix camViewM = pCam.GetViewMatrix();
-		sm::Matrix camProj = pCam.GetProjMatrix();
-		sm::Matrix world = rTr.GetWorld();
+		matrix camViewM = pCam.GetViewMatrix();
+		matrix camProj = pCam.GetProjMatrix();
+		matrix world = rTr.GetWorld();
 
 		float* model = reinterpret_cast<float*>(&world);
 		const float* proj = reinterpret_cast<const float*>(&camProj);
@@ -1125,10 +1125,14 @@ void Gui_EntList(void* test, bool* show)
 		if (ImGuizmo::IsUsing())
 		{
 			pt::Entity* pEnt = pt::Entity::GetEntityP((uint)p->selected);
-			sm::Vector3 pos;
-			sm::Vector3 scale;
-			sm::Quaternion rot;
-			world.Decompose(scale, rot, pos);
+			float3 pos;
+			float3 scale;
+			quat rot;
+
+			float3 dummy3;
+			float4 dummy4;
+			glm::decompose(world, scale, rot, pos, dummy3, dummy4);
+			//world.Decompose(scale, rot, pos);
 			//ImGuizmo::DecomposeMatrixToComponents(&world._11, &pos.x, &rot.x, &scale.x);
 
 			rTr.SetScale(scale);

@@ -19,7 +19,7 @@ namespace PrimtTech
 		void Update(float dt);
 		rp::RigidBody* CreateRigidBody(const rp::Transform& transform, rp::BodyType bodyType = rp::BodyType::DYNAMIC);
 
-		rp::BoxShape* CreateBoxShape(const sm::Vector3& extents);
+		rp::BoxShape* CreateBoxShape(const float3& extents);
 		rp::SphereShape* CreateSphereShape(float radius);
 		rp::CapsuleShape* CreateCapsuleShape(float radius, float height);
 

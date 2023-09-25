@@ -9,7 +9,7 @@ namespace PrimtTech
 		~RenderShape();
 		virtual void Draw(ID3D11DeviceContext*& dc);
 		void DrawShape(ID3D11DeviceContext*& dc) { dc->DrawIndexed(m_ibuffer.GetBufferSize(), 0, 0); }
-		void SetColor(sm::Vector3 color);
+		void SetColor(float3 color);
 		void SetBuffer(ID3D11DeviceContext*& dc)
 		{
 			uint offset = 0;
@@ -35,7 +35,7 @@ namespace PrimtTech
 		// Inherited via RenderShape
 		virtual void Init(ID3D11Device*& device, ID3D11DeviceContext*& dc);
 
-		void SetLine(sm::Vector3 start, sm::Vector3 end);
+		void SetLine(float3 start, float3 end);
 	};
 
 	class RenderBox : public RenderShape

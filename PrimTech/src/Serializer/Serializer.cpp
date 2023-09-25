@@ -130,7 +130,7 @@ namespace PrimtTech
 			WRITE(&, entId, sizeof(EntIdType));
 
 			float f3[3]{ 0.f };
-			sm::Vector3 vec = transforms[i].GetPosition();
+			float3 vec = transforms[i].GetPosition();
 			memcpy(f3, &vec.x, sizeof(float) * 3);
 			WRITE(, f3, sizeof(float) * 3);
 
@@ -183,7 +183,7 @@ namespace PrimtTech
 			WRITE(&, fov, sizeof(float));
 
 			float f3[3]{ 0.f };
-			sm::Vector3 vec = cams[i].GetPositionOffset();
+			float3 vec = cams[i].GetPositionOffset();
 			memcpy(f3, &vec.x, sizeof(float) * 3);
 			WRITE(,f3, sizeof(float) * 3);
 			//exporter << f3[0] << " " << f3[1] << " " << f3[2] << " posoffset" << std::endl;
@@ -194,13 +194,13 @@ namespace PrimtTech
 
 			// export view and projection
 			const int MATRIXSIZE = sizeof(float) * 16;
-			sm::Matrix mat = cams[i].GetViewMatrix();
+			matrix mat = cams[i].GetViewMatrix();
 			float f16[16]{};
-			memcpy(f16, &mat._11, MATRIXSIZE);
+			memcpy(f16, &mat[0][0], MATRIXSIZE);
 			WRITE(,f16, MATRIXSIZE);
 
 			mat = cams[i].GetProjMatrix();
-			memcpy(f16, &mat._11, MATRIXSIZE);
+			memcpy(f16, &mat[0][0], MATRIXSIZE);
 			WRITE(,f16, MATRIXSIZE);
 		}
 
@@ -222,7 +222,7 @@ namespace PrimtTech
 			WRITEB(&, lightData, sizeof(hlsl::Light));
 			WRITEA(&, "light struct", sizeof(hlsl::Light));
 
-			sm::Vector4 v4 = lights[i].GetPositionOffset();
+			float4 v4 = lights[i].GetPositionOffset();
 			float f3[3]{ 0 };
 			memcpy(f3, &v4.x, sizeof(float) * 3);
 			WRITE(&, f3, sizeof(float) * 3);
@@ -258,7 +258,7 @@ namespace PrimtTech
 				bool isTrigger = pBodys[i].GetIsTrigger(j);
 				WRITE(&, isTrigger, sizeof(bool));
 
-				sm::Vector3 vec3;
+				float3 vec3;
 				int writeSize = sizeof(float);
 
 				switch (colliderType)
@@ -278,7 +278,7 @@ namespace PrimtTech
 				case pt::PhysicsBody::ePT_ShapeType::Capsule:
 				{
 					writeSize *= 2;
-					sm::Vector2 vec2 = pBodys[i].GetCapsuleLengths(j);
+					float2 vec2 = pBodys[i].GetCapsuleLengths(j);
 					memcpy(&vec3.x, &vec2.x, writeSize);
 					//vec3.x = pBodys[i].GetCapsuleLengths(j).x;
 					//vec3.y = pBodys[i].GetCapsuleLengths(j).y;
@@ -507,7 +507,7 @@ namespace PrimtTech
 
 			float fov = 80.f;
 			READ(&, fov, sizeof(float));
-			cams.emplace_back(entId).SetPerspective(fov, 16.f/9.f, 0.1f, 100.f);
+			cams.emplace_back(entId).SetPerspective(fov, 16.f, 9.f, 0.1f, 100.f);
 
 			float f3[3]{ 0.f };
 			READ(,f3, sizeof(float)*3);
@@ -555,10 +555,10 @@ namespace PrimtTech
 
 			float f3[3]{ 0 };
 			READ(,f3, sizeof(float) * 3);
-			lights[i].SetOffsetPosition(sm::Vector4(f3[0], f3[1], f3[2], 1.f));
+			lights[i].SetOffsetPosition(float4(f3[0], f3[1], f3[2], 1.f));
 
 			READ(,f3, sizeof(float) * 3);
-			lights[i].SetDirectionOffset(sm::Vector4(f3[0], f3[1], f3[2], 1.f));
+			lights[i].SetDirectionOffset(float4(f3[0], f3[1], f3[2], 1.f));
 		}
 		//
 		// ------------------ PhysBodies ------------------
@@ -601,7 +601,7 @@ namespace PrimtTech
 				bool isTrigger = false;
 				READ(&, isTrigger, sizeof(bool));
 
-				sm::Vector3 vec3;
+				float3 vec3;
 				int readSize = sizeof(float);
 
 				switch (colliderType)

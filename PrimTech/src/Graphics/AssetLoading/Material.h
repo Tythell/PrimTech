@@ -49,7 +49,7 @@ namespace PrimtTech
 		void SetTransparency(float f);
 		void SetTextureScale(float f);
 		void SetTextureScaleDist(float f);
-		void SetRimColor(sm::Vector3 rgb);
+		void SetRimColor(float3 rgb);
 		void ResetScrollValue();
 		void SetDistortionDivider(const float& f);
 		float GetDistortionDivider() const;
@@ -58,17 +58,17 @@ namespace PrimtTech
 		bool ExportMaterial(std::string path);
 		void ImportMaterial(std::string path);
 		void RemoveTexture(const TextureType e);
-		void SetDiffuseClr(const sm::Vector3& v);
+		void SetDiffuseClr(const float3& v);
 		void SetDiffuseClr(float r, float g, float b);
 		void SetName(std::string name);
 
 		std::string GetMapName(const TextureType& e) const;
 		std::string GetFileName() const;
-		sm::Vector2 GetDiffuseScrollSpeed() const;
-		sm::Vector2 GetDistortionScrollSpeed() const;
+		float2 GetDiffuseScrollSpeed() const;
+		float2 GetDistortionScrollSpeed() const;
 		float GetTextureScale() const;
 		float GetTextureScaleDist() const;
-		sm::Vector3 GetDiffuseClr() const;
+		float3 GetDiffuseClr() const;
 
 		bool HasTexture(const TextureType& e) const;
 		bool HasTexture(UINT e) const;
@@ -80,12 +80,12 @@ namespace PrimtTech
 		float m_textureScale = 1.f;
 		float m_textureScaleDist = 1.f;
 		
-		//sm::Vector3 m_rimColor = GOLD_3F;
+		//float3 m_rimColor = GOLD_3F;
 		float m_distDivider = 1.f;
-		sm::Vector3 m_diffuseClr = WHITE_3F;
+		float3 m_diffuseClr = WHITE_3F;
 
-		sm::Vector2 m_diffuseOffsetValue, m_distortionValue;
-		sm::Vector2 m_diffuseOffsetSpeed, m_distortionOffsetSpeed;
+		float2 m_diffuseOffsetValue, m_distortionValue;
+		float2 m_diffuseOffsetSpeed, m_distortionOffsetSpeed;
 		float m_transparency = 1.f;
 	};
 }

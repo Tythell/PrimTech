@@ -45,7 +45,7 @@ namespace PrimtTech
 		m_ibuffer.CreateIndexBuffer(device, index, ARRAYSIZE(index));
 	}
 
-	void RenderLine::SetLine(sm::Vector3 start, sm::Vector3 end)
+	void RenderLine::SetLine(float3 start, float3 end)
 	{
 		m_vbuffer.Data(0).m_position = start;
 		m_vbuffer.Data(0).m_color = WHITE_3F;
@@ -68,7 +68,7 @@ namespace PrimtTech
 		dc->DrawIndexed(m_ibuffer.GetBufferSize(), 0, 0);
 	}
 
-	void RenderShape::SetColor(sm::Vector3 color)
+	void RenderShape::SetColor(float3 color)
 	{
 		uint size = m_vbuffer.GetBufferSize();
 		for (int i = 0; i < size; i++)
@@ -83,7 +83,7 @@ namespace PrimtTech
 		points *= 4;
 
 		const float corner = 0.36f;
-		sm::Vector3 color = WHITE_3F;
+		float3 color = WHITE_3F;
 
 		const float degreeIncrease = 360.f / (float)points;
 		const float radius = .5f;

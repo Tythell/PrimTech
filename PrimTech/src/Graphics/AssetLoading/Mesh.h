@@ -13,10 +13,10 @@ namespace PrimtTech
 
 	struct MeshInstance
 	{
-		sm::Vector3 row = sm::Vector3(1.f,0.f,0.f);
-		sm::Vector3 row1 = sm::Vector3(0.f,1.f,0.f);
-		sm::Vector3 row2 = sm::Vector3(0.f,0.f,1.f);
-		sm::Vector3 row3 = sm::Vector3(0.f,0.f,0.f);
+		float3 row = float3(1.f,0.f,0.f);
+		float3 row1 = float3(0.f,1.f,0.f);
+		float3 row2 = float3(0.f,0.f,1.f);
+		float3 row3 = float3(0.f,0.f,0.f);
 	};
 
 	class Mesh

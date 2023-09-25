@@ -5,12 +5,12 @@ namespace PrimtTech
 {
 	struct Vertex3D
 	{
-		sm::Vector3 position;
-		sm::Vector2 texCoord;
-		sm::Vector3 normal;
-		sm::Vector3 tangent;
-		sm::Vector3 bitangent;
-		//sm::Vector3 color = { 1.f,1.f,1.f };
+		float3 position;
+		float2 texCoord;
+		float3 normal;
+		float3 tangent;
+		float3 bitangent;
+		//float3 color = { 1.f,1.f,1.f };
 	};
 
 	struct BBVertex
@@ -22,8 +22,8 @@ namespace PrimtTech
 			m_position.y = y;
 			m_position.z = z;
 		}
-		sm::Vector3 m_position = { 0.f,0.f,0.f };
-		sm::Vector3 m_color = { 1.f,1.f,1.f };
+		float3 m_position = { 0.f,0.f,0.f };
+		float3 m_color = { 1.f,1.f,1.f };
 	};
 
 }

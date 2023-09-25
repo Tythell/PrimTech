@@ -4,9 +4,9 @@
 
 namespace PrimtTech
 {
-	sm::Vector3 rpToSm(const rp::Vector3& f)
+	float3 rpToSm(const rp::Vector3& f)
 	{
-		return sm::Vector3(f.x, f.y, f.z);
+		return float3(f.x, f.y, f.z);
 	}
 
 	PhysicsHandler::PhysicsHandler()
@@ -44,7 +44,7 @@ namespace PrimtTech
 				tris[i + 0].m_position = rpToSm(md_debugRenderer->getTrianglesArray()[i / 3].point1);
 				tris[i + 0].m_color = clr.GetAsVector3();
 
-				sm::Vector4 vec = clr.GetAsVector4();
+				float4 vec = clr.GetAsVector4();
 
 				clr = md_debugRenderer->getTrianglesArray()[i / 3].color2;
 				tris[i + 1].m_position = rpToSm(md_debugRenderer->getTrianglesArray()[i / 3].point2);
@@ -66,7 +66,7 @@ namespace PrimtTech
 #endif // _DEBUG
 	}
 
-	rp::BoxShape* PhysicsHandler::CreateBoxShape(const sm::Vector3& extents)
+	rp::BoxShape* PhysicsHandler::CreateBoxShape(const float3& extents)
 	{
 		return m_physics.createBoxShape(rp::Vector3(extents.x, extents.y, extents.z));
 	}

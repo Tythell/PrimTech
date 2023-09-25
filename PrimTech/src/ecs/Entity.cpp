@@ -99,10 +99,10 @@ namespace pt
 
 	void Entity::SetPosition(float x, float y, float z)
 	{
-		SetPosition(sm::Vector3(x, y, z));
+		SetPosition(float3(x, y, z));
 	}
 
-	void Entity::SetPosition(const sm::Vector3& v)
+	void Entity::SetPosition(const float3& v)
 	{
 		Transform().SetPosition(v);
 
@@ -124,12 +124,12 @@ namespace pt
 
 	void Entity::SetRotation(float x, float y, float z)
 	{
-		SetRotation(sm::Vector3(x, y, z));
+		SetRotation(float3(x, y, z));
 	}
 
-	sm::Vector3 toQuatTest(sm::Quaternion q)
+	float3 toQuatTest(quat q)
 	{
-		sm::Vector3 angles;    //yaw pitch roll
+		float3 angles;    //yaw pitch roll
 		const float x = q.x;
 		const float y = q.y;
 		const float z = q.z;
@@ -154,9 +154,9 @@ namespace pt
 		return angles;
 	}
 
-	void Entity::SetRotation(const sm::Vector3& v)
+	void Entity::SetRotation(const float3& v)
 	{
-		sm::Quaternion quat = quat.CreateFromYawPitchRoll(v);
+		quat quat(v);
 		Transform().SetRotation(quat);
 
 		if (m_physIndex != -1)
@@ -167,7 +167,7 @@ namespace pt
 		}
 	}
 
-	void Entity::SetRotation(const sm::Quaternion& q)
+	void Entity::SetRotation(const quat& q)
 	{
 		Transform().SetRotation(q);
 
@@ -181,25 +181,25 @@ namespace pt
 
 	void Entity::SetScale(float x, float y, float z)
 	{
-		SetScale(sm::Vector3(x,y,z));
+		SetScale(float3(x,y,z));
 	}
 
-	void Entity::SetScale(const sm::Vector3& v)
+	void Entity::SetScale(const float3& v)
 	{
 		Transform().SetScale(v);
 	}
 
-	void Entity::OverrideTransformMatrix(const sm::Matrix& matrix)
+	void Entity::OverrideTransformMatrix(const matrix& matrix)
 	{
 		throw;
 	}
 
 	void Entity::Move(float x, float y, float z)
 	{
-		Move(sm::Vector3(x, y, z));
+		Move(float3(x, y, z));
 	}
 
-	void Entity::Move(sm::Vector3 v)
+	void Entity::Move(float3 v)
 	{
 		if (m_physIndex != -1)
 		{
@@ -215,7 +215,7 @@ namespace pt
 	{
 	}
 
-	void Entity::Rotate(sm::Vector3 v)
+	void Entity::Rotate(float3 v)
 	{
 	}
 
@@ -223,7 +223,7 @@ namespace pt
 	{
 	}
 
-	void Entity::Scale(sm::Vector3 v)
+	void Entity::Scale(float3 v)
 	{
 	}
 

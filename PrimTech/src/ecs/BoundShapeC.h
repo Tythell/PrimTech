@@ -11,9 +11,9 @@ namespace pt
 		AABBComp(EntIdType entId);
 
 		void Update(pt::TransformComp& transform);
-		void SetExtends(const sm::Vector3& extends);
-		void SetPositionOffset(const sm::Vector3& pos);
-		sm::Vector3 GetPositionOffset() const;
+		void SetExtends(const float3& extends);
+		void SetPositionOffset(const float3& pos);
+		smm::Vector3 GetPositionOffset() const;
 
 		bool Intersects(AABBComp& box);
 
@@ -29,7 +29,7 @@ namespace pt
 		virtual void OnFree() override;
 	private:
 		d::BoundingBox m_aabb;
-		sm::Vector3 m_posOffset;
+		smm::Vector3 m_posOffset;
 		bool m_isIntersecting = false;
 
 
@@ -41,7 +41,7 @@ namespace pt
 		OBBComp(EntIdType entId);
 
 		void Update(const pt::TransformComp& transform);
-		void SetExtends(const sm::Vector3& extends);
+		void SetExtends(const float3& extends);
 
 		// Inherited via Component
 		virtual void DuplicateFrom(Component* other) override;

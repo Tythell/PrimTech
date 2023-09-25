@@ -21,7 +21,7 @@ namespace pt
 
 		void CreateRigidBody(const pt::TransformComp& ptTransform);
 
-		void AddBoxColider(const sm::Vector3& extents = { .5f, .5f, .5f });
+		void AddBoxColider(const float3& extents = { .5f, .5f, .5f });
 		void AddSphereColider(float radius);
 		void AddCapsuleColider(float radius, float height);
 		void RemoveCollider(uint index = 0);
@@ -29,11 +29,11 @@ namespace pt
 		rp::BodyType GetType() const { return m_bodyType; }
 		void SetType(rp::BodyType bodyType);
 
-		void SetPhysicsPosition(const sm::Vector3& v);
-		void SetPhysicsEulerRotation(const sm::Vector3& v);
-		void SetPhysicsQuatRotation(const sm::Quaternion& q);
-		void SetBoxExtents(const sm::Vector3& extents, uint index = 0);
-		void PhysMove(const sm::Vector3& v);
+		void SetPhysicsPosition(const float3& v);
+		void SetPhysicsEulerRotation(const float3& v);
+		void SetPhysicsQuatRotation(const quat& q);
+		void SetBoxExtents(const float3& extents, uint index = 0);
+		void PhysMove(const float3& v);
 
 		void SetSphereRadius(float r, uint index = 0);
 		void SetCapsuleLengths(float r, float h, uint index = 0);
@@ -44,9 +44,9 @@ namespace pt
 
 		void Freeze(bool b);
 
-		sm::Vector3 GetExtents(uint index = 0) const;
+		float3 GetExtents(uint index = 0) const;
 		float GetSphereRadius(uint index = 0) const;
-		sm::Vector2 GetCapsuleLengths(uint index = 0) const; // x = r, y = h
+		float2 GetCapsuleLengths(uint index = 0) const; // x = r, y = h
 		uint GetNoColliders() const;
 		bool Exists() const { return (mp_rigidBody); }
 		static void SetPtrs(PrimtTech::PhysicsHandler* pPhysHandle) { m_pPhysHandle = pPhysHandle; }

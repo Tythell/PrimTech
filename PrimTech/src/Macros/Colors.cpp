@@ -15,18 +15,18 @@ namespace pt
 	{
 		m_hexClr = hexColor;
 	}
-	sm::Vector3 Color::GetAsVector3() const
+	float3 Color::GetAsVector3() const
 	{
-		sm::Vector3 vec;
+		float3 vec;
 		vec.x = (float)((m_hexClr & 0x00ff0000) >> 16) / 255.f;
 		vec.y = (float)((m_hexClr & 0x0000ff00) >> 8) / 255.f;
 		vec.z = (float)((m_hexClr & 0x000000ff) >> 0) / 255.f;
 
 		return vec;
 	}
-	sm::Vector4 Color::GetAsVector4() const
+	float4 Color::GetAsVector4() const
 	{
-		sm::Vector4 vec;
+		float4 vec;
 		vec.x = (float)((m_hexClr & 0xff000000)	>> 24)	/ 255.f;
 		vec.y = (float)((m_hexClr & 0x00ff0000)	>> 16)	/ 255.f;
 		vec.z = (float)((m_hexClr & 0x0000ff00)	>> 8)	/ 255.f;

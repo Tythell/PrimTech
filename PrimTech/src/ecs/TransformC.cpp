@@ -12,10 +12,10 @@ namespace pt
 
 	void TransformComp::SetPosition(float x, float y, float z)
 	{
-		SetPosition(sm::Vector3(x, y, z));
+		SetPosition(float3(x, y, z));
 	}
 
-	void TransformComp::SetPosition(sm::Vector3 v)
+	void TransformComp::SetPosition(float3 v)
 	{
 		m_pos = v;
 		UpdateWorld();
@@ -23,18 +23,18 @@ namespace pt
 
 	void TransformComp::SetRotation(float x, float y, float z)
 	{
-		SetRotation(sm::Vector3(x, y, z));
+		SetRotation(float3(x, y, z));
 		UpdateWorld();
 	}
 
-	void TransformComp::SetRotation(sm::Vector3 v)
+	void TransformComp::SetRotation(float3 v)
 	{
-		m_rotQ = d::XMQuaternionRotationRollPitchYawFromVector(v);
+		m_rotQ = glm::quat(v);
 
 		UpdateWorld();
 	}
 
-	void TransformComp::SetRotation(sm::Quaternion q)
+	void TransformComp::SetRotation(quat q)
 	{
 		m_rotQ = q;
 		UpdateWorld();
@@ -42,16 +42,16 @@ namespace pt
 
 	void TransformComp::SetScale(float x, float y, float z)
 	{
-		SetScale(sm::Vector3(x, y, z));
+		SetScale(float3(x, y, z));
 	}
 
 	void TransformComp::SetScale(float xyz)
 	{
-		m_scale = sm::Vector3(xyz, xyz, xyz);
+		m_scale = float3(xyz, xyz, xyz);
 		UpdateWorld();
 	}
 
-	void TransformComp::SetScale(sm::Vector3 v)
+	void TransformComp::SetScale(float3 v)
 	{
 		m_scale = v;
 		UpdateWorld();
@@ -59,11 +59,11 @@ namespace pt
 
 	void TransformComp::Move(float x, float y, float z)
 	{
-		m_pos += sm::Vector3(x, y, z);
+		m_pos += float3(x, y, z);
 		UpdateWorld();
 	}
 
-	void TransformComp::Move(sm::Vector3 v)
+	void TransformComp::Move(float3 v)
 	{
 		m_pos += v;
 		UpdateWorld();
@@ -71,17 +71,18 @@ namespace pt
 
 	void TransformComp::Rotate(float x, float y, float z)
 	{
-		Rotate(sm::Vector3(x, y, z));
+		Rotate(float3(x, y, z));
 		UpdateWorld();
 	}
 
-	void TransformComp::Rotate(sm::Vector3 v)
+	void TransformComp::Rotate(float3 v)
 	{
-		//sm::Quaternion quat = quat.CreateFromYawPitchRoll(v.x, v.y, v.z);
+		//quat quat = quat.CreateFromYawPitchRoll(v.x, v.y, v.z);
 
 		//m_rotQ.
 
-		m_rotQ = d::XMQuaternionRotationRollPitchYawFromVector(v+ m_rotQ.ToEuler());
+		m_rotQ = quat(glm::eulerAngles(m_rotQ) + v);
+		//m_rotQ = d::XMQuaternionRotationRollPitchYawFromVector(v+ glm::eulerAngles(m_rotQ.ToEuler());
 		//ptm::ForceRotation(m_rot);
 
 		UpdateWorld();
@@ -89,11 +90,11 @@ namespace pt
 
 	void TransformComp::Scale(float x, float y, float z)
 	{
-		m_scale += sm::Vector3(x, y, z);
+		m_scale += float3(x, y, z);
 		UpdateWorld();
 	}
 
-	void TransformComp::Scale(sm::Vector3 v)
+	void TransformComp::Scale(float3 v)
 	{
 		m_scale += v;
 		UpdateWorld();
@@ -101,39 +102,43 @@ namespace pt
 
 	void TransformComp::Scale(float xyz)
 	{
-		m_scale += sm::Vector3(xyz, xyz, xyz);
+		m_scale += float3(xyz, xyz, xyz);
 		UpdateWorld();
 	}
 
-	void TransformComp::SetWorldMatrix(sm::Matrix m)
+	void TransformComp::SetWorldMatrix(matrix m)
 	{
-		worldTransposed = m.Transpose();
+		worldTransposed = glm::transpose(m);
 	}
 
-	sm::Vector3 TransformComp::GetPosition() const
+	float3 TransformComp::GetPosition() const
 	{
 		return m_pos;
 	}
 
-	sm::Vector3 TransformComp::GetRotation() const
+	float3 TransformComp::GetRotation() const
 	{
-		//sm::Vector3 eulerRotation = m_rot.ToEuler();
+		//float3 eulerRotation = m_rot.ToEuler();
 		//return eulerRotation;
-		return m_rotQ.ToEuler();
+		return glm::eulerAngles(m_rotQ);
 	}
 
-	sm::Vector3 TransformComp::GetScale() const
+	float3 TransformComp::GetScale() const
 	{
 		return m_scale;
 	}
 
 	void TransformComp::UpdateWorld()
 	{
-		worldTransposed =
-			d::XMMatrixScalingFromVector(m_scale) *
-			d::XMMatrixRotationQuaternion(m_rotQ) *
-			d::XMMatrixTranslationFromVector(m_pos);
-		worldTransposed = worldTransposed.Transpose();
+		//worldTransposed =
+		//	d::XMMatrixScalingFromVector(m_scale) *
+		//	d::XMMatrixRotationQuaternion(m_rotQ) *
+		//	d::XMMatrixTranslationFromVector(m_pos);
+		//worldTransposed = worldTransposed.Transpose();
+		/*worldTransposed = */
+		worldTransposed = glm::scale(worldTransposed, m_scale);
+		worldTransposed *= glm::toMat4(m_rotQ);
+		worldTransposed = glm::translate(worldTransposed, m_pos);
 	}
 
 	void TransformComp::OnFree() {}
@@ -147,27 +152,27 @@ namespace pt
 		worldTransposed = otherComp->worldTransposed;
 	}
 
-	sm::Matrix TransformComp::GetWorldTransposed() const
+	matrix TransformComp::GetWorldTransposed() const
 	{
 		return worldTransposed;
 	}
 
-	sm::Matrix TransformComp::GetWorld() const
+	matrix TransformComp::GetWorld() const
 	{
-		sm::Matrix world = worldTransposed;
-		return d::XMMatrixTranspose(world);
+		matrix world = worldTransposed;
+		return glm::transpose(worldTransposed);
 	}
 
-	sm::Matrix TransformComp::GetWorldInversed()
+	matrix TransformComp::GetWorldInversed()
 	{
-		sm::Matrix matrix =
-			d::XMMatrixInverse(nullptr, DirectX::XMMatrixTranslationFromVector(m_pos)) *
-			d::XMMatrixInverse(nullptr, DirectX::XMMatrixRotationQuaternion(m_rotQ)) *
-			d::XMMatrixInverse(nullptr, DirectX::XMMatrixScalingFromVector(m_scale));
+		matrix matrix =
+			glm::inverse(glm::scale(worldTransposed, m_scale)) *
+			glm::inverse(glm::toMat4(m_rotQ)) *
+			glm::inverse(glm::scale(worldTransposed, m_scale));
 		return matrix;
 	}
 
-	sm::Quaternion TransformComp::GetRotationQuaternion() const
+	quat TransformComp::GetRotationQuaternion() const
 	{
 		return m_rotQ;
 	}

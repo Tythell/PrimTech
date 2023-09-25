@@ -61,7 +61,7 @@ Editor::Editor(d::XMINT2 windowRes, HINSTANCE hInstance)
 	pt::Entity& devEnt = pt::Entity::Create();
 	pt::Camera* devCam = devEnt.AddComponent<pt::Camera>();
 	devCam->UpdateView(devEnt.Transform());
-	devCam->SetPerspective(80.f, (float)windowRes.x / (float)windowRes.y, 0.1f, 100.f);
+	devCam->SetPerspective(80.f, (float)windowRes.x, (float)windowRes.y, 0.1f, 100.f);
 	devEnt.SetPosition(0.f, 1.f, -2.f);
 
 	pt::Entity::ReserveEnts(10);
@@ -95,11 +95,11 @@ Editor::~Editor()
 {
 }
 
-sm::Vector3 Vector3FromString(std::stringstream& ss)
+float3 Vector3FromString(std::stringstream& ss)
 {
 	std::string argBuffer;
 
-	sm::Vector3 extents;
+	float3 extents;
 	ss >> argBuffer;
 	extents.x = (float)atof(argBuffer.c_str());
 	ss >> argBuffer;
@@ -244,7 +244,7 @@ void Editor::execCommand(std::string cmd)
 					ss >> argBuffer;
 					if (argBuffer == "add")
 					{
-						sm::Vector2 lengths;
+						float2 lengths;
 						ss >> argBuffer;
 						lengths.x = (float)atof(argBuffer.c_str());
 						ss >> argBuffer;
@@ -253,7 +253,7 @@ void Editor::execCommand(std::string cmd)
 					}
 					else if (argBuffer == "edit")
 					{
-						sm::Vector2 lengths;
+						float2 lengths;
 						ss >> argBuffer;
 						lengths.x = (float)atof(argBuffer.c_str());
 						ss >> argBuffer;
@@ -412,7 +412,7 @@ void Editor::Update(float deltatime)
 		m_entlist.console.cmdQ.pop();
 	}
 
-	sm::Vector3 move = { 0.f,0.f,0.f };
+	float3 move = { 0.f,0.f,0.f };
 
 	bool canMove = MouseHandler::GetIsMouseDown(eRIGHTCLICK);
 
@@ -431,10 +431,10 @@ void Editor::Update(float deltatime)
 		if (KeyboardHandler::IsKeyDown(Key::S))
 			move += -pDevCam->GetForwardV();
 		if (KeyboardHandler::IsKeyDown(Key::SPACE))
-			move += {0.f, 1.f, 0.f};
+			move += float3(0.f, 1.f, 0.f);
 		if (KeyboardHandler::IsKeyDown(Key::SHIFT))
-			move += {0.f, -1.f, 0.f};
-		move.Normalize();
+			move += float3(0.f, -1.f, 0.f);
+		move = glm::normalize(move);
 
 		move *= 10.f;
 
@@ -447,7 +447,7 @@ void Editor::Update(float deltatime)
 		MouseEvent me = MouseHandler::ReadEvent();
 		if (me.GetType() == MouseEvent::EventType::RAW_MOVE && canMove)
 		{
-			sm::Vector2 mouseMove = { (float)me.GetPosition().y, (float)me.GetPosition().x };
+			float2 mouseMove = { (float)me.GetPosition().y, (float)me.GetPosition().x };
 			mouseMove *= m_mouseSense;
 			pDevTransform->Rotate(mouseMove.x, mouseMove.y, 0.f);
 			//pDevCam->UpdateView(*pDevTransform);
@@ -467,15 +467,15 @@ void Editor::Update(float deltatime)
 			//float x = (2.f * mouseX) / winWidth - 1.f;
 			//float y = 1.f - (2.f * mouseY) / winHeight;
 
-			//sm::Vector4 clipRay(x, y, -1.f, 1.f);
+			//float4 clipRay(x, y, -1.f, 1.f);
 
-			//sm::Vector4 eyeRay = XMVector4Transform(clipRay, d::XMMatrixInverse(nullptr, pDevTransform->GetProjM()));
+			//float4 eyeRay = XMVector4Transform(clipRay, d::XMMatrixInverse(nullptr, pDevTransform->GetProjM()));
 
-			//eyeRay = sm::Vector4(eyeRay.x, eyeRay.y, 1.f, 0.f);
+			//eyeRay = float4(eyeRay.x, eyeRay.y, 1.f, 0.f);
 
-			//sm::Vector4 worldRay = XMVector4Transform(eyeRay, d::XMMatrixInverse(nullptr, pDevTransform->GetViewM()));
+			//float4 worldRay = XMVector4Transform(eyeRay, d::XMMatrixInverse(nullptr, pDevTransform->GetViewM()));
 
-			//sm::Vector3 normRay(worldRay.x, worldRay.y, worldRay.z);
+			//float3 normRay(worldRay.x, worldRay.y, worldRay.z);
 
 			//normRay.Normalize();
 
