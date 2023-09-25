@@ -435,7 +435,8 @@ namespace PrimtTech
 			uint numMeshes = meshVec.size();
 
 			// Set world matrix to identity because they should be affected by instanced world matrix instead
-			transformBuffer.Data().world = matrix();
+
+			transformBuffer.Data().world = matrix(1.f);
 			transformBuffer.MapBuffer();
 
 			for (int i = 0; i < numMeshes; i++)
@@ -516,7 +517,7 @@ namespace PrimtTech
 			//rPrefabs[i].RefreshInstance();
 		}
 		uint nOPrefs = prefabsArr.size();
-		transformBuffer.Data().world = matrix();;
+		transformBuffer.Data().world = matrix(1.f);;
 		transformBuffer.MapBuffer();
 		for (int i = 0; i < nOPrefs; i++)
 		{
@@ -638,11 +639,11 @@ namespace PrimtTech
 		m_transformBuffer.MapBuffer();
 		drawMeshes(rMeshrefs, rTransforms, rPrefabrefs,
 			m_transformBuffer, &m_materialBuffer, dc, deltatime, im->m_drawCalls);
-		std::vector<Camera> cams = ComponentHandler::GetComponentArray<Camera>();
-		for (int i = 0; i < noCams; i++)
-		{
+		//std::vector<Camera> cams = ComponentHandler::GetComponentArray<Camera>();
+		//for (int i = 0; i < noCams; i++)
+		//{
 			//cams[i].E
-		}
+		//}
 
 		m_transformBuffer.Data().world = matrix(1.f);
 		dc->VSSetShader(m_lineVS.GetShader(), NULL, 0);
@@ -662,34 +663,13 @@ namespace PrimtTech
 
 		if (im->m_drawGrid)
 		{
-			m_transformBuffer.Data().world = matrix();
+			m_transformBuffer.Data().world = matrix(1);
 			m_transformBuffer.MapBuffer();
 			dc->IASetVertexBuffers(0, 1, m_grid.GetReference(), m_grid.GetStrideP(), &offset);
 			dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_LINELIST);
 			dc->Draw(m_grid.GetBufferSize(), 0);
 		}
 
-		//std::vector<AABBComp>& rAabbs = ComponentHandler::GetComponentArray<AABBComp>();
-		//uint numAabbs = (uint)rAabbs.size();
-		//m_renderbox.SetBuffer(dc);
-		//for (int i = 0; i < numAabbs; i++)
-		//{
-		//	uint entId = rAabbs[i].EntId();
-		//	TransformComp& pTransformComp = rTransforms[entId];
-
-		//	float3 scaling = rAabbs[i].GetBox().Extents;
-
-		//	d::XMMATRIX world = d::XMMatrixScalingFromVector(scaling) *
-		//		d::XMMatrixTranslationFromVector(float3(rAabbs[i].GetBox().Center));
-
-		//	bool intersecting = rAabbs[i].IsIntersecting();
-		//	if (intersecting) m_renderbox.SetColor(GREEN_3F);
-		//	else m_renderbox.SetColor(WHITE_3F);
-
-		//	m_transformBuffer.Data().world = d::XMMatrixTranspose(world);
-		//	m_transformBuffer.MapBuffer();
-		//	m_renderbox.DrawShape(dc);
-		//}
 
 		ImGuiRender();
 		im->m_drawCalls = 0;

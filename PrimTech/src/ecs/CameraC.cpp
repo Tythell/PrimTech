@@ -4,7 +4,11 @@
 
 namespace pt
 {
-	pt::Camera::Camera(EntIdType entId) : Component(entId) {}
+	pt::Camera::Camera(EntIdType entId) : Component(entId),
+		m_forwardV(0.f,0.f,1.f), m_leftV(0.f, 0.f, 1.f), m_upV(0.f,1.f,0.f),
+		m_projM(1.f), m_viewM(1.f),
+		m_rotateOffset(0.f), m_posOffset(0.f, 0.f, -2.f)
+	{}
 
 	matrix pt::Camera::GetViewMatrix() const
 	{
@@ -53,12 +57,14 @@ namespace pt
 
 		camTarget = camTarget + float4(entTransform.GetPosition(), 0.f);
 
-		//m_forwardV = float4(0.f, 0.f, 1.f, 0.f) * camRot;
-		//m_leftV = float4(-1.f, 0.f, 0.f, 0.f) * camRot;
-		//m_upV = float4(0.f, 1.f, 0.f, 0.f) * camRot;
+		m_forwardV = float4(0.f, 0.f, 1.f, 0.f) * camRot;
+		m_leftV = float4(-1.f, 0.f, 0.f, 0.f) * camRot;
+		m_upV = float4(0.f, 1.f, 0.f, 0.f) * camRot;
 
-		//float3 eyePos = entTransform.GetPosition();
-		//m_viewM = glm::lookAtLH(eyePos, float3(camTarget), m_upV) * glm::translate(matrix(), m_posOffset);
+		float3 eyePos = entTransform.GetPosition();
+		m_viewM = glm::lookAtLH(eyePos, float3(camTarget), m_upV) * glm::translate(matrix(), m_posOffset);
+
+		//m_viewM = matrix(1.f);
 
 
 

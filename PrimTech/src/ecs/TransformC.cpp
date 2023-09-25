@@ -5,7 +5,7 @@
 
 namespace pt
 {
-	TransformComp::TransformComp(EntIdType entId) : Component(entId),
+	TransformComp::TransformComp(EntIdType entId) : Component(entId), worldTransposed(1.f),
 		m_scale(1.f, 1.f, 1.f), m_pos(0.f,0.f,0.f), m_rotQ(0.f,0.f,0.f, 1.f)
 	{
 	}

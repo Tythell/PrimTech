@@ -46,10 +46,6 @@ namespace pt
 
 		bool m_isOrthographic = false;
 
-	
-
-
-
 	};
 }
 
