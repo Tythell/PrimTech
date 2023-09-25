@@ -6,7 +6,7 @@
 namespace pt
 {
 	TransformComp::TransformComp(EntIdType entId) : Component(entId),
-		m_scale(1.f, 1.f, 1.f), m_pos(0.f,0.f,0.f), m_rot(0.f,0.f,0.f)
+		m_scale(1.f, 1.f, 1.f), m_pos(0.f,0.f,0.f), m_rotQ(0.f,0.f,0.f, 1.f)
 	{
 	}
 
@@ -29,22 +29,15 @@ namespace pt
 
 	void TransformComp::SetRotation(sm::Vector3 v)
 	{
-		//if (v.x < 0.f || v.x > d::XM_2PI) v.x = d::XM_2PI + v.x;
-		//if (v.y < 0.f || v.y > d::XM_2PI) v.y = d::XM_2PI + v.y;
-		//if (v.z < 0.f || v.z > d::XM_2PI) v.z = d::XM_2PI + v.z;
-		m_rot = v;
-		//ptm::ForceRotation(m_rot);
-		//if (v.x + v.y + v.z != 0.f)
-			//printf("");
-		//sm::Quaternion quat = quat.CreateFromYawPitchRoll(v.x, v.y, v.z);
+		m_rotQ = d::XMQuaternionRotationRollPitchYawFromVector(v);
 
-		//m_rot = quat;
 		UpdateWorld();
 	}
 
 	void TransformComp::SetRotation(sm::Quaternion q)
 	{
-		m_rot = q.ToEuler();
+		m_rotQ = q;
+		UpdateWorld();
 	}
 
 	void TransformComp::SetScale(float x, float y, float z)
@@ -85,7 +78,10 @@ namespace pt
 	void TransformComp::Rotate(sm::Vector3 v)
 	{
 		//sm::Quaternion quat = quat.CreateFromYawPitchRoll(v.x, v.y, v.z);
-		m_rot += v;
+
+		//m_rotQ.
+
+		m_rotQ = d::XMQuaternionRotationRollPitchYawFromVector(v+ m_rotQ.ToEuler());
 		//ptm::ForceRotation(m_rot);
 
 		UpdateWorld();
@@ -123,7 +119,7 @@ namespace pt
 	{
 		//sm::Vector3 eulerRotation = m_rot.ToEuler();
 		//return eulerRotation;
-		return m_rot;
+		return m_rotQ.ToEuler();
 	}
 
 	sm::Vector3 TransformComp::GetScale() const
@@ -135,20 +131,18 @@ namespace pt
 	{
 		worldTransposed =
 			d::XMMatrixScalingFromVector(m_scale) *
-			d::XMMatrixRotationRollPitchYawFromVector(m_rot) *
+			d::XMMatrixRotationQuaternion(m_rotQ) *
 			d::XMMatrixTranslationFromVector(m_pos);
 		worldTransposed = worldTransposed.Transpose();
 	}
 
-	void TransformComp::OnFree()
-	{
-	}
+	void TransformComp::OnFree() {}
 
 	void TransformComp::DuplicateFrom(Component* other)
 	{
 		TransformComp* otherComp = dynamic_cast<TransformComp*>(other);
 		m_pos = otherComp->m_pos;
-		m_rot = otherComp->m_rot;
+		m_rotQ = otherComp->m_rotQ;
 		m_scale = otherComp->m_scale;
 		worldTransposed = otherComp->worldTransposed;
 	}
@@ -168,15 +162,14 @@ namespace pt
 	{
 		sm::Matrix matrix =
 			d::XMMatrixInverse(nullptr, DirectX::XMMatrixTranslationFromVector(m_pos)) *
-			d::XMMatrixInverse(nullptr, DirectX::XMMatrixRotationRollPitchYawFromVector(m_rot)) *
+			d::XMMatrixInverse(nullptr, DirectX::XMMatrixRotationQuaternion(m_rotQ)) *
 			d::XMMatrixInverse(nullptr, DirectX::XMMatrixScalingFromVector(m_scale));
 		return matrix;
 	}
 
 	sm::Quaternion TransformComp::GetRotationQuaternion() const
 	{
-		sm::Quaternion quat = quat.CreateFromYawPitchRoll(m_rot.x, m_rot.y, m_rot.z);
-		return quat;
+		return m_rotQ;
 	}
 	//int TransformComp::Lua_Move(lua_State* L)
 	//{

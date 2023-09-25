@@ -41,8 +41,8 @@ namespace pt
 	protected:
 		void UpdateWorld();
 	private:
-		sm::Vector3 m_pos, m_rot, m_scale;
-		//sm::Quaternion m_rot;
+		sm::Vector3 m_pos, m_scale;
+		sm::Quaternion m_rotQ;
 		sm::Matrix worldTransposed;
 
 

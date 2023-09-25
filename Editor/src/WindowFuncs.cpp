@@ -718,15 +718,17 @@ void Gui_EntList(void* test, bool* show)
 		}
 		sm::Vector3 transform = pEnt->Transform().GetPosition();
 		ImGui::BeginDisabled(p->selected == 0);
-		if (ImGui::DragFloat3("Translate", reinterpret_cast<float*>(&transform), 0.02f))
+		if (ImGui::DragFloat3("Translate", &transform.x, 0.02f))
+		{
 			pEnt->SetPosition(transform);
+		}
 
 		transform = pEnt->Transform().GetRotation();
-		if (ImGui::DragFloat3("Rotate", reinterpret_cast<float*>(&transform), 0.02f))
-			pEnt->Transform().SetRotation(transform);
+		if (ImGui::DragFloat3("Rotate", &transform.x, 0.02f))
+			pEnt->SetRotation(transform);
 
 		transform = pEnt->Transform().GetScale();
-		if (ImGui::DragFloat3("Scale", reinterpret_cast<float*>(&transform), 0.02f))
+		if (ImGui::DragFloat3("Scale", &transform.x, 0.02f))
 			pEnt->Transform().SetScale(transform);
 		ImGui::EndDisabled();
 
@@ -1138,10 +1140,6 @@ void Gui_EntList(void* test, bool* show)
 				pt::PhysicsBody* p = pEnt->GetComponent<pt::PhysicsBody>();
 
 				p->SetPhysicsTransformation(rTr);
-
-				//p->SetPhysicsPosition(pos);
-				//p->SetPhysicsQuatRotation(rot);
-				//p->UpdateTransform
 			}
 		}
 

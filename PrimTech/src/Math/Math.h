@@ -2,11 +2,13 @@
 #include<DirectXMath.h>
 #include <DirectXCollision.h>
 #include"../Math/Simplemath.h"
+#include <glm/glm.hpp>
+
 #include <cmath>
 #include <string>
 #include <cstdint>
 #include <algorithm>
-namespace sm = DirectX::SimpleMath;
+namespace smm = DirectX::SimpleMath;
 namespace d = DirectX;
 
 using uint = unsigned int;
@@ -14,12 +16,12 @@ using uint2 = d::XMUINT2;
 using uint3 = d::XMUINT3;
 using uint4 = d::XMUINT4;
 
-using float2 = sm::Vector2;
-using float3 = sm::Vector3;
-using float4 = sm::Vector4;
+using float2 = glm::vec2;
+using float3 = glm::vec3;
+using float4 = glm::vec4;
 
-using float4x4 = sm::Matrix;
-using matrix = sm::Matrix;
+using float4x4 = glm::mat4x4;
+using matrix = glm::mat4x4;
 
 using int2 = d::XMINT2;
 using int3 = d::XMINT3;
@@ -37,7 +39,7 @@ namespace ptm
 		return (bits & 0x80000000) ? 31 : firstset((bits << 1) | 1) - 1;
 	}
 
-	inline std::string GetVectorAsString(sm::Vector3 v)
+	inline std::string GetVectorAsString(float3 v)
 	{
 		std::string s = std::to_string(v.x);
 		s += " ";
@@ -46,7 +48,7 @@ namespace ptm
 		s += std::to_string(v.z);
 		return s;
 	}
-	inline std::string GetVectorAsString(sm::Vector4 v)
+	inline std::string GetVectorAsString(float4 v)
 	{
 		std::string s = std::to_string(v.x);
 		s += " ";
@@ -77,15 +79,17 @@ namespace ptm
 		return float((rand() % n2 + n1) / powD);
 	}
 
-	inline void ForceRotation(sm::Vector3& v)
+	inline void ForceRotation(float3& v)
 	{
-		v.x = fmodf(v.x, d::XM_2PI);
-		v.y = fmodf(v.y, d::XM_2PI);
-		v.z = fmodf(v.z, d::XM_2PI);
+		//v.x = fmodf(v.x, d::XM_2PI);
+		//v.y = fmodf(v.y, d::XM_2PI);
+		//v.z = fmodf(v.z, d::XM_2PI);
 
-		if (v.x < 0.f) v.x += d::XM_2PI;
-		if (v.y < 0.f) v.y += d::XM_2PI;
-		if (v.z < 0.f) v.z += d::XM_2PI;
+		//if (v.x < 0.f) v.x += d::XM_2PI;
+		//if (v.y < 0.f) v.y += d::XM_2PI;
+		//if (v.z < 0.f) v.z += d::XM_2PI;
+
+
 		//else if (v.x > d::XM_2PI) v.x -= d::XM_2PI;
 		//else if (v.y > d::XM_2PI) v.y -= d::XM_2PI;
 		//else if (v.z > d::XM_2PI) v.z -= d::XM_2PI;
@@ -93,14 +97,14 @@ namespace ptm
 
 	inline void ForceRotation(float& x, float& y, float& z)
 	{
-		sm::Vector3 v(x, y, z);
+		float3 v(x, y, z);
 		ForceRotation(v);
 		x = v.x;
 		y = v.y;
 		z = v.z;
 	}
 
-	inline float GetHighestValue(const sm::Vector3& v)
+	inline float GetHighestValue(const float3& v)
 	{
 		float arr[3] = { v.x, v.y, v.z };
 		float value = -999999;

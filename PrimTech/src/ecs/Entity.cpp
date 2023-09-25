@@ -104,14 +104,22 @@ namespace pt
 
 	void Entity::SetPosition(const sm::Vector3& v)
 	{
+		Transform().SetPosition(v);
+
 		if (m_physIndex != -1)
 		{
-			PhysicsBody& physBod = PrimtTech::ComponentHandler::GetComponentByIndex<PhysicsBody>((uint)m_physIndex);
+			pt::PhysicsBody& p = PrimtTech::ComponentHandler::GetComponentByIndex<PhysicsBody>((uint)m_physIndex);
 
-			physBod.SetPhysicsPosition(v);
+			p.SetPhysicsTransformation(Transform());
 		}
-		else
-			Transform().SetPosition(v);
+		//if (m_physIndex != -1)
+		//{
+		//	PhysicsBody& physBod = PrimtTech::ComponentHandler::GetComponentByIndex<PhysicsBody>((uint)m_physIndex);
+
+		//	physBod.SetPhysicsPosition(v);
+		//}
+		//else
+		//	Transform().SetPosition(v);
 	}
 
 	void Entity::SetRotation(float x, float y, float z)
@@ -119,28 +127,56 @@ namespace pt
 		SetRotation(sm::Vector3(x, y, z));
 	}
 
-	void Entity::SetRotation(const sm::Vector3& v)
+	sm::Vector3 toQuatTest(sm::Quaternion q)
 	{
-		if (m_physIndex != -1)
-		{
-			PhysicsBody& physBod = PrimtTech::ComponentHandler::GetComponentByIndex<PhysicsBody>((uint)m_physIndex);
+		sm::Vector3 angles;    //yaw pitch roll
+		const float x = q.x;
+		const float y = q.y;
+		const float z = q.z;
+		const float w = q.w;
 
-			physBod.SetPhysicsEulerRotation(v);
-		}
+		// roll (x-axis rotation)
+		double sinr_cosp = 2 * (w * x + y * z);
+		double cosr_cosp = 1 - 2 * (x * x + y * y);
+		angles.x = std::atan2(sinr_cosp, cosr_cosp);
+
+		// pitch (y-axis rotation)
+		double sinp = 2 * (w * y - z * x);
+		if (std::abs(sinp) >= 1)
+			angles.y = std::copysign(d::XM_PI / 2, sinp); // use 90 degrees if out of range
 		else
-			Transform().SetRotation(v);
+			angles.y = std::asin(sinp);
+
+		// yaw (z-axis rotation)
+		double siny_cosp = 2 * (w * z + x * y);
+		double cosy_cosp = 1 - 2 * (y * y + z * z);
+		angles.z = std::atan2(siny_cosp, cosy_cosp);
+		return angles;
 	}
 
-	void Entity::SetRotation(const sm::Quaternion& v)
+	void Entity::SetRotation(const sm::Vector3& v)
 	{
+		sm::Quaternion quat = quat.CreateFromYawPitchRoll(v);
+		Transform().SetRotation(quat);
+
 		if (m_physIndex != -1)
 		{
 			PhysicsBody& physBod = PrimtTech::ComponentHandler::GetComponentByIndex<PhysicsBody>((uint)m_physIndex);
 
-			//physBod.SetPhysicsEulerRotation(v.ToEuler());
+			physBod.SetPhysicsQuatRotation(quat);
 		}
-		else
-			Transform().SetRotation(v);
+	}
+
+	void Entity::SetRotation(const sm::Quaternion& q)
+	{
+		Transform().SetRotation(q);
+
+		if (m_physIndex != -1)
+		{
+			PhysicsBody& physBod = PrimtTech::ComponentHandler::GetComponentByIndex<PhysicsBody>((uint)m_physIndex);
+
+			physBod.SetPhysicsQuatRotation(q);
+		}
 	}
 
 	void Entity::SetScale(float x, float y, float z)

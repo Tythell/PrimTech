@@ -120,16 +120,13 @@ namespace pt
 
 	void PhysicsBody::SetPhysicsEulerRotation(const sm::Vector3& v)
 	{
-		pt::TransformComp ptTransform = Entity::GetEntity(EntId()).Transform();
-		rp::Transform rpTransform;
-		//rpTransform.setToIdentity();
 		rp::BodyType type = mp_rigidBody->getType();
 		mp_rigidBody->setType(rp::BodyType::STATIC);
 
-		rp::Quaternion q;
+		rp::Quaternion q = q.fromEulerAngles(v.x, v.y, v.z);
 
-		q.fromEulerAngles(v.x, v.y, v.z);
-
+		pt::TransformComp ptTransform = Entity::GetEntity(EntId()).Transform();
+		rp::Transform rpTransform;
 		rpTransform.setOrientation(q);
 		rpTransform.setPosition({
 			ptTransform.GetPosition().x,
