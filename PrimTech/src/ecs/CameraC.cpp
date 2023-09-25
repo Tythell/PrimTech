@@ -29,7 +29,7 @@ namespace pt
 	}
 	void Camera::SetPerspective(float fovDeg, float width, float height, float nearZ, float farZ)
 	{
-		float fovRad = (fovDeg / 360.f) * d::XM_2PI;
+		float fovRad = glm::radians(fovDeg);
 		m_projM = glm::perspectiveFovLH(fovRad, width, height, nearZ, farZ);
 		//m_projM = d::XMMatrixPerspectiveFovLH(fovRad, aspectRatio, nearZ, farZ);
 		m_isOrthographic = false;
@@ -48,17 +48,20 @@ namespace pt
 
 
 		float4 camTarget(0.f, 0.f, 1.f, 0.f);
-		camTarget *= camRot;
+		camTarget = camTarget * camRot;
 		//float3 camTarget3(camTarget.x, camTarget.y, camTarget.z);
 
-		camTarget += entTransform.GetPosition();
+		camTarget = camTarget + float4(entTransform.GetPosition(), 0.f);
 
-		m_forwardV = float4(0.f, 0.f, 1.f, 0.f) * camRot;
-		m_leftV = float4(-1.f, 0.f, 0.f, 0.f) * camRot;
-		m_upV = float4(0.f, 1.f, 0.f, 0.f) * camRot;
+		//m_forwardV = float4(0.f, 0.f, 1.f, 0.f) * camRot;
+		//m_leftV = float4(-1.f, 0.f, 0.f, 0.f) * camRot;
+		//m_upV = float4(0.f, 1.f, 0.f, 0.f) * camRot;
 
-		float3 eyePos = entTransform.GetPosition();
-		m_viewM = glm::lookAtLH(eyePos, float3(camTarget), m_upV) * glm::translate(matrix(), m_posOffset);
+		//float3 eyePos = entTransform.GetPosition();
+		//m_viewM = glm::lookAtLH(eyePos, float3(camTarget), m_upV) * glm::translate(matrix(), m_posOffset);
+
+
+
 
 		//d::XMVECTOR camTarget = d::XMVector3TransformCoord(float4(0.f, 0.f, 1.f, 0.f), camRot);
 		//camTarget += entTransform.GetPosition();

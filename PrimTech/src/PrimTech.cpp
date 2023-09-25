@@ -85,7 +85,7 @@ namespace pt
 			}
 		}
 		
-		std::vector<pt::AABBComp>& aabbs = ComponentHandler::GetComponentArray<pt::AABBComp>();
+		//std::vector<pt::AABBComp>& aabbs = ComponentHandler::GetComponentArray<pt::AABBComp>();
 
 		//for (int i = 0; i < aabbs.size(); i++)
 		//{
