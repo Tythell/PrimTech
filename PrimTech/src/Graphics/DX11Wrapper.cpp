@@ -175,7 +175,8 @@ namespace PrimtTech
 		ZeroMemory(&rastDesc, sizeof(D3D11_RASTERIZER_DESC));
 		rastDesc.FillMode = D3D11_FILL_MODE::D3D11_FILL_SOLID;
 
-		rastDesc.CullMode = D3D11_CULL_MODE::D3D11_CULL_BACK;
+		rastDesc.CullMode = D3D11_CULL_MODE::D3D11_CULL_NONE;
+		//rastDesc.CullMode = D3D11_CULL_MODE::D3D11_CULL_BACK;
 		rastDesc.FrontCounterClockwise = false;
 
 		HRESULT hr = device->CreateRasterizerState(&rastDesc, &m_rasterizerState);
@@ -422,7 +423,7 @@ namespace PrimtTech
 				uint index = rMeshrefs[i].GetInstIndex() + 1; // instance 1 is identity matrix
 
 				MeshInstance mehsInst;
-				matrix mat = pTransformComp->GetWorld();
+				matrix mat = pTransformComp->GetWorldTransposed();
 
 				memcpy(&mehsInst.row.x, &mat[0][0], sizeof(float) * 3);
 				memcpy(&mehsInst.row1.x, &mat[1][0], sizeof(float) * 3);
@@ -624,7 +625,7 @@ namespace PrimtTech
 		dc->OMSetRenderTargets(1, &m_rtv, m_dsView);
 		dc->RSSetViewports(1, &m_viewport);
 
-		m_transformBuffer.Data().viewProj = glm::transpose(cc.GetViewMatrix() * cc.GetProjMatrix());
+		m_transformBuffer.Data().viewProj = glm::transpose(cc.GetProjMatrix() * cc.GetViewMatrix());
 		m_transformBuffer.MapBuffer();
 
 		dc->IASetInputLayout(m_3dvs.GetInputLayout());

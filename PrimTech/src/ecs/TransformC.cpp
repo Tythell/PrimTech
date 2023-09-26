@@ -6,7 +6,7 @@
 namespace pt
 {
 	TransformComp::TransformComp(EntIdType entId) : Component(entId), worldTransposed(1.f),
-		m_scale(1.f, 1.f, 1.f), m_pos(0.f,0.f,0.f), m_rotQ(0.f,0.f,0.f, 1.f)
+		m_scale(1.f, 1.f, 1.f), m_pos(0.f,0.f,0.f), m_rotQ(1.f,0.f,0.f, 0.f)
 	{
 	}
 
@@ -135,10 +135,17 @@ namespace pt
 		//	d::XMMatrixRotationQuaternion(m_rotQ) *
 		//	d::XMMatrixTranslationFromVector(m_pos);
 		//worldTransposed = worldTransposed.Transpose();
-		/*worldTransposed = */
-		worldTransposed = glm::scale(worldTransposed, m_scale);
-		worldTransposed *= glm::toMat4(m_rotQ);
-		worldTransposed = glm::translate(worldTransposed, m_pos);
+		worldTransposed =
+			/*glm::scale(worldTransposed, m_scale) *
+			glm::toMat4(m_rotQ) **/
+			glm::translate(worldTransposed, m_pos);
+
+		worldTransposed = glm::transpose(worldTransposed);
+
+		//worldTransposed = glm::scale(worldTransposed, m_scale);
+		//worldTransposed = worldTransposed * glm::toMat4(m_rotQ);
+
+		//worldTransposed = glm::translate(worldTransposed, m_pos);
 	}
 
 	void TransformComp::OnFree() {}
@@ -155,21 +162,29 @@ namespace pt
 	matrix TransformComp::GetWorldTransposed() const
 	{
 		return worldTransposed;
+		//matrix worldTest(1.f);
+		//worldTest = glm::translate(worldTest, float3(0.f, 10000.f, -10.f));
+		//return worldTest;
 	}
 
 	matrix TransformComp::GetWorld() const
 	{
-		matrix world = worldTransposed;
+		//matrix world = worldTransposed;
+		//matrix worldTest(1.f);
+		//worldTest = glm::translate(worldTest, float3(0.f, 10000.f, -10.f));
+		//return worldTest;
 		return glm::transpose(worldTransposed);
+		//return matrix(1.f);
 	}
 
 	matrix TransformComp::GetWorldInversed()
 	{
-		matrix matrix =
-			glm::inverse(glm::scale(worldTransposed, m_scale)) *
-			glm::inverse(glm::toMat4(m_rotQ)) *
-			glm::inverse(glm::scale(worldTransposed, m_scale));
-		return matrix;
+		//matrix matrix =
+		//	glm::inverse(glm::scale(worldTransposed, m_scale)) *
+		//	glm::inverse(glm::toMat4(m_rotQ)) *
+		//	glm::inverse(glm::scale(worldTransposed, m_scale));
+		//return matrix;
+		return matrix(1.f);
 	}
 
 	quat TransformComp::GetRotationQuaternion() const

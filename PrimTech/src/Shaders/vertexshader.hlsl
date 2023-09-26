@@ -1,7 +1,7 @@
 cbuffer TransformBuffer : register(b0)
 {
     float4x4 world;
-    float4x4 viewProj;
+    float4x4 projView;
     float4x4 lightviewProj;
 };
 
@@ -45,7 +45,8 @@ VSOutput main(VSInput input)
     // this way, switching vertex shader won't be neccesary
     float4x4 finalWorld = mul(instWorld, world);
     
-    output.position = mul(float4(input.localPosition.xyz, 1.f), mul(finalWorld, viewProj));
+    //output.position = mul(float4(input.localPosition.xyz, 1.f), mul(world, viewProj));
+    output.position = mul(mul(projView, world), float4(input.localPosition.xyz, 1.f));
     output.texCoord = input.texCoord;
     output.normal = normalize(mul(float4(input.localNormal, 0.f), finalWorld));
     output.worldpos = mul(float4(input.localPosition.xyz, 1.f), finalWorld).xyz;

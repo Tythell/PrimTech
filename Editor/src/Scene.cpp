@@ -434,7 +434,7 @@ void Editor::Update(float deltatime)
 			move += float3(0.f, 1.f, 0.f);
 		if (KeyboardHandler::IsKeyDown(Key::SHIFT))
 			move += float3(0.f, -1.f, 0.f);
-		move = glm::normalize(move);
+		move = glm::length(move) > 0 ? glm::normalize(move) : float3(0.f);
 
 		move *= 10.f;
 
