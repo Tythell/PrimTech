@@ -20,14 +20,19 @@ namespace pt
 		if (mp_rigidBody)
 		{
 			const reactphysics3d::Transform& rpTransform = mp_rigidBody->getTransform();
+			rp::Vector3 rpPos = rpTransform.getPosition();
+			rp::Quaternion rpQuat = rpTransform.getOrientation();
 
-			rp::Vector3 rpPos(rpTransform.getPosition());
-			rp::Quaternion rpQuat(rpTransform.getOrientation());
-			float3 smPos(rpPos.x, rpPos.y, rpPos.z);
-			quat smQuat(rpQuat.x, rpQuat.y, rpQuat.z, rpQuat.w);
+			matrix mat;
+			rpTransform.getOpenGLMatrix(&mat[0][0]);
+
+			transform.SetWorldMatrix(mat);
+
+			/*float3 smPos(rpPos.x, rpPos.y, rpPos.z);
+			quat smQuat(rpQuat.x, rpQuat.y, -rpQuat.z, rpQuat.w);
 
 			transform.SetPosition(smPos);
-			transform.SetRotation(smQuat);
+			transform.SetRotationQ(smQuat);*/
 		}
 	}
 
@@ -94,44 +99,31 @@ namespace pt
 	}
 	void PhysicsBody::SetPhysicsPosition(const float3& v)
 	{
-		std::vector<pt::TransformComp>& sss = PrimtTech::ComponentHandler::GetComponentArray<pt::TransformComp>();
-		pt::TransformComp& ptTransform = sss[EntId()];
-		rp::Transform rpTransform;
-		
+		//std::vector<pt::TransformComp>& sss = PrimtTech::ComponentHandler::GetComponentArray<pt::TransformComp>();
+		//pt::TransformComp& ptTransform = sss[EntId()];
 		rp::BodyType type = mp_rigidBody->getType();
-		//Freeze(true);
-		rpTransform.setPosition({ v.x, v.y, v.z });
+		mp_rigidBody->setType(rp::BodyType::STATIC);
 
-		rp::Vector3 angles(ptTransform.GetRotation().x,
-			ptTransform.GetRotation().y,
-			ptTransform.GetRotation().z);
-
-		rp::Quaternion rpQ = rpQ.fromEulerAngles(angles);
-
-		//rpTransform.getOpenGLMatrix
-
-		rpTransform.setOrientation(rpQ);
+		rp::Transform rpTransform = mp_rigidBody->getTransform();
+		
+		rpTransform.setPosition(rp::Vector3(v.x, v.y, v.z));
 
 		mp_rigidBody->setTransform(rpTransform);
 		mp_rigidBody->resetTorque();
 		mp_rigidBody->resetForce();
-		//Freeze(false);
+		
+		mp_rigidBody->setType(type);
 	}
 
 	void PhysicsBody::SetPhysicsEulerRotation(const float3& v)
 	{
 		rp::BodyType type = mp_rigidBody->getType();
 		mp_rigidBody->setType(rp::BodyType::STATIC);
+		rp::Transform rpTransform = mp_rigidBody->getTransform();
 
 		rp::Quaternion q = q.fromEulerAngles(v.x, v.y, v.z);
 
-		pt::TransformComp ptTransform = Entity::GetEntity(EntId()).Transform();
-		rp::Transform rpTransform;
 		rpTransform.setOrientation(q);
-		rpTransform.setPosition({
-			ptTransform.GetPosition().x,
-			ptTransform.GetPosition().y,
-			ptTransform.GetPosition().z});
 
 		mp_rigidBody->setTransform(rpTransform);
 		mp_rigidBody->resetTorque();

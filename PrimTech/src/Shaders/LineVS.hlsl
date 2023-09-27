@@ -20,7 +20,7 @@ struct VSOutput
 VSOutput main(VSInput input)
 {
 	VSOutput output;
-	output.position = mul(float4(input.position, 1.f), mul(world, viewProj));
+    output.position = mul(mul(world, viewProj), float4(input.position, 1.f));
     output.color = input.color;
 	return output;
 }

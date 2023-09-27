@@ -5,9 +5,10 @@
 
 namespace pt
 {
-	TransformComp::TransformComp(EntIdType entId) : Component(entId), worldTransposed(1.f),
-		m_scale(1.f, 1.f, 1.f), m_pos(0.f,0.f,0.f), m_rotQ(1.f,0.f,0.f, 0.f)
+	TransformComp::TransformComp(EntIdType entId) : Component(entId), worldM(1.f),
+		m_scale(1.f, 1.f, 1.f), m_pos(0.f,0.f,0.f), m_rotQ(1.f,0.f,0.f, 0.f), m_anglesD(0.f, 0.f, 0.f)
 	{
+		//m_angles = glm::eulerAngles(m_rotQ);
 	}
 
 	void TransformComp::SetPosition(float x, float y, float z)
@@ -21,23 +22,34 @@ namespace pt
 		UpdateWorld();
 	}
 
-	void TransformComp::SetRotation(float x, float y, float z)
-	{
-		SetRotation(float3(x, y, z));
-		UpdateWorld();
-	}
+	void TransformComp::SetRotation(float x, float y, float z) { SetRotation(float3(x, y, z)); }
 
 	void TransformComp::SetRotation(float3 v)
 	{
-		m_rotQ = glm::quat(v);
+		m_anglesD = glm::degrees(v);
+
+		m_rotQ = quat(v);
 
 		UpdateWorld();
 	}
 
-	void TransformComp::SetRotation(quat q)
+	void TransformComp::SetRotationQ(quat q)
 	{
 		m_rotQ = q;
+
+		m_anglesD = glm::degrees(glm::eulerAngles(q));
+
 		UpdateWorld();
+	}
+
+	void TransformComp::SetRotationDeg(float x, float y, float z)
+	{
+		SetRotationDeg(float3(x, y, z));
+	}
+
+	void TransformComp::SetRotationDeg(float3 v)
+	{
+		SetRotation(glm::radians(v));
 	}
 
 	void TransformComp::SetScale(float x, float y, float z)
@@ -72,26 +84,18 @@ namespace pt
 	void TransformComp::Rotate(float x, float y, float z)
 	{
 		Rotate(float3(x, y, z));
-		UpdateWorld();
 	}
 
 	void TransformComp::Rotate(float3 v)
 	{
-		//quat quat = quat.CreateFromYawPitchRoll(v.x, v.y, v.z);
+		m_anglesD += glm::degrees(v);
 
-		//m_rotQ.
-
-		m_rotQ = quat(glm::eulerAngles(m_rotQ) + v);
-		//m_rotQ = d::XMQuaternionRotationRollPitchYawFromVector(v+ glm::eulerAngles(m_rotQ.ToEuler());
-		//ptm::ForceRotation(m_rot);
-
-		UpdateWorld();
+		SetRotationDeg(m_anglesD);
 	}
 
 	void TransformComp::Scale(float x, float y, float z)
 	{
-		m_scale += float3(x, y, z);
-		UpdateWorld();
+		Scale(float3(x, y, z));
 	}
 
 	void TransformComp::Scale(float3 v)
@@ -102,13 +106,12 @@ namespace pt
 
 	void TransformComp::Scale(float xyz)
 	{
-		m_scale += float3(xyz, xyz, xyz);
-		UpdateWorld();
+		Scale(float3(xyz, xyz, xyz));
 	}
 
 	void TransformComp::SetWorldMatrix(matrix m)
 	{
-		worldTransposed = glm::transpose(m);
+		worldM = m;
 	}
 
 	float3 TransformComp::GetPosition() const
@@ -116,11 +119,9 @@ namespace pt
 		return m_pos;
 	}
 
-	float3 TransformComp::GetRotation() const
+	float3 TransformComp::GetRotationDeg() const
 	{
-		//float3 eulerRotation = m_rot.ToEuler();
-		//return eulerRotation;
-		return glm::eulerAngles(m_rotQ);
+		return m_anglesD;
 	}
 
 	float3 TransformComp::GetScale() const
@@ -130,22 +131,13 @@ namespace pt
 
 	void TransformComp::UpdateWorld()
 	{
-		//worldTransposed =
-		//	d::XMMatrixScalingFromVector(m_scale) *
-		//	d::XMMatrixRotationQuaternion(m_rotQ) *
-		//	d::XMMatrixTranslationFromVector(m_pos);
-		//worldTransposed = worldTransposed.Transpose();
-		worldTransposed =
-			/*glm::scale(worldTransposed, m_scale) *
-			glm::toMat4(m_rotQ) **/
-			glm::translate(worldTransposed, m_pos);
+		//float3 angles(0.f, glm::radians(45.f), 0.f);
 
-		worldTransposed = glm::transpose(worldTransposed);
-
-		//worldTransposed = glm::scale(worldTransposed, m_scale);
-		//worldTransposed = worldTransposed * glm::toMat4(m_rotQ);
-
-		//worldTransposed = glm::translate(worldTransposed, m_pos);
+		worldM =
+			glm::translate(matrix(1.f), m_pos) *
+			glm::toMat4(m_rotQ) *
+			glm::scale(matrix(1.f), m_scale);
+			
 	}
 
 	void TransformComp::OnFree() {}
@@ -156,35 +148,30 @@ namespace pt
 		m_pos = otherComp->m_pos;
 		m_rotQ = otherComp->m_rotQ;
 		m_scale = otherComp->m_scale;
-		worldTransposed = otherComp->worldTransposed;
+		worldM = otherComp->worldM;
 	}
 
-	matrix TransformComp::GetWorldTransposed() const
+	matrix TransformComp::GetWorld() const
 	{
-		return worldTransposed;
+		return worldM;
 		//matrix worldTest(1.f);
 		//worldTest = glm::translate(worldTest, float3(0.f, 10000.f, -10.f));
 		//return worldTest;
 	}
 
-	matrix TransformComp::GetWorld() const
+	matrix TransformComp::GetWorldTranspose() const
 	{
 		//matrix world = worldTransposed;
 		//matrix worldTest(1.f);
 		//worldTest = glm::translate(worldTest, float3(0.f, 10000.f, -10.f));
 		//return worldTest;
-		return glm::transpose(worldTransposed);
+		return glm::transpose(worldM);
 		//return matrix(1.f);
 	}
 
 	matrix TransformComp::GetWorldInversed()
 	{
-		//matrix matrix =
-		//	glm::inverse(glm::scale(worldTransposed, m_scale)) *
-		//	glm::inverse(glm::toMat4(m_rotQ)) *
-		//	glm::inverse(glm::scale(worldTransposed, m_scale));
-		//return matrix;
-		return matrix(1.f);
+		return glm::inverse(worldM);
 	}
 
 	quat TransformComp::GetRotationQuaternion() const

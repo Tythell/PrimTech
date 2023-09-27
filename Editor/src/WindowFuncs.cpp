@@ -723,9 +723,9 @@ void Gui_EntList(void* test, bool* show)
 			pEnt->SetPosition(transform);
 		}
 
-		transform = pEnt->Transform().GetRotation();
-		if (ImGui::DragFloat3("Rotate", &transform.x, 0.02f))
-			pEnt->SetRotation(transform);
+		transform = pEnt->Transform().GetRotationDeg();
+		if (ImGui::DragFloat3("Rotate", &transform.x, .50f))
+			pEnt->SetRotation(glm::radians(transform));
 
 		transform = pEnt->Transform().GetScale();
 		if (ImGui::DragFloat3("Scale", &transform.x, 0.02f))
@@ -1103,7 +1103,7 @@ void Gui_EntList(void* test, bool* show)
 
 		matrix camViewM = pCam.GetViewMatrix();
 		matrix camProj = pCam.GetProjMatrix();
-		matrix world = rTr.GetWorld();
+		matrix world = glm::transpose(rTr.GetWorldTranspose());
 
 		float* model = reinterpret_cast<float*>(&world);
 		const float* proj = reinterpret_cast<const float*>(&camProj);
@@ -1132,19 +1132,10 @@ void Gui_EntList(void* test, bool* show)
 			float3 dummy3;
 			float4 dummy4;
 			glm::decompose(world, scale, rot, pos, dummy3, dummy4);
-			//world.Decompose(scale, rot, pos);
-			//ImGuizmo::DecomposeMatrixToComponents(&world._11, &pos.x, &rot.x, &scale.x);
 
-			rTr.SetScale(scale);
-			rTr.SetRotation(rot);
-			rTr.SetPosition(pos);
-
-			if (pEnt->HasComponentType(PrimtTech::ec_rigidBodies))
-			{
-				pt::PhysicsBody* p = pEnt->GetComponent<pt::PhysicsBody>();
-
-				p->SetPhysicsTransformation(rTr);
-			}
+			if (op == ImGuizmo::SCALE) pEnt->SetScale(scale);
+			if (op == ImGuizmo::ROTATE) pEnt->SetRotation(rot);
+			if (op == ImGuizmo::TRANSLATE) pEnt->SetPosition(pos);
 		}
 
 		ImGui::End();

@@ -110,16 +110,9 @@ namespace pt
 		{
 			pt::PhysicsBody& p = PrimtTech::ComponentHandler::GetComponentByIndex<PhysicsBody>((uint)m_physIndex);
 
-			p.SetPhysicsTransformation(Transform());
+			//p.SetPhysicsTransformation(Transform());
+			p.SetPhysicsPosition(v);
 		}
-		//if (m_physIndex != -1)
-		//{
-		//	PhysicsBody& physBod = PrimtTech::ComponentHandler::GetComponentByIndex<PhysicsBody>((uint)m_physIndex);
-
-		//	physBod.SetPhysicsPosition(v);
-		//}
-		//else
-		//	Transform().SetPosition(v);
 	}
 
 	void Entity::SetRotation(float x, float y, float z)
@@ -127,49 +120,22 @@ namespace pt
 		SetRotation(float3(x, y, z));
 	}
 
-	float3 toQuatTest(quat q)
-	{
-		float3 angles;    //yaw pitch roll
-		const float x = q.x;
-		const float y = q.y;
-		const float z = q.z;
-		const float w = q.w;
-
-		// roll (x-axis rotation)
-		double sinr_cosp = 2 * (w * x + y * z);
-		double cosr_cosp = 1 - 2 * (x * x + y * y);
-		angles.x = std::atan2(sinr_cosp, cosr_cosp);
-
-		// pitch (y-axis rotation)
-		double sinp = 2 * (w * y - z * x);
-		if (std::abs(sinp) >= 1)
-			angles.y = std::copysign(d::XM_PI / 2, sinp); // use 90 degrees if out of range
-		else
-			angles.y = std::asin(sinp);
-
-		// yaw (z-axis rotation)
-		double siny_cosp = 2 * (w * z + x * y);
-		double cosy_cosp = 1 - 2 * (y * y + z * z);
-		angles.z = std::atan2(siny_cosp, cosy_cosp);
-		return angles;
-	}
-
 	void Entity::SetRotation(const float3& v)
 	{
-		quat quat(v);
-		Transform().SetRotation(quat);
+		//quat quat(v);
+		Transform().SetRotation(v);
 
 		if (m_physIndex != -1)
 		{
 			PhysicsBody& physBod = PrimtTech::ComponentHandler::GetComponentByIndex<PhysicsBody>((uint)m_physIndex);
 
-			physBod.SetPhysicsQuatRotation(quat);
+			physBod.SetPhysicsEulerRotation(v);
 		}
 	}
 
 	void Entity::SetRotation(const quat& q)
 	{
-		Transform().SetRotation(q);
+		Transform().SetRotationQ(q);
 
 		if (m_physIndex != -1)
 		{

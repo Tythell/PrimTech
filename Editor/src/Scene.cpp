@@ -76,11 +76,12 @@ Editor::Editor(d::XMINT2 windowRes, HINSTANCE hInstance)
 	pt::Entity& ent0 = pt::Entity::Create("Cube");
 	ent0.AddComponent<pt::MeshRef>();
 	ent0.SetPosition(0.f, 2.f, 0.f);
-	pt::PhysicsBody* physBod = ent0.AddComponent<pt::PhysicsBody>();
-	physBod->CreateRigidBody(ent0.Transform());
-	
-	physBod->AddBoxColider();
-	physBod->SetType(rp::BodyType::DYNAMIC);
+
+	//pt::PhysicsBody* physBod = ent0.AddComponent<pt::PhysicsBody>();
+	//physBod->CreateRigidBody(ent0.Transform());
+	//physBod->AddBoxColider();
+	//physBod->SetType(rp::BodyType::DYNAMIC);
+
 	pt::Entity& ent1 = pt::Entity::Create("Plane");
 	ent1.SetPosition(0.f, -0.2f, 0.f);
 	ent1.SetScale(10.f, 1.f, 10.f);
@@ -374,7 +375,7 @@ void Editor::Play(char b)
 		for (int i = 0; i < n; i++)
 		{
 			m_startTransforms[i].first = transforms[i].GetPosition();
-			m_startTransforms[i].second = transforms[i].GetRotation();
+			m_startTransforms[i].second = transforms[i].GetRotationDeg();
 		}
 		for (int i = 0; i < noPhysBodys; i++)
 			physBodys[i].Freeze(false);
@@ -397,7 +398,7 @@ void Editor::Play(char b)
 		for (int i = 0; i < n; i++)
 		{
 			transforms[i].SetPosition(m_startTransforms[i].first);
-			transforms[i].SetRotation(m_startTransforms[i].second);
+			transforms[i].SetRotationDeg(m_startTransforms[i].second);
 		}
 	}
 }

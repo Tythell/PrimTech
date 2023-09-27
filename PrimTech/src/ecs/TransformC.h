@@ -11,7 +11,11 @@ namespace pt
 		void SetPosition(float3 v);
 		void SetRotation(float x, float y, float z);
 		void SetRotation(float3 v);
-		void SetRotation(quat q);
+		// Will mess up display angles
+		void SetRotationQ(quat q);
+		void SetRotationDeg(float x, float y, float z);
+		void SetRotationDeg(float3 v);
+
 		void SetScale(float x, float y, float z);
 		void SetScale(float xyz);
 		void SetScale(float3 v);
@@ -26,10 +30,10 @@ namespace pt
 		void SetWorldMatrix(matrix m);
 
 		float3 GetPosition() const;
-		float3 GetRotation() const;
+		float3 GetRotationDeg() const;
 		float3 GetScale() const;
-		matrix GetWorldTransposed() const;
 		matrix GetWorld() const;
+		matrix GetWorldTranspose() const;
 		matrix GetWorldInversed();
 		quat GetRotationQuaternion() const;
 
@@ -41,12 +45,8 @@ namespace pt
 	protected:
 		void UpdateWorld();
 	private:
-		float3 m_pos, m_scale;
+		float3 m_pos, m_scale, m_anglesD;
 		quat m_rotQ;
-		matrix worldTransposed;
-
-
-
-
+		matrix worldM;
 	};
 }

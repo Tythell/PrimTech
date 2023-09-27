@@ -134,7 +134,7 @@ namespace PrimtTech
 			memcpy(f3, &vec.x, sizeof(float) * 3);
 			WRITE(, f3, sizeof(float) * 3);
 
-			vec = transforms[i].GetRotation();
+			vec = transforms[i].GetRotationDeg();
 			memcpy(f3, &vec.x, sizeof(float) * 3);
 			WRITE(,f3, sizeof(float) * 3);
 

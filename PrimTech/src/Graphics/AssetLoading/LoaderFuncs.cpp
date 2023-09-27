@@ -75,6 +75,7 @@ namespace PrimtTech
 
 	bool FileLoader::LoadObjToBuffer(std::string path, std::vector<Shape>& shape, std::vector<Mtl>& localMtls, std::vector<int>& matIndex, bool makeLeftHanded)
 	{
+		return false;
 		////shape.resize(1);
 		//Shape localShape;
 		//UINT nofMats = 0;
@@ -264,7 +265,7 @@ namespace PrimtTech
 
 		////localShape.clear();
 		//reader.close();
-		return true;
+		//return true;
 	}
 	bool FileLoader::StbiCreateCharFromFile(const char* path, unsigned char*& imagedData, int& imagewidth, int& imageheight, int channels, bool flipUV)
 	{

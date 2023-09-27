@@ -46,7 +46,10 @@ VSOutput main(VSInput input)
     float4x4 finalWorld = mul(instWorld, world);
     
     //output.position = mul(float4(input.localPosition.xyz, 1.f), mul(world, viewProj));
-    output.position = mul(mul(projView, world), float4(input.localPosition.xyz, 1.f));
+    
+    matrix pvw = mul(projView, world);
+    
+    output.position = mul(pvw, float4(input.localPosition.xyz, 1.f));
     output.texCoord = input.texCoord;
     output.normal = normalize(mul(float4(input.localNormal, 0.f), finalWorld));
     output.worldpos = mul(float4(input.localPosition.xyz, 1.f), finalWorld).xyz;

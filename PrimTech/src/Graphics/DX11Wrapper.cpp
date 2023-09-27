@@ -175,8 +175,8 @@ namespace PrimtTech
 		ZeroMemory(&rastDesc, sizeof(D3D11_RASTERIZER_DESC));
 		rastDesc.FillMode = D3D11_FILL_MODE::D3D11_FILL_SOLID;
 
-		rastDesc.CullMode = D3D11_CULL_MODE::D3D11_CULL_NONE;
-		//rastDesc.CullMode = D3D11_CULL_MODE::D3D11_CULL_BACK;
+		//rastDesc.CullMode = D3D11_CULL_MODE::D3D11_CULL_NONE;
+		rastDesc.CullMode = D3D11_CULL_MODE::D3D11_CULL_BACK;
 		rastDesc.FrontCounterClockwise = false;
 
 		HRESULT hr = device->CreateRasterizerState(&rastDesc, &m_rasterizerState);
@@ -423,7 +423,7 @@ namespace PrimtTech
 				uint index = rMeshrefs[i].GetInstIndex() + 1; // instance 1 is identity matrix
 
 				MeshInstance mehsInst;
-				matrix mat = pTransformComp->GetWorldTransposed();
+				matrix mat = pTransformComp->GetWorld();
 
 				memcpy(&mehsInst.row.x, &mat[0][0], sizeof(float) * 3);
 				memcpy(&mehsInst.row1.x, &mat[1][0], sizeof(float) * 3);
@@ -467,7 +467,7 @@ namespace PrimtTech
 				uint entId = rMeshrefs[i].EntId();
 
 				TransformComp* pTransformComp = &rTransforms[entId];
-				transformBuffer.Data().world = pTransformComp->GetWorldTransposed();
+				transformBuffer.Data().world = pTransformComp->GetWorld();
 				transformBuffer.MapBuffer();
 
 				Mesh* meshPtr = rMeshrefs[i].GetMeshContainerP();
@@ -506,7 +506,7 @@ namespace PrimtTech
 			uint prefabIndex = rPrefabs[i].GetIndex();
 
 			MeshInstance mehsInst;
-			matrix mat = pTransformComp->GetWorld();
+			matrix mat = pTransformComp->GetWorldTranspose();
 
 			memcpy(&mehsInst.row.x,  &mat[0][0], sizeof(float) * 3);
 			memcpy(&mehsInst.row1.x, &mat[1][0], sizeof(float) * 3);
@@ -625,7 +625,7 @@ namespace PrimtTech
 		dc->OMSetRenderTargets(1, &m_rtv, m_dsView);
 		dc->RSSetViewports(1, &m_viewport);
 
-		m_transformBuffer.Data().viewProj = glm::transpose(cc.GetProjMatrix() * cc.GetViewMatrix());
+		m_transformBuffer.Data().viewProj = cc.GetProjMatrix() * cc.GetViewMatrix();
 		m_transformBuffer.MapBuffer();
 
 		dc->IASetInputLayout(m_3dvs.GetInputLayout());
