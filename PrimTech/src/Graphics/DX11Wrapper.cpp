@@ -162,6 +162,7 @@ namespace PrimtTech
 		dssDesc.DepthEnable = true;
 		dssDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 		dssDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+		//dssDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
 
 		hr = device->CreateDepthStencilState(&dssDesc, &m_dsState);
 		COM_ERROR(hr, "DS State failed");
@@ -348,7 +349,7 @@ namespace PrimtTech
 
 			m_guiHandler->ImguiRender();
 
-			//ImGuTextureDisplay();
+			ImGuTextureDisplay();
 
 			//ImGuiGradientWindow();
 
@@ -506,7 +507,7 @@ namespace PrimtTech
 			uint prefabIndex = rPrefabs[i].GetIndex();
 
 			MeshInstance mehsInst;
-			matrix mat = pTransformComp->GetWorldTranspose();
+			matrix mat = pTransformComp->GetWorld();
 
 			memcpy(&mehsInst.row.x,  &mat[0][0], sizeof(float) * 3);
 			memcpy(&mehsInst.row1.x, &mat[1][0], sizeof(float) * 3);
@@ -609,9 +610,9 @@ namespace PrimtTech
 		m_lightbuffer.Data().camPos = camTransform.GetPosition();
 		m_lightbuffer.MapBuffer();
 
-		m_transformBuffer.Data().viewProj = glm::transpose(scam.GetViewMatrix() * scam.GetProjMatrix());
-		m_transformBuffer.Data().lightViewProj = glm::transpose(scam.GetViewMatrix() * scam.GetProjMatrix());
-		m_transformBuffer.Data().world = matrix(1.f);
+		m_transformBuffer.Data().viewProj = scam.GetProjMatrix() * scam.GetViewMatrix();
+		m_transformBuffer.Data().lightViewProj = scam.GetProjMatrix() * scam.GetViewMatrix();
+		//m_transformBuffer.Data().world = matrix(1.f);
 		m_transformBuffer.MapBuffer();
 		m_shadowmap.Bind(dc, 10);
 

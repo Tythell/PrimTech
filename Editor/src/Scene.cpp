@@ -29,7 +29,7 @@ Editor::Editor(d::XMINT2 windowRes, HINSTANCE hInstance)
 	m_renderer->SetImGuiHandler(m_pGui);
 
 	uint u = 0;
-	m_entlist.console.m_showWin.resize(10, { true, "" });
+	m_entlist.console.m_showWin.resize(11, { true, "" });
 
 	m_pGui.AddWindowFunc(Gui_ImGuiDemo, NULL, &m_entlist.console.m_showWin[u].first);
 	m_entlist.console.m_showWin[u].second = "imguiDemo";
@@ -54,6 +54,10 @@ Editor::Editor(d::XMINT2 windowRes, HINSTANCE hInstance)
 
 	m_pGui.AddWindowFunc(Gui_CompView, NULL, &m_entlist.console.m_showWin[u].first);
 	m_entlist.console.m_showWin[u++].second = "compView";
+
+	m_pGui.AddWindowFunc(Gui_TextureView, NULL, &m_entlist.console.m_showWin[u].first);
+	m_entlist.console.m_showWin[u].second = "textureView";
+	m_entlist.console.m_showWin[u++].first = false;
 
 	m_pGui.AddWindowFunc(Gui_menubar, &m_entlist.console, &m_entlist.console.m_showWin[u].first);
 	m_entlist.console.m_showWin[u++].second = "Menu_Bar";

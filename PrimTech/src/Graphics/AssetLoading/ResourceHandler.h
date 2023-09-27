@@ -73,6 +73,7 @@ namespace PrimtTech
 		static TextureMap* AddTexture(std::string path, bool flipUV = true);
 		static TextureMap& GetTexture(unsigned int index);
 		static TextureMap* GetTextureAdress(unsigned int index);
+		static const uint GetNumTextures();
 		static Material* AddMaterial(std::string name);
 		static Material& GetMaterial(unsigned int index);
 		static Material* GetMaterialAdress(unsigned int index);

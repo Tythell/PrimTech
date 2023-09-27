@@ -82,6 +82,11 @@ namespace PrimtTech
 		return m_textures[index];;
 	}
 
+	const uint ResourceHandler::GetNumTextures()
+	{
+		return m_textures.size();
+	}
+
 	Material* ResourceHandler::AddMaterial(std::string name)
 	{
 		//THROW_POPUP_ERROR(!(m_materials.size() == m_materials.capacity()), "not enough memory reserved for new material");

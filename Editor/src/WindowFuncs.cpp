@@ -3,6 +3,7 @@
 #include "Scene.h"
 #include "Serializer/Serializer.h"
 
+
 std::string AddCompString(const uint& entId, std::string compType)
 {
 	std::string cmd = "comp ";
@@ -47,6 +48,20 @@ void LoadButton(PrimtTech::Material* pMaterial, std::string name, unsigned int e
 			pMaterial->RemoveTexture((TextureType)e);
 		}
 	}
+}
+
+void Gui_TextureView(void* ptr, bool* show)
+{
+	const uint numTextures = PrimtTech::ResourceHandler::GetNumTextures();
+	ImGui::Begin("Loaded Textures", show);
+
+	//for (int i = 0; i < 1; i++)
+	//{
+	//	ImTextureID texture = ptr;
+	//	ImGui::Image(texture, ImVec2(50, 50), { 0.f,1.f }, { 1.f,0.f });
+	//}
+
+	ImGui::End();
 }
 
 void Gui_MaterialProperties(void* ptr, bool* show)

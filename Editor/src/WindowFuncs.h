@@ -1,5 +1,7 @@
 #pragma once
 
+void Gui_TextureView(void* ptr, bool* show);
+
 void Gui_AssetList(void* ptr, bool* show);
 
 void Gui_EntList(void* test, bool* show);
