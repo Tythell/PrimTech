@@ -23,9 +23,9 @@ namespace pt
 			rp::Vector3 rpPos = rpTransform.getPosition();
 			rp::Quaternion rpQuat = rpTransform.getOrientation();
 
-			matrix mat;
+			matrix mat(1.f);
 			rpTransform.getOpenGLMatrix(&mat[0][0]);
-
+			mat = glm::scale(mat, transform.GetScale());
 			transform.SetWorldMatrix(mat);
 
 			/*float3 smPos(rpPos.x, rpPos.y, rpPos.z);
