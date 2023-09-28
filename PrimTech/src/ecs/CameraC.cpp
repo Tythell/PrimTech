@@ -41,6 +41,8 @@ namespace pt
 
 	void Camera::SetOrtographic(float width, float height, float nearZ, float farZ)
 	{
+		//width *= 0.5;
+		//height *= 0.5;
 		m_projM = glm::orthoLH(-width * 0.5f, width * 0.5f, -height * 0.5f, height * 0.5f, nearZ, farZ);
 		//m_projM = d::XMMatrixOrthographicLH(width, height, nearZ, farZ);
 		m_isOrthographic = true;

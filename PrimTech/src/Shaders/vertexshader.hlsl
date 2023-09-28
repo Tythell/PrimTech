@@ -43,13 +43,15 @@ VSOutput main(VSInput input)
     // Not all drawcalls will be instanced
     // When drawing instanced, worldMatrix will be identity, and when drawing noninstanced geometry inst will be identity,
     // this way, switching vertex shader won't be neccesary
-    float4x4 finalWorld = mul(instWorld, world);
+    float4x4 finalWorld = world;
+    //float4x4 finalWorld = instWorld;
+    //float4x4 finalWorld = mul(instWorld, world);
     
     //output.position = mul(float4(input.localPosition.xyz, 1.f), mul(world, viewProj));
     
-    matrix pvw = mul(projView, world);
+    //matrix pvw = ;
     
-    output.position = mul(pvw, float4(input.localPosition.xyz, 1.f));
+    output.position = mul(mul(projView, finalWorld), float4(input.localPosition.xyz, 1.f));
     output.texCoord = input.texCoord;
     output.normal = normalize(mul(float4(input.localNormal, 0.f), finalWorld));
     output.worldpos = mul(float4(input.localPosition.xyz, 1.f), finalWorld).xyz;

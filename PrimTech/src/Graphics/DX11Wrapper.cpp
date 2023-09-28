@@ -408,13 +408,26 @@ namespace PrimtTech
 	{
 		uint numMEshRefs = ComponentHandler::GetNoOfUsedComponents<pt::MeshRef>();
 
-		/*
-		With no materials present, there is no need to draw similar meshes separatly,
-		so they will be drawn using DrawInstanced()
-		*/
 		if (!pMAtBuffer)
 		{
 			for (int i = 0; i < numMEshRefs; i++)
+			{
+				uint entId = rMeshrefs[i].EntId();
+
+				TransformComp* pTransformComp = &rTransforms[entId];
+				transformBuffer.Data().world = pTransformComp->GetWorld();
+				transformBuffer.MapBuffer();
+
+				Mesh* meshPtr = rMeshrefs[i].GetMeshContainerP();
+				meshPtr->Bind(dc);
+
+				uint nSubMEshes = meshPtr->GetNofMeshes();
+
+				int v1 = meshPtr->GetMeshOffsfets()[nSubMEshes];
+				drawCalls++;
+				dc->Draw(v1, 0);
+			}
+			/*for (int i = 0; i < numMEshRefs; i++)
 			{
 				uint entId = rMeshrefs[i].EntId();
 				Mesh* meshPtr = rMeshrefs[i].GetMeshContainerP();
@@ -424,7 +437,7 @@ namespace PrimtTech
 				uint index = rMeshrefs[i].GetInstIndex() + 1; // instance 1 is identity matrix
 
 				MeshInstance mehsInst;
-				matrix mat = pTransformComp->GetWorld();
+				matrix mat = pTransformComp->GetWorldTranspose();
 
 				memcpy(&mehsInst.row.x, &mat[0][0], sizeof(float) * 3);
 				memcpy(&mehsInst.row1.x, &mat[1][0], sizeof(float) * 3);
@@ -459,7 +472,7 @@ namespace PrimtTech
 					continue;
 				}
 
-			}
+			}*/
 		}
 		else
 		{
@@ -472,9 +485,6 @@ namespace PrimtTech
 				transformBuffer.MapBuffer();
 
 				Mesh* meshPtr = rMeshrefs[i].GetMeshContainerP();
-
-				//TransformComp* pTransformComp = &rTransforms[entId];
-
 				meshPtr->Bind(dc);
 
 				uint nSubMEshes = meshPtr->GetNofMeshes();
@@ -495,63 +505,63 @@ namespace PrimtTech
 
 
 
-		std::vector<Prefab>& prefabsArr = ResourceHandler::GetPrefabArray();
-		uint nOPrefRefs = ComponentHandler::GetNoOfUsedComponents<pt::MeshPrefabRef>();
+		//std::vector<Prefab>& prefabsArr = ResourceHandler::GetPrefabArray();
+		//uint nOPrefRefs = ComponentHandler::GetNoOfUsedComponents<pt::MeshPrefabRef>();
 
-		for (int i = 0; i < nOPrefRefs; i++)
-		{
-			uint entId = rPrefabs[i].EntId();
-			TransformComp* pTransformComp = &rTransforms[entId];
+		//for (int i = 0; i < nOPrefRefs; i++)
+		//{
+		//	uint entId = rPrefabs[i].EntId();
+		//	TransformComp* pTransformComp = &rTransforms[entId];
 
-			uint instanceIndex = rPrefabs[i].GetInstIndex(); // instance 0 is identity matrix
-			uint prefabIndex = rPrefabs[i].GetIndex();
+		//	uint instanceIndex = rPrefabs[i].GetInstIndex(); // instance 0 is identity matrix
+		//	uint prefabIndex = rPrefabs[i].GetIndex();
 
-			MeshInstance mehsInst;
-			matrix mat = pTransformComp->GetWorld();
+		//	MeshInstance mehsInst;
+		//	matrix mat = pTransformComp->GetWorld();
 
-			memcpy(&mehsInst.row.x,  &mat[0][0], sizeof(float) * 3);
-			memcpy(&mehsInst.row1.x, &mat[1][0], sizeof(float) * 3);
-			memcpy(&mehsInst.row2.x, &mat[2][0], sizeof(float) * 3);
-			memcpy(&mehsInst.row3.x, &mat[3][0], sizeof(float) * 3);
+		//	memcpy(&mehsInst.row.x,  &mat[0][0], sizeof(float) * 3);
+		//	memcpy(&mehsInst.row1.x, &mat[1][0], sizeof(float) * 3);
+		//	memcpy(&mehsInst.row2.x, &mat[2][0], sizeof(float) * 3);
+		//	memcpy(&mehsInst.row3.x, &mat[3][0], sizeof(float) * 3);
 
-			prefabsArr[prefabIndex].ChangeInstance(instanceIndex, mehsInst);
+		//	prefabsArr[prefabIndex].ChangeInstance(instanceIndex, mehsInst);
 
-			//rPrefabs[i].RefreshInstance();
-		}
-		uint nOPrefs = prefabsArr.size();
-		transformBuffer.Data().world = matrix(1.f);;
-		transformBuffer.MapBuffer();
-		for (int i = 0; i < nOPrefs; i++)
-		{
-			if (prefabsArr[i].GetUses() > 0)
-			{
-				Mesh* meshPtr = prefabsArr[i].GetMeshPtr();
+		//	//rPrefabs[i].RefreshInstance();
+		//}
+		//uint nOPrefs = prefabsArr.size();
+		//transformBuffer.Data().world = matrix(1.f);;
+		//transformBuffer.MapBuffer();
+		//for (int i = 0; i < nOPrefs; i++)
+		//{
+		//	if (prefabsArr[i].GetUses() > 0)
+		//	{
+		//		Mesh* meshPtr = prefabsArr[i].GetMeshPtr();
 
-				prefabsArr[i].BindInstanceBuffer(dc);
-				prefabsArr[i].MapInstBuffer();
+		//		prefabsArr[i].BindInstanceBuffer(dc);
+		//		prefabsArr[i].MapInstBuffer();
 
-				meshPtr->Bind(dc);
+		//		meshPtr->Bind(dc);
 
-				uint numInstances = prefabsArr[i].GetUses();
-				uint nSubMEshes = meshPtr->GetNofMeshes();
+		//		uint numInstances = prefabsArr[i].GetUses();
+		//		uint nSubMEshes = meshPtr->GetNofMeshes();
 
-				if (pMAtBuffer)
-				{
-					for (int j = 0; j < nSubMEshes; j++)
-					{
-						uint matIndex = prefabsArr[i].GetMaterialIndex(j);
-						Material& rMat = ResourceHandler::GetMaterial(matIndex);
-						rMat.Set(dc, *pMAtBuffer);
-						rMat.UpdateTextureScroll(deltatime);
+		//		if (pMAtBuffer)
+		//		{
+		//			for (int j = 0; j < nSubMEshes; j++)
+		//			{
+		//				uint matIndex = prefabsArr[i].GetMaterialIndex(j);
+		//				Material& rMat = ResourceHandler::GetMaterial(matIndex);
+		//				rMat.Set(dc, *pMAtBuffer);
+		//				rMat.UpdateTextureScroll(deltatime);
 
-						int v1 = meshPtr->GetMeshOffsfets()[j + 1], v2 = meshPtr->GetMeshOffsfets()[j];
-						drawCalls++;
-						uint uses = prefabsArr[i].GetUses();
-						dc->DrawInstanced(v1 - v2, std::min(prefabsArr[i].GetUses(), prefabsArr[i].GetCap()-1), v2, 1);
-					}
-				}
-			}	
-		}
+		//				int v1 = meshPtr->GetMeshOffsfets()[j + 1], v2 = meshPtr->GetMeshOffsfets()[j];
+		//				drawCalls++;
+		//				uint uses = prefabsArr[i].GetUses();
+		//				dc->DrawInstanced(v1 - v2, std::min(prefabsArr[i].GetUses(), prefabsArr[i].GetCap()-1), v2, 1);
+		//			}
+		//		}
+		//	}	
+		//}
 	}
 
 	void Renderer::Render(const float& deltatime)
@@ -593,7 +603,7 @@ namespace PrimtTech
 
 		std::vector<pt::Light>& r_lights = ComponentHandler::GetComponentArray<pt::Light>();
 		uint numLights = ComponentHandler::GetNoOfUsedComponents<pt::Light>();
-		//uint numLights = (uint)r_lights.size();
+
 		m_lightbuffer.Data().numLights = numLights;
 
 		for (int i = 0; i < numLights; i++)
@@ -604,25 +614,29 @@ namespace PrimtTech
 		}
 		m_multiLightBuffer.MapBuffer();
 
-		pt::Camera& cc = ComponentHandler::GetComponentByIndex<pt::Camera>(m_activeCamIndex);
-		int noCams = ComponentHandler::GetNoOfUsedComponents<Camera>();
-		pt::TransformComp& camTransform = ComponentHandler::GetComponentByIndex<pt::TransformComp>(m_activeCamIndex);
-		m_lightbuffer.Data().camPos = camTransform.GetPosition();
-		m_lightbuffer.MapBuffer();
+		
+		{
+			int noCams = ComponentHandler::GetNoOfUsedComponents<Camera>();
+			pt::TransformComp& camTransform = ComponentHandler::GetComponentByIndex<pt::TransformComp>(m_activeCamIndex);
+			m_lightbuffer.Data().camPos = camTransform.GetPosition();
+			m_lightbuffer.MapBuffer();
 
-		m_transformBuffer.Data().viewProj = scam.GetProjMatrix() * scam.GetViewMatrix();
-		m_transformBuffer.Data().lightViewProj = scam.GetProjMatrix() * scam.GetViewMatrix();
-		//m_transformBuffer.Data().world = matrix(1.f);
-		m_transformBuffer.MapBuffer();
-		m_shadowmap.Bind(dc, 10);
+			m_transformBuffer.Data().viewProj = scam.GetProjMatrix() * scam.GetViewMatrix();
+			m_transformBuffer.Data().lightViewProj = scam.GetProjMatrix() * scam.GetViewMatrix();
+			//m_transformBuffer.Data().world = matrix(1.f);
+			m_transformBuffer.MapBuffer();
+			m_shadowmap.Bind(dc, 10);
+		}
+		
 
 		uint numMEshRefs = (uint)rMeshrefs.size();
 		uint offset = 0;
 
-		drawMeshes(rMeshrefs, rTransforms, rPrefabrefs,
-			m_transformBuffer, NULL, dc, deltatime, im->m_drawCalls);
+		drawMeshes(rMeshrefs, rTransforms, rPrefabrefs, m_transformBuffer, NULL, dc, deltatime, im->m_drawCalls);
 
 		// --------------------------End of shadw pass-----------------------------------------------
+
+		pt::Camera& cc = ComponentHandler::GetComponentByIndex<pt::Camera>(m_activeCamIndex);
 		dc->OMSetRenderTargets(1, &m_rtv, m_dsView);
 		dc->RSSetViewports(1, &m_viewport);
 
@@ -639,13 +653,7 @@ namespace PrimtTech
 		m_shadowmap.BindSRV(dc, 10);
 		// iterate through meshrefs
 		m_transformBuffer.MapBuffer();
-		drawMeshes(rMeshrefs, rTransforms, rPrefabrefs,
-			m_transformBuffer, &m_materialBuffer, dc, deltatime, im->m_drawCalls);
-		//std::vector<Camera> cams = ComponentHandler::GetComponentArray<Camera>();
-		//for (int i = 0; i < noCams; i++)
-		//{
-			//cams[i].E
-		//}
+		drawMeshes(rMeshrefs, rTransforms, rPrefabrefs, m_transformBuffer, &m_materialBuffer, dc, deltatime, im->m_drawCalls);
 
 		m_transformBuffer.Data().world = matrix(1.f);
 		dc->VSSetShader(m_lineVS.GetShader(), NULL, 0);
