@@ -53,11 +53,12 @@ VSOutput main(VSInput input)
     
     output.position = mul(mul(projView, finalWorld), float4(input.localPosition.xyz, 1.f));
     output.texCoord = input.texCoord;
+    
     output.normal = normalize(mul(float4(input.localNormal, 0.f), finalWorld));
-    output.worldpos = mul(float4(input.localPosition.xyz, 1.f), finalWorld).xyz;
+    output.worldpos = mul(finalWorld, float4(input.localPosition.xyz, 1.f)).xyz;
     output.tangent = mul(float4(input.tangent, 0.f), finalWorld).xyz;
     output.bitangent = mul(float4(input.bitangent, 0.f), finalWorld).xyz;
-    output.clipSpace = mul(float4(input.localPosition, 1.f), mul(finalWorld, lightviewProj));
+    output.clipSpace = mul(mul(lightviewProj, finalWorld), float4(input.localPosition, 1.f));
     //output.vcolor = input.vcolor;
     return output;
 }

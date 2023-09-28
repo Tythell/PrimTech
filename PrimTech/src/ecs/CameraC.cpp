@@ -34,7 +34,7 @@ namespace pt
 	void Camera::SetPerspective(float fovDeg, float width, float height, float nearZ, float farZ)
 	{
 		float fovRad = glm::radians(fovDeg);
-		m_projM = glm::perspectiveFovLH(fovRad, width, height, nearZ, farZ);
+		m_projM = glm::perspectiveFovLH_ZO(fovRad, width, height, nearZ, farZ);
 		//m_projM = d::XMMatrixPerspectiveFovLH(fovRad, aspectRatio, nearZ, farZ);
 		m_isOrthographic = false;
 	}
@@ -43,7 +43,8 @@ namespace pt
 	{
 		//width *= 0.5;
 		//height *= 0.5;
-		m_projM = glm::orthoLH(-width * 0.5f, width * 0.5f, -height * 0.5f, height * 0.5f, nearZ, farZ);
+		
+		m_projM = glm::orthoLH_ZO(-width * 0.5f, width * 0.5f, -height * 0.5f, height * 0.5f, nearZ, farZ);
 		//m_projM = d::XMMatrixOrthographicLH(width, height, nearZ, farZ);
 		m_isOrthographic = true;
 	}
