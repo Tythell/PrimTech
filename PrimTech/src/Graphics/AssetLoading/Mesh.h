@@ -9,15 +9,6 @@ namespace PrimtTech
 	/// <summary>
 	/// Asset, always created by the ResourceHandler
 	/// </summary>
-	
-
-	struct MeshInstance
-	{
-		float3 row = float3(1.f,0.f,0.f);
-		float3 row1 = float3(0.f,1.f,0.f);
-		float3 row2 = float3(0.f,0.f,1.f);
-		float3 row3 = float3(0.f,0.f,0.f);
-	};
 
 	class Mesh
 	{
@@ -33,7 +24,7 @@ namespace PrimtTech
 		void InitInstanceBuffer(uint numInstances, ID3D11Device*& d, ID3D11DeviceContext*& dc);
 		void Bind(ID3D11DeviceContext*& dc);
 		void InstancedBind(ID3D11DeviceContext*& dc);
-		void ChangeInstance(uint i, MeshInstance instance);
+		void ChangeInstance(uint i, matrix instance);
 		void MapInstance();
 
 		int IncreaseUses(int n);
@@ -43,8 +34,8 @@ namespace PrimtTech
 		void Release();
 	private:
 		Buffer<Vertex3D> m_vbuffer;
-		MeshInstance* m_pmeshInstArr = nullptr;
-		Buffer<MeshInstance> m_instancebuffer;
+		matrix* m_pmeshInstArr = nullptr;
+		Buffer<matrix> m_instancebuffer;
 
 		uint m_numInstances = 1;
 		int m_numActiveInstances = 0;

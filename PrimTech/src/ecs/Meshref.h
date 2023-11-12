@@ -3,20 +3,25 @@
 
 namespace pt
 {
+
+	class TransformComp;
+
 	class MeshRef : public Component
 	{
 	public:
 		MeshRef(EntIdType entId, std::string meshName = "");
 
-		void Init(std::string path);
+		void SetMesh(const std::string& path);
 		void SetIndex(uint idx);
 		void SetMaterial(uint materialIndex, uint slot = 0);
-		void SetMaterial(std::string materialName, uint slot = 0);
+		void SetMaterial(const std::string& materialName, uint slot = 0);
 
-		PrimtTech::Mesh* GetMeshContainerP() const { return PrimtTech::ResourceHandler::GetMeshAdress(m_index); }
+		void UpdateTransformInstance(PrimtTech::Mesh* meshArr, const TransformComp& t);
+
+		PrimtTech::Mesh* GetMeshContainerP() const { return PrimtTech::ResourceHandler::GetMeshAdress(m_meshIndex); }
 		uint GetMaterialIndex(const uint& index) const;
 		uint GetNumMaterials() const { return (uint)m_pMaterialindexes.size(); };
-		std::string GetNameOfMesh() const { return PrimtTech::ResourceHandler::GetMeshAdress(m_index)->GetName(); }
+		std::string GetNameOfMesh() const { return PrimtTech::ResourceHandler::GetMeshAdress(m_meshIndex)->GetName(); }
 		uint GetInstIndex() const;
 
 		static int Lua_ChangeModel(lua_State* L);
@@ -33,7 +38,7 @@ namespace pt
 		uint GetIndex() const;
 	private:
 		Type m_type = eRegularMesh;
-		uint m_index = 0;
+		uint m_meshIndex = 0;
 		int m_instanceIndex = 0;
 		std::vector<uint> m_pMaterialindexes;
 	};

@@ -102,11 +102,12 @@ namespace PrimtTech
 		//numInstances = 2;
 		if (m_pmeshInstArr)
 			delete[] m_pmeshInstArr;
-		m_pmeshInstArr = new MeshInstance[numInstances];
+		m_pmeshInstArr = new matrix[numInstances]{matrix(1.f)};
 
 		m_numInstances = numInstances;
 
 		m_instancebuffer.CreateVertexBuffer(d, m_pmeshInstArr, numInstances, dc, eBufferFlags_IgnoreCreateTwice);
+		m_instancebuffer.MapBuffer();
 	}
 
 	void Mesh::Bind(ID3D11DeviceContext*& dc)
@@ -130,7 +131,7 @@ namespace PrimtTech
 			delete[] m_pmeshInstArr;
 	}
 
-	void Mesh::ChangeInstance(uint i, MeshInstance instance)
+	void Mesh::ChangeInstance(uint i, matrix instance)
 	{
 		m_instancebuffer.Data(i) = instance;
 	}

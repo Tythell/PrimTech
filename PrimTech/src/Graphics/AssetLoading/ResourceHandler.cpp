@@ -248,7 +248,7 @@ namespace PrimtTech
 	{
 		if (m_pmeshInstArr)
 			delete[] m_pmeshInstArr;
-		m_pmeshInstArr = new MeshInstance[numInstances];
+		m_pmeshInstArr = new matrix[numInstances];
 
 		m_maxNoInstances = numInstances;
 
@@ -257,14 +257,14 @@ namespace PrimtTech
 
 	void Prefab::BindInstanceBuffer(ID3D11DeviceContext*& dc)
 	{
-		MeshInstance debugArr[4];
-		memcpy(debugArr, m_pmeshInstArr, sizeof(MeshInstance) * 4);
+		//MeshInstance debugArr[4];
+		//memcpy(debugArr, m_pmeshInstArr, sizeof(MeshInstance) * 4);
 
 		uint offset[] = { 0 };
 		dc->IASetVertexBuffers(1, 1, m_instancebuffer.GetReference(), m_instancebuffer.GetStrideP(), offset);
 	}
 
-	void Prefab::ChangeInstance(uint i, const MeshInstance& inst)
+	void Prefab::ChangeInstance(uint i, const matrix& inst)
 	{
 		m_instancebuffer.Data(i) = inst;
 	}

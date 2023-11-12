@@ -479,7 +479,7 @@ namespace PrimtTech
 			meshrefs[i].freeComponent(entId);
 
 			READ(,meshname, 64);
-			meshrefs[i].Init(std::string(meshname));
+			meshrefs[i].SetMesh(std::string(meshname));
 			uint numMats = 0;
 			READ(&, numMats, sizeof(uint));
 			for (int j = 0; j < numMats; j++)

@@ -261,10 +261,10 @@ namespace PrimtTech
 			{"NORMAL",	0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 			{"TANGENT",	0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 			{"BITANGENT", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
-			{"INSTWORLD", 0, DXGI_FORMAT_R32G32B32_FLOAT, 1, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1},
-			{"INSTWORLD", 1, DXGI_FORMAT_R32G32B32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
-			{"INSTWORLD", 2, DXGI_FORMAT_R32G32B32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
-			{"INSTWORLD", 3, DXGI_FORMAT_R32G32B32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+			{"INSTWORLD", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+			{"INSTWORLD", 1, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+			{"INSTWORLD", 2, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+			{"INSTWORLD", 3, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
 		};
 
 		D3D11_INPUT_ELEMENT_DESC lineLayout[] =
@@ -403,14 +403,40 @@ namespace PrimtTech
 		}
 	}
 
+	void updateInstances(std::vector<Mesh>& meshVec, int numMesher, std::vector<MeshRef>& rMeshrefs, const std::vector<TransformComp>& rTransforms)
+	{
+		for (int i = 0; i < numMesher; i++)
+		{
+			uint entId = rMeshrefs[i].EntId();
+			if (entId != uint(-1))
+			{
+				TransformComp ttt = rTransforms[entId];
+
+				rMeshrefs[i].UpdateTransformInstance(meshVec.data(), ttt);
+			}
+		}
+	}
+
 	void drawMeshes(std::vector<MeshRef>& rMeshrefs, std::vector<TransformComp>& rTransforms, std::vector<MeshPrefabRef>& rPrefabs,
 		Buffer<hlsl::cbpWorldTransforms3D>& transformBuffer, Buffer<hlsl::cbpMaterialBuffer>* pMAtBuffer, ID3D11DeviceContext*& dc, float deltatime, int& drawCalls)
 	{
 		uint numMEshRefs = ComponentHandler::GetNoOfUsedComponents<pt::MeshRef>();
-
+		
 		if (!pMAtBuffer)
 		{
-			for (int i = 0; i < numMEshRefs; i++)
+			uint numMEshes = ResourceHandler::GetNoMeshes();
+			for (int i = 0; i < numMEshes; i++)
+			{
+				Mesh* pMesh = ResourceHandler::GetMeshAdress(i);
+				uint numInstances = pMesh->GetNrOfUses();
+				pMesh->InstancedBind(dc);
+				pMesh->MapInstance();
+
+				uint numVerts = pMesh->GetMeshOffsfets()[pMesh->GetNofMeshes()];
+
+				dc->DrawInstanced(numVerts, numInstances, 0, 1);
+			}
+			/*for (int i = 0; i < numMEshRefs; i++)
 			{
 				uint entId = rMeshrefs[i].EntId();
 
@@ -420,58 +446,14 @@ namespace PrimtTech
 
 				Mesh* meshPtr = rMeshrefs[i].GetMeshContainerP();
 				meshPtr->Bind(dc);
+				meshPtr->MapInstance();
+
 
 				uint nSubMEshes = meshPtr->GetNofMeshes();
 
 				int v1 = meshPtr->GetMeshOffsfets()[nSubMEshes];
 				drawCalls++;
 				dc->Draw(v1, 0);
-			}
-			/*for (int i = 0; i < numMEshRefs; i++)
-			{
-				uint entId = rMeshrefs[i].EntId();
-				Mesh* meshPtr = rMeshrefs[i].GetMeshContainerP();
-
-				TransformComp* pTransformComp = &rTransforms[entId];
-
-				uint index = rMeshrefs[i].GetInstIndex() + 1; // instance 1 is identity matrix
-
-				MeshInstance mehsInst;
-				matrix mat = pTransformComp->GetWorldTranspose();
-
-				memcpy(&mehsInst.row.x, &mat[0][0], sizeof(float) * 3);
-				memcpy(&mehsInst.row1.x, &mat[1][0], sizeof(float) * 3);
-				memcpy(&mehsInst.row2.x, &mat[2][0], sizeof(float) * 3);
-				memcpy(&mehsInst.row3.x, &mat[3][0], sizeof(float) * 3);
-
-				meshPtr->ChangeInstance(index, mehsInst);
-			}
-			std::vector<Mesh>& meshVec = ResourceHandler::GetMeshArrayReference();
-			uint numMeshes = meshVec.size();
-
-			// Set world matrix to identity because they should be affected by instanced world matrix instead
-
-			transformBuffer.Data().world = matrix(1.f);
-			transformBuffer.MapBuffer();
-
-			for (int i = 0; i < numMeshes; i++)
-			{
-				Mesh* meshPtr = &meshVec[i];
-				if (meshPtr->GetNrOfUses() > 0)
-				{
-					meshPtr->MapInstance();
-
-					meshPtr->InstancedBind(dc);
-
-					uint numMeshes = meshPtr->GetNofMeshes();
-
-					uint vCount = meshPtr->GetMeshOffsfets()[numMeshes];
-					//dc->Draw(vCount, 0);
-					dc->DrawInstanced(vCount, meshPtr->GetNrOfUses(), 0, 1);
-					drawCalls++;
-					continue;
-				}
-
 			}*/
 		}
 		else
@@ -485,7 +467,7 @@ namespace PrimtTech
 				transformBuffer.MapBuffer();
 
 				Mesh* meshPtr = rMeshrefs[i].GetMeshContainerP();
-				meshPtr->Bind(dc);
+				meshPtr->InstancedBind(dc);
 
 				uint nSubMEshes = meshPtr->GetNofMeshes();
 
@@ -498,7 +480,9 @@ namespace PrimtTech
 
 					int v1 = meshPtr->GetMeshOffsfets()[j + 1], v2 = meshPtr->GetMeshOffsfets()[j];
 					drawCalls++;
-					dc->Draw(v1 - v2, v2);
+					// draws first instance in instance buffer, which is identity, because there is already a transform in place
+					dc->DrawInstanced(v1 - v2, 1, v2, 0);
+					//dc->Draw(v1 - v2, v2);
 				}
 			}
 		}
@@ -631,6 +615,8 @@ namespace PrimtTech
 
 		uint numMEshRefs = (uint)rMeshrefs.size();
 		uint offset = 0;
+
+		updateInstances(ResourceHandler::GetMeshArrayReference(), rMeshrefs.size(), rMeshrefs, rTransforms);
 
 		drawMeshes(rMeshrefs, rTransforms, rPrefabrefs, m_transformBuffer, NULL, dc, deltatime, im->m_drawCalls);
 

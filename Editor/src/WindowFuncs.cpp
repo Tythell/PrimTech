@@ -690,7 +690,7 @@ void Gui_EntList(void* test, bool* show)
 				
 				if (ImGui::MenuItem("Reference"))
 				{
-					pEnt->AddComponent<pt::MeshRef>()->Init("cube.txt");
+					pEnt->AddComponent<pt::MeshRef>()->SetMesh("cube.txt");
 				}
 				
 				if (ImGui::MenuItem("Prefab"))
@@ -775,7 +775,7 @@ void Gui_EntList(void* test, bool* show)
 				{
 					if (ImGui::InputText("mesh", charbuffer, 16, ImGuiInputTextFlags_EnterReturnsTrue))
 					{
-						mr->Init(std::string(charbuffer));
+						mr->SetMesh(std::string(charbuffer));
 					}
 					uint matSize = (uint)mr->GetMeshContainerP()->GetMtl().size();
 					for (int i = 0; i < matSize; i++)

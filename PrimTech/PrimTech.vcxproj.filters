@@ -1024,6 +1024,9 @@
     <ClInclude Include="src\Math\SimpleMath.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\thirdParty\PerlinNoise.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="src\Shaders\LineVS.hlsl">

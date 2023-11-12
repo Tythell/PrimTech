@@ -89,7 +89,7 @@ Editor::Editor(d::XMINT2 windowRes, HINSTANCE hInstance)
 	pt::Entity& ent1 = pt::Entity::Create("Plane");
 	ent1.SetPosition(0.f, -0.2f, 0.f);
 	ent1.SetScale(10.f, 1.f, 10.f);
-	ent1.AddComponent<pt::MeshRef>()->Init("scaledplane.obj");
+	ent1.AddComponent<pt::MeshRef>()->SetMesh("scaledplane.obj");
 
 	pt::Entity::Create("DirLight").AddComponent<pt::Light>()->SetType(1);
 

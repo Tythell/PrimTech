@@ -302,7 +302,7 @@ if(otherEnt.m_hasComponents & en) \
 
 		T* pImag = pEnt->AddComponent<T>();
 		if (name)
-			pImag->Init(name);
+			pImag->SetMesh(name);
 
 		lua_pushlightuserdata(L, pImag);
 
@@ -345,7 +345,7 @@ if(otherEnt.m_hasComponents & en) \
 
 			//pt::MeshRef* pImag = pEnt->AddComponent<pt::MeshRef>();
 			if (name)
-				mr->Init(name);
+				mr->SetMesh(name);
 
 			//lua_pushlightuserdata(L, pImag);
 

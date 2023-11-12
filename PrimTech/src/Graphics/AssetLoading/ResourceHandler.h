@@ -25,7 +25,7 @@ namespace PrimtTech
 
 		void InitInstanceBuffer(uint numInstances, ID3D11Device*& d, ID3D11DeviceContext*& dc);
 		void BindInstanceBuffer(ID3D11DeviceContext*& dc);
-		void ChangeInstance(uint i, const MeshInstance& inst);
+		void ChangeInstance(uint i, const matrix& inst);
 		void MapInstBuffer();
 
 		void SetName(std::string name);
@@ -44,8 +44,8 @@ namespace PrimtTech
 
 		void Release();
 	private:
-		MeshInstance* m_pmeshInstArr = nullptr;
-		Buffer<MeshInstance> m_instancebuffer;
+		matrix* m_pmeshInstArr = nullptr;
+		Buffer<matrix> m_instancebuffer;
 		std::vector<uint> m_prefabRefsIdx;
 
 		uint m_meshIndex = 0;

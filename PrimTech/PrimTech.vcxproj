@@ -375,6 +375,7 @@
     <ClInclude Include="src\thirdParty\mono\utils\mono-jemalloc.h" />
     <ClInclude Include="src\thirdParty\mono\utils\mono-logger.h" />
     <ClInclude Include="src\thirdParty\mono\utils\mono-publib.h" />
+    <ClInclude Include="src\thirdParty\PerlinNoise.hpp" />
     <ClInclude Include="src\thirdParty\reactphysics3d\body\CollisionBody.h" />
     <ClInclude Include="src\thirdParty\reactphysics3d\body\RigidBody.h" />
     <ClInclude Include="src\thirdParty\reactphysics3d\collision\broadphase\DynamicAABBTree.h" />

@@ -144,11 +144,7 @@ namespace pt
 
 	void TransformComp::DuplicateFrom(Component* other)
 	{
-		TransformComp* otherComp = dynamic_cast<TransformComp*>(other);
-		m_pos = otherComp->m_pos;
-		m_rotQ = otherComp->m_rotQ;
-		m_scale = otherComp->m_scale;
-		worldM = otherComp->worldM;
+		*this = *dynamic_cast<TransformComp*>(other);
 	}
 
 	matrix TransformComp::GetWorld() const

@@ -42,8 +42,8 @@ namespace PrimtTech
 			fullpath = "Assets\\Textures\\" + m_name;
 
 
-		int textureWidth;
-		int textureHeight;
+		int textureWidth = 0;
+		int textureHeight = 0;
 		//unsigned char* imageData = stbi_load(fullpath.c_str(), &textureWidth, &textureHeight, nullptr, STBI_rgb_alpha);
 		unsigned char* imageData = nullptr;
 		FileLoader::StbiCreateCharFromFile(fullpath.c_str(), imageData, textureWidth, textureHeight, 4);
@@ -54,9 +54,9 @@ namespace PrimtTech
 			return false;
 		}
 
-		ID3D11Texture2D* texture2D;
+		ID3D11Texture2D* texture2D = nullptr;
 
-		D3D11_TEXTURE2D_DESC desc;
+		D3D11_TEXTURE2D_DESC desc = {};
 		desc.Width = textureWidth;
 		desc.Height = textureHeight;
 		desc.MipLevels = 1;
@@ -137,6 +137,22 @@ namespace PrimtTech
 
 	bool TextureMap::CreatePerlinNoise(ID3D11Device*& device)
 	{
+		//const siv::PerlinNoise::seed_type seed = 7938181;
+
+		//const siv::PerlinNoise perlin{ 7938181 };
+
+		//unsigned char imageData[256 * 256]{};
+
+		//for (int y = 0; y < 256; y++)
+		//{
+		//	for (int x = 0; x < 256; x++)
+		//	{
+		//		imageData[x * y] = perlin.octave2D_01((x * 0.01), (y * 0.01), 4);
+		//	}
+		//}
+
+		//CreateFromData(imageData, device, { 256, 256 }, 1);
+
 		return false;
 	}
 

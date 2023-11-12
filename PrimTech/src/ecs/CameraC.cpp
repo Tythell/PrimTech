@@ -34,6 +34,7 @@ namespace pt
 	void Camera::SetPerspective(float fovDeg, float width, float height, float nearZ, float farZ)
 	{
 		float fovRad = glm::radians(fovDeg);
+
 		m_projM = glm::perspectiveFovLH_ZO(fovRad, width, height, nearZ, farZ);
 		//m_projM = d::XMMatrixPerspectiveFovLH(fovRad, aspectRatio, nearZ, farZ);
 		m_isOrthographic = false;
