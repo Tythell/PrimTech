@@ -1,6 +1,6 @@
 #include"pch.h"
 #include "PrimTech.h"
-#include "Graphics/DX11Wrapper.h"
+#include "Graphics/DX11Renderer.h"
 #include"ecs/Entity.h"
 
 using namespace PrimtTech;
@@ -10,6 +10,7 @@ namespace pt
 	PrimTech::PrimTech() :
 		m_playerSpeed(5.f)
 	{
+
 	}
 
 	PrimTech::~PrimTech()
@@ -30,18 +31,21 @@ namespace pt
 		m_windowName = windowName;
 		m_window.init(windowName, hInstance, windowClass, width, height);
 
-		
+
 
 		SetUpScriptEnviroment();
 		LuaScript::SetLuaState(m_luaEngine.GetLuaState());
 
-		/*pt::Entity& ent0 = pt::Entity::Create();
-		pt::Camera* devCam = ent0.AddComponent<pt::Camera>();
-		devCam->UpdateView(ent0.Transform());
-		devCam->SetPerspective(80.f, (float)width / (float)height, 0.1f, 100.f);
-		ent0.SetPosition(0.f, 1.f, -2.f);*/
 
 		mp_dxrenderer = new Renderer(m_window);
+		
+		m_pGui = mp_dxrenderer->GetGuiHandlerP();
+		//pt::Entity& ent0 = pt::Entity::Create();
+		//pt::Camera* devCam = ent0.AddComponent<pt::Camera>();
+		//devCam->UpdateView(ent0.Transform());
+		//devCam->SetPerspective(80.f, (float)width, (float)height, 0.1f, 100.f);
+		//ent0.SetPosition(0.f, 1.f, -2.f);
+
 		
 		ID3D11Device* devi = mp_dxrenderer->GetDevice();
 		pt::PhysicsBody::SetPtrs(&m_physHandler);
@@ -173,6 +177,11 @@ namespace pt
 			m_playing = (bool)b;
 
 		return m_playing;
+	}
+
+	void PrimTech::CreateImGuiWindow(PrimtTech::ImGuiWindowFunc func, void* args, bool* openClose)
+	{
+		mp_dxrenderer->GetGuiHandlerR().AddWindowFunc(func, args, openClose);
 	}
 
 	void PrimTech::Run()

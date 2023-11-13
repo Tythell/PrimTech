@@ -24,7 +24,7 @@
     <ProjectGuid>{4c739d44-3d6b-4f73-bc45-e9b57c0a579b}</ProjectGuid>
     <RootNamespace>Editor</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>Editor</ProjectName>
+    <ProjectName>SkinView</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -149,8 +149,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\Scene.cpp" />
     <ClCompile Include="src\WindowFuncs.cpp" />
+    <ClCompile Include="src\Viewer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PrimTech\PrimTech.vcxproj">
@@ -158,8 +158,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Scene.h" />
     <ClInclude Include="src\WindowFuncs.h" />
+    <ClInclude Include="src\Viewer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

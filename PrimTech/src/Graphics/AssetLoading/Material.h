@@ -6,7 +6,7 @@
 #include <string>
 #include "../Macros/Colors.h"
 
-namespace PrimtTech
+namespace pt
 {
 	enum TextureType
 	{
@@ -45,7 +45,7 @@ namespace PrimtTech
 		void UpdateTextureScroll(const float& deltatime);
 		void SetDiffuseScrollSpeed(float x, float y);
 		void SetDistortionScrollSpeed(float x, float y);
-		void Set(ID3D11DeviceContext*& dc, Buffer<hlsl::cbpMaterialBuffer>& mp_matBuffer);
+		void Set(ID3D11DeviceContext*& dc, PrimtTech::Buffer<PrimtTech::hlsl::cbpMaterialBuffer>& mp_matBuffer);
 		void SetTransparency(float f);
 		void SetTextureScale(float f);
 		void SetTextureScaleDist(float f);
@@ -76,7 +76,7 @@ namespace PrimtTech
 		void ReadRecursion(eMaterialHeaders& header, std::ifstream& reader);
 		void ClearMaterial();
 		std::string m_name;
-		TextureMap* mp_textures[eTextureTypeAMOUNT] = { nullptr };
+		PrimtTech::TextureMap* mp_textures[eTextureTypeAMOUNT] = { nullptr };
 		float m_textureScale = 1.f;
 		float m_textureScaleDist = 1.f;
 		

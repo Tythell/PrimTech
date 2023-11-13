@@ -49,19 +49,21 @@ namespace PrimtTech
 		}
 		return shape;
 	}
-	void ProcessNode(aiNode* node, const aiScene* scene, std::vector<Shape>& fullShape, std::vector<Mtl>& allMtls)
+	void ProcessNode(aiNode* node, const aiScene* scene, std::vector<Shape>& fullShape, std::vector<Mtl>& allMtls, std::vector<std::string>& submeshNames)
 	{
-		for (int i = 0; i < node->mNumMeshes; i++)
+		uint numMEshes = node->mNumMeshes;
+		for (int i = 0; i < numMEshes; i++)
 		{
 			aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+			submeshNames.emplace_back(mesh->mName.C_Str());
 			Mtl mtl;
 			fullShape.emplace_back(ProcessMesh(mesh, scene, mtl));
 			allMtls.emplace_back(mtl);
 		}
 		for (int i = 0; i < node->mNumChildren; i++)
-			ProcessNode(node->mChildren[i], scene, fullShape, allMtls);
+			ProcessNode(node->mChildren[i], scene, fullShape, allMtls, submeshNames);
 	}
-	bool FileLoader::AssimpLoad(std::string path, std::vector<Shape>& shape, std::vector<Mtl>& allMtls)
+	bool FileLoader::AssimpLoad(std::string path, std::vector<Shape>& shape, std::vector<Mtl>& allMtls, std::vector<std::string>& submeshNames)
 	{
 		Assimp::Importer importer;
 		const aiScene* pScene = importer.ReadFile(path.c_str(), aiProcess_MakeLeftHanded | aiProcess_CalcTangentSpace);
@@ -69,7 +71,7 @@ namespace PrimtTech
 
 		THROW_POPUP_ERROR(pScene != NULL, errString);
 
-		ProcessNode(pScene->mRootNode, pScene, shape, allMtls);
+		ProcessNode(pScene->mRootNode, pScene, shape, allMtls, submeshNames);
 		return true;
 	}
 

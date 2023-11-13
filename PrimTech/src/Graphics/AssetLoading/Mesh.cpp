@@ -17,7 +17,7 @@ namespace PrimtTech
 			check = FileLoader::LoadObjToBuffer(path, mesh, m_mtls, m_mtlIndexes, true);
 			break;
 		case 1:
-			check = FileLoader::AssimpLoad(path, mesh, m_mtls);
+			check = FileLoader::AssimpLoad(path, mesh, m_mtls, m_submeshNames);
 			break;
 		case 2: // triangle
 		{

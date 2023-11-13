@@ -46,6 +46,9 @@ namespace PrimtTech
 		std::vector<Mtl> m_mtls;
 		std::vector<int> m_mtlIndexes;
 		std::vector<int> m_offsets;
+
+		std::vector<std::string> m_submeshNames;
+
 		std::string m_name = "unloaded";
 		uint m_nofMeshes = 0;
 		Shape m_shape;

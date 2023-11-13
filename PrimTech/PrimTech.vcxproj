@@ -229,7 +229,7 @@
     </ClCompile>
     <ClCompile Include="src\Serializer\Serializer.cpp" />
     <ClCompile Include="src\Utility\CommonDialogs.cpp" />
-    <ClCompile Include="src\Graphics\DX11Wrapper.cpp" />
+    <ClCompile Include="src\Graphics\DX11Renderer.cpp" />
     <ClCompile Include="src\Graphics\Shader.cpp" />
     <ClCompile Include="src\Graphics\AssetLoading\Texture.cpp" />
     <ClCompile Include="src\Input\Keyboard.cpp" />
@@ -507,7 +507,7 @@
     <ClInclude Include="src\Graphics\AssetLoading\ResourceHandler.h" />
     <ClInclude Include="src\Utility\StringHelper.h" />
     <ClInclude Include="src\Utility\COMException.h" />
-    <ClInclude Include="src\Graphics\DX11Wrapper.h" />
+    <ClInclude Include="src\Graphics\DX11Renderer.h" />
     <ClInclude Include="src\Utility\Popup.h" />
     <ClInclude Include="src\Windows\WindowWrap.h" />
   </ItemGroup>

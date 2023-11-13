@@ -75,7 +75,7 @@
     <ClCompile Include="src\Graphics\Shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Graphics\DX11Wrapper.cpp">
+    <ClCompile Include="src\Graphics\DX11Renderer.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="src\Graphics\AssetLoading\Texture.cpp">
@@ -244,7 +244,7 @@
     <ClInclude Include="src\Graphics\AssetLoading\Vertex.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="src\Graphics\DX11Wrapper.h">
+    <ClInclude Include="src\Graphics\DX11Renderer.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\CbufferTypes.h">

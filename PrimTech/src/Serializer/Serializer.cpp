@@ -39,7 +39,7 @@ namespace PrimtTech
 
 	void NewScene(std::vector<pt::Entity>& entList)
 	{
-		Import("Default3DScene.ptsc", entList);
+		//Import("Default3DScene.ptsc", entList);
 	}
 
 	void Export(std::string path, std::vector<pt::Entity>& entList)
@@ -73,7 +73,7 @@ namespace PrimtTech
 		}
 
 		uint numMaterials = ResourceHandler::GetNoMaterials();
-		std::vector<Material>& mats = ResourceHandler::GetMaterialArrayReference();
+		std::vector<pt::Material>& mats = ResourceHandler::GetMaterialArrayReference();
 		WRITE(&, numMaterials, sizeof(uint));
 
 		WRITESHIT("Material");
@@ -370,7 +370,7 @@ namespace PrimtTech
 
 		uint numMaterials = 0;
 		READ(&, numMaterials, sizeof(uint));
-		std::vector<Material>& mats = ResourceHandler::GetMaterialArrayReference();
+		std::vector<pt::Material>& mats = ResourceHandler::GetMaterialArrayReference();
 
 		ResourceHandler::ResizeMaterials(0);
 

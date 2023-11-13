@@ -2,7 +2,7 @@
 #include "Material.h"
 #include "Mesh.h"
 
-namespace PrimtTech
+namespace pt
 {
 	Material::Material(std::string name)
 	{
@@ -28,11 +28,11 @@ namespace PrimtTech
 
 	void Material::LoadTexture(std::string textureName, TextureType type)
 	{
-		int textureIndex = ResourceHandler::CheckTextureNameExists(StringHelper::GetName(textureName));
+		int textureIndex = PrimtTech::ResourceHandler::CheckTextureNameExists(StringHelper::GetName(textureName));
 		if (textureIndex != -1)
-			mp_textures[type] = ResourceHandler::GetTextureAdress(textureIndex);
+			mp_textures[type] = PrimtTech::ResourceHandler::GetTextureAdress(textureIndex);
 		else
-			mp_textures[type] = ResourceHandler::AddTexture(textureName);
+			mp_textures[type] = PrimtTech::ResourceHandler::AddTexture(textureName);
 	}
 
 	void Material::ReadRecursion(eMaterialHeaders& header, std::ifstream& reader)
@@ -128,12 +128,12 @@ namespace PrimtTech
 		m_distortionOffsetSpeed = float2(x, y);
 	}
 
-	void Material::Set(ID3D11DeviceContext*& dc, Buffer<hlsl::cbpMaterialBuffer>& matBuffer)
+	void Material::Set(ID3D11DeviceContext*& dc, PrimtTech::Buffer<PrimtTech::hlsl::cbpMaterialBuffer>& matBuffer)
 	{
 		if (mp_textures[eDiffuse])
 			dc->PSSetShaderResources(1, 1, mp_textures[eDiffuse]->GetSRVAdress());
 		else // If Model has no diffuse it will default to first texture in vector
-			dc->PSSetShaderResources(1, 1, ResourceHandler::GetTextureAdress(0)->GetSRVAdress());
+			dc->PSSetShaderResources(1, 1, PrimtTech::ResourceHandler::GetTextureAdress(0)->GetSRVAdress());
 
 		for (int i = 1; i < eTextureTypeAMOUNT; i++)
 		{
@@ -281,13 +281,13 @@ namespace PrimtTech
 			{
 				int nofMats = 0;
 				std::string sdummy;
-				std::vector<Mtl> localMtls;
+				std::vector<PrimtTech::Mtl> localMtls;
 				while (std::getline(matreader, sdummy))
 				{
 					std::string input;
 					if (sdummy[0] == 'n' && sdummy[1] == 'e')
 					{
-						Mtl mtl;
+						PrimtTech::Mtl mtl;
 						input = input = sdummy.substr(7);
 						nofMats++;
 						mtl.name = input;
@@ -298,7 +298,7 @@ namespace PrimtTech
 					matreader >> input;
 					if (input == "newmtl")
 					{
-						Mtl mtl;
+						PrimtTech::Mtl mtl;
 						nofMats++;
 						matreader >> input;
 						mtl.name = input;

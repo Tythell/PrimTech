@@ -53,9 +53,11 @@ namespace pt
 	{
 		matrix camRot = glm::inverse(glm::toMat4(entTransform.GetRotationQuaternion()));
 
+		camRot = glm::rotation(glm::)
+
 		
 
-		float3 rotAngles = glm::degrees(glm::eulerAngles(entTransform.GetRotationQuaternion()));
+		//float3 rotAngles = glm::degrees(glm::eulerAngles(entTransform.GetRotationQuaternion()));
 
 		float4 camTarget = float4(0.f, 0.f, 1.f, 0.f) * camRot;
 
@@ -97,6 +99,14 @@ namespace pt
 	void Camera::SetRotationOffset(float x, float y, float z)
 	{
 		SetRotationOffset(float3(x, y, z));
+	}
+	void Camera::RotateOffset(float x, float y, float z)
+	{
+		RotateOffset(float3(x, y, z));
+	}
+	void Camera::RotateOffset(const float3& v)
+	{
+		m_rotateOffset += v;
 	}
 	void Camera::DuplicateFrom(Component* other)
 	{

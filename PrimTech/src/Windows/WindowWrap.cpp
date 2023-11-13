@@ -12,8 +12,8 @@
 #ifdef _DEBUG
 			if (MessageBox(hwnd, L"Leaving already?", L"[REDACTED]", MB_OKCANCEL) == IDOK)
 			{
-				MessageBox(hwnd, L"lmao you wish", L"[REDACTED]", 0);
-				//DestroyWindow(hwnd);
+				MessageBox(hwnd, L"oh then", L"[REDACTED]", 0);
+				DestroyWindow(hwnd);
 			}
 #else
 			DestroyWindow(hwnd);

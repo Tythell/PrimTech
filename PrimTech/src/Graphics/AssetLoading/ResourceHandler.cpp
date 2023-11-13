@@ -7,7 +7,7 @@ namespace PrimtTech
 	std::vector<Prefab> ResourceHandler::m_prefabs;
 	std::vector<Mesh> ResourceHandler::m_meshes;
 	std::vector<TextureMap*> ResourceHandler::m_textures;
-	std::vector<Material> ResourceHandler::m_materials;
+	std::vector<pt::Material> ResourceHandler::m_materials;
 	ID3D11Device* ResourceHandler::pDevice;
 	ID3D11DeviceContext* ResourceHandler::s_pDc;
 
@@ -46,6 +46,8 @@ namespace PrimtTech
 			if (m_meshes[i].GetName() == StringHelper::GetName(path))
 				return &m_meshes[i];
 		}
+
+
 
 		return &m_meshes.emplace_back(path, pDevice, s_pDc, makeLeftHanded);
 	}
@@ -87,7 +89,7 @@ namespace PrimtTech
 		return m_textures.size();
 	}
 
-	Material* ResourceHandler::AddMaterial(std::string name)
+	pt::Material* ResourceHandler::AddMaterial(std::string name)
 	{
 		//THROW_POPUP_ERROR(!(m_materials.size() == m_materials.capacity()), "not enough memory reserved for new material");
 
@@ -100,12 +102,12 @@ namespace PrimtTech
 		return &m_materials.emplace_back(name);
 	}
 
-	Material& ResourceHandler::GetMaterial(unsigned int index)
+	pt::Material& ResourceHandler::GetMaterial(unsigned int index)
 	{
 		return m_materials[index];
 	}
 
-	Material* ResourceHandler::GetMaterialAdress(unsigned int index)
+	pt::Material* ResourceHandler::GetMaterialAdress(unsigned int index)
 	{
 		return &m_materials[index];
 	}

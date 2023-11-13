@@ -32,6 +32,8 @@ namespace pt
 		
 		void SetCamera(uint idx);
 		bool TogglePlay(char b = 2);
+
+		void CreateImGuiWindow(PrimtTech::ImGuiWindowFunc func, void* args, bool* openClose = (bool*)0);
 		
 	private:
 		void Update(float dt);
@@ -41,6 +43,7 @@ namespace pt
 		PrimtTech::Window m_window;
 		PrimtTech::Renderer* mp_dxrenderer = nullptr;
 		PrimtTech::LuaEngine m_luaEngine;
+		PrimtTech::ImGuiHandler* m_pGui = nullptr;
 
 		float m_playerSpeed;
 		double m_deltaTime = 0.0;

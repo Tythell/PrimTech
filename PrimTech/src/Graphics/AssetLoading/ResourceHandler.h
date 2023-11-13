@@ -5,12 +5,17 @@
 #include <string>
 #include <vector>
 
+namespace pt
+{
+	class Material;
+}
+
 namespace PrimtTech
 {
 	class Mesh;
 	class MeshInstance;
 	class TextureMap;
-	class Material;
+
 
 	class Prefab
 	{
@@ -68,15 +73,15 @@ namespace PrimtTech
 		static Mesh& GetMesh(unsigned int index);
 		static Mesh* GetMeshAdress(unsigned int index);
 		static std::vector<Mesh>& GetMeshArrayReference() { return m_meshes; };
-		static std::vector<Material>& GetMaterialArrayReference() { return m_materials; };
+		static std::vector<pt::Material>& GetMaterialArrayReference() { return m_materials; };
 		static std::vector<TextureMap*>& GetTextureArrayReference() { return m_textures; };
 		static TextureMap* AddTexture(std::string path, bool flipUV = true);
 		static TextureMap& GetTexture(unsigned int index);
 		static TextureMap* GetTextureAdress(unsigned int index);
 		static const uint GetNumTextures();
-		static Material* AddMaterial(std::string name);
-		static Material& GetMaterial(unsigned int index);
-		static Material* GetMaterialAdress(unsigned int index);
+		static pt::Material* AddMaterial(std::string name);
+		static pt::Material& GetMaterial(unsigned int index);
+		static pt::Material* GetMaterialAdress(unsigned int index);
 		static int CheckMtrlNameExists(std::string mtrlName);
 		static uint GetNoMaterials();
 		static uint GetNoMeshes();
@@ -96,7 +101,7 @@ namespace PrimtTech
 		static std::vector<Prefab> m_prefabs;
 		static std::vector<Mesh> m_meshes;
 		static std::vector<TextureMap*> m_textures;
-		static std::vector<Material> m_materials;
+		static std::vector<pt::Material> m_materials;
 		static ID3D11Device* pDevice;
 		static ID3D11DeviceContext* s_pDc;
 	};
