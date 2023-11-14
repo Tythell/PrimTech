@@ -31,6 +31,12 @@ namespace PrimtTech
 		int GetNrOfUses() const;
 		int GetNrOfMaxInstances() const;
 
+		void SubmeshVisible(std::string name, bool b);
+		void SubmeshVisible(uint index, bool b);
+
+		const ushort GetIsSubmeshesVisible() const;
+		const bool GetIsSubmeshesVisible(uint index) const;
+
 		void Release();
 	private:
 		Buffer<Vertex3D> m_vbuffer;
@@ -40,6 +46,7 @@ namespace PrimtTech
 		uint m_numInstances = 1;
 		int m_numActiveInstances = 0;
 		uint offset[2] = { 0,0 };
+		ushort m_showsubmeshes = 0xffff; // ushort max
 
 		//uint m_meshIndex = 0, m_noVerts = 0;
 

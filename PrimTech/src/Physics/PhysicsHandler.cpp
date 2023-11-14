@@ -40,19 +40,22 @@ namespace PrimtTech
 
 			for (int i = 0; md_debugRenderer->getIsDebugItemDisplayed(rp::DebugRenderer::DebugItem::COLLISION_SHAPE) && i < tris.size(); i += 3)
 			{
-				pt::Color clr = md_debugRenderer->getTrianglesArray()[i / 3].color1;
+				float4 green(0.f, 1.f, 0.f, 1.f);
+				//pt::Color clr = md_debugRenderer->getTrianglesArray()[i / 3].color1;
 				tris[i + 0].m_position = rpToSm(md_debugRenderer->getTrianglesArray()[i / 3].point1);
-				tris[i + 0].m_color = clr.GetAsVector3();
+				tris[i + 0].m_color = green;
 
-				float4 vec = clr.GetAsVector4();
+				//float4 vec = clr.GetAsVector4Reversed();
 
-				clr = md_debugRenderer->getTrianglesArray()[i / 3].color2;
+				//clr = md_debugRenderer->getTrianglesArray()[i / 3].color2;
 				tris[i + 1].m_position = rpToSm(md_debugRenderer->getTrianglesArray()[i / 3].point2);
-				tris[i + 1].m_color = clr.GetAsVector3();
+				tris[i + 1].m_color = green;
+				//tris[i + 1].m_color = clr.GetAsVector3Reversed();
 
-				clr = md_debugRenderer->getTrianglesArray()[i / 3].color3;
+				//clr = md_debugRenderer->getTrianglesArray()[i / 3].color3;
 				tris[i + 2].m_position = rpToSm(md_debugRenderer->getTrianglesArray()[i / 3].point3);
-				tris[i + 2].m_color = clr.GetAsVector3();
+				tris[i + 2].m_color = green;
+				//tris[i + 2].m_color = clr.GetAsVector3Reversed();
 			}
 
 			if (tris.size()) debugTris.CreateVertexBuffer(device, tris.data(), tris.size(), NULL, eBufferFlags_IgnoreCreateTwice);

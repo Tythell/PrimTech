@@ -193,18 +193,7 @@ namespace PrimtTech
 
 			m_type = eINDEX;
 			m_usage = eIMMULATBLE;
-			//if (m_buffer)
-			//{
-			//	Popup::Error("Buffer created twice");
-			//	throw;
-			//}
-			//else if (sizeof(T) != sizeof(DWORD))
-			//{
-			//	Popup::Error("Indexbuffer type must be DWORD");
-			//	throw;
-			//}
 
-			//m_type = BufferType::eINDEX
 			mp_dc = dc;
 			m_bufferSize = numIndices;
 			D3D11_BUFFER_DESC bufferDesc;

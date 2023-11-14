@@ -10,6 +10,7 @@ public:
 	bool Run();
 private:
 	void ControlCam();
+	void InitImguiWindows();
 
 	pt::PrimTech m_engine;
 

@@ -103,8 +103,6 @@ namespace PrimtTech
 		swapChainDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 		swapChainDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
 
-
-
 		swapChainDesc.SampleDesc.Count = 1;
 		swapChainDesc.SampleDesc.Quality = 0;
 
@@ -472,19 +470,22 @@ namespace PrimtTech
 
 				uint nSubMEshes = meshPtr->GetNofMeshes();
 
-				for (int j = 0; j < nSubMEshes; j++)
-				{
-					uint matIndex = rMeshrefs[i].GetMaterialIndex(j);
-					pt::Material& rMat = ResourceHandler::GetMaterial(matIndex);
-					rMat.Set(dc, *pMAtBuffer);
-					rMat.UpdateTextureScroll(deltatime);
+				ushort visibleSubmesh = meshPtr->GetIsSubmeshesVisible();
 
-					int v1 = meshPtr->GetMeshOffsfets()[j + 1], v2 = meshPtr->GetMeshOffsfets()[j];
-					drawCalls++;
-					// draws first instance in instance buffer, which is identity, because there is already a transform in place
-					dc->DrawInstanced(v1 - v2, 1, v2, 0);
-					//dc->Draw(v1 - v2, v2);
-				}
+				for (int j = 0; j < nSubMEshes; j++)
+					if (visibleSubmesh & (1 << j))
+					{
+						uint matIndex = rMeshrefs[i].GetMaterialIndex(j);
+						pt::Material& rMat = ResourceHandler::GetMaterial(matIndex);
+						rMat.Set(dc, *pMAtBuffer);
+						rMat.UpdateTextureScroll(deltatime);
+
+						int v1 = meshPtr->GetMeshOffsfets()[j + 1], v2 = meshPtr->GetMeshOffsfets()[j];
+						drawCalls++;
+						// draws first instance in instance buffer, which is identity, because there is already a transform in place
+						dc->DrawInstanced(v1 - v2, 1, v2, 0);
+						//dc->Draw(v1 - v2, v2);
+					}
 			}
 		}
 

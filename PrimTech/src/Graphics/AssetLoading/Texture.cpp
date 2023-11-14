@@ -22,6 +22,75 @@ namespace PrimtTech
 	{
 		if (m_textureSRV)
 			m_textureSRV->Release();
+		if (m_texture2D)
+			m_texture2D->Release();
+	}
+
+	bool TextureMap::CreateDynamicTexture(unsigned char* imageData, uint2 dimensions, ID3D11Device* device, ID3D11DeviceContext*& dc)
+	{
+		if (m_textureSRV)
+			m_textureSRV->Release();
+
+		m_pImageData = imageData;
+
+		m_dimensions = dimensions;
+
+		D3D11_TEXTURE2D_DESC desc = {};
+		desc.Width = dimensions.x;
+		desc.Height = dimensions.y;
+		desc.MipLevels = 1;
+		desc.ArraySize = 1;
+		desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		desc.SampleDesc.Count = 1;
+		desc.SampleDesc.Quality = 0;
+		desc.Usage = D3D11_USAGE_DYNAMIC;
+		desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+		desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		desc.MiscFlags = 0;
+
+		D3D11_SUBRESOURCE_DATA data = {};
+
+		data.pSysMem = &imageData[0];
+		data.SysMemPitch = dimensions.x * 4;
+		data.SysMemSlicePitch = 0;
+
+
+		if (FAILED(device->CreateTexture2D(&desc, &data, &m_texture2D)))
+		{
+			return false;
+		}
+
+		HRESULT hr = device->CreateShaderResourceView(m_texture2D, nullptr, &m_textureSRV);
+
+		//for (int i = 0; i < dimensions.x * dimensions.y; i++)
+		//{
+		//	uint grayScale;
+		//	grayScale = m_pImageData[(i * 4) + 0];
+		//	grayScale += m_pImageData[(i * 4) + 1];
+		//	grayScale += m_pImageData[(i * 4) + 2];
+		//	grayScale /= 3;
+		//	m_pImageData[(i * 4) + 0] = grayScale; // red channel
+		//	m_pImageData[(i * 4) + 1] = grayScale; // green
+		//	m_pImageData[(i * 4) + 2] = grayScale; // blue
+		//}
+
+		//for (int i = 0; i < 64; i++)
+		//	for (int j = 0; j < 64; j++)
+		//	{
+		//		SetPixelColor(uint2(i, j), float4(1.f, 0.f, 0.f, 1.f));
+		//	}
+
+		SetPixelColor(uint2(40, 0), float4(1.f, 0.f, 0.f, 1.f));
+
+		D3D11_MAPPED_SUBRESOURCE mappedResource;
+		hr = dc->Map(m_texture2D, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+		COM_ERROR(hr, "Failed to update texture");
+		CopyMemory(mappedResource.pData, m_pImageData, sizeof(uchar) * dimensions.x * dimensions.y * 4);
+		dc->Unmap(m_texture2D, 0);
+
+		delete[] m_pImageData;
+		return SUCCEEDED(hr);
+		//return true;
 	}
 
 	bool TextureMap::CreateFromFile(const char* texturePath, ID3D11Device* device, const bool& flipUV)
@@ -45,16 +114,18 @@ namespace PrimtTech
 		int textureWidth = 0;
 		int textureHeight = 0;
 		//unsigned char* imageData = stbi_load(fullpath.c_str(), &textureWidth, &textureHeight, nullptr, STBI_rgb_alpha);
-		unsigned char* imageData = nullptr;
-		FileLoader::StbiCreateCharFromFile(fullpath.c_str(), imageData, textureWidth, textureHeight, 4);
+		//unsigned char* imageData = nullptr;
+		FileLoader::StbiCreateCharFromFile(fullpath.c_str(), m_pImageData, textureWidth, textureHeight, 4);
+		m_channels = 4;
 
-		if (!imageData)
+		m_dimensions.x = textureWidth;
+		m_dimensions.y = textureHeight;
+
+		if (!m_pImageData)
 		{
 			Popup::Error("Texture: " + std::string(fullpath) + " not found");
 			return false;
 		}
-
-		ID3D11Texture2D* texture2D = nullptr;
 
 		D3D11_TEXTURE2D_DESC desc = {};
 		desc.Width = textureWidth;
@@ -71,27 +142,32 @@ namespace PrimtTech
 
 		D3D11_SUBRESOURCE_DATA data = {};
 
-		data.pSysMem = &imageData[0];
+		data.pSysMem = &m_pImageData[0];
 		data.SysMemPitch = textureWidth * 4;
 		data.SysMemSlicePitch = 0;
 
 
-		if (FAILED(device->CreateTexture2D(&desc, &data, &texture2D)))
+		if (FAILED(device->CreateTexture2D(&desc, &data, &m_texture2D)))
 		{
 			return false;
 		}
 
-		HRESULT hr = device->CreateShaderResourceView(texture2D, nullptr, &m_textureSRV);
-		texture2D->Release();
+		HRESULT hr = device->CreateShaderResourceView(m_texture2D, nullptr, &m_textureSRV);
 
-		free(imageData);
+		m_texture2D->Release();
+		m_texture2D = nullptr;
+
+		free(m_pImageData);
 		return SUCCEEDED(hr);
 	}
 
-	bool TextureMap::CreateFromData(unsigned char* imageData, ID3D11Device*& m_device, int2 dimensions, unsigned channels)
+	bool TextureMap::CreateFromData(unsigned char* imageData, ID3D11Device*& m_device, uint2 dimensions, unsigned channels)
 	{
+		m_channels = 4;
 		if (m_textureSRV)
 			m_textureSRV->Release();
+
+		m_dimensions = dimensions;
 
 		ID3D11Texture2D* texture = nullptr;
 		D3D11_TEXTURE2D_DESC desc = {};
@@ -133,6 +209,18 @@ namespace PrimtTech
 		texture->Release();
 
 		return true;
+	}
+
+	void TextureMap::SetPixelColor(uint2 pixel, uint color)
+	{
+		pixel.y = m_dimensions.y - pixel.y - 1;
+		uint index = (pixel.y * m_dimensions.x + pixel.x) * 4;
+		memcpy(&m_pImageData[index], &color, sizeof(uint));
+	}
+
+	void TextureMap::SetPixelColor(uint2 pixel, float4 color)
+	{
+		SetPixelColor(pixel, pt::Color::AsHex(color));
 	}
 
 	bool TextureMap::CreatePerlinNoise(ID3D11Device*& device)

@@ -17,6 +17,8 @@
 //namespace smm = DirectX::SimpleMath;
 //namespace d = DirectX;
 
+using ushort = unsigned short;
+
 using uint = unsigned int;
 using uint2 = glm::uvec2;
 using uint3 = glm::uvec3;

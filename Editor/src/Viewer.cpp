@@ -1,10 +1,13 @@
 #include "Viewer.h"
+#include "WindowFuncs.h"
 
 Viewer::Viewer()
 {
 	int width = 500, height = 500;
 
 	m_engine.Init(L"Skin Viewer", NULL, L"wndclass", width, height);
+
+	InitImguiWindows();
 
 	std::vector<pt::Camera>& m_cams = PrimtTech::ComponentHandler::GetComponentArray<pt::Camera>();
 	PrimtTech::ResourceHandler::AddMesh("Assets/models/cube.txt");
@@ -13,8 +16,9 @@ Viewer::Viewer()
 
 	std::vector<pt::Entity>& m_ents = pt::Entity::GetAllEnts();
 
-	PrimtTech::ResourceHandler::AddMesh("Assets/models/amcguy.obj");
-	PrimtTech::ResourceHandler::AddTexture("mcskin.png");
+	PrimtTech::Mesh* pMesh = PrimtTech::ResourceHandler::AddMesh("Assets/models/amcguy.obj");
+
+	//pMesh->SubmeshVisible("headhat", false);
 
 	std::vector<PrimtTech::Mesh>& meshes = PrimtTech::ResourceHandler::GetMeshArrayReference();
 
@@ -108,4 +112,9 @@ void Viewer::ControlCam()
 	move *= 0.001f;
 	m_pCamEnt->Move(move);
 	m_cam->UpdateView(m_pCamEnt->Transform());
+}
+
+void Viewer::InitImguiWindows()
+{
+	m_engine.CreateImGuiWindow(ToggleWindow, NULL);
 }

@@ -122,6 +122,36 @@ namespace PrimtTech
 		dc->IASetVertexBuffers(0, 2, bufferPtr, strides, offset);
 	}
 
+	void Mesh::SubmeshVisible(std::string name, bool b)
+	{
+		for (int i = 0; i < m_submeshNames.size(); i++)
+		{
+			if (name == m_submeshNames[i])
+			{
+				SubmeshVisible(i, b);
+				break;
+			}
+		}
+	}
+
+	void Mesh::SubmeshVisible(uint index, bool b)
+	{
+		if (b)
+			m_showsubmeshes |= (1 << index);
+		else
+			m_showsubmeshes &= ~(1 << index);
+	}
+
+	const ushort Mesh::GetIsSubmeshesVisible() const
+	{
+		return m_showsubmeshes;
+	}
+
+	const bool Mesh::GetIsSubmeshesVisible(uint index) const
+	{
+		return m_showsubmeshes & (1 << index);
+	}
+
 	void Mesh::Release()
 	{
 		m_vbuffer.Release();

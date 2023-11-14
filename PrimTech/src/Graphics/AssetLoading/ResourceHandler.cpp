@@ -65,12 +65,25 @@ namespace PrimtTech
 	TextureMap* ResourceHandler::AddTexture(std::string path, bool flipUV)
 	{
 		TextureMap* pTexture = new TextureMap(/*path.c_str(), pDevice, flipUV*/);
-		if (!pTexture->CreateFromFile(path.c_str(), pDevice, flipUV))
+		if (path == "mcskin.png")
 		{
-			delete pTexture;
-			return m_textures[0];
+			int2 dimensions(0);
+			unsigned char* image = nullptr;
+			FileLoader::StbiCreateCharFromFile("Assets/Textures/mcskin.png", image, dimensions.x, dimensions.y, 4);
+			pTexture->CreateDynamicTexture(image, dimensions, pDevice, s_pDc);
+			m_textures.emplace_back(pTexture);
 		}
-		m_textures.emplace_back(pTexture);
+		else
+		{
+			if (!pTexture->CreateFromFile(path.c_str(), pDevice, flipUV))
+			{
+				delete pTexture;
+				return m_textures[0];
+			}
+			m_textures.emplace_back(pTexture);
+		}
+
+		
 		return pTexture;
 	}
 

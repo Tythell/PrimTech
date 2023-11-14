@@ -9,8 +9,13 @@ namespace pt
 		Color(uchar r, uchar g, uchar b, uchar a = 255u);
 		Color(uint hexColor);
 
-		float3 GetAsVector3() const;
-		float4 GetAsVector4() const;
+		float3 GetAsFloat3() const;
+		float4 GetAsFloat4() const;
+		uint GetHex() const;
+
+		static const float3 AsFloat3(uint color);
+		static const float4 AsFloat4(uint color);
+		static const uint AsHex(float4 color);
 	private:
 		uint m_hexClr;
 	};
