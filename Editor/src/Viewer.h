@@ -18,6 +18,7 @@ private:
 	pt::Entity* m_avatar = nullptr;
 	pt::MeshRef* m_mesh = nullptr;
 
-	//pt::Entity* m_camEnt = nullptr;
 	pt::Camera* m_cam = nullptr;
+
+	pt::Entity* m_pCamEnt = nullptr;;
 };

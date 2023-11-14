@@ -98,12 +98,12 @@ namespace PrimtTech
 				//vert.m_color = RED_3F;
 				for (int j = 0; j < points; j++)
 				{
-					float degree = DEG(degreeIncrease * (float)(j + points / 4));
+					float degree = glm::degrees(degreeIncrease * (float)(j + points / 4));
 					vert.m_position = { radius * sin(degree), 0.f, radius * cos(degree) };
 					m_shape.push_back(vert);
 				}
 			}
-			float degree = DEG(degreeIncrease * (float)(i + points / 4));
+			float degree = glm::degrees(degreeIncrease * (float)(i + points / 4));
 			vert.m_position = { radius * cos(degree) , radius * sin(degree), 0.f };
 			//vert.m_color = { float(i % 2), float(i % 2), float(i % 2) };
 			m_shape.push_back(vert);
@@ -114,7 +114,7 @@ namespace PrimtTech
 		{
 			BBVertex vert;
 
-			float degree = DEG(degreeIncrease * (float)(i + points / 4));
+			float degree = glm::degrees(degreeIncrease * (float)(i + points / 4));
 			vert.m_position = { 0.f , radius * sin(degree), radius * cos(degree) };
 			//vert.m_color = { float(i % 2), float(i % 2), float(i % 2) };
 			m_shape.push_back(vert);

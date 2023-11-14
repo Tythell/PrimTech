@@ -28,6 +28,8 @@ namespace pt
 		void SetRotationOffset(float x, float y, float z);
 		void RotateOffset(float x, float y, float z);
 		void RotateOffset(const float3& v);
+		void MoveOffset(float x, float y, float z);
+		void MoveOffset(const float3& v);
 
 		float3 GetPositionOffset() const { return m_posOffset; }
 		float3 GetRotationOffset() const { return m_rotateOffset; }

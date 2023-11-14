@@ -88,7 +88,7 @@ namespace PrimtTech
 		return SUCCEEDED(hr);
 	}
 
-	bool TextureMap::CreateFromData(unsigned char* imageData, ID3D11Device*& m_device, d::XMINT2 dimensions, unsigned channels)
+	bool TextureMap::CreateFromData(unsigned char* imageData, ID3D11Device*& m_device, int2 dimensions, unsigned channels)
 	{
 		if (m_textureSRV)
 			m_textureSRV->Release();

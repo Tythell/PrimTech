@@ -53,34 +53,24 @@ namespace pt
 	{
 		matrix camRot = glm::inverse(glm::toMat4(entTransform.GetRotationQuaternion()));
 
-		camRot = glm::rotation(glm::)
-
-		
-
-		//float3 rotAngles = glm::degrees(glm::eulerAngles(entTransform.GetRotationQuaternion()));
-
 		float4 camTarget = float4(0.f, 0.f, 1.f, 0.f) * camRot;
 
 		camTarget = camTarget + float4(entTransform.GetPosition(), 0.f);
 
 		float4 upDir = float4(0.f, 1.f, 0.f, 0.f) * camRot;
 
-		m_viewM = glm::lookAtLH(entTransform.GetPosition(), float3(camTarget), float3(upDir));
+		matrix offsetMat(1.f);
+		offsetMat *= glm::translate(offsetMat, m_posOffset);
+		m_viewM = glm::inverse(offsetMat);
+		m_viewM *= glm::lookAtLH(entTransform.GetPosition(), float3(camTarget), float3(upDir));
 
-		//d::XMVECTOR camTarget = d::XMVector3TransformCoord(float4(0.f, 0.f, 1.f, 0.f), camRot);
-		//camTarget += entTransform.GetPosition();
-		////camTarget += posOffset;
 
-		//d::XMVECTOR upDir = d::XMVector2TransformCoord(float4(0.f, 1.f, 0.f, 0.f), camRot);
+		//matrix offsetRotM = glm::toMat4(quat(m_rotateOffset));
+		//offsetMat *= offsetRotM;
+		
 
-		//m_viewM = d::XMMatrixLookAtLH(entTransform.GetPosition(), camTarget, upDir);
 
-		//m_viewM *= d::XMMatrixTranslationFromVector(m_posOffset);
-
-		//m_forwardV = d::XMVector3TransformCoord({ 0,0,1 }, camRot);
-		//m_leftV = d::XMVector3TransformCoord({ -1,0,0 }, camRot);
-		//m_upV = d::XMVector3TransformCoord({ 0.f,1.f,0.f }, camRot);
-		m_forwardV = float4(0.f, 0.f, 1.f, 0.f) * camRot;;
+		m_forwardV = float4(0.f, 0.f, 1.f, 0.f) * camRot;
 		m_leftV = float4(-1.f, 0.f, 0.f, 0.f) * camRot;
 		m_upV = upDir;
 	}
@@ -107,6 +97,14 @@ namespace pt
 	void Camera::RotateOffset(const float3& v)
 	{
 		m_rotateOffset += v;
+	}
+	void Camera::MoveOffset(float x, float y, float z)
+	{
+		MoveOffset(float3(x, y, z));
+	}
+	void Camera::MoveOffset(const float3& v)
+	{
+		m_posOffset += v;
 	}
 	void Camera::DuplicateFrom(Component* other)
 	{

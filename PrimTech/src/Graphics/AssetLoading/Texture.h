@@ -15,7 +15,7 @@ namespace PrimtTech
 		TextureMap(const char* texturePath, ID3D11Device* device, const bool& flipUV = true);
 		~TextureMap();
 		bool CreateFromFile(const char* texturePath, ID3D11Device* device, const bool& flipUV = true);
-		bool CreateFromData(unsigned char* imageData, ID3D11Device*& m_device, d::XMINT2 dimensions, unsigned channels = 4);
+		bool CreateFromData(unsigned char* imageData, ID3D11Device*& m_device, int2 dimensions, unsigned channels = 4);
 		
 		bool CreatePerlinNoise(ID3D11Device*& device);
 

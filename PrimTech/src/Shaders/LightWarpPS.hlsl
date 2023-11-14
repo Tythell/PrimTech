@@ -130,17 +130,15 @@ float4 main(PSInput input) : SV_Target
     
     float4 diffuse;
     if (flags & MaterialFlag_eHasDiffuse)
-        diffuse = saturate(diffuseMap.Sample(wrapSampler, texCoord + distortion) /** float4(input.vcolor, 1.f)*/);
+        diffuse = saturate(diffuseMap.Sample(shadowSampler, texCoord + distortion));
     else
         diffuse = float4(diffuseColor, 1.f);
-    
-    diffuse.w = 1.f;
-    //float4 diffuse = diffuseMap.Sample(samplerState, texCoord + distortion);
     
     if (flags & MaterialFlag_eHasOpacity)
         opacity = opacityMap.Sample(wrapSampler, texCoord + distortion).x;
     else
         opacity = diffuse.w;
+
     
     float attenuation = 1.f;
     

@@ -6,6 +6,7 @@
 #include<vector>
 #include<string>
 
+#define GLM_CONFIG_XYZW_ONLY
 #include "Math/Math.h"
 #include "Utility/Popup.h"
 #undef max

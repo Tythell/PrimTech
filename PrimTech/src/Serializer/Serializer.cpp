@@ -215,8 +215,11 @@ namespace PrimtTech
 		{
 			EntIdType u = lights[i].EntId();
 			WRITE(&, u, sizeof(EntIdType));
-			uchar uc = lights[i].GetType();
-			WRITE(&, uc, sizeof(uchar));
+			pt::LightType uc = lights[i].GetType();
+
+			uchar ucharWrite = (uchar)uc;
+
+			WRITE(&, ucharWrite, sizeof(uchar));
 
 			hlsl::Light lightData = lights[i].GetLightData();
 			WRITEB(&, lightData, sizeof(hlsl::Light));
@@ -547,7 +550,7 @@ namespace PrimtTech
 			//
 			uchar uc = 0;
 			READ(&, uc, sizeof(uchar));
-			lights[i].SetType(uc);
+			lights[i].SetType(pt::LightType(uc));
 
 			hlsl::Light lightData = {};
 			READ(&, lightData, sizeof(hlsl::Light));

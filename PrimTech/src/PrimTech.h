@@ -54,6 +54,6 @@ namespace pt
 		uint m_activeCamera = 1;
 		int m_entTableIdx = 0;
 
-		d::XMINT2 m_windowPos;
+		int2 m_windowPos;
 	};
 };

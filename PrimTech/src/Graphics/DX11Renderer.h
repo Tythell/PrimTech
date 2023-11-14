@@ -18,7 +18,7 @@
 
 #define IMGUI_DEFINE_MATH_OPERATORS
 
-namespace sm = DirectX::SimpleMath;
+//namespace sm = DirectX::SimpleMath;
 
 namespace PrimtTech
 {
@@ -112,7 +112,8 @@ namespace PrimtTech
 		//ImGuiVars* im = nullptr;
 
 		RenderBox m_renderbox;
-		sm::Ray m_ray;
+
+		//sm::Ray m_ray;
 		int m_fps = 0;
 		//RenderLine m_rLine;
 		//RenderSphere m_sphere;

@@ -1,7 +1,8 @@
 #pragma once
-#include<DirectXMath.h>
-#include <DirectXCollision.h>
-#include"../Math/Simplemath.h"
+//#include<DirectXMath.h>
+//#include <DirectXCollision.h>
+//#include"../Math/Simplemath.h"
+#define GLM_FORCE_XYZW_ONLY
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -13,13 +14,13 @@
 #include <string>
 #include <cstdint>
 #include <algorithm>
-namespace smm = DirectX::SimpleMath;
-namespace d = DirectX;
+//namespace smm = DirectX::SimpleMath;
+//namespace d = DirectX;
 
 using uint = unsigned int;
-using uint2 = d::XMUINT2;
-using uint3 = d::XMUINT3;
-using uint4 = d::XMUINT4;
+using uint2 = glm::uvec2;
+using uint3 = glm::uvec3;
+using uint4 = glm::uvec4;
 
 using float2 = glm::vec2;
 using float3 = glm::vec3;
@@ -28,9 +29,9 @@ using float4 = glm::vec4;
 using float4x4 = glm::mat4x4;
 using matrix = glm::mat4x4;
 
-using int2 = d::XMINT2;
-using int3 = d::XMINT3;
-using int4 = d::XMINT4;
+using int2 = glm::ivec2;
+using int3 = glm::ivec3;
+using int4 = glm::ivec4;
 
 using uchar = unsigned char;
 using ulong = unsigned long;
@@ -38,7 +39,7 @@ using ullong = unsigned long long;
 
 using quat = glm::quat;
 
-#define DEG(r) r * d::XM_PI / 180
+//#define DEG(r) r * glm::pi / 180
 
 namespace ptm
 {

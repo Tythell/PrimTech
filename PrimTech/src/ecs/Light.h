@@ -4,6 +4,14 @@
 namespace pt
 {
 	class TransformComp;
+
+	enum class LightType : char
+	{
+		ePOINT,
+		eDIRECTIONAL,
+		eAMBIENT,
+	};
+
 	class Light : public Component
 	{
 	public:
@@ -18,8 +26,8 @@ namespace pt
 		float4 GetPositionOffset() const { return m_posOffset; };
 		float4 GetDirectionOffset() const { return m_dirOffset; };
 
-		void SetType(uchar type);
-		uchar GetType() const { return m_type; };
+		void SetType(LightType type);
+		LightType GetType() const { return m_type; };
 		// Inherited via Component
 		virtual void DuplicateFrom(Component* other) override;
 		// Inherited via Component
@@ -28,7 +36,7 @@ namespace pt
 		PrimtTech::hlsl::Light m_lightData;
 		float4 m_posOffset;
 		float4 m_dirOffset;
-		uchar m_type = 0u;
+		LightType m_type = LightType::ePOINT;
 
 
 

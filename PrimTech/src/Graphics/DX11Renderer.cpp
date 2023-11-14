@@ -461,7 +461,7 @@ namespace PrimtTech
 
 				matrix transformMatrix = matrix(1.f);
 
-				transformMatrix = glm::translate(transformMatrix, float3(0.f, 0.f, 2.f));
+				//transformMatrix = glm::translate(transformMatrix, float3(0.f, 0.f, 2.f));
 
 				transformBuffer.Data().world = transformMatrix;
 				//transformBuffer.Data().world = pTransformComp->GetWorld();

@@ -44,7 +44,7 @@ namespace pt
 		--nrOfEntitiesUsed;
 		FreeComponent<MeshRef>();
 		FreeComponent<MeshPrefabRef>();
-		FreeComponent<AABBComp>();
+		//FreeComponent<AABBComp>();
 		FreeComponent<Camera>();
 		FreeComponent<Light>();
 		FreeComponent<LuaScript>();
@@ -179,10 +179,20 @@ namespace pt
 
 	void Entity::Rotate(float x, float y, float z)
 	{
+		Rotate(float3(x, y, z));
 	}
 
 	void Entity::Rotate(float3 v)
 	{
+		//quat quat(v);
+		Transform().Rotate(v);
+
+		if (m_physIndex != -1)
+		{
+			PhysicsBody& physBod = PrimtTech::ComponentHandler::GetComponentByIndex<PhysicsBody>((uint)m_physIndex);
+
+			physBod.SetPhysicsEulerRotation(v);
+		}
 	}
 
 	void Entity::Scale(float x, float y, float z)

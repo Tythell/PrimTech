@@ -4,7 +4,7 @@
 
 namespace pt
 {
-	AABBComp::AABBComp(EntIdType entId): Component(entId)
+	/*AABBComp::AABBComp(EntIdType entId): Component(entId)
 	{
 		m_aabb.Extents = { .5f,.5f,.5f };
 	}
@@ -79,5 +79,5 @@ namespace pt
 	}
 	void BSphereComp::OnFree()
 	{
-	}
+	}*/
 }

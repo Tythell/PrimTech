@@ -32,7 +32,6 @@ COMP_TYPE(pt::MeshRef, s_meshrefs, STAT, AFTER) \
 COMP_TYPE(pt::MeshPrefabRef, s_meshPrefabs, STAT, AFTER) \
 COMP_TYPE(pt::TransformComp, s_transforms, STAT, AFTER) \
 COMP_TYPE(pt::Camera, s_cams, STAT, AFTER) \
-COMP_TYPE(pt::AABBComp, s_aabbs, STAT, AFTER) \
 COMP_TYPE(pt::Light, s_lights, STAT, AFTER) \
 COMP_TYPE(pt::PhysicsBody, s_rigidBodies, STAT, AFTER) \
 COMP_TYPE(pt::LuaScript, s_luascripts, STAT, AFTER) \
@@ -48,7 +47,6 @@ LINK_TYPE_VEC(##, pt::MeshRef, s_meshrefs, ec_meshRef) \
 LINK_TYPE_VEC(else, pt::MeshPrefabRef, s_meshPrefabs, ec_prefab) \
 LINK_TYPE_VEC(else, pt::TransformComp, s_transforms, ec_transform) \
 LINK_TYPE_VEC(else, pt::Camera, s_cams, ec_cam) \
-LINK_TYPE_VEC(else, pt::AABBComp, s_aabbs, ec_aabb) \
 LINK_TYPE_VEC(else, pt::Light, s_lights, ec_light) \
 LINK_TYPE_VEC(else, pt::PhysicsBody, s_rigidBodies, ec_rigidBodies) \
 LINK_TYPE_VEC(else, pt::LuaScript, s_luascripts, ec_lua) \
