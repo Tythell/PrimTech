@@ -65,6 +65,7 @@ bool Viewer::Run()
 	{
 		m_engine.Run();
 		ControlCam();
+		UpdateToggles();
 
 		if (KeyboardHandler::IsKeyDown(Key::ESCAPE))
 		{
@@ -116,5 +117,14 @@ void Viewer::ControlCam()
 
 void Viewer::InitImguiWindows()
 {
-	m_engine.CreateImGuiWindow(ToggleWindow, NULL);
+	m_engine.CreateImGuiWindow(ToggleWindow, m_enables);
+}
+
+void Viewer::UpdateToggles()
+{
+	PrimtTech::Mesh* pmesh = m_mesh->GetMeshContainerP();
+	for (int i = 0; i < 12; i++)
+	{
+		pmesh->SubmeshVisible(i, m_enables[i]);
+	}
 }

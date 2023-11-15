@@ -9,8 +9,10 @@ public:
 
 	bool Run();
 private:
+	bool m_enables[12];
 	void ControlCam();
 	void InitImguiWindows();
+	void UpdateToggles();
 
 	pt::PrimTech m_engine;
 
