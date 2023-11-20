@@ -148,6 +148,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Comlib\Comlib.cpp" />
+    <ClCompile Include="src\Comlib\Memory.cpp" />
+    <ClCompile Include="src\Comlib\Mutex.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\WindowFuncs.cpp" />
     <ClCompile Include="src\Viewer.cpp" />
@@ -158,6 +161,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Comlib\Comlib.h" />
+    <ClInclude Include="src\Comlib\Headers.h" />
+    <ClInclude Include="src\Comlib\Memory.h" />
+    <ClInclude Include="src\Comlib\MsgHeaders.h" />
+    <ClInclude Include="src\Comlib\Mutex.h" />
     <ClInclude Include="src\WindowFuncs.h" />
     <ClInclude Include="src\Viewer.h" />
   </ItemGroup>

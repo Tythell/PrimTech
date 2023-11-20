@@ -4,18 +4,25 @@
 
 Viewer::Viewer()
 	:
-	m_msgSize(0), m_bufferSize(0), m_comlib(L"skinmap", (size_t)m_bufferSize, comlib::Consumer)
+	m_msgSize(0), m_bufferSize(0),
+	m_initSharedMem(false)
 {
 	int width = 500, height = 500;
 
 	srand((unsigned int)time(0));
 
-	memset(m_enables, (int)true, sizeof(bool) * 12);
+	if (m_initSharedMem)
+	{
+		m_comlib = new comlib::RingBuffer(L"skinview", )
+	}
 
-	//for (int i = 0; i < 12; i++)
-	//{
-	//	m_enables[i] = true
-	//}
+	for (int i = 0; i < 12; i++)
+	{
+		m_enables[i] = true;
+	}
+
+	//memset(m_enables, (int)true, sizeof(bool) * 12);
+
 
 	m_engine.Init(L"Skin Viewer", NULL, L"wndclass", width, height);
 
@@ -68,7 +75,10 @@ Viewer::Viewer()
 
 Viewer::~Viewer()
 {
-	
+	if (m_comlib)
+	{
+		delete m_comlib;
+	}
 }
 
 bool Viewer::Run()
@@ -137,51 +147,58 @@ void Viewer::UpdateTexture()
 	pt::Material* pMat = PrimtTech::ResourceHandler::GetMaterialAdress(m_mesh->GetMaterialIndex(0));
 	PrimtTech::TextureMap* pTexture = pMat->GetTexture(0);
 
-	//float randNum = f;
-
-	bool updateRecieved = ComlibUpdate(pTexture);
-
-	//pTexture->SetPixelColor(uint2(rand() % 64, rand() % 64), float4(float(rand() % 10) / 10., float(rand() % 10) / 10., float(rand() % 10) / 10., 1.f));
-
-	//pTexture->Map();
+	if (m_initSharedMem)
+	{
+		bool updateRecieved = ComlibUpdate(pTexture);
+		pTexture->Update();
+	}
 }
 
 bool Viewer::ComlibUpdate(PrimtTech::TextureMap*& pTexture)
 {
 	char* message = new char[m_msgSize];
 	SectionHeader* psh = new SectionHeader;
-	m_comlib.Recieve(message, psh);
 
-	switch (psh->header)
+	bool result = true;
+
+	while (m_comlib->Recieve(message, psh))
 	{
-	case Headers::PixelArrayStart:
-	{
-		PixelArrayStart numPixels = 0;
-
-		memcpy(&numPixels, message, psh->msgLen);
-
-		PixelChange pix{uint2(0,0), float4(0.f,0.f,0.f,0.f)};
-		for (size_t i = 0; i < numPixels; i++)
+		switch (psh->header)
 		{
-			m_comlib.Recieve(message, psh);
-			memcpy(&pix, message, psh->msgLen);
-			pTexture->SetPixelColor(pix.pixel, pix.color);
+		case Headers::PixelArrayStart:
+		{
+			PixelArrayStart numPixels = 0;
+
+			memcpy(&numPixels, message, psh->msgLen);
+
+			PixelChange pix{ uint2(0,0), float4(0.f,0.f,0.f,0.f) };
+			for (size_t i = 0; i < numPixels; i++)
+			{
+				m_comlib->Recieve(message, psh);
+				memcpy(&pix, message, psh->msgLen);
+				pTexture->SetPixelColor(pix.pixel, pix.color);
+			}
+
+			break;
 		}
+		case Headers::LonePixel:
+		{
+			PixelChange pc = {};
+			memcpy(&pc, message, psh->msgLen);
+			pTexture->SetPixelColor(pc.pixel, pc.color);
 
-		break;
-	}
-	case Headers::LonePixel:
-	{
-		PixelChange pc = {};
-		memcpy(&pc, message, psh->msgLen);
-		pTexture->SetPixelColor(pc.pixel, pc.color);
+			break;
+		}
+		default:
+			result = false;
+			break;
+		}
+	};
 
-		break;
-	}
-	default:
-		break;
-	}
+	
 
 	delete psh;
 	delete[] message;
+
+	return result;
 }

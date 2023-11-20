@@ -17,7 +17,8 @@ private:
 	void UpdateTexture();
 	bool ComlibUpdate(PrimtTech::TextureMap*& pTexture);
 
-	comlib::RingBuffer m_comlib;
+	bool initSharedMem;
+	comlib::RingBuffer* m_comlib = nullptr;
 	uint m_msgSize;
 	uint m_bufferSize;
 
