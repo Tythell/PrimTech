@@ -13,6 +13,7 @@ private:
 	void ControlCam();
 	void InitImguiWindows();
 	void UpdateToggles();
+	void UpdateTexture();
 
 	pt::PrimTech m_engine;
 

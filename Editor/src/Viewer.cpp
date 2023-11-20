@@ -1,9 +1,19 @@
 #include "Viewer.h"
 #include "WindowFuncs.h"
+#include <ctime>
 
 Viewer::Viewer()
 {
 	int width = 500, height = 500;
+
+	srand((unsigned int)time(0));
+
+	memset(m_enables, (int)true, sizeof(bool) * 12);
+
+	//for (int i = 0; i < 12; i++)
+	//{
+	//	m_enables[i] = true
+	//}
 
 	m_engine.Init(L"Skin Viewer", NULL, L"wndclass", width, height);
 
@@ -66,6 +76,7 @@ bool Viewer::Run()
 		m_engine.Run();
 		ControlCam();
 		UpdateToggles();
+		UpdateTexture();
 
 		if (KeyboardHandler::IsKeyDown(Key::ESCAPE))
 		{
@@ -88,11 +99,7 @@ void Viewer::ControlCam()
 			float2 mouseMove = { (float)me.GetPosition().y, (float)me.GetPosition().x };
 			mouseMove *= 0.005f;
 			
-			//m_cam->RotateOffset(mouseMove.x, mouseMove.y, 0.f);
-			
 			m_pCamEnt->Rotate(mouseMove.x, mouseMove.y, 0.f);
-
-			//pDevCam->UpdateView(*pDevTransform);
 		}
 
 		else if (me.GetType() == MouseEvent::EventType::eSCROLLUP)
@@ -104,12 +111,6 @@ void Viewer::ControlCam()
 		}*/
 	}
 	float3 move(0.f);
-	//if (KeyboardHandler::IsKeyDown(Key::W)) move += float3(0.f, 0.f, 1.f);
-	//if (KeyboardHandler::IsKeyDown(Key::S)) move += float3(0.f, 0.f, -1.f);
-	//if (KeyboardHandler::IsKeyDown(Key::A)) move += float3(-1.f, 0.f, 0.f);
-	//if (KeyboardHandler::IsKeyDown(Key::D)) move += float3(1.f, 0.f, 0.f);
-	//if (KeyboardHandler::IsKeyDown(Key::SPACE)) move += float3(0.f, 1.f, 0.f);
-	//if (KeyboardHandler::IsKeyDown(Key::SHIFT)) move += float3(0.f, -1.f, 0.f);
 	move *= 0.001f;
 	m_pCamEnt->Move(move);
 	m_cam->UpdateView(m_pCamEnt->Transform());
@@ -127,4 +128,16 @@ void Viewer::UpdateToggles()
 	{
 		pmesh->SubmeshVisible(i, m_enables[i]);
 	}
+}
+
+void Viewer::UpdateTexture()
+{
+	pt::Material* pMat = PrimtTech::ResourceHandler::GetMaterialAdress(m_mesh->GetMaterialIndex(0));
+	PrimtTech::TextureMap* pTexture = pMat->GetTexture(0);
+
+	//float randNum = f;
+
+	//pTexture->SetPixelColor(uint2(rand() % 64, rand() % 64), float4(float(rand() % 10) / 10., float(rand() % 10) / 10., float(rand() % 10) / 10., 1.f));
+
+	//pTexture->Map();
 }

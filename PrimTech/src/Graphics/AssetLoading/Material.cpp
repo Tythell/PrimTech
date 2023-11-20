@@ -407,5 +407,9 @@ namespace pt
 	{
 		return (mp_textures[e] != nullptr);
 	}
+	PrimtTech::TextureMap* Material::GetTexture(uint type)
+	{
+		return mp_textures[type];
+	}
 }
 

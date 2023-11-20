@@ -72,6 +72,7 @@ namespace pt
 
 		bool HasTexture(const TextureType& e) const;
 		bool HasTexture(UINT e) const;
+		PrimtTech::TextureMap* GetTexture(uint type);
 	private:
 		void ReadRecursion(eMaterialHeaders& header, std::ifstream& reader);
 		void ClearMaterial();

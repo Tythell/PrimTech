@@ -24,10 +24,16 @@ namespace PrimtTech
 			m_textureSRV->Release();
 		if (m_texture2D)
 			m_texture2D->Release();
+		if (m_pImageData)
+		{
+			free(m_pImageData);
+		}
+		
 	}
 
 	bool TextureMap::CreateDynamicTexture(unsigned char* imageData, uint2 dimensions, ID3D11Device* device, ID3D11DeviceContext*& dc)
 	{
+		m_pdc = dc;
 		if (m_textureSRV)
 			m_textureSRV->Release();
 
@@ -50,7 +56,7 @@ namespace PrimtTech
 
 		D3D11_SUBRESOURCE_DATA data = {};
 
-		data.pSysMem = &imageData[0];
+		data.pSysMem = &m_pImageData[0];
 		data.SysMemPitch = dimensions.x * 4;
 		data.SysMemSlicePitch = 0;
 
@@ -61,34 +67,7 @@ namespace PrimtTech
 		}
 
 		HRESULT hr = device->CreateShaderResourceView(m_texture2D, nullptr, &m_textureSRV);
-
-		//for (int i = 0; i < dimensions.x * dimensions.y; i++)
-		//{
-		//	uint grayScale;
-		//	grayScale = m_pImageData[(i * 4) + 0];
-		//	grayScale += m_pImageData[(i * 4) + 1];
-		//	grayScale += m_pImageData[(i * 4) + 2];
-		//	grayScale /= 3;
-		//	m_pImageData[(i * 4) + 0] = grayScale; // red channel
-		//	m_pImageData[(i * 4) + 1] = grayScale; // green
-		//	m_pImageData[(i * 4) + 2] = grayScale; // blue
-		//}
-
-		//for (int i = 0; i < 64; i++)
-		//	for (int j = 0; j < 64; j++)
-		//	{
-		//		SetPixelColor(uint2(i, j), float4(1.f, 0.f, 0.f, 1.f));
-		//	}
-
-		SetPixelColor(uint2(40, 0), float4(1.f, 0.f, 0.f, 1.f));
-
-		D3D11_MAPPED_SUBRESOURCE mappedResource;
-		hr = dc->Map(m_texture2D, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-		COM_ERROR(hr, "Failed to update texture");
-		CopyMemory(mappedResource.pData, m_pImageData, sizeof(uchar) * dimensions.x * dimensions.y * 4);
-		dc->Unmap(m_texture2D, 0);
-
-		delete[] m_pImageData;
+		
 		return SUCCEEDED(hr);
 		//return true;
 	}
@@ -158,6 +137,7 @@ namespace PrimtTech
 		m_texture2D = nullptr;
 
 		free(m_pImageData);
+		m_pImageData = nullptr;
 		return SUCCEEDED(hr);
 	}
 
@@ -223,24 +203,17 @@ namespace PrimtTech
 		SetPixelColor(pixel, pt::Color::AsHex(color));
 	}
 
+	void TextureMap::Map()
+	{
+		D3D11_MAPPED_SUBRESOURCE mappedResource;
+		HRESULT hr = m_pdc->Map(m_texture2D, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+		COM_ERROR(hr, "Failed to update texture");
+		CopyMemory(mappedResource.pData, m_pImageData, sizeof(uchar) * m_dimensions.x * m_dimensions.y * 4);
+		m_pdc->Unmap(m_texture2D, 0);
+	}
+
 	bool TextureMap::CreatePerlinNoise(ID3D11Device*& device)
 	{
-		//const siv::PerlinNoise::seed_type seed = 7938181;
-
-		//const siv::PerlinNoise perlin{ 7938181 };
-
-		//unsigned char imageData[256 * 256]{};
-
-		//for (int y = 0; y < 256; y++)
-		//{
-		//	for (int x = 0; x < 256; x++)
-		//	{
-		//		imageData[x * y] = perlin.octave2D_01((x * 0.01), (y * 0.01), 4);
-		//	}
-		//}
-
-		//CreateFromData(imageData, device, { 256, 256 }, 1);
-
 		return false;
 	}
 

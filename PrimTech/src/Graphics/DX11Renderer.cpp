@@ -43,7 +43,7 @@ namespace PrimtTech
 
 		m_lightVector.resize(32);
 
-		m_multiLightBuffer.CreateStructuredBuffer(device, m_lightVector.data(), m_lightVector.size(), dc);
+		m_multiLightBuffer.CreateStructuredBuffer(device, m_lightVector.data(), (uint)m_lightVector.size(), dc);
 
 		m_multiLightBuffer.BindSRV(11);
 	}
@@ -176,8 +176,8 @@ namespace PrimtTech
 		ZeroMemory(&rastDesc, sizeof(D3D11_RASTERIZER_DESC));
 		rastDesc.FillMode = D3D11_FILL_MODE::D3D11_FILL_SOLID;
 
-		//rastDesc.CullMode = D3D11_CULL_MODE::D3D11_CULL_NONE;
-		rastDesc.CullMode = D3D11_CULL_MODE::D3D11_CULL_BACK;
+		rastDesc.CullMode = D3D11_CULL_MODE::D3D11_CULL_NONE;
+		//rastDesc.CullMode = D3D11_CULL_MODE::D3D11_CULL_BACK;
 		rastDesc.FrontCounterClockwise = false;
 
 		HRESULT hr = device->CreateRasterizerState(&rastDesc, &m_rasterizerState);
@@ -658,13 +658,13 @@ namespace PrimtTech
 
 		// --------------------------- Draw grid ---------------------------
 		//if (im->m_drawGrid)
-		{
-			m_transformBuffer.Data().world = matrix(1);
-			m_transformBuffer.MapBuffer();
-			dc->IASetVertexBuffers(0, 1, m_grid.GetReference(), m_grid.GetStrideP(), &offset);
-			dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_LINELIST);
-			dc->Draw(m_grid.GetBufferSize(), 0);
-		}
+		//{
+		//	m_transformBuffer.Data().world = matrix(1);
+		//	m_transformBuffer.MapBuffer();
+		//	dc->IASetVertexBuffers(0, 1, m_grid.GetReference(), m_grid.GetStrideP(), &offset);
+		//	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_LINELIST);
+		//	dc->Draw(m_grid.GetBufferSize(), 0);
+		//}
 
 
 		ImGuiRender();

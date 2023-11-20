@@ -14,6 +14,7 @@ namespace PrimtTech
 		ID3D11Texture2D* m_texture2D = nullptr;
 		uint2 m_dimensions = uint2(0);
 		uint m_channels = 4;
+		ID3D11DeviceContext* m_pdc = nullptr;
 	public:
 		TextureMap();
 		TextureMap(const char* texturePath, ID3D11Device* device, const bool& flipUV = true);
@@ -24,6 +25,7 @@ namespace PrimtTech
 		// Only works on dynamic textures
 		void SetPixelColor(uint2 pixel, uint color);
 		void SetPixelColor(uint2 pixel, float4 color);
+		void Map();
 		
 		bool CreatePerlinNoise(ID3D11Device*& device);
 

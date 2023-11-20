@@ -139,6 +139,8 @@ float4 main(PSInput input) : SV_Target
     else
         opacity = diffuse.w;
 
+    if(opacity == 0.f)
+        discard;
     
     float attenuation = 1.f;
     
