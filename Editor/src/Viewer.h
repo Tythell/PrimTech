@@ -1,5 +1,6 @@
 #pragma once
 #include "PrimTech.h"
+#include "Comlib/Comlib.h"
 
 class Viewer
 {
@@ -14,6 +15,11 @@ private:
 	void InitImguiWindows();
 	void UpdateToggles();
 	void UpdateTexture();
+	bool ComlibUpdate(PrimtTech::TextureMap*& pTexture);
+
+	comlib::RingBuffer m_comlib;
+	uint m_msgSize;
+	uint m_bufferSize;
 
 	pt::PrimTech m_engine;
 

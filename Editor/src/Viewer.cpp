@@ -3,6 +3,8 @@
 #include <ctime>
 
 Viewer::Viewer()
+	:
+	m_msgSize(0), m_bufferSize(0), m_comlib(L"skinmap", (size_t)m_bufferSize, comlib::Consumer)
 {
 	int width = 500, height = 500;
 
@@ -137,7 +139,49 @@ void Viewer::UpdateTexture()
 
 	//float randNum = f;
 
+	bool updateRecieved = ComlibUpdate(pTexture);
+
 	//pTexture->SetPixelColor(uint2(rand() % 64, rand() % 64), float4(float(rand() % 10) / 10., float(rand() % 10) / 10., float(rand() % 10) / 10., 1.f));
 
 	//pTexture->Map();
+}
+
+bool Viewer::ComlibUpdate(PrimtTech::TextureMap*& pTexture)
+{
+	char* message = new char[m_msgSize];
+	SectionHeader* psh = new SectionHeader;
+	m_comlib.Recieve(message, psh);
+
+	switch (psh->header)
+	{
+	case Headers::PixelArrayStart:
+	{
+		PixelArrayStart numPixels = 0;
+
+		memcpy(&numPixels, message, psh->msgLen);
+
+		PixelChange pix{uint2(0,0), float4(0.f,0.f,0.f,0.f)};
+		for (size_t i = 0; i < numPixels; i++)
+		{
+			m_comlib.Recieve(message, psh);
+			memcpy(&pix, message, psh->msgLen);
+			pTexture->SetPixelColor(pix.pixel, pix.color);
+		}
+
+		break;
+	}
+	case Headers::LonePixel:
+	{
+		PixelChange pc = {};
+		memcpy(&pc, message, psh->msgLen);
+		pTexture->SetPixelColor(pc.pixel, pc.color);
+
+		break;
+	}
+	default:
+		break;
+	}
+
+	delete psh;
+	delete[] message;
 }
