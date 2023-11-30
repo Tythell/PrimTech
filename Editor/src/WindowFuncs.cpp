@@ -1,5 +1,5 @@
 #include "WindowFuncs.h"
-#include "PrimTech.h"
+//#include "PrimTech.h"
 #include <bitset>
 
 void toggleButton(bool& on, std::string str)
@@ -44,6 +44,8 @@ void figure(std::string face, uint startIndex, bool* enables)
 	ImGui::EndChild();
 }
 
+
+
 void ToggleWindow(void* args, bool* b)
 {
 	ImGuiWindowFlags flags = 0;
@@ -57,7 +59,9 @@ void ToggleWindow(void* args, bool* b)
 	ImGui::SetWindowSize(ImVec2(150, 270));
 	ImGui::SetWindowPos(ImVec2(0, 0));
 	
-	bool* enables = (bool*)args;
+	ToggleWindowStructure* str = (ToggleWindowStructure*)args;
+
+	
 
 	/*
 	std::vector<std::string> names;
@@ -88,7 +92,6 @@ void ToggleWindow(void* args, bool* b)
 		//ImGui::Checkbox(label.c_str(), &enables[i * 2 + 1]);
 	}
 	ImGui::EndChild();*/
-
 	
 	std::string faces[] =
 	{
@@ -101,14 +104,27 @@ void ToggleWindow(void* args, bool* b)
 		"-_-",
 		". .",
 		"O_O",
-		"? ?"
+		"? ?",
+		"- -"
 	};
 
 
 	static std::string face = faces[rand() % ARRAYSIZE(faces)] + "##head";
 
-	figure(face, 0, enables);
-	figure("hat##head", 6, enables);
+	figure(face, 0, str->enables);
+	figure("hat##head", 6, str->enables);
+
+	char textStr[16];
+	strcpy_s(textStr, 16, str->skinFile.c_str());
+
+	if (ImGui::Button("load skin"))
+	{
+		std::string path = Dialogs::OpenFile(".png");
+
+		PrimtTech::FileLoader::StbiCreateCharFromFile(path.c_str(), str->pTexturemap->GetImageData())
+		str->pTexturemap->CreateDynamicTexture()
+	}
+	//ImGui::InputText("##skinfilename", textStr, 16, ImGuiInputTextFlags_ReadOnly);
 
 	ImGui::End();
 }

@@ -72,6 +72,53 @@ namespace PrimtTech
 		//return true;
 	}
 
+	bool TextureMap::CreateDynamicTexture(const char* path, ID3D11Device* device, ID3D11DeviceContext*& dc)
+	{
+		m_pdc = dc;
+		if (m_textureSRV)
+			m_textureSRV->Release();
+
+		int2 dimen;
+
+		if (!FileLoader::StbiCreateCharFromFile(path, m_pImageData, dimen.x, dimen.y, 4))
+		{
+			m_pImageData = nullptr;
+			return false;
+		}
+
+		m_dimensions = (uint2)dimen;
+
+		D3D11_TEXTURE2D_DESC desc = {};
+		desc.Width = m_dimensions.x;
+		desc.Height = m_dimensions.y;
+		desc.MipLevels = 1;
+		desc.ArraySize = 1;
+		desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		desc.SampleDesc.Count = 1;
+		desc.SampleDesc.Quality = 0;
+		desc.Usage = D3D11_USAGE_DYNAMIC;
+		desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+		desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		desc.MiscFlags = 0;
+
+		D3D11_SUBRESOURCE_DATA data = {};
+
+		data.pSysMem = &m_pImageData[0];
+		data.SysMemPitch = m_dimensions.x * 4;
+		data.SysMemSlicePitch = 0;
+
+
+		if (FAILED(device->CreateTexture2D(&desc, &data, &m_texture2D)))
+		{
+			return false;
+		}
+
+		HRESULT hr = device->CreateShaderResourceView(m_texture2D, nullptr, &m_textureSRV);
+
+		return SUCCEEDED(hr);
+		//return true;
+	}
+
 	bool TextureMap::CreateFromFile(const char* texturePath, ID3D11Device* device, const bool& flipUV)
 	{
 		if (m_textureSRV)
@@ -203,7 +250,7 @@ namespace PrimtTech
 		SetPixelColor(pixel, pt::Color::AsHex(color));
 	}
 
-	void TextureMap::Map()
+	void TextureMap::Update()
 	{
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
 		HRESULT hr = m_pdc->Map(m_texture2D, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);

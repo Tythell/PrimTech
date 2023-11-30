@@ -9,7 +9,11 @@ namespace comlib
         //Creating our shared memory inside our constructor of the comlib.cpp.
         m_sharedMemory = new Memory(bufferName, bufferSize);
         m_messageData = m_sharedMemory->GetMemoryBuffer();
-        m_mutex = new Mutex(L"MutexMap");
+
+        std::wstring mutexName = L"MutexMap";
+        mutexName.append(bufferName);
+
+        m_mutex = new Mutex(mutexName.c_str());
 
         /*
         When creating each process, we need to separate if it is the producer or the
@@ -28,14 +32,14 @@ namespace comlib
 
         if (type == Producer)
         {
-            std::cout << "Producer activated" << std::endl;
+            //std::cout << "Producer activated" << std::endl;
             *m_head = 0;
             *m_tail = 0;
             *m_freeMemory = bufferSize * 1048576;
         }
         else if (type == Producer)
         {
-            std::cout << "Consumer activated" << std::endl;
+            //std::cout << "Consumer activated" << std::endl;
             *m_tail = 0;
         }
 

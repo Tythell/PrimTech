@@ -1,5 +1,5 @@
 #include "Viewer.h"
-#include "WindowFuncs.h"
+//#include "WindowFuncs.h"
 #include <ctime>
 
 Viewer::Viewer()
@@ -13,12 +13,12 @@ Viewer::Viewer()
 
 	if (m_initSharedMem)
 	{
-		m_comlib = new comlib::RingBuffer(L"skinview", )
+		m_comlib = new comlib::RingBuffer(L"skinview", 150, comlib::Consumer);
 	}
 
 	for (int i = 0; i < 12; i++)
 	{
-		m_enables[i] = true;
+		m_windowStruct.enables[i] = true;
 	}
 
 	//memset(m_enables, (int)true, sizeof(bool) * 12);
@@ -49,11 +49,7 @@ Viewer::Viewer()
 
 	m_mesh = m_avatar->AddComponent<pt::MeshRef>();
 
-	//m_camEnt = &pt::Entity::Create();
-
 	m_pCamEnt = &pt::Entity::Create();
-
-
 
 	m_cam = m_pCamEnt->AddComponent<pt::Camera>();
 
@@ -65,6 +61,7 @@ Viewer::Viewer()
 
 	pt::Material* pMat = PrimtTech::ResourceHandler::AddMaterial("skin");
 
+	//pMat->LoadTexture("etho.png", pt::TextureType::eDiffuse);
 	pMat->LoadTexture("mcskin.png", pt::TextureType::eDiffuse);
 
 	m_mesh->SetMesh("amcguy.obj");
@@ -78,6 +75,7 @@ Viewer::~Viewer()
 	if (m_comlib)
 	{
 		delete m_comlib;
+		m_comlib = nullptr;
 	}
 }
 
@@ -130,16 +128,14 @@ void Viewer::ControlCam()
 
 void Viewer::InitImguiWindows()
 {
-	m_engine.CreateImGuiWindow(ToggleWindow, m_enables);
+	m_engine.CreateImGuiWindow(ToggleWindow, &m_windowStruct);
 }
 
 void Viewer::UpdateToggles()
 {
 	PrimtTech::Mesh* pmesh = m_mesh->GetMeshContainerP();
 	for (int i = 0; i < 12; i++)
-	{
-		pmesh->SubmeshVisible(i, m_enables[i]);
-	}
+		pmesh->SubmeshVisible(i, m_windowStruct.enables[i]);
 }
 
 void Viewer::UpdateTexture()
@@ -201,4 +197,17 @@ bool Viewer::ComlibUpdate(PrimtTech::TextureMap*& pTexture)
 	delete[] message;
 
 	return result;
+}
+
+void Viewer::UpdateCommands()
+{
+	while (!m_windowStruct.commands.empty())
+	{
+		StringHelper
+		if (m_windowStruct.commands.front() == "tex load")
+		{
+
+		};
+		m_windowStruct.commands.pop();
+	}
 }

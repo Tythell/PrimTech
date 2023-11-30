@@ -20,15 +20,17 @@ namespace PrimtTech
 		TextureMap(const char* texturePath, ID3D11Device* device, const bool& flipUV = true);
 		~TextureMap();
 		bool CreateDynamicTexture(unsigned char* imageData, uint2 dimensions, ID3D11Device* device, ID3D11DeviceContext*& dc);
+		bool CreateDynamicTexture(const char* path, ID3D11Device* device, ID3D11DeviceContext*& dc);
 		bool CreateFromFile(const char* texturePath, ID3D11Device* device, const bool& flipUV = true);
 		bool CreateFromData(unsigned char* imageData, ID3D11Device*& m_device, uint2 dimensions, unsigned channels = 4);
 		// Only works on dynamic textures
 		void SetPixelColor(uint2 pixel, uint color);
 		void SetPixelColor(uint2 pixel, float4 color);
-		void Map();
+		void Update();
 		
 		bool CreatePerlinNoise(ID3D11Device*& device);
 
+		uchar* GetImageDataP() const { return m_pImageData; };
 		ID3D11ShaderResourceView* GetSRV();
 		ID3D11ShaderResourceView** GetSRVAdress();
 		std::string GetName() const;

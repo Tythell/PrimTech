@@ -19,7 +19,7 @@ namespace comlib
 		size_t* m_tail;
 		size_t* m_freeMemory;
 
-		ControlHeader* m_ctrler;
+		ControlHeader* m_ctrler = nullptr;
 		ProcessType m_type;
 	public:
 		RingBuffer(LPCWSTR bufferName, size_t bufferSize, ProcessType type);

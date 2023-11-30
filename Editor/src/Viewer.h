@@ -1,6 +1,7 @@
 #pragma once
 #include "PrimTech.h"
 #include "Comlib/Comlib.h"
+#include "WindowFuncs.h"
 
 class Viewer
 {
@@ -10,14 +11,16 @@ public:
 
 	bool Run();
 private:
-	bool m_enables[12];
+	ToggleWindowStructure m_windowStruct;
+	//bool m_enables[12];
 	void ControlCam();
 	void InitImguiWindows();
 	void UpdateToggles();
 	void UpdateTexture();
 	bool ComlibUpdate(PrimtTech::TextureMap*& pTexture);
+	void UpdateCommands();
 
-	bool initSharedMem;
+	bool m_initSharedMem;
 	comlib::RingBuffer* m_comlib = nullptr;
 	uint m_msgSize;
 	uint m_bufferSize;
@@ -31,5 +34,6 @@ private:
 
 	pt::Camera* m_cam = nullptr;
 
-	pt::Entity* m_pCamEnt = nullptr;;
+	pt::Entity* m_pCamEnt = nullptr;
+	std::string currentSkinFile = "";
 };
