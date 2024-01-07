@@ -10,6 +10,8 @@ public:
 		eCHAR
 	};
 	KeyboardEvent(EventType e, const unsigned char key);
+	unsigned char GetKey() const { return key; };
+	EventType GetEventType() const { return type; };
 private:
 	EventType type;
 	unsigned char key;
@@ -21,8 +23,11 @@ public:
 	static bool IsKeyDown(const unsigned char key);
 	static void SetKeyState(const unsigned char key, bool b);
 	static void AddKeyboardEvent(KeyboardEvent e);
+	static bool IsRecording() { return IsRecording; };
 	static KeyboardEvent ReadEvent();
+	static void EnableEventRecorder(bool b) { m_isrecording = b; }
 private:
+	static bool m_isrecording;
 	static bool m_isKeyDown[256];
 	static std::queue<KeyboardEvent> m_keyboardBuffer;
 };

@@ -41,6 +41,7 @@ namespace PrimtTech
 
 		void SetLightWarp(const std::string& path);
 		void SetActiveCam(uint idx);
+
 	private:
 		bool initSwapChain();
 		bool initRTV();
@@ -52,7 +53,7 @@ namespace PrimtTech
 		void InitConstantBuffers();
 
 		void ImGuiRender();
-		void ImGuTextureDisplay();
+		//void ImGuTextureDisplay();
 
 #ifdef PHYSDEBUG
 		PhysicsHandler* mp_debufrenderer = nullptr;
@@ -60,10 +61,6 @@ namespace PrimtTech
 	public:
 		void SetDebugRenderer(PhysicsHandler* p) { mp_debufrenderer = p; }
 	private:
-
-		//ID3D11Texture2D* mp_clickBuffer = nullptr;
-		//ID3D11ShaderResourceView* mp_clickbufferSrv = nullptr;
-
 		uint m_drawCalls = 0;
 
 #endif // PHYSDEBUG

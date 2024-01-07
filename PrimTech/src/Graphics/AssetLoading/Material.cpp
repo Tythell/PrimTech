@@ -26,12 +26,14 @@ namespace pt
 	//	mp_textures = ;
 	//}
 
-	void Material::LoadTexture(std::string textureName, TextureType type)
+	void Material::LoadTexture(std::string textureName, TextureType type, bool reloadExisting)
 	{
 		int textureIndex = PrimtTech::ResourceHandler::CheckTextureNameExists(StringHelper::GetName(textureName));
+
+
 		if (textureIndex != -1)
 			mp_textures[type] = PrimtTech::ResourceHandler::GetTextureAdress(textureIndex);
-		else
+		else if (!reloadExisting)
 			mp_textures[type] = PrimtTech::ResourceHandler::AddTexture(textureName);
 	}
 

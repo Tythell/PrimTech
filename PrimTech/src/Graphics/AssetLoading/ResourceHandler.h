@@ -75,9 +75,11 @@ namespace PrimtTech
 		static std::vector<Mesh>& GetMeshArrayReference() { return m_meshes; };
 		static std::vector<pt::Material>& GetMaterialArrayReference() { return m_materials; };
 		static std::vector<TextureMap*>& GetTextureArrayReference() { return m_textures; };
-		static TextureMap* AddTexture(std::string path, bool flipUV = true);
+		static TextureMap* AddDynamicCPUTexture(std::string path);
+		static TextureMap* AddTexture(std::string path, uchar flags = 0);
 		static TextureMap& GetTexture(unsigned int index);
 		static TextureMap* GetTextureAdress(unsigned int index);
+		static TextureMap* ReloadTexture(std::string path, std::string newPath);
 		static const uint GetNumTextures();
 		static pt::Material* AddMaterial(std::string name);
 		static pt::Material& GetMaterial(unsigned int index);
@@ -105,24 +107,5 @@ namespace PrimtTech
 		static ID3D11Device* pDevice;
 		static ID3D11DeviceContext* s_pDc;
 	};
-
-//	class MeshCluster
-//	{
-//	public:
-//		MeshCluster();
-//		static int AddMesh(std::vector<Vertex3D>& vec, std::string name);
-//
-//#ifdef DX11
-//		static void IASet(ID3D11DeviceContext* dc);
-//#endif // DX11
-//
-//	private:
-//		//static std::vector<Vertex3D> m_allVerts;
-//		//static Buffer<Vertex3D> m_vBuffer;
-//		//static std::vector<std::string> m_names;
-//		//static std::vector<uint> m_startIndexes;
-//
-//		//Buffer<int> m_mainVbuffer;
-//	};
 }
 

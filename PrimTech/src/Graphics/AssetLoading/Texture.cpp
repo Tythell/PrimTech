@@ -37,6 +37,15 @@ namespace PrimtTech
 		if (m_textureSRV)
 			m_textureSRV->Release();
 
+		if (m_texture2D)
+			m_texture2D->Release();
+
+		if (m_pImageData)
+		{
+			delete[] m_pImageData;
+			m_pImageData = nullptr;
+		}
+
 		m_pImageData = imageData;
 
 		m_dimensions = dimensions;
@@ -67,7 +76,6 @@ namespace PrimtTech
 		}
 
 		HRESULT hr = device->CreateShaderResourceView(m_texture2D, nullptr, &m_textureSRV);
-		
 		return SUCCEEDED(hr);
 		//return true;
 	}
@@ -78,7 +86,16 @@ namespace PrimtTech
 		if (m_textureSRV)
 			m_textureSRV->Release();
 
-		int2 dimen;
+		if (m_texture2D)
+			m_texture2D->Release();
+
+		if (m_pImageData)
+		{
+			delete[] m_pImageData;
+			m_pImageData = nullptr;
+		}
+
+		int2 dimen(0);
 
 		if (!FileLoader::StbiCreateCharFromFile(path, m_pImageData, dimen.x, dimen.y, 4))
 		{
@@ -124,6 +141,15 @@ namespace PrimtTech
 		if (m_textureSRV)
 			m_textureSRV->Release();
 
+		if (m_texture2D)
+			m_texture2D->Release();
+
+		if (m_pImageData)
+		{
+			delete[] m_pImageData;
+			m_pImageData = nullptr;
+		}
+
 		//stbi_set_flip_vertically_on_load(flipUV);
 
 		m_name = StringHelper::GetName(std::string(texturePath));
@@ -139,8 +165,6 @@ namespace PrimtTech
 
 		int textureWidth = 0;
 		int textureHeight = 0;
-		//unsigned char* imageData = stbi_load(fullpath.c_str(), &textureWidth, &textureHeight, nullptr, STBI_rgb_alpha);
-		//unsigned char* imageData = nullptr;
 		FileLoader::StbiCreateCharFromFile(fullpath.c_str(), m_pImageData, textureWidth, textureHeight, 4);
 		m_channels = 4;
 
@@ -193,6 +217,15 @@ namespace PrimtTech
 		m_channels = 4;
 		if (m_textureSRV)
 			m_textureSRV->Release();
+
+		if (m_texture2D)
+			m_texture2D->Release();
+
+		if (m_pImageData)
+		{
+			delete[] m_pImageData;
+			m_pImageData = nullptr;
+		}
 
 		m_dimensions = dimensions;
 

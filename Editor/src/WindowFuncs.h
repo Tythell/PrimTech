@@ -8,6 +8,6 @@ struct ToggleWindowStructure
 {
 	bool enables[12];
 	std::string skinFile = "hej";
-	PrimtTech::TextureMap* pTexturemap;
+	//PrimtTech::TextureMap* pTexturemap;
 	std::queue<std::string> commands;
 };

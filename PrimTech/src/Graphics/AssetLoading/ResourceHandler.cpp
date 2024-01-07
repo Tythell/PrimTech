@@ -62,28 +62,42 @@ namespace PrimtTech
 		return &m_meshes[index];
 	}
 
-	TextureMap* ResourceHandler::AddTexture(std::string path, bool flipUV)
+	TextureMap* ResourceHandler::AddDynamicCPUTexture(std::string path)
+	{
+		TextureMap* pTexture = new TextureMap;
+		if (!pTexture->CreateDynamicTexture(path.c_str(), pDevice, s_pDc))
+		{
+			delete pTexture;
+			return m_textures[0];
+		}
+		m_textures.emplace_back(pTexture);
+		return pTexture;
+	}
+
+	TextureMap* ResourceHandler::AddTexture(std::string path, uchar flags)
 	{
 		TextureMap* pTexture = new TextureMap(/*path.c_str(), pDevice, flipUV*/);
-		if (path == "mcskin.png")
+
+		if (flags &= TextureMap::Flags::eDynamic)
 		{
 			int2 dimensions(0);
 			unsigned char* image = nullptr;
-			FileLoader::StbiCreateCharFromFile("Assets/Textures/mcskin.png", image, dimensions.x, dimensions.y, 4);
+			path = "Assets/Textures/" + path;
+			FileLoader::StbiCreateCharFromFile(path.c_str(), image, dimensions.x, dimensions.y, 4);
 			pTexture->CreateDynamicTexture(image, dimensions, pDevice, s_pDc);
-			m_textures.emplace_back(pTexture);
+			pTexture->SetName(StringHelper::GetName(path));
 		}
 		else
 		{
-			if (!pTexture->CreateFromFile(path.c_str(), pDevice, flipUV))
+			if (!pTexture->CreateFromFile(path.c_str(), pDevice, DX11))
 			{
 				delete pTexture;
 				return m_textures[0];
 			}
-			m_textures.emplace_back(pTexture);
+			//m_textures.emplace_back(pTexture);
 		}
 
-		
+		m_textures.emplace_back(pTexture);
 		return pTexture;
 	}
 
@@ -95,6 +109,16 @@ namespace PrimtTech
 	TextureMap* ResourceHandler::GetTextureAdress(unsigned int index)
 	{
 		return m_textures[index];;
+	}
+
+	TextureMap* ResourceHandler::ReloadTexture(std::string name, std::string newPath)
+	{
+		int texIndex = CheckTextureNameExists(name);
+
+		if (texIndex != -1)
+			return m_textures[texIndex]->CreateFromFile(newPath.c_str(), pDevice) ? m_textures[texIndex] : nullptr;
+
+		return nullptr;
 	}
 
 	const uint ResourceHandler::GetNumTextures()

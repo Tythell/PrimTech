@@ -41,7 +41,7 @@ namespace pt
 		Material() {};
 		Material(std::string name);
 		//Material(const Material& other);
-		void LoadTexture(std::string textureName, TextureType type);
+		void LoadTexture(std::string textureName, TextureType type, bool reloadExisting = false);
 		void UpdateTextureScroll(const float& deltatime);
 		void SetDiffuseScrollSpeed(float x, float y);
 		void SetDistortionScrollSpeed(float x, float y);

@@ -1,6 +1,7 @@
 #include"pch.h"
 #include "Keyboard.h"
 
+bool KeyboardHandler::m_isrecording = false;
 bool KeyboardHandler::m_isKeyDown[256] = { false };
 std::queue<KeyboardEvent> KeyboardHandler::m_keyboardBuffer;
 

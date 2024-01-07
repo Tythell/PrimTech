@@ -114,17 +114,24 @@ void ToggleWindow(void* args, bool* b)
 	figure(face, 0, str->enables);
 	figure("hat##head", 6, str->enables);
 
-	char textStr[16];
-	strcpy_s(textStr, 16, str->skinFile.c_str());
+	char textStr[32];
+	strcpy_s(textStr, 32, str->skinFile.c_str());
 
-	if (ImGui::Button("load skin"))
+	if (ImGui::Button(textStr))
 	{
 		std::string path = Dialogs::OpenFile(".png");
 
-		PrimtTech::FileLoader::StbiCreateCharFromFile(path.c_str(), str->pTexturemap->GetImageData())
-		str->pTexturemap->CreateDynamicTexture()
+		if (path != "")
+			str->commands.push("load texture " + path);
+
 	}
+
+	ImGui::SameLine();
+	if (ImGui::ArrowButton("heheh", 2))
+		str->commands.push("reload texture");
 	//ImGui::InputText("##skinfilename", textStr, 16, ImGuiInputTextFlags_ReadOnly);
 
 	ImGui::End();
+
+	//ImGui::ShowDemoWindow();
 }

@@ -173,16 +173,16 @@ namespace PrimtTech
 			return 0;
 
 		}
-		//case WM_CHAR:
-		//{
-		//	unsigned char key = static_cast<unsigned char>(wParam);
-		//	if (mp_kb->IsRecording())
-		//	{
-		//		mp_kb->AddKeyboardEvent(KeyboardEvent(KeyboardEvent::EventType::eCHAR, key));
-		//	}
-		//	return 0;
+		case WM_CHAR:
+		{
+			unsigned char key = static_cast<unsigned char>(wParam);
+			if (KeyboardHandler::IsRecording())
+			{
+				KeyboardHandler::AddKeyboardEvent(KeyboardEvent(KeyboardEvent::EventType::eCHAR, key));
+			}
+			return 0;
 
-		//}
+		}
 		case WM_INPUT:
 		{
 			UINT dataSize = 0;

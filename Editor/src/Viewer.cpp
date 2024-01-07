@@ -1,6 +1,7 @@
 #include "Viewer.h"
 //#include "WindowFuncs.h"
 #include <ctime>
+#include <sstream>
 
 Viewer::Viewer()
 	:
@@ -8,6 +9,8 @@ Viewer::Viewer()
 	m_initSharedMem(false)
 {
 	int width = 500, height = 500;
+
+	//KeyboardHandler::EnableEventRecorder(true);
 
 	srand((unsigned int)time(0));
 
@@ -17,12 +20,11 @@ Viewer::Viewer()
 	}
 
 	for (int i = 0; i < 12; i++)
-	{
 		m_windowStruct.enables[i] = true;
-	}
 
-	//memset(m_enables, (int)true, sizeof(bool) * 12);
+	bool hej[4]{ false, false, false, false };
 
+	memset(&hej[0], 1, 1);
 
 	m_engine.Init(L"Skin Viewer", NULL, L"wndclass", width, height);
 
@@ -62,12 +64,15 @@ Viewer::Viewer()
 	pt::Material* pMat = PrimtTech::ResourceHandler::AddMaterial("skin");
 
 	//pMat->LoadTexture("etho.png", pt::TextureType::eDiffuse);
+
+	m_windowStruct.skinFile = "mcskin.png";
+
+	PrimtTech::ResourceHandler::AddTexture("mcskin.png", PrimtTech::TextureMap::Flags::eDynamic);
+
 	pMat->LoadTexture("mcskin.png", pt::TextureType::eDiffuse);
 
 	m_mesh->SetMesh("amcguy.obj");
 	m_mesh->SetMaterial("skin");
-
-	float3 d = pMat->GetDiffuseClr();
 }
 
 Viewer::~Viewer()
@@ -87,6 +92,7 @@ bool Viewer::Run()
 		ControlCam();
 		UpdateToggles();
 		UpdateTexture();
+		UpdateCommands();
 
 		if (KeyboardHandler::IsKeyDown(Key::ESCAPE))
 		{
@@ -120,6 +126,22 @@ void Viewer::ControlCam()
 		{
 		}*/
 	}
+
+	static bool isKeyPressed = false;
+
+	if (!isKeyPressed && KeyboardHandler::IsKeyDown('G'))
+	{
+		isKeyPressed = true;
+
+		PrimtTech::ResourceHandler::ReloadTexture(m_windowStruct.skinFile, m_windowStruct.skinFile);
+		m_windowStruct.skinFile = StringHelper::GetName(m_windowStruct.skinFile);
+
+	}
+	else if (!KeyboardHandler::IsKeyDown('G'))
+	{
+		isKeyPressed = false;
+	}
+
 	float3 move(0.f);
 	move *= 0.001f;
 	m_pCamEnt->Move(move);
@@ -203,11 +225,33 @@ void Viewer::UpdateCommands()
 {
 	while (!m_windowStruct.commands.empty())
 	{
-		StringHelper
-		if (m_windowStruct.commands.front() == "tex load")
+		std::stringstream ss(m_windowStruct.commands.front());
+		std::string input;
+		ss >> input;
+		if (input == "load")
 		{
-
-		};
+			ss >> input;
+			if (input == "texture")
+			{
+				ss >> input;
+				PrimtTech::ResourceHandler::ReloadTexture(m_windowStruct.skinFile, input);
+				m_windowStruct.skinFile = StringHelper::GetName(input);
+			}
+			else if (input == "mesh")
+			{
+				ss >> input;
+				PrimtTech::ResourceHandler::AddMesh(input);
+				m_mesh->SetMesh(StringHelper::GetName(input));
+			}
+		}
+		else if (input == "reload")
+		{
+			ss >> input;
+			if (input == "texture")
+			{
+				PrimtTech::ResourceHandler::ReloadTexture(m_windowStruct.skinFile, m_windowStruct.skinFile);
+			}
+		}
 		m_windowStruct.commands.pop();
 	}
 }
