@@ -123,7 +123,7 @@ namespace PrimtTech
 
 	const uint ResourceHandler::GetNumTextures()
 	{
-		return m_textures.size();
+		return static_cast<uint>(m_textures.size());
 	}
 
 	pt::Material* ResourceHandler::AddMaterial(std::string name)
@@ -166,12 +166,12 @@ namespace PrimtTech
 
 	uint ResourceHandler::GetNoMeshes()
 	{
-		return m_meshes.size();
+		return (uint)m_meshes.size();
 	}
 
 	const uint ResourceHandler::GetMtrlCount()
 	{
-		return m_materials.size();
+		return (uint)m_materials.size();
 	}
 
 	int ResourceHandler::CheckMeshNameExists(std::string meshName)

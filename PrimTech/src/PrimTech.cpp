@@ -70,7 +70,7 @@ namespace pt
 		if (timer >= 1.f)
 		{
 			timer = 0.f;
-			int fps = 1.f / dt;
+			int fps = static_cast<int>(1.f / dt);
 			std::wstring extendedWinName = m_windowName + L"  -  FPS: " + std::to_wstring(fps);
 
 			::SetWindowTextW(m_window.getHWND(), extendedWinName.c_str());
@@ -82,7 +82,7 @@ namespace pt
 			m_luaEngine.UpdateDeltaTime(dt);
 			std::vector<LuaScript>& scripts = ComponentHandler::GetComponentArray<LuaScript>();
 			uint numScripts = ComponentHandler::GetNoOfUsedComponents<LuaScript>();
-			for (int i = 0; i < numScripts; i++)
+			for (uint i = 0; i < numScripts; i++)
 			{
 				m_luaEngine.ChangeCurrentLuaEnt(scripts[i].EntId());
 				scripts[i].Execute("OnTick");
@@ -126,7 +126,7 @@ namespace pt
 		std::vector<pt::Light>& r_lights = ComponentHandler::GetComponentArray<pt::Light>();
 		uint numLights = ComponentHandler::GetNoOfUsedComponents<pt::Light>();
 		//uint numLights = (uint)r_lights.size();
-		for (int i = 0; i < numLights; i++)
+		for (uint i = 0; i < numLights; i++)
 		{
 			r_lights[i].Update(pt::Entity::GetEntity(r_lights[i].EntId()).Transform());
 		}
@@ -197,7 +197,7 @@ namespace pt
 		{
 			std::vector<LuaScript>& scripts = ComponentHandler::GetComponentArray<LuaScript>();
 			uint numScripts = ComponentHandler::GetNoOfUsedComponents<LuaScript>();
-			for (int i = 0; i < numScripts; i++)
+			for (uint i = 0; i < numScripts; i++)
 			{
 				m_luaEngine.ChangeCurrentLuaEnt(scripts[i].EntId());
 				scripts[i].Execute("OnStart");

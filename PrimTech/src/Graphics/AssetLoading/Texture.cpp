@@ -10,8 +10,10 @@
 
 namespace PrimtTech
 {
-	TextureMap::TextureMap()
-	{}
+	TextureMap::TextureMap():m_flags(eNull)
+	{
+
+	}
 
 	TextureMap::TextureMap(const char* texturePath, ID3D11Device* device, const bool& flipUV)
 	{
@@ -58,9 +60,9 @@ namespace PrimtTech
 		desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 		desc.SampleDesc.Count = 1;
 		desc.SampleDesc.Quality = 0;
-		desc.Usage = D3D11_USAGE_DYNAMIC;
+		desc.Usage = D3D11_USAGE_IMMUTABLE;
 		desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-		desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		desc.CPUAccessFlags = 0;
 		desc.MiscFlags = 0;
 
 		D3D11_SUBRESOURCE_DATA data = {};
@@ -113,9 +115,10 @@ namespace PrimtTech
 		desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 		desc.SampleDesc.Count = 1;
 		desc.SampleDesc.Quality = 0;
-		desc.Usage = D3D11_USAGE_DYNAMIC;
+		desc.Usage = D3D11_USAGE_IMMUTABLE;
 		desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-		desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		//desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		desc.CPUAccessFlags = 0;
 		desc.MiscFlags = 0;
 
 		D3D11_SUBRESOURCE_DATA data = {};

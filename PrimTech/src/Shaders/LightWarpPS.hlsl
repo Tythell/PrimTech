@@ -46,7 +46,7 @@ cbuffer MaterialBuffer : register(b1)
 
     float2 texCoordOffset;
     float transparency = 1.f;
-    int distDiv;
+    uint distDiv;
 
     float2 texCoordoffsetDist;
     float textureScale;
@@ -170,7 +170,7 @@ float4 main(PSInput input) : SV_Target
     float3 amb = float3(0.f,0.f,0.f);
     
     uint numOfLights = numLights;
-    for (int i = 0; i < numOfLights; i++)
+    for (uint i = 0; i < numOfLights; i++)
     {
         Light light = mySb[i];
         if (light.pos.w == 1.f)

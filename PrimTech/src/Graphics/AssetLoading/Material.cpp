@@ -92,7 +92,7 @@ namespace pt
 		}
 		m_textureScale = 1.f;
 		m_textureScaleDist = 1.f;
-		m_distDivider = 1.f;
+		m_distDivider = 1u;
 		m_name = "";
 		m_transparency = 1.f;
 		m_diffuseOffsetValue = { 0.f, 0.f }; m_distortionValue = { 0.f, 0.f };

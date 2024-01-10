@@ -82,7 +82,7 @@ bool MouseHandler::CheckMouseEvent(int index)
 
 void MouseHandler::OnMouseRaw(float x, float y)
 {
-	m_mouseBuffer.push(MouseEvent(MouseEvent::EventType::RAW_MOVE, x, y));
+	m_mouseBuffer.push(MouseEvent(MouseEvent::EventType::RAW_MOVE, (int)x, (int)y));
 }
 
 bool MouseHandler::BufferIsEmpty()

@@ -16,7 +16,7 @@ void Gui_MenuBar(void* args, bool* b);
 
 struct ToggleWindowStructure
 {
-	bool enables[12];
+	bool enables[12] = { true };
 	std::string skinFile = "hej";
 	//PrimtTech::TextureMap* pTexturemap;
 	std::queue<std::string> commands;

@@ -65,7 +65,7 @@ namespace pt
 			if (freeComponents > 0)
 			{
 				PrimtTech::ComponentHandler::IncreaseFreeComponents(c, -1);
-				returnIndex = ptvec->size() - freeComponents;
+				returnIndex = static_cast<int>(ptvec->size()) - freeComponents;
 				ptvec[0][returnIndex] = T(m_id);
 			}
 			else
@@ -111,7 +111,7 @@ namespace pt
 				return;
 			}
 
-			int swapIndex = ptvec->size() - PrimtTech::ComponentHandler::GetNoFreeComponents(c) - 1;
+			int swapIndex = static_cast<int>(ptvec->size()) - PrimtTech::ComponentHandler::GetNoFreeComponents(c) - 1;
 
 			if (m_hasComponents & c /*&& c != PrimtTech::ec_transform*/)
 			{

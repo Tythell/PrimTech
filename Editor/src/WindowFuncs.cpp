@@ -45,35 +45,43 @@ void figure(std::string face, uint startIndex, bool* enables)
 
 void Gui_MenuBar(void* args, bool* b)
 {
-	Gui_MenuToggles* arg = (Gui_MenuToggles*)args;
+	ImGui::Begin("imageList");
+	uint numTextures = PrimtTech::ResourceHandler::GetNumTextures();
+	for (uint i = 0; i < numTextures; i++)
+	{
+		ImTextureID texId = PrimtTech::ResourceHandler::GetTexture(i).GetSRVAdress();
+		ImGui::Image(texId, ImVec2(30, 30));
+	}
+	ImGui::End();
+	//Gui_MenuToggles* arg = (Gui_MenuToggles*)args;
 
 
 	//ImGui::ShowDemoWindow();
-	ImGui::BeginMainMenuBar();
-	
-	if (ImGui::BeginMenu("Settings"))
-	{
-		if (ImGui::MenuItem("Always on top", "", arg->isAlwaysOnTop)) {}
-		if (ImGui::MenuItem("Hook Keyboard", "", arg->isHookKeyboard))
-		{
-			std::string command = "setting kbHook " + std::to_string((int)arg->isHookKeyboard);
-			//arg->commands.push(command);
-		}
-		ImGui::EndMenu();
-	}
+	//ImGui::BeginMainMenuBar();
+	//
+	//if (ImGui::BeginMenu("Settings"))
+	//{
+	//	if (ImGui::MenuItem("Always on top", "", arg->isAlwaysOnTop)) {}
+	//	if (ImGui::MenuItem("Hook Keyboard", "", arg->isHookKeyboard))
+	//	{
+	//		std::string command = "setting kbHook " + std::to_string((int)arg->isHookKeyboard);
+	//		//arg->commands.push(command);
+	//	}
+	//	ImGui::EndMenu();
+	//}
 
-	static bool hookKb = false;
-	static bool alwaysOnTop = false;
-	ImGui::BeginDisabled();
-	if (ImGui::BeginMenu("Animations"))
-	{
-		if (ImGui::MenuItem("Walking", "")) {}
-		//if (ImGui::MenuItem("Walking", "CTRL+Z")) {}
-		ImGui::EndMenu();
-	}
-	ImGui::EndDisabled();
+	//static bool hookKb = false;
+	//static bool alwaysOnTop = false;
+	//ImGui::BeginDisabled();
+	//if (ImGui::BeginMenu("Animations"))
+	//{
+	//	if (ImGui::MenuItem("Walking", "")) {}
+	//	//if (ImGui::MenuItem("Walking", "CTRL+Z")) {}
+	//	ImGui::EndMenu();
+	//}
+	//ImGui::EndDisabled();
 
-	ImGui::EndMainMenuBar();
+	//ImGui::EndMainMenuBar();
 }
 
 void Gui_ToggleWindow(void* args, bool* b)

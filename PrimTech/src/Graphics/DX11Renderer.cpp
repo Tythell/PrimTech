@@ -297,14 +297,14 @@ namespace PrimtTech
 		// grid
 		uint nLines = 11;
 		gridArr.resize(nLines * 4);
-		for (int i = 0; i < nLines; i++)
+		for (uint i = 0; i < nLines; i++)
 		{
 			gridArr[2 * i + 0].m_position = float3(i - 5, 0.f, (float)nLines / 2.f);
 			gridArr[2 * i + 1].m_position = float3(i - 5, 0.f, -(float)nLines / 2.f);
 			gridArr[2 * i + 0].m_color = GRAY_3F;
 			gridArr[2 * i + 1].m_color = GRAY_3F;
 		}
-		for (int i = 0; i < nLines; i++)
+		for (uint i = 0; i < nLines; i++)
 		{
 			uint index = (nLines * 2) + i * 2;
 			gridArr[index + 0].m_position = float3(-(float)nLines / 2.f, 0.f, i - 5);
@@ -314,7 +314,7 @@ namespace PrimtTech
 			gridArr[index + 1].m_color = GRAY_3F;
 		}
 
-		m_grid.CreateVertexBuffer(device, gridArr.data(), gridArr.size());
+		m_grid.CreateVertexBuffer(device, gridArr.data(), static_cast<uint>(gridArr.size()));
 
 		dc->OMSetBlendState(m_blendState, NULL, 0xFFFFFFFF);
 
@@ -390,7 +390,7 @@ namespace PrimtTech
 		uint numPrefabsRefs = ComponentHandler::GetNoOfUsedComponents<pt::MeshPrefabRef>();
 		uint numPrefabs = ComponentHandler::GetNoOfUsedComponents<pt::MeshPrefabRef>();
 		std::vector<Prefab>& prefabsArr = ResourceHandler::GetPrefabArray();
-		for (int i = 0; i < numPrefabs; i++)
+		for (uint i = 0; i < numPrefabs; i++)
 		{
 			prefabsArr[i].GetRefIdx(i);
 		}
@@ -418,7 +418,7 @@ namespace PrimtTech
 		if (!pMAtBuffer)
 		{
 			uint numMEshes = ResourceHandler::GetNoMeshes();
-			for (int i = 0; i < numMEshes; i++)
+			for (uint i = 0; i < numMEshes; i++)
 			{
 				Mesh* pMesh = ResourceHandler::GetMeshAdress(i);
 				uint numInstances = pMesh->GetNrOfUses();
@@ -451,7 +451,7 @@ namespace PrimtTech
 		}
 		else
 		{
-			for (int i = 0; i < numMEshRefs; i++)
+			for (uint i = 0; i < numMEshRefs; i++)
 			{
 				uint entId = rMeshrefs[i].EntId();
 
@@ -472,7 +472,7 @@ namespace PrimtTech
 
 				ushort visibleSubmesh = meshPtr->GetIsSubmeshesVisible();
 
-				for (int j = 0; j < nSubMEshes; j++)
+				for (uint j = 0; j < nSubMEshes; j++)
 					if (visibleSubmesh & (1 << j))
 					{
 						uint matIndex = rMeshrefs[i].GetMaterialIndex(j);
@@ -568,7 +568,7 @@ namespace PrimtTech
 		// -------------------------------------- Update transforms with rigidbodies ---------------------------------------------------
 		std::vector<PhysicsBody>& rRigidBodies = ComponentHandler::GetComponentArray<PhysicsBody>();
 		uint numRigidBodies = ComponentHandler::GetNoOfUsedComponents<PhysicsBody>();
-		for (int i = 0; i < numRigidBodies; i++)
+		for (uint i = 0; i < numRigidBodies; i++)
 		{
 			uint entId = rRigidBodies[i].EntId();
 			rRigidBodies[i].UpdateTransform(rTransforms[entId]);
@@ -592,7 +592,7 @@ namespace PrimtTech
 
 		m_lightbuffer.Data().numLights = numLights;
 
-		for (int i = 0; i < numLights; i++)
+		for (uint i = 0; i < numLights; i++)
 		{
 			m_multiLightBuffer.Data(i).clr = r_lights[i].GetLightData().clr;
 			m_multiLightBuffer.Data(i).pos = r_lights[i].GetLightData().pos;

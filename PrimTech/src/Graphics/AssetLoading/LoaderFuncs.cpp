@@ -1,12 +1,14 @@
 #include "pch.h"
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION
+
 #include "../3rdParty/stb_image.h"
 #undef min
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include "LoaderFuncs.h"
+
 
 namespace PrimtTech
 {
@@ -23,7 +25,7 @@ namespace PrimtTech
 		Shape shape;
 		UINT numVerts = mesh->mNumVertices;
 		shape.verts.resize(numVerts);
-		for (int i = 0; i < numVerts; i++)
+		for (uint i = 0; i < numVerts; i++)
 		{
 			shape.verts[i].position = aiVecToSm(mesh->mVertices[i]);
 			shape.verts[i].normal = aiVecToSm(mesh->mNormals[i]);
@@ -37,7 +39,7 @@ namespace PrimtTech
 		material->Get(AI_MATKEY_TEXTURE(aiTextureType_DIFFUSE, 0), diffuseName);
 		mtl.diffuseName = diffuseName.C_Str();
 		// making vertexes clockwise because assimp is retarded
-		for (int i = 0; i < numVerts / 3; i++)
+		for (uint i = 0; i < numVerts / 3; i++)
 		{
 			PrimtTech::Vertex3D triangle[3];
 			for (int j = 0; j < 3; j++)
@@ -52,7 +54,7 @@ namespace PrimtTech
 	void ProcessNode(aiNode* node, const aiScene* scene, std::vector<Shape>& fullShape, std::vector<Mtl>& allMtls, std::vector<std::string>& submeshNames)
 	{
 		uint numMEshes = node->mNumMeshes;
-		for (int i = 0; i < numMEshes; i++)
+		for (uint i = 0; i < numMEshes; i++)
 		{
 			aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 			submeshNames.emplace_back(mesh->mName.C_Str());
@@ -60,7 +62,7 @@ namespace PrimtTech
 			fullShape.emplace_back(ProcessMesh(mesh, scene, mtl));
 			allMtls.emplace_back(mtl);
 		}
-		for (int i = 0; i < node->mNumChildren; i++)
+		for (uint i = 0; i < node->mNumChildren; i++)
 			ProcessNode(node->mChildren[i], scene, fullShape, allMtls, submeshNames);
 	}
 	bool FileLoader::AssimpLoad(std::string path, std::vector<Shape>& shape, std::vector<Mtl>& allMtls, std::vector<std::string>& submeshNames)

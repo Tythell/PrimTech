@@ -41,25 +41,25 @@ namespace PrimtTech
 		}
 		THROW_POPUP_ERROR(check, "loading " + path);
 		m_name = StringHelper::GetName(path);
-		m_nofMeshes = mesh.size();
+		m_nofMeshes = (uint)mesh.size();
 		m_offsets.emplace_back(0);
 		int lastSize = 0;
-		for (int i = 0; i < m_nofMeshes; i++)
+		for (uint i = 0; i < m_nofMeshes; i++)
 		{
-			lastSize += mesh[i].verts.size();
+			lastSize += static_cast<uint>(mesh[i].verts.size());
 			m_offsets.emplace_back(lastSize);
 		}
 
 		uint totalVertCount = 0;
-		for (int i = 0; i < m_nofMeshes; i++)
-			totalVertCount += mesh[i].verts.size();
+		for (uint i = 0; i < m_nofMeshes; i++)
+			totalVertCount += static_cast<uint>(mesh[i].verts.size());
 
 		m_shape.verts.reserve(totalVertCount);
 
-		for (int i = 0; i < m_nofMeshes; i++)
+		for (uint i = 0; i < m_nofMeshes; i++)
 			m_shape.verts.insert(m_shape.verts.end(), mesh[i].verts.begin(), mesh[i].verts.end());
 
-		UINT bsize = m_shape.verts.size();
+		UINT bsize = (uint)m_shape.verts.size();
 
 		HRESULT hr = m_vbuffer.CreateVertexBuffer(device, m_shape.verts.data(), bsize);
 		COM_ERROR(hr, "Failed to load vertex buffer");

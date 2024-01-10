@@ -39,7 +39,7 @@ LRESULT CALLBACK HookCallback(int ncode, WPARAM wParam, LPARAM lParam)
 		{
 		case WM_KEYDOWN:
 		{
-			char msg = info->lResult;
+			char msg = static_cast<char>(info->lResult);
 
 			KeyboardHandler::SetKeyState(msg, true);
 
@@ -47,7 +47,7 @@ LRESULT CALLBACK HookCallback(int ncode, WPARAM wParam, LPARAM lParam)
 		}
 		case WM_KEYUP:
 		{
-			char msg = info->lResult;
+			char msg = static_cast<char>(info->lResult);
 
 			KeyboardHandler::SetKeyState(msg, false);
 

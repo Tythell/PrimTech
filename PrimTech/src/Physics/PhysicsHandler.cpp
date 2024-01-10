@@ -58,7 +58,7 @@ namespace PrimtTech
 				//tris[i + 2].m_color = clr.GetAsVector3Reversed();
 			}
 
-			if (tris.size()) debugTris.CreateVertexBuffer(device, tris.data(), tris.size(), NULL, eBufferFlags_IgnoreCreateTwice);
+			if (tris.size()) debugTris.CreateVertexBuffer(device, tris.data(), (uint)tris.size(), NULL, eBufferFlags_IgnoreCreateTwice);
 			else
 			{
 				// To prevent error on exiting without loading vertexbuffer

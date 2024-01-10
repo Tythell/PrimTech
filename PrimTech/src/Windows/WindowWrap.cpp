@@ -20,9 +20,9 @@
 //#endif // _DEBUG
 //			return 0;
 
-		//case WM_DESTROY:
-		//	PostQuitMessage(0);
-		//	return 0;
+		case WM_DESTROY:
+			PostQuitMessage(0);
+			return 0;
 
 		default:
 		{

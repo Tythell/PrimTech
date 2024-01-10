@@ -12,7 +12,7 @@ namespace PrimtTech
 		TextureMap(const char* texturePath, ID3D11Device* device, const bool& flipUV = true);
 		~TextureMap();
 
-		enum Flags : uchar
+		enum Flags
 		{
 			eNull,
 			eDynamic = 0x1,

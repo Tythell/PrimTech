@@ -12,22 +12,22 @@ Viewer::Viewer()
 
 	//KeyboardHandler::EnableEventRecorder(true);
 
-	std::ifstream keyReader("properties.txt", std::ios::in | std::ios::app);
+	//std::ifstream keyReader("properties.txt", std::ios::in | std::ios::app);
 
-	if (keyReader.is_open())
-	{
-		keyReader >> m_reloadKey;
-		keyReader >> m_sleepTimeBeforeReload;
+	//if (keyReader.is_open())
+	//{
+	//	keyReader >> m_reloadKey;
+	//	keyReader >> m_sleepTimeBeforeReload;
 
-		keyReader.close();
-	}
+	//	keyReader.close();
+	//}
 
-	srand((unsigned int)time(0));
+	//srand((unsigned int)time(0));
 
-	if (m_initSharedMem)
-	{
-		m_comlib = new comlib::RingBuffer(L"skinview", 150, comlib::Consumer);
-	}
+	//if (m_initSharedMem)
+	//{
+	//	m_comlib = new comlib::RingBuffer(L"skinview", 150, comlib::Consumer);
+	//}
 
 	for (int i = 0; i < 12; i++)
 		m_windowStruct.enables[i] = true;
@@ -99,7 +99,7 @@ bool Viewer::Run()
 		m_engine.Run();
 		ControlCam();
 		UpdateToggles();
-		UpdateTexture();
+		//UpdateTexture();
 		UpdateCommands();
 
 		if (KeyboardHandler::IsKeyDown(Key::ESCAPE))
@@ -160,7 +160,7 @@ void Viewer::InitImguiWindows()
 	//m_windowStruct.commands = &m_commands;
 	//m_guiToggles.commands = &m_commands;
 	m_engine.CreateImGuiWindow(Gui_ToggleWindow, &m_windowStruct);
-	m_engine.CreateImGuiWindow(Gui_MenuBar, &m_guiToggles);
+	m_engine.CreateImGuiWindow(Gui_MenuBar, NULL);
 }
 
 void Viewer::UpdateToggles()
