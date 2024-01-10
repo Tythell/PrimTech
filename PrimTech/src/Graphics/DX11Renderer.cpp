@@ -320,7 +320,7 @@ namespace PrimtTech
 
 		//ResourceHandler::AddTexture("missingTexture.png"); // setting missingtexture
 		ResourceHandler::AddTexture(".NoTexture.pngg"); // setting missingtexture
-		ResourceHandler::AddTexture("ZANormal.png"); // Load LightWarp Texture
+		ResourceHandler::AddTexture("Assets/Textures/ZANormal.png"); // Load LightWarp Texture
 		//ResourceHandler::AddTexture("ZATf2esk.png"); // Load LightWarp Texture
 
 		dc->PSSetShaderResources(0, 1, ResourceHandler::GetTexture(1).GetSRVAdress());

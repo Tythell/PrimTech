@@ -11,7 +11,11 @@ public:
 
 	bool Run();
 private:
+	char m_reloadKey = 'G';
+	uint m_sleepTimeBeforeReload = 0;
 	ToggleWindowStructure m_windowStruct;
+	Gui_MenuToggles m_guiToggles;
+	//std::queue<std::string> m_commands;
 	//bool m_enables[12];
 	void ControlCam();
 	void InitImguiWindows();

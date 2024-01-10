@@ -23,11 +23,27 @@ public:
 	static bool IsKeyDown(const unsigned char key);
 	static void SetKeyState(const unsigned char key, bool b);
 	static void AddKeyboardEvent(KeyboardEvent e);
-	static bool IsRecording() { return IsRecording; };
 	static KeyboardEvent ReadEvent();
-	static void EnableEventRecorder(bool b) { m_isrecording = b; }
+	static void InitKeyboardHook();
+	static HHOOK s_hook;
+	static void ReleaseHook();
+
+
+	enum KeyboardStream
+	{
+		Off = 0x0,
+		WndProc = 0x1,
+		GlobalHook = 0x2,
+		RecordEvents = 0x4
+	};
+
+	static void SetFlags(const KeyboardStream& flags) { m_kbFlags = flags; };
+	static KeyboardStream GetFlags() { return (KeyboardStream)m_kbFlags; };
+
+	
+
 private:
-	static bool m_isrecording;
+	static uint m_kbFlags;
 	static bool m_isKeyDown[256];
 	static std::queue<KeyboardEvent> m_keyboardBuffer;
 };

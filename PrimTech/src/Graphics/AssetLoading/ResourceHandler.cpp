@@ -82,7 +82,7 @@ namespace PrimtTech
 		{
 			int2 dimensions(0);
 			unsigned char* image = nullptr;
-			path = "Assets/Textures/" + path;
+			//path = "Assets/Textures/" + path;
 			FileLoader::StbiCreateCharFromFile(path.c_str(), image, dimensions.x, dimensions.y, 4);
 			pTexture->CreateDynamicTexture(image, dimensions, pDevice, s_pDc);
 			pTexture->SetName(StringHelper::GetName(path));

@@ -1,6 +1,5 @@
 #include "WindowFuncs.h"
 //#include "PrimTech.h"
-#include <bitset>
 
 void toggleButton(bool& on, std::string str)
 {
@@ -44,9 +43,40 @@ void figure(std::string face, uint startIndex, bool* enables)
 	ImGui::EndChild();
 }
 
+void Gui_MenuBar(void* args, bool* b)
+{
+	Gui_MenuToggles* arg = (Gui_MenuToggles*)args;
 
 
-void ToggleWindow(void* args, bool* b)
+	//ImGui::ShowDemoWindow();
+	ImGui::BeginMainMenuBar();
+	
+	if (ImGui::BeginMenu("Settings"))
+	{
+		if (ImGui::MenuItem("Always on top", "", arg->isAlwaysOnTop)) {}
+		if (ImGui::MenuItem("Hook Keyboard", "", arg->isHookKeyboard))
+		{
+			std::string command = "setting kbHook " + std::to_string((int)arg->isHookKeyboard);
+			//arg->commands.push(command);
+		}
+		ImGui::EndMenu();
+	}
+
+	static bool hookKb = false;
+	static bool alwaysOnTop = false;
+	ImGui::BeginDisabled();
+	if (ImGui::BeginMenu("Animations"))
+	{
+		if (ImGui::MenuItem("Walking", "")) {}
+		//if (ImGui::MenuItem("Walking", "CTRL+Z")) {}
+		ImGui::EndMenu();
+	}
+	ImGui::EndDisabled();
+
+	ImGui::EndMainMenuBar();
+}
+
+void Gui_ToggleWindow(void* args, bool* b)
 {
 	ImGuiWindowFlags flags = 0;
 	flags |= ImGuiWindowFlags_NoTitleBar;
@@ -57,7 +87,7 @@ void ToggleWindow(void* args, bool* b)
 	ImGui::Begin("Toggle parts", NULL, flags);
 
 	ImGui::SetWindowSize(ImVec2(150, 270));
-	ImGui::SetWindowPos(ImVec2(0, 0));
+	ImGui::SetWindowPos(ImVec2(0, 17));
 	
 	ToggleWindowStructure* str = (ToggleWindowStructure*)args;
 
@@ -115,7 +145,8 @@ void ToggleWindow(void* args, bool* b)
 	figure("hat##head", 6, str->enables);
 
 	char textStr[32];
-	strcpy_s(textStr, 32, str->skinFile.c_str());
+
+	strcpy_s(textStr, 32, StringHelper::GetName(str->skinFile).c_str());
 
 	if (ImGui::Button(textStr))
 	{
@@ -127,8 +158,9 @@ void ToggleWindow(void* args, bool* b)
 	}
 
 	ImGui::SameLine();
-	if (ImGui::ArrowButton("heheh", 2))
+	if (ImGui::Button("reload skin"))
 		str->commands.push("reload texture");
+
 	//ImGui::InputText("##skinfilename", textStr, 16, ImGuiInputTextFlags_ReadOnly);
 
 	ImGui::End();

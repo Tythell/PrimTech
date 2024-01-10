@@ -157,10 +157,7 @@ namespace PrimtTech
 		std::string fullpath;
 		if (texturePath[0] == '.')
 			fullpath = std::string(texturePath).substr(1);
-		else if (texturePath[1] != ':')
-			fullpath = "Assets/Textures/" + std::string(texturePath);
-		else
-			fullpath = "Assets\\Textures\\" + m_name;
+		else fullpath = texturePath;
 
 
 		int textureWidth = 0;

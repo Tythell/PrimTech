@@ -12,6 +12,16 @@ Viewer::Viewer()
 
 	//KeyboardHandler::EnableEventRecorder(true);
 
+	std::ifstream keyReader("properties.txt", std::ios::in | std::ios::app);
+
+	if (keyReader.is_open())
+	{
+		keyReader >> m_reloadKey;
+		keyReader >> m_sleepTimeBeforeReload;
+
+		keyReader.close();
+	}
+
 	srand((unsigned int)time(0));
 
 	if (m_initSharedMem)
@@ -22,11 +32,7 @@ Viewer::Viewer()
 	for (int i = 0; i < 12; i++)
 		m_windowStruct.enables[i] = true;
 
-	bool hej[4]{ false, false, false, false };
-
-	memset(&hej[0], 1, 1);
-
-	m_engine.Init(L"Skin Viewer", NULL, L"wndclass", width, height);
+	m_engine.Init(L"MC Skin View", NULL, L"wndclass", width, height);
 
 	InitImguiWindows();
 
@@ -65,9 +71,9 @@ Viewer::Viewer()
 
 	//pMat->LoadTexture("etho.png", pt::TextureType::eDiffuse);
 
-	m_windowStruct.skinFile = "mcskin.png";
+	m_windowStruct.skinFile = "Assets/Textures/mcskin.png";
 
-	PrimtTech::ResourceHandler::AddTexture("mcskin.png", PrimtTech::TextureMap::Flags::eDynamic);
+	PrimtTech::ResourceHandler::AddTexture(m_windowStruct.skinFile, PrimtTech::TextureMap::Flags::eDynamic);
 
 	pMat->LoadTexture("mcskin.png", pt::TextureType::eDiffuse);
 
@@ -86,6 +92,8 @@ Viewer::~Viewer()
 
 bool Viewer::Run()
 {
+	//KeyboardHandler::InitKeyboardHook();
+
 	while (m_engine.IsOpen())
 	{
 		m_engine.Run();
@@ -99,6 +107,7 @@ bool Viewer::Run()
 			m_engine.Close();
 		}
 	}
+	KeyboardHandler::ReleaseHook();
 	return false;
 }
 
@@ -129,15 +138,13 @@ void Viewer::ControlCam()
 
 	static bool isKeyPressed = false;
 
-	if (!isKeyPressed && KeyboardHandler::IsKeyDown('G'))
+	if (!isKeyPressed && KeyboardHandler::IsKeyDown(Key::LCONTROL) && KeyboardHandler::IsKeyDown(m_reloadKey))
 	{
 		isKeyPressed = true;
-
-		PrimtTech::ResourceHandler::ReloadTexture(m_windowStruct.skinFile, m_windowStruct.skinFile);
-		m_windowStruct.skinFile = StringHelper::GetName(m_windowStruct.skinFile);
-
+		Sleep(m_sleepTimeBeforeReload); // if saving takes too long
+		PrimtTech::ResourceHandler::ReloadTexture(StringHelper::GetName(m_windowStruct.skinFile), m_windowStruct.skinFile);
 	}
-	else if (!KeyboardHandler::IsKeyDown('G'))
+	else if (!KeyboardHandler::IsKeyDown(m_reloadKey))
 	{
 		isKeyPressed = false;
 	}
@@ -150,7 +157,10 @@ void Viewer::ControlCam()
 
 void Viewer::InitImguiWindows()
 {
-	m_engine.CreateImGuiWindow(ToggleWindow, &m_windowStruct);
+	//m_windowStruct.commands = &m_commands;
+	//m_guiToggles.commands = &m_commands;
+	m_engine.CreateImGuiWindow(Gui_ToggleWindow, &m_windowStruct);
+	m_engine.CreateImGuiWindow(Gui_MenuBar, &m_guiToggles);
 }
 
 void Viewer::UpdateToggles()
@@ -228,14 +238,29 @@ void Viewer::UpdateCommands()
 		std::stringstream ss(m_windowStruct.commands.front());
 		std::string input;
 		ss >> input;
-		if (input == "load")
+		if (input == "kbHook")
+		{
+			ss >> input;
+			if (input == "1") 
+			{
+				KeyboardHandler::InitKeyboardHook();
+				KeyboardHandler::SetFlags(KeyboardHandler::KeyboardStream::GlobalHook);
+			}
+			else
+			{
+				KeyboardHandler::ReleaseHook();
+				KeyboardHandler::SetFlags(KeyboardHandler::KeyboardStream::WndProc);
+			}
+			
+		}
+		else if (input == "load")
 		{
 			ss >> input;
 			if (input == "texture")
 			{
 				ss >> input;
-				PrimtTech::ResourceHandler::ReloadTexture(m_windowStruct.skinFile, input);
-				m_windowStruct.skinFile = StringHelper::GetName(input);
+				PrimtTech::ResourceHandler::ReloadTexture(StringHelper::GetName(m_windowStruct.skinFile), input);
+				m_windowStruct.skinFile = input;
 			}
 			else if (input == "mesh")
 			{
@@ -249,7 +274,7 @@ void Viewer::UpdateCommands()
 			ss >> input;
 			if (input == "texture")
 			{
-				PrimtTech::ResourceHandler::ReloadTexture(m_windowStruct.skinFile, m_windowStruct.skinFile);
+				PrimtTech::ResourceHandler::ReloadTexture(StringHelper::GetName(m_windowStruct.skinFile), m_windowStruct.skinFile);
 			}
 		}
 		m_windowStruct.commands.pop();

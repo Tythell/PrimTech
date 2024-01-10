@@ -8,21 +8,21 @@
 	{
 		switch (uMsg)
 		{
-		case WM_CLOSE:
-#ifdef _DEBUG
-			if (MessageBox(hwnd, L"Leaving already?", L"[REDACTED]", MB_OKCANCEL) == IDOK)
-			{
-				MessageBox(hwnd, L"oh then", L"[REDACTED]", 0);
-				DestroyWindow(hwnd);
-			}
-#else
-			DestroyWindow(hwnd);
-#endif // _DEBUG
-			return 0;
+//		case WM_CLOSE:
+//#ifdef _DEBUG
+//			if (MessageBox(hwnd, L"Leaving already?", L"[REDACTED]", MB_OKCANCEL) == IDOK)
+//			{
+//				MessageBox(hwnd, L"oh then", L"[REDACTED]", 0);
+//				DestroyWindow(hwnd);
+//			}
+//#else
+//			DestroyWindow(hwnd);
+//#endif // _DEBUG
+//			return 0;
 
-		case WM_DESTROY:
-			PostQuitMessage(0);
-			return 0;
+		//case WM_DESTROY:
+		//	PostQuitMessage(0);
+		//	return 0;
 
 		default:
 		{
@@ -64,7 +64,6 @@ namespace PrimtTech
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
-
 		if (msg.message == WM_NULL)
 		{
 			if (!IsWindow(this->m_hwnd))
@@ -85,7 +84,7 @@ namespace PrimtTech
 		return true;
 	}
 
-	
+
 	LRESULT Window::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		if (ImGui_ImplWin32_WndProcHandler(hwnd, uMsg, wParam, lParam)) return true;
@@ -158,16 +157,24 @@ namespace PrimtTech
 		}
 		case WM_KEYDOWN:
 		{
-			unsigned char key = static_cast<unsigned char>(wParam);
-			KeyboardHandler::SetKeyState(key, true);
+			if (KeyboardHandler::GetFlags() & KeyboardHandler::KeyboardStream::WndProc)
+			{
+				unsigned char key = static_cast<unsigned char>(wParam);
+				KeyboardHandler::SetKeyState(key, true);
+			}
+
+			
 			//mp_kb->AddKeyboardEvent(KeyboardEvent(KeyboardEvent::EventType::ePUSH, key));
 			//mp_kb->SetKeyState(key, true);
 			return 0;
 		}
 		case WM_KEYUP:
 		{
-			unsigned char key = static_cast<unsigned char>(wParam);
-			KeyboardHandler::SetKeyState(key, false);
+			if (KeyboardHandler::GetFlags() & KeyboardHandler::KeyboardStream::WndProc)
+			{
+				unsigned char key = static_cast<unsigned char>(wParam);
+				KeyboardHandler::SetKeyState(key, false);
+			}
 			//mp_kb->AddKeyboardEvent(KeyboardEvent(KeyboardEvent::EventType::eRELEASE, key));
 			//mp_kb->SetKeyState(key, false);
 			return 0;
@@ -176,7 +183,7 @@ namespace PrimtTech
 		case WM_CHAR:
 		{
 			unsigned char key = static_cast<unsigned char>(wParam);
-			if (KeyboardHandler::IsRecording())
+			if (KeyboardHandler::GetFlags() & KeyboardHandler::KeyboardStream::RecordEvents)
 			{
 				KeyboardHandler::AddKeyboardEvent(KeyboardEvent(KeyboardEvent::EventType::eCHAR, key));
 			}
