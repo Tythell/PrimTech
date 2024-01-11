@@ -46,7 +46,7 @@ cbuffer MaterialBuffer : register(b1)
 
     float2 texCoordOffset;
     float transparency = 1.f;
-    uint distDiv;
+    float distDiv;
 
     float2 texCoordoffsetDist;
     float textureScale;

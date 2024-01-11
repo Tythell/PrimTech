@@ -175,7 +175,7 @@ namespace PrimtTech
 
 			COM_ERROR(hr, "failed to setup srv");
 
-			return SUCCEEDED(hr);
+			return !FAILED(hr);
 		}
 
 		void BindSRV(uint slot)

@@ -214,6 +214,12 @@ namespace PrimtTech
 			else if (GET_WHEEL_DELTA_WPARAM(wParam) < 0) MouseHandler::OnWheelDown(x, y);
 			return 0;
 		}
+		case WM_SIZE:
+		{
+			m_isResize = true;
+			m_winDimension.x = LOWORD(lParam);
+			m_winDimension.y = HIWORD(lParam);
+		}
 		default:
 			return DefWindowProc(hwnd, uMsg, wParam, lParam);
 		}
@@ -229,14 +235,14 @@ namespace PrimtTech
 		return m_hwnd;
 	}
 
-	uint16_t Window::getWinWidth() const
+	uint2 Window::GetWinDimensions() const
 	{
-		return m_windowWidth;
+		return m_winDimension;
 	}
 
-	uint16_t Window::getWinHeight() const
+	uint2* Window::GetWinDimensionsP()
 	{
-		return m_windowHeight;
+		return &m_winDimension;
 	}
 
 	void Window::ShutDown()
@@ -249,13 +255,23 @@ namespace PrimtTech
 		return m_isFocused;
 	}
 
+	bool Window::GetIsResize()
+	{
+		if (m_isResize)
+		{
+			m_isResize = false;
+			return true;
+		}
+		return false;
+	}
+
 	Window::Window() :
-		m_windowWidth(0), m_windowHeight(0)
+		m_winDimension(0)
 	{
 		static bool rawInputInitialized = false;
 		if (!rawInputInitialized)
 		{
-			RAWINPUTDEVICE rid;
+			RAWINPUTDEVICE rid = {};
 
 			rid.usUsagePage = 0x01;
 			rid.usUsage = 0x02;
@@ -278,8 +294,7 @@ namespace PrimtTech
 		// Register window class
 		m_wndClass = windowClass;
 
-		m_windowWidth = width;
-		m_windowHeight = height;
+		m_winDimension = uint2(width, height);
 
 		WNDCLASS wc = {};
 
@@ -303,8 +318,8 @@ namespace PrimtTech
 
 		RegisterClass(&wc);
 		m_hwnd = CreateWindowEx(0, m_wndClass.c_str(), m_windowName.c_str(), style,
-			(LONG(GetSystemMetrics(SM_CXSCREEN) - m_windowWidth) / 2),
-			(LONG(GetSystemMetrics(SM_CYSCREEN) - m_windowHeight) / 3),
+			(LONG(GetSystemMetrics(SM_CXSCREEN) - width) / 2),
+			(LONG(GetSystemMetrics(SM_CYSCREEN) - height) / 3),
 			rect.right - rect.left,
 			rect.bottom - rect.top,
 			NULL, NULL, hInstance, this);

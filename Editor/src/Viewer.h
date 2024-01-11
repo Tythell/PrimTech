@@ -14,7 +14,10 @@ private:
 	char m_reloadKey = 'S';
 	uint m_sleepTimeBeforeReload = 100;
 	ToggleWindowStructure m_windowStruct;
-	//Gui_MenuToggles m_guiToggles;
+	Gui_MenuToggles m_guiToggles;
+
+	std::queue<std::string> m_commands;
+
 	void ControlCam();
 	void InitImguiWindows();
 	void UpdateToggles();

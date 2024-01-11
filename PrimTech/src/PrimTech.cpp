@@ -88,31 +88,10 @@ namespace pt
 				scripts[i].Execute("OnTick");
 			}
 		}
-		
-		//std::vector<pt::AABBComp>& aabbs = ComponentHandler::GetComponentArray<pt::AABBComp>();
-
-		//for (int i = 0; i < aabbs.size(); i++)
-		//{
-		//	pt::AABBComp& comp = aabbs[i];
-		//	aabbs[i].EntId();
-		//	pt::TransformComp& transform = ComponentHandler::GetComponentByIndex<pt::TransformComp>(aabbs[i].EntId());
-
-		//	aabbs[i].Update(transform);
-		//}
-
-		//// FIXME naive and slow solution, has to be optimised in the future
-		//for (int i = 0; i < aabbs.size(); i++)
-		//	for (int j = 0; j < aabbs.size(); j++)
-		//		if (i != j && aabbs[i].Intersects(aabbs[j]))
-		//		{
-		//			aabbs[i].SetIsIntersecting(true);
-		//			aabbs[j].SetIsIntersecting(true);
-		//		}
-
 
 		if (m_mouseLocked)
 		{
-			RECT Rect;
+			RECT Rect = {};
 			GetWindowRect(m_window.getHWND(), &Rect);
 
 			RECT rec = {};
@@ -120,7 +99,13 @@ namespace pt
 			m_windowPos.x = rec.left;
 			m_windowPos.y = rec.top;
 
-			SetCursorPos(m_windowPos.x + (m_window.getWinWidth() / 2), m_windowPos.y + (m_window.getWinHeight() / 2));
+			SetCursorPos(m_windowPos.x + (m_window.GetWinDimensions().x / 2), m_windowPos.y + (m_window.GetWinDimensions().y / 2));
+		}
+
+		if (m_window.GetIsResize())
+		{
+			pt::Camera& cam = ComponentHandler::GetComponentByIndex<pt::Camera>(m_activeCamera);
+			mp_dxrenderer->UpdateWindowCall(cam);
 		}
 
 		std::vector<pt::Light>& r_lights = ComponentHandler::GetComponentArray<pt::Light>();

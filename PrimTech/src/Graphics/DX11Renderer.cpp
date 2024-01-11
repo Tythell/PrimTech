@@ -9,14 +9,14 @@ using namespace pt;
 namespace PrimtTech
 {
 	Renderer::Renderer(Window& window) :
-		m_width(window.getWinWidth()), m_height(window.getWinHeight()), m_pHWND(&window.getHWND()),
-		m_shadowmap(1024 * shadowQuality, 1024 * shadowQuality), m_viewport(0.f, 0.f, (float)m_width, (float)m_height)
+		m_winDimensions(window.GetWinDimensionsP()), m_pHWND(&window.getHWND()),
+		m_shadowmap(1024 * shadowQuality, 1024 * shadowQuality), m_viewport(0.f, 0.f, m_winDimensions->x, m_winDimensions->y)
 	{
 		m_pWin = &window;
 
 		initSwapChain();
 		initRTV();
-		SetupDSAndVP();
+		SetupDS();
 		InitRastNSampState();
 		InitBlendState();
 		m_shadowmap.Init(device);
@@ -39,7 +39,6 @@ namespace PrimtTech
 		pScam->UpdateView(shadowEnt.Transform());
 
 		InitScene();
-		m_renderbox.Init(device, dc);
 
 		m_lightVector.resize(32);
 
@@ -59,7 +58,7 @@ namespace PrimtTech
 		m_lightbuffer.Release();
 		m_materialBuffer.Release();
 		m_multiLightBuffer.Release();
-		m_grid.Release();
+		//m_grid.Release();
 
 		device->Release();
 		dc->Release();
@@ -76,15 +75,6 @@ namespace PrimtTech
 		m_wireFrameState->Release();
 	}
 
-	void Renderer::SetImGuiHandler(ImGuiHandler& gui)
-	{
-		m_guiHandler = gui;
-		//im = m_guiHandler->GetVarPtrs();
-		//im->width = m_width;
-		//im->height = m_height;
-		//m_guiHandler->ImGuiInit(m_pWin->getHWND(), device, dc);
-	}
-
 	bool Renderer::initSwapChain()
 	{
 		UINT flags = 0;
@@ -95,8 +85,8 @@ namespace PrimtTech
 		DXGI_SWAP_CHAIN_DESC swapChainDesc;
 		ZeroMemory(&swapChainDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
 
-		swapChainDesc.BufferDesc.Width = m_width;
-		swapChainDesc.BufferDesc.Height = m_height;
+		swapChainDesc.BufferDesc.Width = m_winDimensions->x;
+		swapChainDesc.BufferDesc.Height = m_winDimensions->y;
 		swapChainDesc.BufferDesc.RefreshRate.Numerator = 0; // 60
 		swapChainDesc.BufferDesc.RefreshRate.Denominator = 1;
 		swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -144,9 +134,9 @@ namespace PrimtTech
 		return true;
 	}
 
-	bool Renderer::SetupDSAndVP()
+	bool Renderer::SetupDS()
 	{
-		CD3D11_TEXTURE2D_DESC depthStencilTextureDesc(DXGI_FORMAT_D24_UNORM_S8_UINT, m_width, m_height);
+		CD3D11_TEXTURE2D_DESC depthStencilTextureDesc(DXGI_FORMAT_D24_UNORM_S8_UINT, m_winDimensions->x, m_winDimensions->y);
 		depthStencilTextureDesc.MipLevels = 1;
 		depthStencilTextureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 
@@ -292,29 +282,29 @@ namespace PrimtTech
 		dc->RSSetState(m_rasterizerState);
 		dc->OMSetDepthStencilState(m_dsState, 0);
 
-		std::vector<BBVertex> gridArr;
+		//std::vector<BBVertex> gridArr;
 
-		// grid
-		uint nLines = 11;
-		gridArr.resize(nLines * 4);
-		for (uint i = 0; i < nLines; i++)
-		{
-			gridArr[2 * i + 0].m_position = float3(i - 5, 0.f, (float)nLines / 2.f);
-			gridArr[2 * i + 1].m_position = float3(i - 5, 0.f, -(float)nLines / 2.f);
-			gridArr[2 * i + 0].m_color = GRAY_3F;
-			gridArr[2 * i + 1].m_color = GRAY_3F;
-		}
-		for (uint i = 0; i < nLines; i++)
-		{
-			uint index = (nLines * 2) + i * 2;
-			gridArr[index + 0].m_position = float3(-(float)nLines / 2.f, 0.f, i - 5);
-			gridArr[index + 1].m_position = float3((float)nLines / 2.f, 0.f, i - 5);
+		//// grid
+		//uint nLines = 11;
+		//gridArr.resize(nLines * 4);
+		//for (uint i = 0; i < nLines; i++)
+		//{
+		//	gridArr[2 * i + 0].m_position = float3(i - 5, 0.f, (float)nLines / 2.f);
+		//	gridArr[2 * i + 1].m_position = float3(i - 5, 0.f, -(float)nLines / 2.f);
+		//	gridArr[2 * i + 0].m_color = GRAY_3F;
+		//	gridArr[2 * i + 1].m_color = GRAY_3F;
+		//}
+		//for (uint i = 0; i < nLines; i++)
+		//{
+		//	uint index = (nLines * 2) + i * 2;
+		//	gridArr[index + 0].m_position = float3(-(float)nLines / 2.f, 0.f, i - 5);
+		//	gridArr[index + 1].m_position = float3((float)nLines / 2.f, 0.f, i - 5);
 
-			gridArr[index + 0].m_color = GRAY_3F;
-			gridArr[index + 1].m_color = GRAY_3F;
-		}
+		//	gridArr[index + 0].m_color = GRAY_3F;
+		//	gridArr[index + 1].m_color = GRAY_3F;
+		//}
 
-		m_grid.CreateVertexBuffer(device, gridArr.data(), static_cast<uint>(gridArr.size()));
+		//m_grid.CreateVertexBuffer(device, gridArr.data(), static_cast<uint>(gridArr.size()));
 
 		dc->OMSetBlendState(m_blendState, NULL, 0xFFFFFFFF);
 
@@ -383,6 +373,32 @@ namespace PrimtTech
 	void Renderer::SetActiveCam(uint idx)
 	{
 		m_activeCamIndex = idx;
+	}
+
+	void Renderer::UpdateWindowCall(pt::Camera& cam)
+	{
+		m_rtv->Release();
+		m_rtv = nullptr;
+
+		m_swapChain->ResizeBuffers(0, m_winDimensions->x, m_winDimensions->y, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
+
+
+		ID3D11Texture2D* pBackBuffer;
+		HRESULT hr = m_swapChain->GetBuffer(0, IID_PPV_ARGS(&pBackBuffer));
+		COM_ERROR(hr, "Get Buffer failed");
+		hr = device->CreateRenderTargetView(pBackBuffer, nullptr, &m_rtv);
+		COM_ERROR(hr, "recreate rtv failed");
+		pBackBuffer->Release();
+
+		m_depthStencilBuffer->Release();
+		m_dsState->Release();
+		m_dsView->Release();
+
+		SetupDS();
+
+		cam.RecalculateProjection(m_winDimensions->x, m_winDimensions->y);
+		m_viewport.Width = m_winDimensions->x;
+		m_viewport.Height = m_winDimensions->y;
 	}
 
 	void RefreshPrefabInstances(std::vector<MeshPrefabRef>& rPrefabs, ID3D11DeviceContext*& dc)
@@ -552,6 +568,7 @@ namespace PrimtTech
 
 	void Renderer::Render(const float& deltatime)
 	{
+
 		float bgColor[] = { .1f,.1f,.1f,1.f };
 
 		dc->ClearRenderTargetView(m_rtv, bgColor);
@@ -618,13 +635,21 @@ namespace PrimtTech
 		uint numMEshRefs = (uint)rMeshrefs.size();
 		uint offset = 0;
 
-		updateInstances(ResourceHandler::GetMeshArrayReference(), rMeshrefs.size(), rMeshrefs, rTransforms);
+		updateInstances(ResourceHandler::GetMeshArrayReference(), static_cast<int>(rMeshrefs.size()), rMeshrefs, rTransforms);
 
 		//drawMeshes(rMeshrefs, rTransforms, rPrefabrefs, m_transformBuffer, NULL, dc, deltatime, m_drawCalls);
 
 		// --------------------------End of shadw pass-----------------------------------------------
 
 		pt::Camera& cc = ComponentHandler::GetComponentByIndex<pt::Camera>(m_activeCamIndex);
+
+		if (m_updateWinHeight)
+		{
+			
+
+			m_updateWinHeight = false;
+		}
+
 		dc->OMSetRenderTargets(1, &m_rtv, m_dsView);
 		dc->RSSetViewports(1, &m_viewport);
 

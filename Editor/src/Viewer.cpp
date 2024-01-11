@@ -8,7 +8,7 @@ Viewer::Viewer()
 	m_msgSize(0), m_bufferSize(0),
 	m_initSharedMem(false)
 {
-	int width = 500, height = 500;
+	uint width = 500, height = 500;
 
 	//KeyboardHandler::EnableEventRecorder(true);
 
@@ -22,7 +22,7 @@ Viewer::Viewer()
 	//	keyReader.close();
 	//}
 
-	//srand((unsigned int)time(0));
+	srand((unsigned int)time(0));
 
 	//if (m_initSharedMem)
 	//{
@@ -61,7 +61,7 @@ Viewer::Viewer()
 
 	m_cam = m_pCamEnt->AddComponent<pt::Camera>();
 
-	m_cam->SetPerspective(90, width, height, 0.1f, 100.f);
+	m_cam->SetPerspective(90.f, static_cast<float>(width), static_cast<float>(height), 0.1f, 100.f);
 
 	m_cam->SetPositionOffset(0.f, 0, -2.5f);
 
@@ -73,12 +73,15 @@ Viewer::Viewer()
 
 	m_windowStruct.skinFile = "Assets/Textures/mcskin.png";
 
-	PrimtTech::ResourceHandler::AddTexture(m_windowStruct.skinFile, PrimtTech::TextureMap::Flags::eDynamic);
+	PrimtTech::ResourceHandler::AddTexture(m_windowStruct.skinFile, PrimtTech::TextureMap::Flags::eNull);
 
 	pMat->LoadTexture("mcskin.png", pt::TextureType::eDiffuse);
 
 	m_mesh->SetMesh("amcguy.obj");
 	m_mesh->SetMaterial("skin");
+
+	m_windowStruct.commands = &m_commands;
+	m_guiToggles.commands = &m_commands;
 }
 
 Viewer::~Viewer()
@@ -160,7 +163,7 @@ void Viewer::InitImguiWindows()
 	//m_windowStruct.commands = &m_commands;
 	//m_guiToggles.commands = &m_commands;
 	m_engine.CreateImGuiWindow(Gui_ToggleWindow, &m_windowStruct);
-	m_engine.CreateImGuiWindow(Gui_MenuBar, NULL);
+	m_engine.CreateImGuiWindow(Gui_MenuBar, &m_guiToggles);
 }
 
 void Viewer::UpdateToggles()
@@ -233,26 +236,34 @@ bool Viewer::ComlibUpdate(PrimtTech::TextureMap*& pTexture)
 
 void Viewer::UpdateCommands()
 {
-	while (!m_windowStruct.commands.empty())
+	while (!m_commands.empty())
 	{
-		std::stringstream ss(m_windowStruct.commands.front());
+		std::stringstream ss(m_commands.front());
 		std::string input;
 		ss >> input;
-		if (input == "kbHook")
+		if (input == "setting")
 		{
 			ss >> input;
-			if (input == "1") 
+
+			if (input == "kbHook")
 			{
-				KeyboardHandler::InitKeyboardHook();
-				KeyboardHandler::SetFlags(KeyboardHandler::KeyboardStream::GlobalHook);
+				ss >> input;
+				if (input == "1")
+				{
+					KeyboardHandler::InitKeyboardHook();
+					KeyboardHandler::SetFlags(KeyboardHandler::KeyboardStream::GlobalHook);
+					m_guiToggles.isHookKeyboard = true;
+				}
+				else
+				{
+					KeyboardHandler::ReleaseHook();
+					KeyboardHandler::SetFlags(KeyboardHandler::KeyboardStream::WndProc);
+					m_guiToggles.isHookKeyboard = false;
+				}
+
 			}
-			else
-			{
-				KeyboardHandler::ReleaseHook();
-				KeyboardHandler::SetFlags(KeyboardHandler::KeyboardStream::WndProc);
-			}
-			
 		}
+		
 		else if (input == "load")
 		{
 			ss >> input;
@@ -277,6 +288,6 @@ void Viewer::UpdateCommands()
 				PrimtTech::ResourceHandler::ReloadTexture(StringHelper::GetName(m_windowStruct.skinFile), m_windowStruct.skinFile);
 			}
 		}
-		m_windowStruct.commands.pop();
+		m_commands.pop();
 	}
 }

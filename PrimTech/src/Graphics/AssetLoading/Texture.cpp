@@ -33,7 +33,7 @@ namespace PrimtTech
 		
 	}
 
-	bool TextureMap::CreateDynamicTexture(unsigned char* imageData, uint2 dimensions, ID3D11Device* device, ID3D11DeviceContext*& dc)
+	bool TextureMap::CreateDynamicTexture(unsigned char* imageData, uint2 dimensions, ID3D11Device*& device, ID3D11DeviceContext*& dc)
 	{
 		m_pdc = dc;
 		if (m_textureSRV)
@@ -60,9 +60,9 @@ namespace PrimtTech
 		desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 		desc.SampleDesc.Count = 1;
 		desc.SampleDesc.Quality = 0;
-		desc.Usage = D3D11_USAGE_IMMUTABLE;
+		desc.Usage = D3D11_USAGE_DYNAMIC;
 		desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-		desc.CPUAccessFlags = 0;
+		desc.CPUAccessFlags = D3D10_CPU_ACCESS_WRITE;
 		desc.MiscFlags = 0;
 
 		D3D11_SUBRESOURCE_DATA data = {};
@@ -82,7 +82,7 @@ namespace PrimtTech
 		//return true;
 	}
 
-	bool TextureMap::CreateDynamicTexture(const char* path, ID3D11Device* device, ID3D11DeviceContext*& dc)
+	bool TextureMap::CreateDynamicTexture(const char* path, ID3D11Device*& device, ID3D11DeviceContext*& dc)
 	{
 		m_pdc = dc;
 		if (m_textureSRV)
@@ -93,7 +93,7 @@ namespace PrimtTech
 
 		if (m_pImageData)
 		{
-			delete[] m_pImageData;
+			free(m_pImageData);
 			m_pImageData = nullptr;
 		}
 
@@ -115,10 +115,10 @@ namespace PrimtTech
 		desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 		desc.SampleDesc.Count = 1;
 		desc.SampleDesc.Quality = 0;
-		desc.Usage = D3D11_USAGE_IMMUTABLE;
+		desc.Usage = D3D11_USAGE_DYNAMIC;
 		desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-		//desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-		desc.CPUAccessFlags = 0;
+		desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		//desc.CPUAccessFlags = 0;
 		desc.MiscFlags = 0;
 
 		D3D11_SUBRESOURCE_DATA data = {};
@@ -142,10 +142,16 @@ namespace PrimtTech
 	bool TextureMap::CreateFromFile(const char* texturePath, ID3D11Device* device, const bool& flipUV)
 	{
 		if (m_textureSRV)
+		{
 			m_textureSRV->Release();
+			m_textureSRV = nullptr;
+		}
 
 		if (m_texture2D)
+		{
 			m_texture2D->Release();
+			m_texture2D = nullptr;
+		}
 
 		if (m_pImageData)
 		{

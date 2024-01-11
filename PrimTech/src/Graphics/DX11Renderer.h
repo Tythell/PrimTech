@@ -29,7 +29,6 @@ namespace PrimtTech
 	public:
 		Renderer(Window& window);
 		~Renderer();
-		void SetImGuiHandler(ImGuiHandler& gui);
 
 		void Render(const float& deltatime);
 		ID3D11Device* GetDevice() const;
@@ -42,10 +41,11 @@ namespace PrimtTech
 		void SetLightWarp(const std::string& path);
 		void SetActiveCam(uint idx);
 
+		void UpdateWindowCall(pt::Camera& cam);
 	private:
 		bool initSwapChain();
 		bool initRTV();
-		bool SetupDSAndVP();
+		bool SetupDS();
 		bool InitRastNSampState();
 		void InitBlendState();
 		bool InitShaders();
@@ -61,12 +61,13 @@ namespace PrimtTech
 	public:
 		void SetDebugRenderer(PhysicsHandler* p) { mp_debufrenderer = p; }
 	private:
+		bool m_updateWinHeight = false;
 		uint m_drawCalls = 0;
 
 #endif // PHYSDEBUG
 		Window* m_pWin = nullptr;
 
-		const unsigned int m_width, m_height;
+		uint2* m_winDimensions;
 
 		HWND* m_pHWND = nullptr;
 
@@ -101,19 +102,16 @@ namespace PrimtTech
 
 		std::vector<hlsl::Light> m_lightVector;
 		Buffer<hlsl::Light> m_multiLightBuffer;
-		Buffer<BBVertex> m_grid;
+		//Buffer<BBVertex> m_grid;
 
 		uint m_activeCamIndex = 1;
 
 		ImGuiHandler m_guiHandler;
 		//ImGuiVars* im = nullptr;
 
-		RenderBox m_renderbox;
+		//RenderBox m_renderbox;
 
-		//sm::Ray m_ray;
 		int m_fps = 0;
-		//RenderLine m_rLine;
-		//RenderSphere m_sphere;
 
 		ShadowMap m_shadowmap;
 		uint m_shadowCamIndex = 0;

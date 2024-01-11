@@ -49,6 +49,11 @@ namespace pt
 		//m_projM = d::XMMatrixOrthographicLH(width, height, nearZ, farZ);
 		m_isOrthographic = true;
 	}
+	void Camera::RecalculateProjection(uint width, uint height)
+	{
+		if (!m_isOrthographic) SetPerspective(FOV, static_cast<float>(width), static_cast<float>(height), 0.1f, 100.f);
+		else SetOrtographic(static_cast<float>(width), static_cast<float>(height), 0.1f, 100.f);
+	}
 	void Camera::UpdateView(const pt::TransformComp& entTransform)
 	{
 		matrix camRot = glm::inverse(glm::toMat4(entTransform.GetRotationQuaternion()));

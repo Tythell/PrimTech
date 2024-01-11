@@ -19,6 +19,7 @@ namespace pt
 
 		void SetPerspective(float fovDeg, float width, float height, float nearZ, float farZ);
 		void SetOrtographic(float width, float height, float nearZ, float farZ);
+		void RecalculateProjection(uint width, uint height);
 
 		void UpdateView(const pt::TransformComp& entTransform);
 
@@ -47,6 +48,8 @@ namespace pt
 		matrix m_viewM, m_projM;
 		float3 m_posOffset, m_rotateOffset;
 		float3 m_forwardV, m_leftV, m_upV;
+
+		static const UINT FOV = 80.f;
 
 		bool m_isOrthographic = false;
 

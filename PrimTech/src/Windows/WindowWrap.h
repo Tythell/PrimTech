@@ -18,18 +18,22 @@ namespace PrimtTech
 		std::wstring getWinName() const;
 		HWND& getHWND();
 
-		uint16_t getWinWidth() const;
-		uint16_t getWinHeight() const;
+		uint2 GetWinDimensions() const;
+		uint2* GetWinDimensionsP();
 		void ShutDown();
 		bool GetIsFocused() const;
+		bool GetIsResize();
 	private:
-		int m_windowWidth = 0, m_windowHeight = 0;
+		uint2 m_winDimension;
+		uint2 m_windowPos = uint2(0);
 		std::wstring m_windowName;
 		HWND m_hwnd = NULL;
 		HINSTANCE m_hInstance = NULL;
 		std::wstring m_wndClass;
 
+		bool m_isResize = false;
 		bool m_isFocused = true;
+		bool m_alwaysOnTop = false;
 	};
 
 }

@@ -19,8 +19,8 @@ namespace PrimtTech
 			eReloadExisting = 0x2,
 		};
 
-		bool CreateDynamicTexture(unsigned char* imageData, uint2 dimensions, ID3D11Device* device, ID3D11DeviceContext*& dc);
-		bool CreateDynamicTexture(const char* path, ID3D11Device* device, ID3D11DeviceContext*& dc);
+		bool CreateDynamicTexture(unsigned char* imageData, uint2 dimensions, ID3D11Device*& device, ID3D11DeviceContext*& dc);
+		bool CreateDynamicTexture(const char* path, ID3D11Device*& device, ID3D11DeviceContext*& dc);
 		bool CreateFromFile(const char* texturePath, ID3D11Device* device, const bool& flipUV = true);
 		bool CreateFromData(unsigned char* imageData, ID3D11Device*& m_device, uint2 dimensions, unsigned channels = 4);
 		// Only works on dynamic textures

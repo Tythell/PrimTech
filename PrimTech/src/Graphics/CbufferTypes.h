@@ -52,7 +52,7 @@ namespace PrimtTech {
 
 			float2 texCoordOffset = float2(0.f);
 			float transparency = 1.f;
-			uint distDiv = 0;
+			float distDiv = 0;
 
 			float2 texCoordoffsetDist = float2(0.f);
 			float textureScale = 0.f;
