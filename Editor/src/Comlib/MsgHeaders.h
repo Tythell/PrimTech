@@ -20,12 +20,12 @@ using PixelArrayStart = size_t;
 
 struct PixelChange
 {
-	uint2 pixel;
-	float4 color;
+	uint2 pixel = uint2(0.f);
+	float4 color = float4(0.f);
 };
 
 struct WholeTextureChange
 {
-	uint2 textureDimesnions;
+	uint2 textureDimesnions = uint2(0);
 	float4* colors = nullptr;
 };

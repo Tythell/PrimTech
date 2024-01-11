@@ -78,8 +78,8 @@ namespace PrimtTech
 	bool Renderer::initSwapChain()
 	{
 		UINT flags = 0;
-#ifdef _DEBUG
 		flags = D3D11_CREATE_DEVICE_DEBUG;
+#ifdef _DEBUG
 #endif // _DEBUG
 
 		DXGI_SWAP_CHAIN_DESC swapChainDesc;

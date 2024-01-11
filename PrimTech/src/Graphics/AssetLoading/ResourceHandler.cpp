@@ -8,8 +8,8 @@ namespace PrimtTech
 	std::vector<Mesh> ResourceHandler::m_meshes;
 	std::vector<TextureMap*> ResourceHandler::m_textures;
 	std::vector<pt::Material> ResourceHandler::m_materials;
-	ID3D11Device* ResourceHandler::pDevice;
-	ID3D11DeviceContext* ResourceHandler::s_pDc;
+	ID3D11Device* ResourceHandler::pDevice = nullptr;
+	ID3D11DeviceContext* ResourceHandler::s_pDc = nullptr;
 
 	void ResourceHandler::SetDevice(ID3D11Device*& device, ID3D11DeviceContext*& dc)
 	{

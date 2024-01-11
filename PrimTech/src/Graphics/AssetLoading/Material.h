@@ -85,8 +85,8 @@ namespace pt
 		float m_distDivider = 1.f;
 		float3 m_diffuseClr = WHITE_3F;
 
-		float2 m_diffuseOffsetValue, m_distortionValue;
-		float2 m_diffuseOffsetSpeed, m_distortionOffsetSpeed;
+		float2 m_diffuseOffsetValue = float2(0.f), m_distortionValue = float2(0.f);
+		float2 m_diffuseOffsetSpeed = float2(0.f), m_distortionOffsetSpeed = float2(0.f);
 		float m_transparency = 1.f;
 	};
 }

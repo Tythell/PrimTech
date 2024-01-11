@@ -108,9 +108,6 @@ float calcShadow(in float4 clipspace, in float3 normal)
 
 float4 main(PSInput input) : SV_Target
 {
-    
-    
-    
     float2 distortion = 0.f;
     float opacity = 1.f;
     
@@ -232,6 +229,6 @@ float4 main(PSInput input) : SV_Target
     //float3 final = diffuse.xyz * (cellLightStr) + (rimDot.xxx * rimColor) + specular;
 
     //return float4(input.worldPos, 1.f);
-    //return float4(1.f, 1.f, 1.f, 1.f);
+    //return float4(1.f, 0.f, 1.f, 1.f);
     return float4(final, opacity * transparency);
 }

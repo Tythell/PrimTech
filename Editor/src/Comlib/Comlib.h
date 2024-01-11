@@ -11,16 +11,16 @@ namespace comlib
 	class RingBuffer
 	{
 	private:
-		Mutex* m_mutex;
-		Memory* m_sharedMemory;
-		char* m_messageData;
+		Mutex* m_mutex = nullptr;
+		Memory* m_sharedMemory = nullptr;
+		char* m_messageData = nullptr;
 
-		size_t* m_head;
-		size_t* m_tail;
-		size_t* m_freeMemory;
+		size_t* m_head = nullptr;
+		size_t* m_tail = nullptr;
+		size_t* m_freeMemory = nullptr;
 
 		ControlHeader* m_ctrler = nullptr;
-		ProcessType m_type;
+		ProcessType m_type = Producer;
 	public:
 		RingBuffer(LPCWSTR bufferName, size_t bufferSize, ProcessType type);
 		~RingBuffer();

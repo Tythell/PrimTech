@@ -265,14 +265,8 @@ void Viewer::UpdateCommands()
 			else if (input == "topmost")
 			{
 				ss >> input;
-				if (input == "1")
-				{
-					m_engine.SetAlwaysOnTop(true);
-				}
-				else
-				{
-					m_engine.SetAlwaysOnTop(false);
-				}
+				if (input == "1") m_engine.SetAlwaysOnTop(true);
+				else m_engine.SetAlwaysOnTop(false);
 				
 			}
 		}

@@ -17,7 +17,7 @@ namespace pt
 		static const float4 AsFloat4(uint color);
 		static const uint AsHex(float4 color);
 	private:
-		uint m_hexClr;
+		uint m_hexClr = 0x00ff00ff;
 	};
 }
 

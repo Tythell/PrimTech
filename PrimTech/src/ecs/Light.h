@@ -34,8 +34,8 @@ namespace pt
 		virtual void OnFree() override;
 	private:
 		PrimtTech::hlsl::Light m_lightData;
-		float4 m_posOffset;
-		float4 m_dirOffset;
+		float4 m_posOffset = float4(0.f);
+		float4 m_dirOffset = float4(0.f);
 		LightType m_type = LightType::ePOINT;
 
 

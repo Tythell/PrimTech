@@ -7,7 +7,7 @@ namespace comlib
 	class Mutex
 	{
 	private:
-		HANDLE mutexHandle;
+		HANDLE mutexHandle = NULL;
 
 	public:
 		Mutex(LPCWSTR mutexName);

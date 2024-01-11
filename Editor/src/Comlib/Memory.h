@@ -16,17 +16,17 @@ namespace comlib
 	class Memory
 	{
 	private:
-		HANDLE memoryFilemap;
-		HANDLE controlFilemap;
+		HANDLE memoryFilemap = NULL;
+		HANDLE controlFilemap = NULL;
 
-		char* memoryData;
-		size_t* controlData;
+		char* memoryData = NULL;
+		size_t* controlData = NULL;
 
-		size_t bufferSize;
-		size_t controlbufferSize;
+		size_t bufferSize = NULL;
+		size_t controlbufferSize = NULL;
 
-		LPCWSTR bufferName;
-		LPCWSTR ctrlbufferName;
+		LPCWSTR bufferName = NULL;
+		LPCWSTR ctrlbufferName = NULL;
 
 	public:
 		Memory(LPCWSTR bufferName, size_t bufferSize);
