@@ -23,6 +23,7 @@ namespace PrimtTech
 		void ShutDown();
 		bool GetIsFocused() const;
 		bool GetIsResize();
+		void ToggleAlwaysOnTop(bool b);
 	private:
 		uint2 m_winDimension;
 		uint2 m_windowPos = uint2(0);

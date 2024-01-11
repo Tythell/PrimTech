@@ -255,6 +255,11 @@ namespace PrimtTech
 		return m_isFocused;
 	}
 
+	void Window::ToggleAlwaysOnTop(bool b)
+	{
+		m_alwaysOnTop = b;
+	}
+
 	bool Window::GetIsResize()
 	{
 		if (m_isResize)

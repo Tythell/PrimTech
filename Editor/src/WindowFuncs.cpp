@@ -60,7 +60,11 @@ void Gui_MenuBar(void* args, bool* b)
 	
 	if (ImGui::BeginMenu("Settings"))
 	{
-		if (ImGui::MenuItem("Always on top", "", &arg->isAlwaysOnTop)) {}
+		if (ImGui::MenuItem("Always on top", "", &arg->isAlwaysOnTop))
+		{
+			std::string command = "setting topmost " + std::to_string((int)arg->isAlwaysOnTop);
+			arg->commands->push(command);
+		}
 		if (ImGui::MenuItem("Hook Keyboard", "", &arg->isHookKeyboard))
 		{
 			std::string command = "setting kbHook " + std::to_string((int)arg->isHookKeyboard);

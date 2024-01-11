@@ -32,6 +32,14 @@ namespace pt
 		
 		void SetCamera(uint idx);
 		bool TogglePlay(char b = 2);
+		void SetAlwaysOnTop(bool b)
+		{
+			if (b)
+				SetWindowPos(m_window.getHWND(), HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+			else
+				SetWindowPos(m_window.getHWND(), HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+			
+		}
 
 		void CreateImGuiWindow(PrimtTech::ImGuiWindowFunc func, void* args, bool* openClose = (bool*)0);
 		
