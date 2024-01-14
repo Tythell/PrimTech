@@ -10,6 +10,9 @@ Viewer::Viewer()
 {
 	uint width = 500, height = 500;
 
+	m_windowStruct.toggleFigure = m_toggleWidgets;
+	m_guiToggles.toggleFigure = m_toggleWidgets;
+
 	//KeyboardHandler::EnableEventRecorder(true);
 
 	//std::ifstream keyReader("properties.txt", std::ios::in | std::ios::app);
@@ -97,6 +100,9 @@ bool Viewer::Run()
 {
 	//KeyboardHandler::InitKeyboardHook();
 
+
+	//double start
+
 	while (m_engine.IsOpen())
 	{
 		m_engine.Run();
@@ -160,8 +166,6 @@ void Viewer::ControlCam()
 
 void Viewer::InitImguiWindows()
 {
-	//m_windowStruct.commands = &m_commands;
-	//m_guiToggles.commands = &m_commands;
 	m_engine.CreateImGuiWindow(Gui_ToggleWindow, &m_windowStruct);
 	m_engine.CreateImGuiWindow(Gui_MenuBar, &m_guiToggles);
 }

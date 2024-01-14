@@ -15,6 +15,7 @@ private:
 	uint m_sleepTimeBeforeReload = 100;
 	ToggleWindowStructure m_windowStruct;
 	Gui_MenuToggles m_guiToggles;
+	bool m_toggleWidgets[3] = { true, true, true };
 
 	std::queue<std::string> m_commands;
 
