@@ -7,12 +7,12 @@ void toggleButton(bool& on, std::string str)
 	if (!on)
 	{
 		ImGui::PushID(0);
-		ImGui::PushStyleColor(ImGuiCol_Button,			ImVec4(0.2f, 0.2f, 0.2f, 1.f));
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered,	ImVec4(0.3f, 0.3f, 0.3f, 1.f));
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive,	ImVec4(0.4f, 0.4f, 0.4f, 1.f));
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.2f, 0.2f, 1.f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.3f, 0.3f, 1.f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.4f, 0.4f, 0.4f, 1.f));
 	}
 	if (ImGui::Button(str.c_str())) clickedButton = true;
-	
+
 	if (!on)
 	{
 		ImGui::PopStyleColor(3);
@@ -46,8 +46,11 @@ void figure(std::string face, uint startIndex, bool* enables, bool show = true)
 	}
 }
 
+
+
 void Gui_MenuBar(void* args, bool* b)
 {
+	//ImGui::ShowDemoWindow();
 	Gui_MenuToggles* arg = (Gui_MenuToggles*)args;
 	//ImGui::Begin("imageList");
 	//uint numTextures = PrimtTech::ResourceHandler::GetNumTextures();
@@ -59,7 +62,7 @@ void Gui_MenuBar(void* args, bool* b)
 	//ImGui::End();
 
 	ImGui::BeginMainMenuBar();
-	
+
 	if (ImGui::BeginMenu("File"))
 	{
 		if (ImGui::MenuItem("Open skin", ""))
@@ -68,7 +71,7 @@ void Gui_MenuBar(void* args, bool* b)
 
 			if (path != "") arg->commands->push("load texture " + path);
 		}
-		if (ImGui::MenuItem("Reload skin", "CTRL+S"))
+		if (ImGui::MenuItem("Reload skin", ""))
 		{
 			arg->commands->push("reload texture");
 		}
@@ -88,9 +91,50 @@ void Gui_MenuBar(void* args, bool* b)
 			arg->commands->push(command);
 		}
 		ImGui::Separator();
-		ImGui::MenuItem("Toggle Figure", "", arg->toggleFigure);
-		ImGui::MenuItem("Toggle Hatfigure", "", arg->toggleFigure + 1);
-		ImGui::MenuItem("Toggle Button", "", arg->toggleFigure + 2);
+		if (ImGui::BeginMenu("Keybinds"))
+		{
+			static bool recording = false;
+			static std::string buttonStr = "";
+			if (buttonStr == "")
+			{
+				buttonStr = *arg->pReloadKey;
+			}
+
+			if (recording)
+			{
+				for (int k = 0; k < 256; k++)
+				{
+					if (KeyboardHandler::IsKeyDown(k))
+					{
+						*arg->pReloadKey = static_cast<char>(k);
+						recording = false;
+						buttonStr = *arg->pReloadKey;
+					}
+				}
+			}
+
+			ImGui::Text("Reload Key"); ImGui::SameLine();
+			if (ImGui::Button(buttonStr.c_str()))
+			{
+				buttonStr = "recording";
+				recording = true;
+			}
+			
+			static int currentItem = 1;
+			const char* modKeys[] = { "None", "CTRL", "Shift"};
+			ImGui::SetNextItemWidth(100.f);
+			if (ImGui::Combo("combo", &currentItem, modKeys, IM_ARRAYSIZE(modKeys)))
+			{
+				std::string com = "setting reloadMod " + std::to_string(currentItem);
+				arg->commands->push(com);
+			}
+
+			ImGui::EndMenu();
+		}
+		ImGui::Separator();
+		ImGui::MenuItem("Figure", "", arg->toggleFigure);
+		ImGui::MenuItem("Hatfigure", "", arg->toggleFigure + 1);
+		ImGui::MenuItem("Button", "", arg->toggleFigure + 2);
 		ImGui::EndMenu();
 	}
 	static bool hookKb = false;
@@ -128,7 +172,7 @@ void Gui_ToggleWindow(void* args, bool* b)
 
 	ImGui::SetWindowSize(ImVec2(150, 270));
 	ImGui::SetWindowPos(ImVec2(0, 17));
-	
+
 	ToggleWindowStructure* str = (ToggleWindowStructure*)args;
 
 
@@ -164,7 +208,7 @@ void Gui_ToggleWindow(void* args, bool* b)
 		//ImGui::Checkbox(label.c_str(), &enables[i * 2 + 1]);
 	}
 	ImGui::EndChild();*/
-	
+
 	std::string faces[] =
 	{
 		"T_T",

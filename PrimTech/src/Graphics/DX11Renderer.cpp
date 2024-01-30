@@ -87,7 +87,7 @@ namespace PrimtTech
 
 		swapChainDesc.BufferDesc.Width = m_winDimensions->x;
 		swapChainDesc.BufferDesc.Height = m_winDimensions->y;
-		swapChainDesc.BufferDesc.RefreshRate.Numerator = 0; // 60
+		swapChainDesc.BufferDesc.RefreshRate.Numerator = 60; // 60
 		swapChainDesc.BufferDesc.RefreshRate.Denominator = 1;
 		swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 		swapChainDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;

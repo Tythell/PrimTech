@@ -65,16 +65,16 @@ namespace pt
 
 	void PrimTech::Update(float dt)
 	{
-		static float timer = 0.f;
-		timer += dt;
-		if (timer >= 1.f)
-		{
-			timer = 0.f;
-			int fps = static_cast<int>(1.f / dt);
-			std::wstring extendedWinName = m_windowName + L"  -  FPS: " + std::to_wstring(fps);
+		//static float timer = 0.f;
+		//timer += dt;
+		//if (timer >= 1.f)
+		//{
+		//	timer = 0.f;
+		//	int fps = static_cast<int>(1.f / dt);
+		//	std::wstring extendedWinName = m_windowName + L"  -  FPS: " + std::to_wstring(fps);
 
-			::SetWindowTextW(m_window.getHWND(), extendedWinName.c_str());
-		}
+		//	::SetWindowTextW(m_window.getHWND(), extendedWinName.c_str());
+		//}
 		m_physHandler.Update(dt);
 		
 		if (m_playing)

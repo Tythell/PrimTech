@@ -1,7 +1,6 @@
 #pragma once
 #include "Windows/WindowWrap.h"
-#include <omp.h>
-#include <thread>
+#include <chrono>
 #include"Physics/PhysicsHandler.h"
 #include"scripting/LuaHandler.h"
 
@@ -21,7 +20,7 @@ namespace pt
 		void ExecuteOnStart(pt::LuaScript* pScript = nullptr);
 		
 		bool IsOpen() const;
-		void SetDeltaTime(double& dt) { m_deltaTime = dt; };
+		void SetDeltaTime(long long& dt) { m_deltaTime = dt; };
 		double GetDeltaTime() const { return m_deltaTime; };
 		PrimtTech::Renderer* GetRenderer() { return mp_dxrenderer; }
 		void Close() { m_window.ShutDown(); };
@@ -54,7 +53,7 @@ namespace pt
 		PrimtTech::ImGuiHandler* m_pGui = nullptr;
 
 		float m_playerSpeed;
-		double m_deltaTime = 0.0;
+		long long m_deltaTime = 0;
 		bool m_isOpen = true;
 		bool m_playing = false;
 

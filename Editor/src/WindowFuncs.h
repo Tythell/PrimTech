@@ -11,6 +11,7 @@ struct Gui_MenuToggles
 	bool isAlwaysOnTop = false;
 	bool* toggleFigure = nullptr;
 	std::queue<std::string>* commands = nullptr;
+	char* pReloadKey = nullptr;
 };
 void Gui_MenuBar(void* args, bool* b);
 

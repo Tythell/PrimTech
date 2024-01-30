@@ -85,6 +85,7 @@ Viewer::Viewer()
 
 	m_windowStruct.commands = &m_commands;
 	m_guiToggles.commands = &m_commands;
+	m_guiToggles.pReloadKey = &m_reloadKey;
 }
 
 Viewer::~Viewer()
@@ -100,13 +101,14 @@ bool Viewer::Run()
 {
 	//KeyboardHandler::InitKeyboardHook();
 
-
-	//double start
+	auto start = std::chrono::high_resolution_clock::now();
+	long long deltaTime = 0;
 
 	while (m_engine.IsOpen())
 	{
+		start = std::chrono::high_resolution_clock::now();
 		m_engine.Run();
-		ControlCam();
+		ControlCam(deltaTime);
 		UpdateToggles();
 		//UpdateTexture();
 		UpdateCommands();
@@ -115,12 +117,19 @@ bool Viewer::Run()
 		{
 			m_engine.Close();
 		}
+		
+		auto end = std::chrono::high_resolution_clock::now();
+		auto exec_time = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+
+		deltaTime = exec_time.count();
+
+		m_engine.SetDeltaTime(deltaTime);
 	}
 	KeyboardHandler::ReleaseHook();
 	return false;
 }
 
-void Viewer::ControlCam()
+void Viewer::ControlCam(long long& deltaTime)
 {
 	while (!MouseHandler::BufferIsEmpty())
 	{
@@ -131,7 +140,7 @@ void Viewer::ControlCam()
 		if (me.GetType() == MouseEvent::EventType::RAW_MOVE && canMove)
 		{
 			float2 mouseMove = { (float)me.GetPosition().y, (float)me.GetPosition().x };
-			mouseMove *= 0.005f;
+			mouseMove *= deltaTime * 0.00002f;
 			
 			m_pCamEnt->Rotate(mouseMove.x, mouseMove.y, 0.f);
 		}
@@ -147,7 +156,25 @@ void Viewer::ControlCam()
 
 	static bool isKeyPressed = false;
 
-	if (!isKeyPressed && KeyboardHandler::IsKeyDown(Key::LCONTROL) && KeyboardHandler::IsKeyDown(m_reloadKey))
+	bool isModKeyPressed = false;
+
+	switch (m_modKey)
+	{
+	case Viewer::eNone:
+		isModKeyPressed = true;
+		break;
+	case Viewer::CTRL:
+		isModKeyPressed = KeyboardHandler::IsKeyDown(Key::LCONTROL);
+		break;
+	case Viewer::Shift:
+		isModKeyPressed = KeyboardHandler::IsKeyDown(Key::LSHIFT);
+		break;
+	default:
+		isModKeyPressed = true;
+		break;
+	}
+
+	if (!isKeyPressed && isModKeyPressed && KeyboardHandler::IsKeyDown(m_reloadKey))
 	{
 		isKeyPressed = true;
 		Sleep(m_sleepTimeBeforeReload); // if saving takes too long
@@ -248,7 +275,6 @@ void Viewer::UpdateCommands()
 		if (input == "setting")
 		{
 			ss >> input;
-
 			if (input == "kbHook")
 			{
 				ss >> input;
@@ -272,6 +298,11 @@ void Viewer::UpdateCommands()
 				if (input == "1") m_engine.SetAlwaysOnTop(true);
 				else m_engine.SetAlwaysOnTop(false);
 				
+			}
+			else if (input == "reloadMod")
+			{
+				ss >> input;
+				m_modKey = (ModKey)atoi(input.c_str());
 			}
 		}
 		

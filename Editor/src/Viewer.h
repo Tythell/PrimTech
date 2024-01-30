@@ -16,10 +16,16 @@ private:
 	ToggleWindowStructure m_windowStruct;
 	Gui_MenuToggles m_guiToggles;
 	bool m_toggleWidgets[3] = { true, true, true };
+	enum ModKey
+	{
+		eNone, CTRL, Shift
+	};
+
+	ModKey m_modKey = CTRL;
 
 	std::queue<std::string> m_commands;
 
-	void ControlCam();
+	void ControlCam(long long& deltaTime);
 	void InitImguiWindows();
 	void UpdateToggles();
 	void UpdateTexture();
