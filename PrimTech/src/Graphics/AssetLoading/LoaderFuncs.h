@@ -22,7 +22,7 @@ namespace PrimtTech
 	class FileLoader
 	{
 	public:
-		static bool AssimpLoad(std::string path, std::vector<Shape>& shape, std::vector<Mtl>& allMtls);
+		static bool AssimpLoad(std::string path, std::vector<Shape>& shape, std::vector<Mtl>& allMtls, std::vector<std::string>& submeshNames);
 		static bool LoadObjToBuffer(std::string path, std::vector<Shape>& shape, std::vector<Mtl>& localMtls, std::vector<int>& matIndex, bool makeLeftHanded);
 		
 		static bool StbiCreateCharFromFile(const char* path, unsigned char*& imagedData, int& imagewidth, int& imageheight, int channels, bool flipUV = true);

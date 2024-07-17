@@ -6,7 +6,7 @@
 #include <string>
 #include "../Macros/Colors.h"
 
-namespace PrimtTech
+namespace pt
 {
 	enum TextureType
 	{
@@ -41,11 +41,11 @@ namespace PrimtTech
 		Material() {};
 		Material(std::string name);
 		//Material(const Material& other);
-		void LoadTexture(std::string textureName, TextureType type);
+		void LoadTexture(std::string textureName, TextureType type, bool reloadExisting = false);
 		void UpdateTextureScroll(const float& deltatime);
 		void SetDiffuseScrollSpeed(float x, float y);
 		void SetDistortionScrollSpeed(float x, float y);
-		void Set(ID3D11DeviceContext*& dc, Buffer<hlsl::cbpMaterialBuffer>& mp_matBuffer);
+		void Set(ID3D11DeviceContext*& dc, PrimtTech::Buffer<PrimtTech::hlsl::cbpMaterialBuffer>& mp_matBuffer);
 		void SetTransparency(float f);
 		void SetTextureScale(float f);
 		void SetTextureScaleDist(float f);
@@ -72,11 +72,12 @@ namespace PrimtTech
 
 		bool HasTexture(const TextureType& e) const;
 		bool HasTexture(UINT e) const;
+		PrimtTech::TextureMap* GetTexture(uint type);
 	private:
 		void ReadRecursion(eMaterialHeaders& header, std::ifstream& reader);
 		void ClearMaterial();
 		std::string m_name;
-		TextureMap* mp_textures[eTextureTypeAMOUNT] = { nullptr };
+		PrimtTech::TextureMap* mp_textures[eTextureTypeAMOUNT] = { nullptr };
 		float m_textureScale = 1.f;
 		float m_textureScaleDist = 1.f;
 		
@@ -84,8 +85,8 @@ namespace PrimtTech
 		float m_distDivider = 1.f;
 		float3 m_diffuseClr = WHITE_3F;
 
-		float2 m_diffuseOffsetValue, m_distortionValue;
-		float2 m_diffuseOffsetSpeed, m_distortionOffsetSpeed;
+		float2 m_diffuseOffsetValue = float2(0.f), m_distortionValue = float2(0.f);
+		float2 m_diffuseOffsetSpeed = float2(0.f), m_distortionOffsetSpeed = float2(0.f);
 		float m_transparency = 1.f;
 	};
 }

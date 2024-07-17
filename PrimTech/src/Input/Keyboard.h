@@ -10,6 +10,8 @@ public:
 		eCHAR
 	};
 	KeyboardEvent(EventType e, const unsigned char key);
+	unsigned char GetKey() const { return key; };
+	EventType GetEventType() const { return type; };
 private:
 	EventType type;
 	unsigned char key;
@@ -22,7 +24,26 @@ public:
 	static void SetKeyState(const unsigned char key, bool b);
 	static void AddKeyboardEvent(KeyboardEvent e);
 	static KeyboardEvent ReadEvent();
+	static void InitKeyboardHook();
+	static HHOOK s_hook;
+	static void ReleaseHook();
+
+
+	enum KeyboardStream
+	{
+		Off = 0x0,
+		WndProc = 0x1,
+		GlobalHook = 0x2,
+		RecordEvents = 0x4
+	};
+
+	static void SetFlags(const KeyboardStream& flags) { m_kbFlags = flags; };
+	static KeyboardStream GetFlags() { return (KeyboardStream)m_kbFlags; };
+
+	
+
 private:
+	static uint m_kbFlags;
 	static bool m_isKeyDown[256];
 	static std::queue<KeyboardEvent> m_keyboardBuffer;
 };

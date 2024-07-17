@@ -15,6 +15,11 @@ namespace pt
 		Entity::GetEntity(id).SetPhysBodyIndex(h);
 	}
 
+	rp::Transform PhysicsBody::GetTransform()
+	{
+		return mp_rigidBody->getTransform();
+	}
+
 	void PhysicsBody::UpdateTransform(pt::TransformComp& transform)
 	{
 		if (mp_rigidBody)
@@ -28,11 +33,11 @@ namespace pt
 			mat = glm::scale(mat, transform.GetScale());
 			transform.SetWorldMatrix(mat);
 
-			/*float3 smPos(rpPos.x, rpPos.y, rpPos.z);
-			quat smQuat(rpQuat.x, rpQuat.y, -rpQuat.z, rpQuat.w);
+			float3 smPos(rpPos.x, rpPos.y, rpPos.z);
+			//quat smQuat(rpQuat.x, rpQuat.y, -rpQuat.z, rpQuat.w);
 
 			transform.SetPosition(smPos);
-			transform.SetRotationQ(smQuat);*/
+			//transform.SetRotationQ(smQuat);
 		}
 	}
 
@@ -179,7 +184,24 @@ namespace pt
 	{
 		return mp_rigidBody->getNbColliders();
 	}
+	//float PhysicsBody::RayCastTo(float3 startPoint, float3 dir, pt::PhysicsBody& physBod)
+	//{
+	//	//mp_rigidBody->getTransform().getPosition()
+	//	rp::Vector3 startPointRp;
+	//	memcpy(&startPointRp.x, &startPoint.x, (sizeof(float) * 3));
 
+	//	rp::Vector3 endPointRp;
+	//	memcpy(&endPointRp.x, &dir.x, (sizeof(float) * 3));
+
+	//	rp::Ray ray(startPointRp, startPointRp + endPointRp);
+	//	for (int i = 0; i < physBod.mp_rigidBody->getNbColliders(); i++)
+	//	{
+	//		rp::RaycastInfo rci;
+	//		physBod.mp_rigidBody->getCollider(i)->raycast(ray, rci);
+	//		
+	//	}
+	//	return ;
+	//}
 	void PhysicsBody::Delete()
 	{
 		for (int i = 0; i < GetNoColliders(); i++)
@@ -244,9 +266,20 @@ namespace pt
 	}
 	void PhysicsBody::PhysMove(const float3& v)
 	{
-		mp_rigidBody->applyWorldForceAtCenterOfMass(rp::Vector3(10000 * v.x, 0 * v.y, 10000 * v.z));
-		//mp_rigidBody->setLinearVelocity(rp::Vector3(10000 * v.x, 100 * v.y, 10000 * v.z));
-		//mp_rigidBody->setLinearLockAxisFactor(rp::Vector3(10000 * v.x, 100 * v.y, 10000 * v.z));
+		//mp_rigidBody->vel
+		switch (m_bodyType)
+		{
+		case reactphysics3d::BodyType::STATIC:
+			break;
+		case reactphysics3d::BodyType::KINEMATIC:
+			mp_rigidBody->setLinearVelocity(rp::Vector3(1 * v.x, 0 * v.y, 1 * v.z));
+			break;
+		case reactphysics3d::BodyType::DYNAMIC:
+			mp_rigidBody->applyWorldForceAtCenterOfMass(rp::Vector3(10000 * v.x, 0 * v.y, 10000 * v.z));
+			break;
+		default:
+			break;
+		}
 	}
 	void PhysicsBody::SetSphereRadius(float r, uint index)
 	{

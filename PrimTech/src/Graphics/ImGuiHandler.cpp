@@ -109,43 +109,6 @@ namespace PrimtTech
 		ImGui::DestroyContext();
 	}
 
-	//void ImGuiGradientWindow(ImGuiVars& im)
-	//{
-	//	ImGui::Begin("Gradient");
-	//	ImDrawList* draw_list = ImGui::GetWindowDrawList();
-	//	ImVec2 full_gradient_size = ImVec2(255, ImGui::GetFrameHeight());
-	//	float halfPoint = full_gradient_size.x / 2;
-	//	halfPoint += im.gradientOffset;
-	//	{
-	//		ImVec2 pbS = ImVec2(ImGui::GetCursorScreenPos().x, ImGui::GetCursorScreenPos().y);
-	//		ImVec2 pbE = ImVec2(pbS.x + halfPoint, full_gradient_size.y + pbS.y);
-	//		ImVec2 pwS = ImVec2(pbS.x + halfPoint, ImGui::GetCursorScreenPos().y /* + full_gradient_size.y */);
-	//		ImVec2 pwE = ImVec2(ImGui::GetCursorScreenPos().x + full_gradient_size.x, (full_gradient_size.y * 1) + pbS.y);
-	//		ImU32 col_a = ImGui::GetColorU32(IM_COL32(0, 0, 0, 255));
-	//		ImU32 col_b = ImGui::GetColorU32(IM_COL32(255, 255, 255, 255));
-	//
-	//		ImVec2 gs = ImVec2(pbE.x - ((full_gradient_size.x / 2.f) - im.gradient[0]), pbS.y);
-	//		//ImVec2 gs = ImVec2(pbE.x - ((full_gradient_size.x / 2.f) - im.gradient[0]), pbS.y);
-	//		ImVec2 ge = ImVec2(pbE.x + im.gradient[1], pwE.y);
-	//
-	//		draw_list->AddRectFilled(pbS, pbE, col_a);
-	//		draw_list->AddRectFilled(pwS, pwE, col_b);
-	//		draw_list->AddRectFilledMultiColor(gs, ge, col_a, col_b, col_b, col_a);
-	//		ImGui::InvisibleButton("##gradient1", full_gradient_size);
-	//		ImGui::SliderFloat2("grad editor", im.gradient, 1.f, 255.f / 2.f, "%.f");
-	//		ImGui::SliderFloat("##gradient offset", &im.gradientOffset, -full_gradient_size.x / 2.f, full_gradient_size.x / 2.f, "%.f");
-	//		//ImGui::InputText("##imagename", im.buffer, 16);
-	//		ImGui::SameLine();
-	//		if (ImGui::Button("Export"))
-	//		{
-	//			//unsigned char data[255];
-	//			//ExportToon(im.buffer, data, im.gradientOffset, im.gradient[0], im.gradient[1]);
-	//		}
-	//	}
-	//
-	//	ImGui::End();
-	//}
-
 	void ImGuiHandler::ImguiRender()
 	{
 		for (int i = 0; i < m_windows.size(); i++)
@@ -153,8 +116,6 @@ namespace PrimtTech
 			if (!m_showWin[i] || (*m_showWin[i])) m_windows[i](m_funcVars[i], m_showWin[i]);
 		}
 	}
-
-
 
 	void PrimtTech::ImGuiHandler::AddWindowFunc(ImGuiWindowFunc func, void* pVars, bool* showWin)
 	{

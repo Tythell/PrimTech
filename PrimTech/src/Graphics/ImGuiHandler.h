@@ -10,20 +10,6 @@
 
 namespace PrimtTech
 {
-	struct ImGuiVars
-	{
-		bool showDebugWindow = true;
-		bool useVsync = false;
-		float pointLightDistance = 10.f;
-		float direction[3] = { 0.f, 1.f, 0.f };
-		float shadowBias = 0.005f;
-		uint width, height;
-		bool m_isHoveringWindow = false;
-		bool m_drawGrid = true;
-		bool m_drawCams = true;
-		int m_drawCalls = 0;
-	};
-
 	typedef void(*ImGuiWindowFunc)(void*, bool*);
 
 	class ImGuiHandler
@@ -32,12 +18,9 @@ namespace PrimtTech
 		void ImGuiInit(HWND& hwnd, ID3D11Device*& device, ID3D11DeviceContext*& dc);
 		void ImGuiShutDown();
 		void ImguiRender();
-		ImGuiVars* GetVarPtrs() { return &im; };
 
 		void AddWindowFunc(ImGuiWindowFunc func, void* pVars, bool* showWin = (bool*)0);
 	private:
-		ImGuiVars im;
-
 		std::vector<ImGuiWindowFunc> m_windows;
 		std::vector<void*> m_funcVars;
 		std::vector<bool*> m_showWin;

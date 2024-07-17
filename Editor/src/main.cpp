@@ -1,4 +1,4 @@
-#include"Scene.h"
+#include"Editor.h"
 
 //#define _NEW new( _NORMAL_BLOCK, __FILE__, __LINE__)
 //#define __FILENAME__ (strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__)
@@ -16,14 +16,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 #endif // _DEBUG
 
 	
-
+	//AllocConsole();
 	
 	
-	d::XMINT2 windowRes(1700, 900);
+	int2 windowRes(1700, 900);
 
 	Editor editor(windowRes, hInstance);
 
 	editor.Run();
+
+	//FreeConsole();
 
 	return 0;
 }

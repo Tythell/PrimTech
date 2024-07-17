@@ -19,7 +19,7 @@ namespace pt
 	void TransformComp::SetPosition(float3 v)
 	{
 		m_pos = v;
-		UpdateWorld();
+		//UpdateWorld();
 	}
 
 	void TransformComp::SetRotation(float x, float y, float z) { SetRotation(float3(x, y, z)); }
@@ -30,7 +30,7 @@ namespace pt
 
 		m_rotQ = quat(v);
 
-		UpdateWorld();
+		//UpdateWorld();
 	}
 
 	void TransformComp::SetRotationQ(quat q)
@@ -39,7 +39,7 @@ namespace pt
 
 		m_anglesD = glm::degrees(glm::eulerAngles(q));
 
-		UpdateWorld();
+		//UpdateWorld();
 	}
 
 	void TransformComp::SetRotationDeg(float x, float y, float z)
@@ -60,25 +60,25 @@ namespace pt
 	void TransformComp::SetScale(float xyz)
 	{
 		m_scale = float3(xyz, xyz, xyz);
-		UpdateWorld();
+		//UpdateWorld();
 	}
 
 	void TransformComp::SetScale(float3 v)
 	{
 		m_scale = v;
-		UpdateWorld();
+		//UpdateWorld();
 	}
 
 	void TransformComp::Move(float x, float y, float z)
 	{
 		m_pos += float3(x, y, z);
-		UpdateWorld();
+		//UpdateWorld();
 	}
 
 	void TransformComp::Move(float3 v)
 	{
 		m_pos += v;
-		UpdateWorld();
+		//UpdateWorld();
 	}
 
 	void TransformComp::Rotate(float x, float y, float z)
@@ -101,7 +101,7 @@ namespace pt
 	void TransformComp::Scale(float3 v)
 	{
 		m_scale += v;
-		UpdateWorld();
+		//UpdateWorld();
 	}
 
 	void TransformComp::Scale(float xyz)
@@ -112,6 +112,12 @@ namespace pt
 	void TransformComp::SetWorldMatrix(matrix m)
 	{
 		worldM = m;
+	}
+
+	void TransformComp::SetWorldMatrix(float* m)
+	{
+		
+		worldM = glm::make_mat4(m);
 	}
 
 	float3 TransformComp::GetPosition() const

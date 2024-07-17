@@ -75,9 +75,6 @@
     <ClCompile Include="src\Graphics\Shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Graphics\DX11Wrapper.cpp">
-      <Filter>Source Files\Graphics</Filter>
-    </ClCompile>
     <ClCompile Include="src\Graphics\AssetLoading\Texture.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
@@ -186,6 +183,9 @@
     <ClCompile Include="src\Math\SimpleMath.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Graphics\DX11Renderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
@@ -242,9 +242,6 @@
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\AssetLoading\Vertex.h">
-      <Filter>Header Files\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\DX11Wrapper.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\CbufferTypes.h">
@@ -1025,6 +1022,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\thirdParty\PerlinNoise.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\DX11Renderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

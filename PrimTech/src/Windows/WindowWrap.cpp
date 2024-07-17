@@ -8,17 +8,17 @@
 	{
 		switch (uMsg)
 		{
-		case WM_CLOSE:
-#ifdef _DEBUG
-			if (MessageBox(hwnd, L"Leaving already?", L"[REDACTED]", MB_OKCANCEL) == IDOK)
-			{
-				MessageBox(hwnd, L"lmao you wish", L"[REDACTED]", 0);
-				//DestroyWindow(hwnd);
-			}
-#else
-			DestroyWindow(hwnd);
-#endif // _DEBUG
-			return 0;
+//		case WM_CLOSE:
+//#ifdef _DEBUG
+//			if (MessageBox(hwnd, L"Leaving already?", L"[REDACTED]", MB_OKCANCEL) == IDOK)
+//			{
+//				MessageBox(hwnd, L"oh then", L"[REDACTED]", 0);
+//				DestroyWindow(hwnd);
+//			}
+//#else
+//			DestroyWindow(hwnd);
+//#endif // _DEBUG
+//			return 0;
 
 		case WM_DESTROY:
 			PostQuitMessage(0);
@@ -64,7 +64,6 @@ namespace PrimtTech
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
-
 		if (msg.message == WM_NULL)
 		{
 			if (!IsWindow(this->m_hwnd))
@@ -85,7 +84,7 @@ namespace PrimtTech
 		return true;
 	}
 
-	
+
 	LRESULT Window::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		if (ImGui_ImplWin32_WndProcHandler(hwnd, uMsg, wParam, lParam)) return true;
@@ -158,31 +157,39 @@ namespace PrimtTech
 		}
 		case WM_KEYDOWN:
 		{
-			unsigned char key = static_cast<unsigned char>(wParam);
-			KeyboardHandler::SetKeyState(key, true);
+			if (KeyboardHandler::GetFlags() & KeyboardHandler::KeyboardStream::WndProc)
+			{
+				unsigned char key = static_cast<unsigned char>(wParam);
+				KeyboardHandler::SetKeyState(key, true);
+			}
+
+			
 			//mp_kb->AddKeyboardEvent(KeyboardEvent(KeyboardEvent::EventType::ePUSH, key));
 			//mp_kb->SetKeyState(key, true);
 			return 0;
 		}
 		case WM_KEYUP:
 		{
-			unsigned char key = static_cast<unsigned char>(wParam);
-			KeyboardHandler::SetKeyState(key, false);
+			if (KeyboardHandler::GetFlags() & KeyboardHandler::KeyboardStream::WndProc)
+			{
+				unsigned char key = static_cast<unsigned char>(wParam);
+				KeyboardHandler::SetKeyState(key, false);
+			}
 			//mp_kb->AddKeyboardEvent(KeyboardEvent(KeyboardEvent::EventType::eRELEASE, key));
 			//mp_kb->SetKeyState(key, false);
 			return 0;
 
 		}
-		//case WM_CHAR:
-		//{
-		//	unsigned char key = static_cast<unsigned char>(wParam);
-		//	if (mp_kb->IsRecording())
-		//	{
-		//		mp_kb->AddKeyboardEvent(KeyboardEvent(KeyboardEvent::EventType::eCHAR, key));
-		//	}
-		//	return 0;
+		case WM_CHAR:
+		{
+			unsigned char key = static_cast<unsigned char>(wParam);
+			if (KeyboardHandler::GetFlags() & KeyboardHandler::KeyboardStream::RecordEvents)
+			{
+				KeyboardHandler::AddKeyboardEvent(KeyboardEvent(KeyboardEvent::EventType::eCHAR, key));
+			}
+			return 0;
 
-		//}
+		}
 		case WM_INPUT:
 		{
 			UINT dataSize = 0;
@@ -207,6 +214,12 @@ namespace PrimtTech
 			else if (GET_WHEEL_DELTA_WPARAM(wParam) < 0) MouseHandler::OnWheelDown(x, y);
 			return 0;
 		}
+		case WM_SIZE:
+		{
+			m_isResize = true;
+			m_winDimension.x = LOWORD(lParam);
+			m_winDimension.y = HIWORD(lParam);
+		}
 		default:
 			return DefWindowProc(hwnd, uMsg, wParam, lParam);
 		}
@@ -222,14 +235,14 @@ namespace PrimtTech
 		return m_hwnd;
 	}
 
-	uint16_t Window::getWinWidth() const
+	uint2 Window::GetWinDimensions() const
 	{
-		return m_windowWidth;
+		return m_winDimension;
 	}
 
-	uint16_t Window::getWinHeight() const
+	uint2* Window::GetWinDimensionsP()
 	{
-		return m_windowHeight;
+		return &m_winDimension;
 	}
 
 	void Window::ShutDown()
@@ -242,13 +255,28 @@ namespace PrimtTech
 		return m_isFocused;
 	}
 
+	void Window::ToggleAlwaysOnTop(bool b)
+	{
+		m_alwaysOnTop = b;
+	}
+
+	bool Window::GetIsResize()
+	{
+		if (m_isResize)
+		{
+			m_isResize = false;
+			return true;
+		}
+		return false;
+	}
+
 	Window::Window() :
-		m_windowWidth(0), m_windowHeight(0)
+		m_winDimension(0)
 	{
 		static bool rawInputInitialized = false;
 		if (!rawInputInitialized)
 		{
-			RAWINPUTDEVICE rid;
+			RAWINPUTDEVICE rid = {};
 
 			rid.usUsagePage = 0x01;
 			rid.usUsage = 0x02;
@@ -271,8 +299,7 @@ namespace PrimtTech
 		// Register window class
 		m_wndClass = windowClass;
 
-		m_windowWidth = width;
-		m_windowHeight = height;
+		m_winDimension = uint2(width, height);
 
 		WNDCLASS wc = {};
 
@@ -296,8 +323,8 @@ namespace PrimtTech
 
 		RegisterClass(&wc);
 		m_hwnd = CreateWindowEx(0, m_wndClass.c_str(), m_windowName.c_str(), style,
-			(LONG(GetSystemMetrics(SM_CXSCREEN) - m_windowWidth) / 2),
-			(LONG(GetSystemMetrics(SM_CYSCREEN) - m_windowHeight) / 3),
+			(LONG(GetSystemMetrics(SM_CXSCREEN) - width) / 2),
+			(LONG(GetSystemMetrics(SM_CYSCREEN) - height) / 3),
 			rect.right - rect.left,
 			rect.bottom - rect.top,
 			NULL, NULL, hInstance, this);

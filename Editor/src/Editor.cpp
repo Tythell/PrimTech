@@ -1,9 +1,11 @@
-#include "Scene.h"
+#include "Editor.h"
 #include "Serializer/Serializer.h"
 #include"WindowFuncs.h"
 #include <sstream>
+#include <omp.h>
+#include<chrono>
 
-Editor::Editor(d::XMINT2 windowRes, HINSTANCE hInstance)
+Editor::Editor(int2 windowRes, HINSTANCE hInstance)
 {
 	//PrimtTech::ResourceHandler::ReserveMeshMemory(15);
 	//PrimtTech::ResourceHandler::ReserveMaterialMemory(8);
@@ -18,7 +20,7 @@ Editor::Editor(d::XMINT2 windowRes, HINSTANCE hInstance)
 	//PrimtTech::ResourceHandler::AddMesh("Assets/models/Slime.fbx");
 	PrimtTech::ResourceHandler::AddMesh("Assets/models/scaledplane.obj");
 	PrimtTech::ResourceHandler::AddMaterial("DefaultMaterial");
-	PrimtTech::Material* ma = PrimtTech::ResourceHandler::AddMaterial("bl");
+	pt::Material* ma = PrimtTech::ResourceHandler::AddMaterial("bl");
 	ma->SetDiffuseClr(0.f, 0.f, .5f);
 
 	PrimtTech::ResourceHandler::NewPrefab("DefaultPrefab", 4);
@@ -26,41 +28,44 @@ Editor::Editor(d::XMINT2 windowRes, HINSTANCE hInstance)
 
 	pr.SetMaterial(0, 1);
 
-	m_renderer->SetImGuiHandler(m_pGui);
+	//m_renderer.SetImGuiHandler(m_pGui);
 
 	uint u = 0;
-	m_entlist.console.m_showWin.resize(11, { true, "" });
+	m_entlist.console.m_showWin.reserve(11);
 
-	m_pGui.AddWindowFunc(Gui_ImGuiDemo, NULL, &m_entlist.console.m_showWin[u].first);
-	m_entlist.console.m_showWin[u].second = "imguiDemo";
-	m_entlist.console.m_showWin[u++].first = false;
+	m_entlist.console.m_showWin.emplace_back(false, "imguiDemo");
+	m_primtech.CreateImGuiWindow(Gui_ImGuiDemo, NULL, &m_entlist.console.m_showWin[u++].first);
 
-	m_pGui.AddWindowFunc(Gui_EntList, &m_entlist, &m_entlist.console.m_showWin[u].first);
-	m_entlist.console.m_showWin[u++].second = "entlist";
+	m_entlist.console.m_showWin.emplace_back(true, "entlist");
+	m_primtech.CreateImGuiWindow(Gui_EntList, &m_entlist, &m_entlist.console.m_showWin[u++].first);
 
-	m_pGui.AddWindowFunc(Gui_AssetList, &m_entlist, &m_entlist.console.m_showWin[u].first);
-	m_entlist.console.m_showWin[u++].second = "assetlist";
-	m_pGui.AddWindowFunc(Gui_Console, &m_entlist.console, &m_entlist.console.m_showWin[u].first);
-	m_entlist.console.m_showWin[u++].second = "console";
-	m_pGui.AddWindowFunc(Gui_MaterialProperties, &m_entlist.m_selectedMaterial, &m_entlist.console.m_showWin[u].first);
-	m_entlist.console.m_showWin[u++].second = "mtrlpropers";
-	m_pGui.AddWindowFunc(ImguiDebug, m_pGui.GetVarPtrs(), &m_entlist.console.m_showWin[u].first);
-	m_entlist.console.m_showWin[u++].second = "debugSettings";
-	m_pGui.AddWindowFunc(Gui_PlayButton, &m_entlist.console, &m_entlist.console.m_showWin[u].first);
-	m_entlist.console.m_showWin[u++].second = "runGameWin";
-	m_pGui.AddWindowFunc(Gui_CamView, NULL, &m_entlist.console.m_showWin[u].first);
-	m_entlist.console.m_showWin[u].second = "camView";
-	m_entlist.console.m_showWin[u++].first = false;
+	m_entlist.console.m_showWin.emplace_back(true, "assetlist");
+	m_primtech.CreateImGuiWindow(Gui_AssetList, &m_entlist, &m_entlist.console.m_showWin[u++].first);
 
-	m_pGui.AddWindowFunc(Gui_CompView, NULL, &m_entlist.console.m_showWin[u].first);
-	m_entlist.console.m_showWin[u++].second = "compView";
+	m_entlist.console.m_showWin.emplace_back(true, "console");
+	m_primtech.CreateImGuiWindow(Gui_Console, &m_entlist.console, &m_entlist.console.m_showWin[u++].first);
 
-	m_pGui.AddWindowFunc(Gui_TextureView, NULL, &m_entlist.console.m_showWin[u].first);
-	m_entlist.console.m_showWin[u].second = "textureView";
-	m_entlist.console.m_showWin[u++].first = false;
+	m_entlist.console.m_showWin.emplace_back(true, "mtrlpropers");
+	m_primtech.CreateImGuiWindow(Gui_MaterialProperties, &m_entlist.m_selectedMaterial, &m_entlist.console.m_showWin[u++].first);
 
-	m_pGui.AddWindowFunc(Gui_menubar, &m_entlist.console, &m_entlist.console.m_showWin[u].first);
-	m_entlist.console.m_showWin[u++].second = "Menu_Bar";
+	//m_primtech.CreateImGuiWindow(ImguiDebug, m_pGui.GetVarPtrs(), &m_entlist.console.m_showWin[u++].first);
+	//m_entlist.console.m_showWin.emplace_back(true, "debugSettings");
+
+	m_entlist.console.m_showWin.emplace_back(true, "runGameWin");
+	m_primtech.CreateImGuiWindow(Gui_PlayButton, &m_entlist.console, &m_entlist.console.m_showWin[u++].first);
+
+	m_entlist.console.m_showWin.emplace_back(false, "camView");
+	m_primtech.CreateImGuiWindow(Gui_CamView, NULL, &m_entlist.console.m_showWin[u++].first);
+
+	m_entlist.console.m_showWin.emplace_back(true, "compView");
+	m_primtech.CreateImGuiWindow(Gui_CompView, NULL, &m_entlist.console.m_showWin[u++].first);
+
+	m_entlist.console.m_showWin.emplace_back(false, "textureView");
+	m_primtech.CreateImGuiWindow(Gui_TextureView, NULL, &m_entlist.console.m_showWin[u++].first);
+
+	m_entlist.console.m_showWin.emplace_back(true, "Menu_Bar");
+	m_primtech.CreateImGuiWindow(Gui_menubar, &m_entlist.console, &m_entlist.console.m_showWin[u++].first);
+
 
 	pt::Entity& devEnt = pt::Entity::Create();
 	pt::Camera* devCam = devEnt.AddComponent<pt::Camera>();
@@ -74,7 +79,7 @@ Editor::Editor(d::XMINT2 windowRes, HINSTANCE hInstance)
 	m_entlist.winHeight = windowRes.y;
 
 	pt::Light* pLight = pt::Entity::Create("AmbLight").AddComponent<pt::Light>();
-	pLight->SetType(2);
+	pLight->SetType(pt::LightType(2));
 	pLight->SetColor({ 1.f, 1.f, 1.f, .2f });
 
 	pt::Entity& ent0 = pt::Entity::Create("Cube");
@@ -91,7 +96,7 @@ Editor::Editor(d::XMINT2 windowRes, HINSTANCE hInstance)
 	ent1.SetScale(10.f, 1.f, 10.f);
 	ent1.AddComponent<pt::MeshRef>()->SetMesh("scaledplane.obj");
 
-	pt::Entity::Create("DirLight").AddComponent<pt::Light>()->SetType(1);
+	pt::Entity::Create("DirLight").AddComponent<pt::Light>()->SetType(pt::LightType(1));
 
 	//ent1.AddComponent<pt::LuaScript>()->LoadScript("Scripts/moveScript.lua");
 }
@@ -186,10 +191,10 @@ void Editor::execCommand(std::string cmd)
 			{
 				rEnt.AddComponent<pt::MeshRef>();
 			}
-			else if (argBuffer == "aabb")
-			{
-				rEnt.AddComponent<pt::AABBComp>();
-			}
+			//else if (argBuffer == "aabb")
+			//{
+			//	rEnt.AddComponent<pt::AABBComp>();
+			//}
 			else if (argBuffer == "light")
 			{
 				rEnt.AddComponent<pt::Light>();
@@ -242,7 +247,7 @@ void Editor::execCommand(std::string cmd)
 						ss >> argBuffer;
 						pRigidBody->SetBoxExtents(Vector3FromString(ss), atoi(argBuffer.c_str()));
 					}
-					
+
 				}
 				else if (argBuffer == "capsule")
 				{
@@ -336,7 +341,8 @@ void Editor::execCommand(std::string cmd)
 				//pt::Entity::Clear(1);
 
 				//pt::Entity::GetEntity(0).AddComponent<pt::Camera>()->SetPerspective(80.f, ((float)m_entlist.winWidth / (float)m_entlist.winHeight), 0.1f, 100.f);
-				PrimtTech::Import(path, pt::Entity::GetAllEnts());
+				//PrimtTech::Import(path, pt::Entity::GetAllEnts());
+				Popup::Error("serialazation disabled");
 			}
 		}
 		else if (argBuffer == "export")
@@ -346,14 +352,16 @@ void Editor::execCommand(std::string cmd)
 			{
 				if (StringHelper::GetExtension(path) != "ptsc")
 					path += ".ptsc";
-				PrimtTech::Export(path, pt::Entity::GetAllEnts());
+				Popup::Error("serialazation disabled");
+				//PrimtTech::Export(path, pt::Entity::GetAllEnts());
 				//PrimtTech::Export(path, pt::Entity::GetAllEnts());
 			}
 		}
 		else if (argBuffer == "new")
 		{
 			m_entlist.selected = -1;
-			PrimtTech::NewScene(pt::Entity::GetAllEnts());
+			//PrimtTech::NewScene(pt::Entity::GetAllEnts());
+
 			//pt::Entity::Clear(4);
 			//pt::Entity::GetEntity(0).AddComponent<pt::Camera>()->SetPerspective(80.f, ((float)m_entlist.winWidth / (float)m_entlist.winHeight), 0.1f, 100.f);
 		}
@@ -364,7 +372,7 @@ void Editor::Play(char b)
 {
 	std::vector<pt::TransformComp>& transforms = PrimtTech::ComponentHandler::GetComponentArray<pt::TransformComp>();
 	std::vector<pt::LuaScript>& scripts = PrimtTech::ComponentHandler::GetComponentArray<pt::LuaScript>();
-	
+
 	m_startTransforms.resize(PrimtTech::ComponentHandler::GetNoOfUsedComponents<pt::TransformComp>());
 	int n = (int)m_startTransforms.size();
 
@@ -407,7 +415,7 @@ void Editor::Play(char b)
 	}
 }
 
-void Editor::Update(float deltatime)
+void Editor::UpdateInput(float deltatime)
 {
 	//  console
 	if (!m_entlist.console.cmdQ.empty())
@@ -441,9 +449,8 @@ void Editor::Update(float deltatime)
 			move += float3(0.f, -1.f, 0.f);
 		move = glm::length(move) > 0 ? glm::normalize(move) : float3(0.f);
 
-		move *= 10.f;
 
-		pDevTransform->Move(move * deltatime);
+		pDevTransform->Move((move * 10.f) * deltatime);
 
 	}
 
@@ -505,11 +512,15 @@ void Editor::Run()
 	double start = 0, deltaTime = 0;
 	start = omp_get_wtime();
 
+	//auto currentTime = std::chrono::steady_clock::now();
+	//auto previousTime = std::chrono::steady_clock::now();
+	//auto elapsedTime = previousTime - currentTime;
+
 	while (m_primtech.IsOpen())
 	{
 		start = omp_get_wtime();
-		m_primtech.Run();
-		Update((float)deltaTime);
+		m_primtech.Run((float)deltaTime);
+		UpdateInput((float)deltaTime);
 
 		while (!m_msgQueue.empty())
 		{
@@ -535,6 +546,5 @@ void Editor::Run()
 		}
 
 		deltaTime = omp_get_wtime() - start;
-		m_primtech.SetDeltaTime(deltaTime);
 	}
 }

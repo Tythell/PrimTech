@@ -1,6 +1,6 @@
 #include "WindowFuncs.h"
 #include "PrimTech.h"
-#include "Scene.h"
+#include "Editor.h"
 #include "Serializer/Serializer.h"
 
 
@@ -12,12 +12,12 @@ std::string AddCompString(const uint& entId, std::string compType)
 	return cmd;
 }
 
-void LoadButton(PrimtTech::Material* pMaterial, std::string name, unsigned int e, const unsigned int& i)
+void LoadButton(pt::Material* pMaterial, std::string name, unsigned int e, const unsigned int& i)
 {
 	using namespace PrimtTech;
-	bool diffExpept = (e == 0 && !pMaterial->HasTexture(eDiffuse));
+	bool diffExpept = (e == 0 && !pMaterial->HasTexture(pt::TextureType::eDiffuse));
 	if (!diffExpept)
-		name += pMaterial->GetMapName((TextureType)e);
+		name += pMaterial->GetMapName((pt::TextureType)e);
 
 	ImGui::Text(name.c_str());
 	if (diffExpept)
@@ -35,7 +35,7 @@ void LoadButton(PrimtTech::Material* pMaterial, std::string name, unsigned int e
 		std::string newMtrlString = Dialogs::OpenFile("Images (*.png, *.jpg)\0*.png;*.jpg;\0", "Assets\\Textures\\");
 		if (newMtrlString != "")
 		{
-			pMaterial->LoadTexture(newMtrlString, (TextureType)e);
+			pMaterial->LoadTexture(newMtrlString, (pt::TextureType)e);
 		}
 	}
 	std::string remove = "Remove##";
@@ -45,7 +45,7 @@ void LoadButton(PrimtTech::Material* pMaterial, std::string name, unsigned int e
 		ImGui::SameLine();
 		if (ImGui::Button(remove.c_str()))
 		{
-			pMaterial->RemoveTexture((TextureType)e);
+			pMaterial->RemoveTexture((pt::TextureType)e);
 		}
 	}
 }
@@ -71,7 +71,7 @@ void Gui_MaterialProperties(void* ptr, bool* show)
 	{
 		ImGui::Begin("Properties", show);
 
-		PrimtTech::Material* pMaterial = PrimtTech::ResourceHandler::GetMaterialAdress(selectedMAt);
+		pt::Material* pMaterial = PrimtTech::ResourceHandler::GetMaterialAdress(selectedMAt);
 		std::string matName = pMaterial->GetFileName();
 		if (ImGui::CollapsingHeader(std::string(matName + "##heee").c_str(), ImGuiTreeNodeFlags_DefaultOpen))
 		{
@@ -84,15 +84,15 @@ void Gui_MaterialProperties(void* ptr, bool* show)
 
 			delete[] nameBuffer;
 
-			LoadButton(pMaterial, "Diffuse: ", PrimtTech::eDiffuse, 0);
-			LoadButton(pMaterial, "NormalMap: ", PrimtTech::eNormal, 0);
-			LoadButton(pMaterial, "DistMap: ", PrimtTech::eDistortion, 0);
-			LoadButton(pMaterial, "OpacityMap: ", PrimtTech::eOpacity, 0);
+			LoadButton(pMaterial, "Diffuse: ", pt::eDiffuse, 0);
+			LoadButton(pMaterial, "NormalMap: ", pt::eNormal, 0);
+			LoadButton(pMaterial, "DistMap: ", pt::eDistortion, 0);
+			LoadButton(pMaterial, "OpacityMap: ", pt::eOpacity, 0);
 
 			float2 diffuseSpeed(pMaterial->GetDiffuseScrollSpeed());
 			float2 distortionSpeed(pMaterial->GetDistortionScrollSpeed());
-			bool hasDistMap = pMaterial->HasTexture(PrimtTech::eDistortion);
-			bool hasDiffuse = pMaterial->HasTexture(PrimtTech::eDiffuse) || pMaterial->HasTexture(PrimtTech::eNormal) || pMaterial->HasTexture(PrimtTech::eOpacity);
+			bool hasDistMap = pMaterial->HasTexture(pt::eDistortion);
+			bool hasDiffuse = pMaterial->HasTexture(pt::eDiffuse) || pMaterial->HasTexture(pt::eNormal) || pMaterial->HasTexture(pt::eOpacity);
 
 			float diffSpeed[2]{ diffuseSpeed.x, diffuseSpeed.y };
 			float distSpeed[2]{ distortionSpeed.x, distortionSpeed.y };
@@ -222,10 +222,10 @@ void ImguiDebug(void* ptr, bool* show)
 {
 	ImGui::Begin("Render Settings", show);
 
-	PrimtTech::ImGuiVars* im = (PrimtTech::ImGuiVars*)ptr;
+	//PrimtTech::ImGuiVars* im = (PrimtTech::ImGuiVars*)ptr;
 
-	if (ImGui::IsWindowHovered())
-		im->m_isHoveringWindow = true;
+	//if (ImGui::IsWindowHovered())
+		//im->m_isHoveringWindow = true;
 
 	//ImGui::Checkbox("Show selection", &im.showSelection);
 
@@ -236,13 +236,13 @@ void ImguiDebug(void* ptr, bool* show)
 		//ImGui::RadioButton("world", (int*)&im.transformMode, 1);
 
 
-		ImGui::Checkbox("Vsync", &im->useVsync); ImGui::SameLine();
-		ImGui::Checkbox("Grid", &im->m_drawGrid);
+		//ImGui::Checkbox("Vsync", &im->useVsync); ImGui::SameLine();
+		//ImGui::Checkbox("Grid", &im->m_drawGrid);
 		//ImGui::Checkbox("Draw Cam models", &im->m_drawCams);
 		
 
-		std::string test =  "Draw calls: " + std::to_string(im->m_drawCalls);
-		ImGui::Text(test.c_str());
+		//std::string test =  "Draw calls: " + std::to_string(im->m_drawCalls);
+		//ImGui::Text(test.c_str());
 
 	}
 
@@ -467,7 +467,7 @@ void Gui_AssetList(void* ptr, bool* show)
 			}
 			if (ImGui::BeginTabItem("Materials"))
 			{
-				std::vector<PrimtTech::Material>& arr = PrimtTech::ResourceHandler::GetMaterialArrayReference();
+				std::vector<pt::Material>& arr = PrimtTech::ResourceHandler::GetMaterialArrayReference();
 				std::string displayText = "Materials: ";
 				displayText += std::to_string(arr.size()) + "/";
 				displayText += std::to_string(arr.capacity());
@@ -856,12 +856,16 @@ void Gui_EntList(void* test, bool* show)
 
 				float3 pos = mr->GetPositionOffset();
 				float3 rot = mr->GetRotationOffset();
+				float3 scale = mr->GetScaleOffset();
 
-				ImGui::DragFloat3("Translate##cam", reinterpret_cast<float*>(&pos), 0.02f);
-				ImGui::DragFloat3("Rotation##cam", reinterpret_cast<float*>(&rot), 0.02f);
-
-				mr->SetPositionOffset(pos);
-				mr->SetRotationOffset(rot);
+				if(ImGui::DragFloat3("Translate##cam", reinterpret_cast<float*>(&pos), 0.02f))
+					mr->SetPositionOffset(pos);
+				if(ImGui::DragFloat3("Rotation##cam", reinterpret_cast<float*>(&rot), 0.02f))
+					mr->SetRotationOffset(rot);
+				static bool one = true;
+				if(!one && ImGui::DragFloat3("Scale##cam", reinterpret_cast<float*>(&scale), 0.02f))
+					mr->SetScaleOffset(scale);
+				ImGui::SameLine(); ImGui::Checkbox("one", &one);
 
 				std::string displaytext = "ForwardVec: " + ptm::GetVectorAsString(mr->GetForwardV());
 				ImGui::Text(displaytext.c_str());
@@ -950,7 +954,7 @@ void Gui_EntList(void* test, bool* show)
 				int item_current = (int)mr->GetType();
 
 				if (ImGui::Combo("##lightcombo", &item_current, items, IM_ARRAYSIZE(items)))
-					mr->SetType((uchar)item_current);
+					mr->SetType((pt::LightType)item_current);
 
 				if (ImGui::Button("Delete##light"))
 				{

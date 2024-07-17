@@ -5,7 +5,7 @@
 namespace PrimtTech
 {
 	ShadowMap::ShadowMap(const UINT& width, const UINT& height) :
-		m_viewPort(0.f, 0.f, width, height), m_width(width), m_height(height),
+		m_viewPort(0.f, 0.f, static_cast<float>(width), static_cast<float>(height)), m_width(width), m_height(height),
 		resoulution(20.f)
 	{}
 
@@ -17,7 +17,7 @@ namespace PrimtTech
 
 	void ShadowMap::Init(ID3D11Device*& device)
 	{
-		CD3D11_TEXTURE2D_DESC texDesc(DXGI_FORMAT::DXGI_FORMAT_R24G8_TYPELESS, (float)m_width, (float)m_height);
+		CD3D11_TEXTURE2D_DESC texDesc(DXGI_FORMAT::DXGI_FORMAT_R24G8_TYPELESS, m_width, m_height);
 		texDesc.MipLevels = 1;
 		texDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
 

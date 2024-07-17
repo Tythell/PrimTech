@@ -17,7 +17,7 @@ namespace PrimtTech
 			check = FileLoader::LoadObjToBuffer(path, mesh, m_mtls, m_mtlIndexes, true);
 			break;
 		case 1:
-			check = FileLoader::AssimpLoad(path, mesh, m_mtls);
+			check = FileLoader::AssimpLoad(path, mesh, m_mtls, m_submeshNames);
 			break;
 		case 2: // triangle
 		{
@@ -41,25 +41,25 @@ namespace PrimtTech
 		}
 		THROW_POPUP_ERROR(check, "loading " + path);
 		m_name = StringHelper::GetName(path);
-		m_nofMeshes = mesh.size();
+		m_nofMeshes = (uint)mesh.size();
 		m_offsets.emplace_back(0);
 		int lastSize = 0;
-		for (int i = 0; i < m_nofMeshes; i++)
+		for (uint i = 0; i < m_nofMeshes; i++)
 		{
-			lastSize += mesh[i].verts.size();
+			lastSize += static_cast<uint>(mesh[i].verts.size());
 			m_offsets.emplace_back(lastSize);
 		}
 
 		uint totalVertCount = 0;
-		for (int i = 0; i < m_nofMeshes; i++)
-			totalVertCount += mesh[i].verts.size();
+		for (uint i = 0; i < m_nofMeshes; i++)
+			totalVertCount += static_cast<uint>(mesh[i].verts.size());
 
 		m_shape.verts.reserve(totalVertCount);
 
-		for (int i = 0; i < m_nofMeshes; i++)
+		for (uint i = 0; i < m_nofMeshes; i++)
 			m_shape.verts.insert(m_shape.verts.end(), mesh[i].verts.begin(), mesh[i].verts.end());
 
-		UINT bsize = m_shape.verts.size();
+		UINT bsize = (uint)m_shape.verts.size();
 
 		HRESULT hr = m_vbuffer.CreateVertexBuffer(device, m_shape.verts.data(), bsize);
 		COM_ERROR(hr, "Failed to load vertex buffer");
@@ -120,6 +120,36 @@ namespace PrimtTech
 		uint strides[] = { m_vbuffer.GetStride(), m_instancebuffer.GetStride() };
 		ID3D11Buffer* bufferPtr[] = {m_vbuffer.Get(), m_instancebuffer.Get() };
 		dc->IASetVertexBuffers(0, 2, bufferPtr, strides, offset);
+	}
+
+	void Mesh::SubmeshVisible(std::string name, bool b)
+	{
+		for (int i = 0; i < m_submeshNames.size(); i++)
+		{
+			if (name == m_submeshNames[i])
+			{
+				SubmeshVisible(i, b);
+				break;
+			}
+		}
+	}
+
+	void Mesh::SubmeshVisible(uint index, bool b)
+	{
+		if (b)
+			m_showsubmeshes |= (1 << index);
+		else
+			m_showsubmeshes &= ~(1 << index);
+	}
+
+	const ushort Mesh::GetIsSubmeshesVisible() const
+	{
+		return m_showsubmeshes;
+	}
+
+	const bool Mesh::GetIsSubmeshesVisible(uint index) const
+	{
+		return m_showsubmeshes & (1 << index);
 	}
 
 	void Mesh::Release()

@@ -44,7 +44,7 @@ namespace pt
 		--nrOfEntitiesUsed;
 		FreeComponent<MeshRef>();
 		FreeComponent<MeshPrefabRef>();
-		FreeComponent<AABBComp>();
+		//FreeComponent<AABBComp>();
 		FreeComponent<Camera>();
 		FreeComponent<Light>();
 		FreeComponent<LuaScript>();
@@ -172,6 +172,9 @@ namespace pt
 			PhysicsBody& physBod = PrimtTech::ComponentHandler::GetComponentByIndex<PhysicsBody>((uint)m_physIndex);
 
 			physBod.PhysMove(v);
+			//matrix arr = Transform().GetWorld();
+			//physBod.GetTransform().getOpenGLMatrix(&arr[0][0]);
+			//Transform().SetWorldMatrix(arr);
 		}
 		else
 			Transform().Move(v);
@@ -179,10 +182,20 @@ namespace pt
 
 	void Entity::Rotate(float x, float y, float z)
 	{
+		Rotate(float3(x, y, z));
 	}
 
 	void Entity::Rotate(float3 v)
 	{
+		//quat quat(v);
+		Transform().Rotate(v);
+
+		if (m_physIndex != -1)
+		{
+			PhysicsBody& physBod = PrimtTech::ComponentHandler::GetComponentByIndex<PhysicsBody>((uint)m_physIndex);
+
+			physBod.SetPhysicsEulerRotation(v);
+		}
 	}
 
 	void Entity::Scale(float x, float y, float z)
@@ -226,6 +239,7 @@ namespace pt
 		lua_getfield(L, -1, "ptr");
 		Entity* pEnt = (Entity*)lua_touserdata(L, -1);
 		pEnt->Move(lua_tonumber(L, 1), lua_tonumber(L, 2), lua_tonumber(L, 3));
+		//pEnt->GetComponent<pt::PhysicsBody>()->PhysMove(float3(lua_tonumber(L, 1), lua_tonumber(L, 2), lua_tonumber(L, 3)));
 		return 0;
 	}
 

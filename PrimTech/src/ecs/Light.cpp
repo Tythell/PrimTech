@@ -20,22 +20,22 @@ namespace pt
 
 		memcpy(&m_lightData.dire.x, &m_dirOffset.x, sizeof(float) * 3);
 	}
-	void Light::SetType(uchar type)
+	void Light::SetType(LightType type)
 	{
 		m_type = type;
 		switch (type)
 		{
-		case 0:
+		case LightType::ePOINT:
 			// point
 			m_lightData.pos.w = 1.f;
 			m_lightData.dire.w = 0.f;
 			break;
-		case 1:
+		case LightType::eDIRECTIONAL:
 			// Directional
 			m_lightData.pos.w = 0.f;
 			m_lightData.dire.w = 1.f;
 			break;
-		case 2:
+		case LightType::eAMBIENT:
 			// ambient
 			m_lightData.pos.w = 0.f;
 			m_lightData.dire.w = 0.f;

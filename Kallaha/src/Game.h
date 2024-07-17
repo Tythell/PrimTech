@@ -35,13 +35,14 @@ struct EntListStruct
 	int m_selectedMaterial = -1;
 };
 
-class Editor
+class Game
 {
 public:
-	Editor(d::XMINT2 windowRes, HINSTANCE hInstance);
-	~Editor();
+	Game(int2 windowRes, HINSTANCE hInstance);
+	~Game();
 
-	void Update(float deltatime);
+	void UpdateInput(float deltatime);
+	void UpdatePlayer(float deltatime);
 	void Run();
 
 	//bool GetIsExit() const { return m_exit; };
@@ -55,31 +56,21 @@ public:
 		eToggleMouse,
 	};
 private:
+	std::vector<std::pair<float3, float3>> m_startTransforms;
+	void Play(char b);
+
 	std::queue<Messages> m_msgQueue;
-	PrimtTech::ImGuiHandler m_pGui;
+	
 	EntListStruct m_entlist;
 	float m_mouseSense = 0.005f;
-
-	//bool m_playing = false;
 
 	void execCommand(std::string cmd);
 
 	PrimtTech::Renderer* m_renderer = nullptr;
 
-	uint m_devEntIndex = 1;
+	uint m_activeCamEntIndex = 2;
 
 	pt::PrimTech m_primtech;
 
-	std::vector<std::pair<float3, float3>> m_startTransforms;
-	void Play(char b = 2);
-
-	//bool m_exit = false;
-
-	uchar m_keyForward = 'W';
-	uchar m_keyBack = 'S';
-	uchar m_keyLeft = 'A';
-	uchar m_keyRight = 'D';
-	uchar m_keyUp = Key::SPACE;
-	uchar m_keyDown = Key::LSHIFT;
 	uchar m_optionkey = Key::ESCAPE;
 };

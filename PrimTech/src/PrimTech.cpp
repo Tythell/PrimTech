@@ -1,6 +1,6 @@
 #include"pch.h"
 #include "PrimTech.h"
-#include "Graphics/DX11Wrapper.h"
+#include "Graphics/DX11Renderer.h"
 #include"ecs/Entity.h"
 
 using namespace PrimtTech;
@@ -10,6 +10,7 @@ namespace pt
 	PrimTech::PrimTech() :
 		m_playerSpeed(5.f)
 	{
+
 	}
 
 	PrimTech::~PrimTech()
@@ -30,18 +31,21 @@ namespace pt
 		m_windowName = windowName;
 		m_window.init(windowName, hInstance, windowClass, width, height);
 
-		
+
 
 		SetUpScriptEnviroment();
 		LuaScript::SetLuaState(m_luaEngine.GetLuaState());
 
-		/*pt::Entity& ent0 = pt::Entity::Create();
-		pt::Camera* devCam = ent0.AddComponent<pt::Camera>();
-		devCam->UpdateView(ent0.Transform());
-		devCam->SetPerspective(80.f, (float)width / (float)height, 0.1f, 100.f);
-		ent0.SetPosition(0.f, 1.f, -2.f);*/
 
 		mp_dxrenderer = new Renderer(m_window);
+		
+		m_pGui = mp_dxrenderer->GetGuiHandlerP();
+		//pt::Entity& ent0 = pt::Entity::Create();
+		//pt::Camera* devCam = ent0.AddComponent<pt::Camera>();
+		//devCam->UpdateView(ent0.Transform());
+		//devCam->SetPerspective(80.f, (float)width, (float)height, 0.1f, 100.f);
+		//ent0.SetPosition(0.f, 1.f, -2.f);
+
 		
 		ID3D11Device* devi = mp_dxrenderer->GetDevice();
 		pt::PhysicsBody::SetPtrs(&m_physHandler);
@@ -61,16 +65,16 @@ namespace pt
 
 	void PrimTech::Update(float dt)
 	{
-		static float timer = 0.f;
-		timer += dt;
-		if (timer >= 1.f)
-		{
-			timer = 0.f;
-			int fps = 1.f / dt;
-			std::wstring extendedWinName = m_windowName + L"  -  FPS: " + std::to_wstring(fps);
+		//static float timer = 0.f;
+		//timer += dt;
+		//if (timer >= 1.f)
+		//{
+		//	timer = 0.f;
+		//	int fps = static_cast<int>(1.f / dt);
+		//	std::wstring extendedWinName = m_windowName + L"  -  FPS: " + std::to_wstring(fps);
 
-			::SetWindowTextW(m_window.getHWND(), extendedWinName.c_str());
-		}
+		//	::SetWindowTextW(m_window.getHWND(), extendedWinName.c_str());
+		//}
 		m_physHandler.Update(dt);
 		
 		if (m_playing)
@@ -78,37 +82,16 @@ namespace pt
 			m_luaEngine.UpdateDeltaTime(dt);
 			std::vector<LuaScript>& scripts = ComponentHandler::GetComponentArray<LuaScript>();
 			uint numScripts = ComponentHandler::GetNoOfUsedComponents<LuaScript>();
-			for (int i = 0; i < numScripts; i++)
+			for (uint i = 0; i < numScripts; i++)
 			{
 				m_luaEngine.ChangeCurrentLuaEnt(scripts[i].EntId());
 				scripts[i].Execute("OnTick");
 			}
 		}
-		
-		//std::vector<pt::AABBComp>& aabbs = ComponentHandler::GetComponentArray<pt::AABBComp>();
-
-		//for (int i = 0; i < aabbs.size(); i++)
-		//{
-		//	pt::AABBComp& comp = aabbs[i];
-		//	aabbs[i].EntId();
-		//	pt::TransformComp& transform = ComponentHandler::GetComponentByIndex<pt::TransformComp>(aabbs[i].EntId());
-
-		//	aabbs[i].Update(transform);
-		//}
-
-		//// FIXME naive and slow solution, has to be optimised in the future
-		//for (int i = 0; i < aabbs.size(); i++)
-		//	for (int j = 0; j < aabbs.size(); j++)
-		//		if (i != j && aabbs[i].Intersects(aabbs[j]))
-		//		{
-		//			aabbs[i].SetIsIntersecting(true);
-		//			aabbs[j].SetIsIntersecting(true);
-		//		}
-
 
 		if (m_mouseLocked)
 		{
-			RECT Rect;
+			RECT Rect = {};
 			GetWindowRect(m_window.getHWND(), &Rect);
 
 			RECT rec = {};
@@ -116,13 +99,19 @@ namespace pt
 			m_windowPos.x = rec.left;
 			m_windowPos.y = rec.top;
 
-			SetCursorPos(m_windowPos.x + (m_window.getWinWidth() / 2), m_windowPos.y + (m_window.getWinHeight() / 2));
+			SetCursorPos(m_windowPos.x + (m_window.GetWinDimensions().x / 2), m_windowPos.y + (m_window.GetWinDimensions().y / 2));
+		}
+
+		if (m_window.GetIsResize())
+		{
+			pt::Camera& cam = ComponentHandler::GetComponentByIndex<pt::Camera>(m_activeCamera);
+			mp_dxrenderer->UpdateWindowCall(cam);
 		}
 
 		std::vector<pt::Light>& r_lights = ComponentHandler::GetComponentArray<pt::Light>();
 		uint numLights = ComponentHandler::GetNoOfUsedComponents<pt::Light>();
 		//uint numLights = (uint)r_lights.size();
-		for (int i = 0; i < numLights; i++)
+		for (uint i = 0; i < numLights; i++)
 		{
 			r_lights[i].Update(pt::Entity::GetEntity(r_lights[i].EntId()).Transform());
 		}
@@ -158,7 +147,7 @@ namespace pt
 		while (::ShowCursor(true) < 0);
 	}
 
-	void PrimTech::SetCamera(uint idx)
+	void PrimTech::SetActiveCamera(uint idx)
 	{
 		mp_dxrenderer->SetActiveCam(idx);
 	}
@@ -175,11 +164,16 @@ namespace pt
 		return m_playing;
 	}
 
-	void PrimTech::Run()
+	void PrimTech::CreateImGuiWindow(PrimtTech::ImGuiWindowFunc func, void* args, bool* openClose)
 	{
-		float dtf = (float)m_deltaTime;
-		Update(dtf);
-		mp_dxrenderer->Render((float)m_deltaTime);
+		mp_dxrenderer->GetGuiHandlerR().AddWindowFunc(func, args, openClose);
+	}
+
+	void PrimTech::Run(float deltaTime)
+	{
+		m_deltaTime = deltaTime;
+		Update(m_deltaTime);
+		mp_dxrenderer->Render(m_deltaTime);
 		m_isOpen = m_window.processMsg();
 	}
 	void PrimTech::ExecuteOnStart(pt::LuaScript* pScript)
@@ -188,7 +182,7 @@ namespace pt
 		{
 			std::vector<LuaScript>& scripts = ComponentHandler::GetComponentArray<LuaScript>();
 			uint numScripts = ComponentHandler::GetNoOfUsedComponents<LuaScript>();
-			for (int i = 0; i < numScripts; i++)
+			for (uint i = 0; i < numScripts; i++)
 			{
 				m_luaEngine.ChangeCurrentLuaEnt(scripts[i].EntId());
 				scripts[i].Execute("OnStart");

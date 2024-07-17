@@ -5,11 +5,11 @@ namespace PrimtTech
 {
 	struct Vertex3D
 	{
-		float3 position;
-		float2 texCoord;
-		float3 normal;
-		float3 tangent;
-		float3 bitangent;
+		float3 position = float3(0.f);
+		float2 texCoord = float2(0.f);
+		float3 normal = float3(0.f);
+		float3 tangent = float3(0.f);
+		float3 bitangent = float3(0.f);
 		//float3 color = { 1.f,1.f,1.f };
 	};
 

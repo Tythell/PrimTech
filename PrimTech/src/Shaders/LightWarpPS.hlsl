@@ -23,7 +23,7 @@ struct Light
 StructuredBuffer<Light> mySb : LIGHTS : register(t11);
 
 SamplerState wrapSampler : SAMPLER : register(s0);
-SamplerState clampSampler : CLAMPSAMPLER : register(s1);
+//SamplerState clampSampler : CLAMPSAMPLER : register(s1);
 SamplerState shadowSampler : SHADOWSAMPLER : register(s2);
 
 cbuffer LightBuffer : register(b0)
@@ -46,7 +46,7 @@ cbuffer MaterialBuffer : register(b1)
 
     float2 texCoordOffset;
     float transparency = 1.f;
-    int distDiv;
+    float distDiv;
 
     float2 texCoordoffsetDist;
     float textureScale;
@@ -108,15 +108,12 @@ float calcShadow(in float4 clipspace, in float3 normal)
 
 float4 main(PSInput input) : SV_Target
 {
-    
-    
-    
     float2 distortion = 0.f;
     float opacity = 1.f;
     
     float2 texCoord = input.texCoord * textureScale;
     float2 distTexCoord = input.texCoord * textureScaleDist;
-    float3 lightPos = float3(0.f,0.f,0.f); // TODO: REMOVE LATER
+    float3 lightPos = float3(0.f, 0.f, 0.f); // TODO: REMOVE LATER
     
     if (flags & MaterialFlag_eHasDistortion)
         distortion = (distortionMap.Sample(wrapSampler, distTexCoord + texCoordoffsetDist).xy - 0.5f) / distDiv;
@@ -130,17 +127,17 @@ float4 main(PSInput input) : SV_Target
     
     float4 diffuse;
     if (flags & MaterialFlag_eHasDiffuse)
-        diffuse = saturate(diffuseMap.Sample(wrapSampler, texCoord + distortion) /** float4(input.vcolor, 1.f)*/);
+        diffuse = saturate(diffuseMap.Sample(wrapSampler, texCoord + distortion));
     else
         diffuse = float4(diffuseColor, 1.f);
-    
-    diffuse.w = 1.f;
-    //float4 diffuse = diffuseMap.Sample(samplerState, texCoord + distortion);
     
     if (flags & MaterialFlag_eHasOpacity)
         opacity = opacityMap.Sample(wrapSampler, texCoord + distortion).x;
     else
         opacity = diffuse.w;
+
+    if (opacity == 0.f)
+        discard;
     
     float attenuation = 1.f;
     
@@ -167,10 +164,10 @@ float4 main(PSInput input) : SV_Target
    
     
     float3 lightValue = 0.f;
-    float3 amb = float3(0.f,0.f,0.f);
+    float3 amb = float3(0.f, 0.f, 0.f);
     
     uint numOfLights = numLights;
-    for (int i = 0; i < numOfLights; i++)
+    for (uint i = 0; i < numOfLights; i++)
     {
         Light light = mySb[i];
         if (light.pos.w == 1.f)
@@ -232,6 +229,6 @@ float4 main(PSInput input) : SV_Target
     //float3 final = diffuse.xyz * (cellLightStr) + (rimDot.xxx * rimColor) + specular;
 
     //return float4(input.worldPos, 1.f);
-    //return float4(1.f, 1.f, 1.f, 1.f);
+    //return float4(1.f, 0.f, 1.f, 1.f);
     return float4(final, opacity * transparency);
 }

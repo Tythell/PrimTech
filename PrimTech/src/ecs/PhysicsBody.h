@@ -14,6 +14,7 @@ namespace pt
 		{
 			Box, Sphere, Capsule
 		};
+		rp::Transform GetTransform();
 
 		//void AddColider(rp::, const pt::TransformComp& transform);
 		void UpdateTransform(pt::TransformComp& transform);
@@ -50,6 +51,7 @@ namespace pt
 		uint GetNoColliders() const;
 		bool Exists() const { return (mp_rigidBody); }
 		static void SetPtrs(PrimtTech::PhysicsHandler* pPhysHandle) { m_pPhysHandle = pPhysHandle; }
+		//float RayCastTo(pt::PhysicsBody& physBod, float3 startPoint, float3 dir, ;
 
 		virtual void Delete() override;
 		// Inherited via Component

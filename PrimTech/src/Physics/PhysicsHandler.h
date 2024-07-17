@@ -33,7 +33,7 @@ namespace PrimtTech
 #endif // _DEBUG
 	private:
 #ifdef PHYSDEBUG
-		rp::DebugRenderer* md_debugRenderer;
+		rp::DebugRenderer* md_debugRenderer = nullptr;
 #endif // _DEBUG
 
 		rp::PhysicsCommon m_physics;

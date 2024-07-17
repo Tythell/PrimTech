@@ -26,7 +26,7 @@ namespace PrimtTech
 		};
 
 		
-		m_vbuffer.CreateVertexBuffer(device, m_shape.data(), m_shape.size(), dc);
+		m_vbuffer.CreateVertexBuffer(device, m_shape.data(), static_cast<uint>(m_shape.size()), dc);
 		m_ibuffer.CreateIndexBuffer(device, indexes, ARRAYSIZE(indexes));
 	}
 
@@ -41,7 +41,7 @@ namespace PrimtTech
 		{
 			0,1
 		};
-		m_vbuffer.CreateVertexBuffer(device, m_shape.data(), m_shape.size(), dc);
+		m_vbuffer.CreateVertexBuffer(device, m_shape.data(), static_cast<uint>(m_shape.size()), dc);
 		m_ibuffer.CreateIndexBuffer(device, index, ARRAYSIZE(index));
 	}
 
@@ -71,7 +71,7 @@ namespace PrimtTech
 	void RenderShape::SetColor(float3 color)
 	{
 		uint size = m_vbuffer.GetBufferSize();
-		for (int i = 0; i < size; i++)
+		for (uint i = 0; i < size; i++)
 		{
 			m_vbuffer.Data(i).m_color = color;
 		}
@@ -98,12 +98,12 @@ namespace PrimtTech
 				//vert.m_color = RED_3F;
 				for (int j = 0; j < points; j++)
 				{
-					float degree = DEG(degreeIncrease * (float)(j + points / 4));
+					float degree = glm::degrees(degreeIncrease * (float)(j + points / 4));
 					vert.m_position = { radius * sin(degree), 0.f, radius * cos(degree) };
 					m_shape.push_back(vert);
 				}
 			}
-			float degree = DEG(degreeIncrease * (float)(i + points / 4));
+			float degree = glm::degrees(degreeIncrease * (float)(i + points / 4));
 			vert.m_position = { radius * cos(degree) , radius * sin(degree), 0.f };
 			//vert.m_color = { float(i % 2), float(i % 2), float(i % 2) };
 			m_shape.push_back(vert);
@@ -114,7 +114,7 @@ namespace PrimtTech
 		{
 			BBVertex vert;
 
-			float degree = DEG(degreeIncrease * (float)(i + points / 4));
+			float degree = glm::degrees(degreeIncrease * (float)(i + points / 4));
 			vert.m_position = { 0.f , radius * sin(degree), radius * cos(degree) };
 			//vert.m_color = { float(i % 2), float(i % 2), float(i % 2) };
 			m_shape.push_back(vert);
@@ -147,7 +147,7 @@ namespace PrimtTech
 		//	{{corner, 0.f, -corner}, color}, // 17
 		//};
 		//m_vbuffer.CreateVertexBuffer(device, circles, ARRAYSIZE(circles));
-		m_vbuffer.CreateVertexBuffer(device, m_shape.data(), m_shape.size(), NULL, eBufferFlags_IgnoreCreateTwice);
+		m_vbuffer.CreateVertexBuffer(device, m_shape.data(), static_cast<uint>(m_shape.size()), NULL, eBufferFlags_IgnoreCreateTwice);
 		//unsigned int circleIndexes[]
 		//{
 		//	0, 1, 2, 3, 4, 5, 6, 7, 0,
@@ -161,7 +161,7 @@ namespace PrimtTech
 			circleIndexes.push_back(i);
 		}
 		//m_ibuffer.CreateIndexBuffer(device, circleIndexes, ARRAYSIZE(circleIndexes));
-		m_ibuffer.CreateIndexBuffer(device, circleIndexes.data(), circleIndexes.size(), NULL, eBufferFlags_IgnoreCreateTwice);
+		m_ibuffer.CreateIndexBuffer(device, circleIndexes.data(), static_cast<uint>(circleIndexes.size()), NULL, eBufferFlags_IgnoreCreateTwice);
 	}
 }
 

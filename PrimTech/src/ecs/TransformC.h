@@ -28,6 +28,7 @@ namespace pt
 		void Scale(float xyz);
 
 		void SetWorldMatrix(matrix m);
+		void SetWorldMatrix(float* m);
 
 		float3 GetPosition() const;
 		float3 GetRotationDeg() const;
@@ -42,8 +43,8 @@ namespace pt
 		virtual void DuplicateFrom(Component* other) override;
 		// Inherited via Component
 		virtual void OnFree() override;
-	protected:
 		void UpdateWorld();
+	protected:
 	private:
 		float3 m_pos, m_scale, m_anglesD;
 		quat m_rotQ;
